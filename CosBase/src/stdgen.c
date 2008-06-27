@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: stdgen.c,v 1.2 2008/06/27 16:53:06 ldeniau Exp $
  |
 */
 
@@ -134,7 +134,7 @@ makgeneric(OBJ , gnewWithInt , _1, (int)val);
 makgeneric(OBJ , gnewWithStr , _1, (STR)str);
 
 // clone (=alloc+initWith(T,T))
-defgeneric(OBJ , gclone      , _1);
+makgeneric(OBJ , gclone      , _1);
 
 // allocator, deallocator
 makgeneric(OBJ , galloc       , _1);

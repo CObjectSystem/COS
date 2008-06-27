@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Proxy.c,v 1.2 2008/06/27 16:53:06 ldeniau Exp $
  |
 */
 
@@ -211,7 +211,7 @@ chkret2(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2)
 }
 
 static inline void
-chkret2(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3)
+chkret3(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3)
 {
   if (COS_GEN_ORET(sel)) {
     if (*ret == pxy1->obj)

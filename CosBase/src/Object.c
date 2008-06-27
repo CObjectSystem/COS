@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Object.c,v 1.2 2008/06/27 16:53:06 ldeniau Exp $
  |
 */
 
@@ -69,12 +69,12 @@ defmethod(OBJ, gnewWithLoc, mObject, Any, (STR)file, (int)line)
   retmethod( ginitWithLoc(galloc(_1),_2,file,line) );
 endmethod
 
-defmethod(OBJ, gnewWithInt, mObject, Any, (int)val)
-  retmethod( ginitWithInt(galloc(_1),_2,val) );
+defmethod(OBJ, gnewWithInt, mObject, (int)val)
+  retmethod( ginitWithInt(galloc(_1),val) );
 endmethod
 
-defmethod(OBJ, gnewWithStr, mObject, Any, (STR)str)
-  retmethod( ginitWithStr(galloc(_1),_2,str) );
+defmethod(OBJ, gnewWithStr, mObject, (STR)str)
+  retmethod( ginitWithStr(galloc(_1),str) );
 endmethod
 
 defmethod(OBJ, gclone, Object)
