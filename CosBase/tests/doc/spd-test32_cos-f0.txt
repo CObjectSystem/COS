@@ -1,0 +1,56 @@
+pentium-m x86-32, gcc 4.1.2, fast message = 0
+
+** C Object System Testsuite **
+ + method invocation & knowledge                      (0.00 s) -  58/ 58 : PASS
+ + class definition & inheritance                     (0.00 s) - 184/184 : PASS
+ + class predicate & logic                            (0.00 s) -  72/ 72 : PASS
+ + next method & specialization                       (0.00 s) -  75/ 75 : PASS
+ + unrecognized message                               (0.00 s) -  15/ 15 : PASS
+ + forwarding message                                 (0.00 s) -  15/ 15 : PASS
+ + variadic message                                   (0.00 s) -  13/ 13 : PASS
+ + proxy & message intercept                          (0.00 s) -  10/ 10 : PASS
+ + exception & signal                                 (0.00 s) -  28/ 28 : PASS
+ + contract                                           (0.00 s) -   5/  5 : PASS
+ + reference counting & autorelease                   (0.07 s) -  32/ 32 : PASS
+ =   507 total,   507 passed,     0 failed            (0.07 s)             PASS
+
+** C Object System Speed Testsuite **
+ + method (0 argument )                               (0.94 s) -   21277 Kitr/s
+ + method (1 argument )                               (0.94 s) -   21277 Kitr/s
+ + method (2 arguments)                               (0.95 s) -   21053 Kitr/s
+ + method (3 arguments)                               (1.00 s) -   20000 Kitr/s
+ + method (4 arguments)                               (1.01 s) -   19802 Kitr/s
+ + method (5 arguments)                               (1.04 s) -   19231 Kitr/s
+ + next method (0 argument )                          (1.31 s) -   15267 Kitr/s
+ + next method (1 argument )                          (1.41 s) -   14184 Kitr/s
+ + next method (2 arguments)                          (1.41 s) -   14184 Kitr/s
+ + next method (3 arguments)                          (1.50 s) -   13333 Kitr/s
+ + next method (4 arguments)                          (1.65 s) -   12121 Kitr/s
+ + next method (5 arguments)                          (1.75 s) -   11429 Kitr/s
+ + multimethod (rank 2)                               (0.95 s) -   21053 Kitr/s
+ + multimethod (rank 3)                               (1.07 s) -   18692 Kitr/s
+ + multimethod (rank 4)                               (1.18 s) -   16949 Kitr/s
+ + multimethod (rank 5)                               (1.29 s) -   15504 Kitr/s
+ + method through proxy (0 argument )                 (0.84 s) -   11905 Kitr/s
+ + method through proxy (1 argument )                 (0.88 s) -   11364 Kitr/s
+ + method through proxy (2 arguments)                 (0.92 s) -   10870 Kitr/s
+ + method through proxy (3 arguments)                 (0.93 s) -   10753 Kitr/s
+ + method through proxy (4 arguments)                 (0.95 s) -   10526 Kitr/s
+ + method through proxy (5 arguments)                 (0.97 s) -   10309 Kitr/s
+ + next method through proxy (0 argument )            (0.97 s) -   10309 Kitr/s
+ + next method through proxy (1 argument )            (1.02 s) -    9804 Kitr/s
+ + next method through proxy (2 arguments)            (1.06 s) -    9434 Kitr/s
+ + next method through proxy (3 arguments)            (1.04 s) -    9615 Kitr/s
+ + next method through proxy (4 arguments)            (1.07 s) -    9346 Kitr/s
+ + next method through proxy (5 arguments)            (1.08 s) -    9259 Kitr/s
+ + multimethod through proxy (rank 2)                 (1.01 s) -    9901 Kitr/s
+ + multimethod through proxy (rank 3)                 (1.06 s) -    9434 Kitr/s
+ + multimethod through proxy (rank 4)                 (1.18 s) -    8475 Kitr/s
+ + multimethod through proxy (rank 5)                 (1.27 s) -    7874 Kitr/s
+ + new (galloc+ginit)                                 (2.05 s) -    4878 Kitr/s
+ + retain                                             (0.56 s) -   17857 Kitr/s
+ + release                                            (0.54 s) -   18519 Kitr/s
+ + autoRelease                                        (0.80 s) -   12500 Kitr/s
+ + release (gdeinit+dealloc)                          (1.66 s) -    6024 Kitr/s
+ + try-endtry                                         (0.55 s) -    3636 Kitr/s
+ =    38 total                                        (41.81 s)

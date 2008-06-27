@@ -1,0 +1,67 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- common
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: common,v 1.1 2008/06/27 16:17:26 ldeniau Exp $
+# |
+#
+
+# standard directories and paths
+DOCDIR := doc
+SRCDIR := src
+INCDIR := include
+BINDIR := bin
+LIBDIR := lib
+OBJDIR := obj
+
+INCLUDE = -I$(PREFIX)/include/cos -I$(BASEDIR)/$(INCDIR) \
+          $(foreach d,$(moddeps),-I$(d)/$(INCDIR))
+LIBRARY = -L$(PREFIX)/lib/ -L$(BUILDDIR)/$(LIBDIR) \
+          $(patsubst -L%,-L$(BUILDDIR)/%, \
+          $(filter-out -L/%, \
+            $(foreach d,$(moddeps),-L$(d)/$(LIBDIR)) \
+            $(foreach d,$(dir $(libdeps)),-L$(d))) ) \
+          $(filter -L/%, \
+            $(foreach d,$(moddeps),-L$(d)/$(LIBDIR)) \
+            $(foreach d,$(dir $(libdeps)),-L$(d)))
+LIBS    = $(foreach l,$(notdir $(moddeps)),-l$(l)$(TARGETEXT)) \
+          $(foreach l,$(notdir $(libdeps)),-l$(l))
+
+# standard flags
+CPPFLAGS    +=                $(SYSFLAGS)
+CCFLAGS     += $(COS_OPTIONS) $(SYSFLAGS)
+DEBUG_CPP   += -DCOS_DEBUG=COS_YES -DCOS_TRACE=COS_YES -DCOS_CONTRACT=COS_CONTRACT_ALL
+DEBUG_CC    += -DCOS_DEBUG=COS_YES -DCOS_TRACE=COS_YES -DCOS_CONTRACT=COS_CONTRACT_ALL
+PROFILE_CPP += -DNDEBUG
+PROFILE_CC  += -DNDEBUG
+RELEASE_CPP += -DNDEBUG
+RELEASE_CC  += -DNDEBUG
+
+# end of makefile

@@ -1,0 +1,16 @@
+pentium-m x86-32, gcc 4.1.2, no virtual inheritance
+
+** C Object System Speed Testsuite (C++) **
+ + method (0 argument )                               (0.17 s) -  117647 Kitr/s
+ + method (1 argument )                               (0.17 s) -  117647 Kitr/s
+ + method (2 arguments)                               (0.20 s) -  100000 Kitr/s
+ + method (3 arguments)                               (0.22 s) -   90909 Kitr/s
+ + method (4 arguments)                               (0.25 s) -   80000 Kitr/s
+ + method (5 arguments)                               (0.28 s) -   71429 Kitr/s
+ + multimethod (rank 2)                               (0.73 s) -   27397 Kitr/s
+ + multimethod (rank 3)                               (1.24 s) -   16129 Kitr/s
+ + multimethod (rank 4)                               (1.83 s) -   10929 Kitr/s
+ + multimethod (rank 5)                               (2.51 s) -    7968 Kitr/s
+ + new                                                (1.50 s) -    6667 Kitr/s
+ + delete                                             (0.71 s) -   14085 Kitr/s
+ =    13 total                                        (9.81 s)

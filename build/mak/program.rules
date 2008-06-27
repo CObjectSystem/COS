@@ -1,0 +1,108 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- program rules
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: program.rules,v 1.1 2008/06/27 16:17:26 ldeniau Exp $
+# |
+#
+
+.PHONY: $(TARGET) $(TARGET).run $(TARGET).clean $(TARGET).exe
+.PRECIOUS: $(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d
+
+#
+# target context
+#
+$(TARGET).%: TARGETEXT := $(TARGET_EXT)
+
+#
+# target rules
+#
+$(TARGET): $(TARGET).exe
+
+$(TARGET).run: $(TARGET).exe
+	@echo "*** Running" $(BUILDDIR)/$(BINDIR)/$(program)$(TARGETEXT)
+ifneq ($(SHOW),yes)
+	@export $(SYSLIBPATH)="$$$(SYSLIBPATH)$(patsubst -L%,:%,$(LIBRARY))" ; \
+	$(BUILDDIR)/$(BINDIR)/$(program)$(TARGETEXT) $(ARGS)
+else
+	export $(SYSLIBPATH)="$$$(SYSLIBPATH)$(patsubst -L%,:%,$(LIBRARY))" ; \
+	$(BUILDDIR)/$(BINDIR)/$(program)$(TARGETEXT) $(ARGS)
+endif
+
+$(TARGET).clean:
+	$(RM)  $(BUILDDIR)/$(BINDIR)/$(program)$(TARGETEXT)
+	$(RMDIR) $(BUILDDIR)/$(OBJDIR)/$(basename $@)
+
+#
+# rules for building program
+#
+$(TARGET).exe: $(BUILDDIR)/$(BINDIR)/$(program)$(TARGET_EXT)
+
+$(BUILDDIR)/$(BINDIR)/$(program)$(TARGET_EXT): \
+  $(foreach o,$(objects),$(BUILDDIR)/$(OBJDIR)/$(TARGET)/$(o).o)
+	@echo "*** Building" $@
+	@$(MKDIR) $(@D)
+	@$(EXEDIR)/$(COS_SYMBOL)  --out=$(<D)/.$(COS_SYMBOL).c
+	@$(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/.$(COS_SYMBOL).c -o $(<D)/.$(COS_SYMBOL).o
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/.$(COS_SYMBOL).o -o $@ $(LIBS) $(SYSLIBS)
+	@$(EXEDIR)/$(COS_SYMBOL)  --out=$(<D)/.$(COS_SYMBOL).c    $@
+	@$(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/.$(COS_SYMBOL).c -o $(<D)/.$(COS_SYMBOL).o
+ifneq ($(SHOW),yes)
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/.$(COS_SYMBOL).o -o $@ $(LIBS) $(SYSLIBS)
+else
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/.$(COS_SYMBOL).o -o $@ $(LIBS) $(SYSLIBS)
+endif
+
+#
+# rules for compilation
+#
+$(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.o: \
+  $(BASEDIR)/$(SRCDIR)/%.c $(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d
+ifneq ($(SHOW),yes)
+	@echo "*** Compiling" $< "->" $@
+	@$(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+else
+	 $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+endif
+
+#
+# rules for dependencies
+#
+$(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d: $(BASEDIR)/$(SRCDIR)/%.c
+	@$(MKDIR) $(@D) ; $(DEP) $(INCLUDE) $(CPPFLAGS) $< -o $@
+
+#
+# include dependencies if required
+#
+ifneq ($(filter-out $(TARGET).clean,$(USERTARGETS)),)
+-include $(addprefix $(BUILDDIR)/$(OBJDIR)/$(TARGET)/,$(addsuffix .d,$(objects)))
+endif
+
+# end of makefile

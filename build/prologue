@@ -1,0 +1,72 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- prologue
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: prologue,v 1.1 2008/06/27 16:17:26 ldeniau Exp $
+# |
+#
+
+# setup paths
+THISMAKEFILE := $(lastword $(MAKEFILE_LIST))
+USERMAKEFILE := $(lastword $(filter-out $(THISMAKEFILE),$(MAKEFILE_LIST)))
+
+BASEDIR := $(patsubst %/,%,$(dir $(USERMAKEFILE)))
+
+ifneq ($(findstring /build/prologue,$(THISMAKEFILE)),)
+PREFIX := $(patsubst %/build/prologue,%,$(THISMAKEFILE))
+MAKDIR := $(PREFIX)/build/mak
+EXEDIR := $(PREFIX)/build/exe
+else
+PREFIX := $(patsubst %/include/cos/prologue,%,$(THISMAKEFILE))
+MAKDIR := $(PREFIX)/include/cos/mak
+EXEDIR := $(PREFIX)/lib/cos/bin
+endif
+
+# check makefiles
+ifeq ($(wildcard $(MAKDIR)/epilogue),)
+$(error unable to autodetect COS makefiles)
+endif
+
+# check binaries
+ifeq ($(wildcard $(EXEDIR)/cossym),)
+$(error unable to autodetect COS tools)
+endif
+
+# check config
+ifeq ($(wildcard $(MAKDIR)/local),)
+$(error local makefile not found. Did you run configure?)
+endif
+
+# include settings
+include $(MAKDIR)/local
+include $(MAKDIR)/config.$(OSNAME)
+include $(MAKDIR)/common
+
+# end of makefile
