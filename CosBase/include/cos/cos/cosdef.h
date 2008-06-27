@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: cosdef.h,v 1.2 2008/06/27 16:45:54 ldeniau Exp $
  |
 */
 
@@ -54,14 +54,14 @@ typedef unsigned long U64;
 #elif ULLONG_MAX >= 18446744073709551615ULL
 typedef signed   long long S64;
 typedef unsigned long long U64;
-#elif defined(COS_LLONG)
-typedef signed   COS_LLONG S64;
-typedef unsigned COS_LLONG U64;
+#elif defined(_LongLong)
+typedef signed   _LongLong S64;
+typedef unsigned _LongLong U64;
 #else
 #error "COS: 64 bits integers not supported"
 #endif
 
-typedef int BOOL;
+typedef _Bool BOOL;
 typedef const char* STR; // string literal
 typedef struct OBJ* OBJ; // ADT, never defined
 typedef const struct Generic* SEL;

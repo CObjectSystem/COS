@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: configure,v 1.1 2008/06/27 16:17:14 ldeniau Exp $
+# | $Id: configure,v 1.2 2008/06/27 16:45:54 ldeniau Exp $
 # |
 #
 
@@ -43,6 +43,7 @@ prefix=/usr
 config=`uname -s`
 arch=`uname -m`
 posix=yes
+tls="__thread"
 datestr=`date`
 options=
 defines=
@@ -72,6 +73,7 @@ cat <<END-OF-TEXT
     config : $config
     arch   : $arch
     posix  : $posix
+    tls    : $tls
     options:$options
     defines:$defines
 
@@ -97,23 +99,27 @@ cat <<END-OF-TEXT
     --config=<config_name>
       Use the given build configuration (system specific).
       Available configurations: $config_list
-      Example: --config=LinuxIntelCC
+      Example: --config=LinuxICC
 
     --arch=<arch_name>
       Use the given build architecture (compiler specific).
       Example: --arch=pentium-m
       
-    --posix=<yes|no>
-      Set the POSIX compliance.
+    --posix=<no|yes>
+      Set the POSIX compliance (include unistd.h).
       Example: --posix=no
+
+    --tls=<no|token>
+      Set the Thread Local Storage keyword.
+      Example: --tls=__thread
 
     --option=<opt_name>
       Add extra options to compiler command, multiple options are allowed.
-      Example: --option="-fsse2" --option="-fsse3"
+      Example: --option="-fsse2" --option="-DMY_DEF"
 
     --define=<def_name>
       Add extra defines to preprocessor command, multiple defines are allowed.
-      Example: --define="inline=__inline" --define="restrict=__restrict"
+      Example: --define="inline=__inline__" --define="restrict=__restrict__"
 
   Default settings:
 END-OF-TEXT
@@ -145,6 +151,11 @@ while [ "$1" != "" ] ; do
 	    posix=$val; shift; continue;
 	fi
 
+	val=`expr $1 : '--tls=\(.*\)'`
+	if [ "$val" != "" ] ; then
+	    tls=$val; shift; continue;
+	fi
+
 	val=`expr $1 : '--option=\(.*\)'`
 	if [ "$val" != "" ] ; then
 		options="$options $val"; shift; continue;
@@ -174,7 +185,11 @@ fi
 
 # settings
 if [ "$posix" == "yes" ] ; then
-  defines="$defines COS_POSIX_USE=COS_YES"
+  defines="$defines COS_POSIX=1"
+fi
+
+if [ "$tls" != "no" ] ; then
+  defines="$defines COS_TLS=$tls"
 fi
 
 ##### Start of local configuration #####
@@ -193,7 +208,7 @@ COS_VERSION := $major.$minor
 COS_MAJOR   := $major
 COS_MINOR   := $minor
 COS_SYMBOL  := $cossym
-COS_OPTIONS :=$options
+COS_CCOPTS  :=$options
 
 # end of config
 END-OF-TEXT

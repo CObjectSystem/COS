@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: config.h,v 1.2 2008/06/27 16:45:54 ldeniau Exp $
  |
 */
 
@@ -67,13 +67,15 @@
 */
 // #define inline        // __inline__
 // #define restrict      // __restrict__
-// #define _LongLong     // __long_long__
+// #define _Bool         // __bool__
 // #define _Complex      // __complex__
-// #define _ThreadLocal  // __thread or __declspec(thread)
+// #define _LongLong     // __long_long__
 
-// #define COS_USE_C89
-// #define COS_USE_TLS
-// #define COS_USE_POSIX
+/* NOTE-CONF: POSIX and Thread Local Storage
+   define missing keywords here or with 'configure'
+*/
+// #define COS_POSIX 1
+// #define COS_TLS   __thread
 
 /* NOTE-CONF: GCC dialect
    Automatic
