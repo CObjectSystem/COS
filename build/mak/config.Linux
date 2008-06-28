@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Linux,v 1.1 2008/06/27 16:17:26 ldeniau Exp $
+# | $Id: config.Linux,v 1.2 2008/06/28 21:27:53 ldeniau Exp $
 # |
 #
 
@@ -60,8 +60,8 @@ TAR        := tar czf
 # compiler and linker flags
 #
 CPPFLAGS   := -std=c99 -W -Wall -pedantic -pipe
-CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -mtune=$(OSARCH) -O3
-LDFLAGS    := -std=c99 -W -Wall -pedantic -pipe -mtune=$(OSARCH) -O3
+CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
+LDFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
 
 DEBUG_CPP   =
 DEBUG_CC    = -g

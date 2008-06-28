@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: base.h,v 1.2 2008/06/28 21:27:53 ldeniau Exp $
  |
 */
 
@@ -213,12 +213,12 @@
         COS_PP_IF(COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_VALIST_,a))) \
           (COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_VALISTF_,a)()),0)
 
-#define COS_TOK_OBJ_OBJ        ()
-#define COS_TOK_OBJF_OBJ()     ()
-#define COS_TOK_VOID_void      ()
-#define COS_TOK_VOIDF_void()   ()
-#define COS_TOK_VALIST_void    ()
-#define COS_TOK_VALISTF_void() ()
+#define COS_TOK_OBJ_OBJ           ()
+#define COS_TOK_OBJF_OBJ()        ()
+#define COS_TOK_VOID_void         ()
+#define COS_TOK_VOIDF_void()      ()
+#define COS_TOK_VALIST_va_list    ()
+#define COS_TOK_VALISTF_va_list() ()
 
 #define COS_TOK_ISGUM(a) \
         COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_GUM_,a))

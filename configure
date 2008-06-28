@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: configure,v 1.2 2008/06/27 16:45:54 ldeniau Exp $
+# | $Id: configure,v 1.3 2008/06/28 21:27:53 ldeniau Exp $
 # |
 #
 
@@ -41,9 +41,9 @@ minor=7
 version=$major.$minor
 prefix=/usr
 config=`uname -s`
-arch=`uname -m`
 posix=yes
-tls="__thread"
+tls=yes
+tlsdef="__thread"
 datestr=`date`
 options=
 defines=
@@ -71,7 +71,6 @@ cat <<END-OF-TEXT
     prefix : $prefix
     version: $version
     config : $config
-    arch   : $arch
     posix  : $posix
     tls    : $tls
     options:$options
@@ -90,36 +89,32 @@ cat <<END-OF-TEXT
 
   Options:
     --help
-      This help.
+      this help.
 
     --prefix=<install_prefix>
-      Use the given install directory for make install.
-      Example: --prefix=/usr/local
+      use the given install directory for make install.
+      default: --prefix=$prefix
 
     --config=<config_name>
-      Use the given build configuration (system specific).
-      Available configurations: $config_list
-      Example: --config=LinuxICC
+      use the given build configuration (system specific).
+      available configurations: $config_list
+      default: --config=$config
 
-    --arch=<arch_name>
-      Use the given build architecture (compiler specific).
-      Example: --arch=pentium-m
-      
     --posix=<no|yes>
-      Set the POSIX compliance (include unistd.h).
-      Example: --posix=no
+      set the POSIX compliance (include unistd.h).
+      default: --posix=$posix
 
     --tls=<no|token>
-      Set the Thread Local Storage keyword.
-      Example: --tls=__thread
+      set the Thread Local Storage keyword.
+      default: --tls=$tlsdef
 
     --option=<opt_name>
-      Add extra options to compiler command, multiple options are allowed.
-      Example: --option="-fsse2" --option="-DMY_DEF"
+      add extra options to compiler command, multiple options are allowed.
+      example: --option="-fsse2" --option="-DMY_DEF"
 
     --define=<def_name>
-      Add extra defines to preprocessor command, multiple defines are allowed.
-      Example: --define="inline=__inline__" --define="restrict=__restrict__"
+      add extra defines to preprocessor command, multiple defines are allowed.
+      example: --define="inline=__inline__" --define="restrict=__restrict__"
 
   Default settings:
 END-OF-TEXT
@@ -141,11 +136,6 @@ while [ "$1" != "" ] ; do
 		config=$val; shift; continue;
 	fi
 
-	val=`expr $1 : '--arch=\(.*\)'`
-	if [ "$val" != "" ] ; then
-		arch=$val; shift; continue;
-	fi
-
 	val=`expr $1 : '--posix=\(.*\)'`
 	if [ "$val" != "" ] ; then
 	    posix=$val; shift; continue;
@@ -153,7 +143,13 @@ while [ "$1" != "" ] ; do
 
 	val=`expr $1 : '--tls=\(.*\)'`
 	if [ "$val" != "" ] ; then
-	    tls=$val; shift; continue;
+	  if [ "$val" = no ] ; then
+            tls=no
+	  else
+	    tls=yes
+            [ "$val" != yes ] && tlsdef="$val"
+          fi
+          shift; continue;
 	fi
 
 	val=`expr $1 : '--option=\(.*\)'`
@@ -184,12 +180,15 @@ if [ ! -f "$makdir/config.$config" ] ; then
 fi
 
 # settings
-if [ "$posix" == "yes" ] ; then
+echo "The C Object System is now configured with the following settings:"
+settings
+
+if [ "$posix" = "yes" ] ; then
   defines="$defines COS_POSIX=1"
 fi
 
-if [ "$tls" != "no" ] ; then
-  defines="$defines COS_TLS=$tls"
+if [ "$tls" = "yes" ] ; then
+  defines="$defines COS_TLS=$tlsdef"
 fi
 
 ##### Start of local configuration #####
@@ -202,7 +201,6 @@ cat > $out <<END-OF-TEXT
 INSTALLDIR   = \$(DESTDIR)$prefix
 
 OSNAME      := $config
-OSARCH      := $arch
 
 COS_VERSION := $major.$minor
 COS_MAJOR   := $major
@@ -248,8 +246,6 @@ if [ "$base" != "$build" ] ; then
 	cp $base/Makefile $build
 fi
 
-echo "The C Object System is now configured with the following settings:"
-settings
 echo "You can run now the following targets:"
 echo "    make [install | tests | samples]."
 

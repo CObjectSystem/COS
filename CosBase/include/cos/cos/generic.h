@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: generic.h,v 1.2 2008/06/28 21:27:53 ldeniau Exp $
  |
 */
 
@@ -290,7 +290,7 @@ RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
   (&COS_GEN_NAME(NAME),COS_PP_SEQ(COS_SEL_NAME(C)), \
    COS_PP_IF(A)(&_arg,0),COS_PP_IF(R)(&_ret,0)); \
   /* arguments deinitialization (if any) */ \
-  COS_PP_IF(A)(COS_PP_SEQ(COS_PP_MAP(AS,COS_ARG_DEINI));,/* no arg */) \
+  COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_ARG_DEINI)),/* no arg */) \
   /* return result */ \
   COS_PP_IF(R)(return _ret;,/* no ret */) \
   /* for C89 mode */ \
@@ -316,7 +316,7 @@ RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
   (&COS_GEN_NAME(NAME),COS_PP_SEQ(COS_SEL_NAME(C)), \
    &_arg,COS_PP_IF(R)(&_ret,0)); \
   /* arguments deinitialization (if any) */ \
-  COS_PP_IF(A)(COS_PP_SEQ(COS_PP_MAP(COS_PP_RDROP(1,AS),COS_ARG_DEINI));,/* no arg */) \
+  COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(COS_PP_RDROP(1,AS),COS_ARG_DEINI)),/* no arg */) \
   /* va_list deinitialization */ \
   va_end(_arg.va); \
   /* return result */ \
@@ -336,7 +336,7 @@ void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
   /* method invocation */ \
   _nxt(_sel,COS_PP_SEQ(COS_SEL_NAME(C)),COS_PP_IF(A)(&_arg,0),_ret); \
   /* arguments deinitialization (if any) */ \
-  COS_PP_IF(A)(COS_PP_SEQ(COS_PP_MAP(AS,COS_ARG_DEINI));,/* no arg */) \
+  COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_ARG_DEINI)),/* no arg */) \
   /* for C89 mode */ \
   COS_UNUSED(COS_NXT_NAME(NAME)); \
 }
@@ -369,7 +369,7 @@ struct Generic COS_GEN_NAME(NAME) = { \
 // argument deinitialization
 #define COS_ARG_DEINI(a) \
   COS_PP_IF(COS_TOK_ISVALIST(COS_PRM_TYPE(a)))( \
-    va_end(_arg.COS_PRM_NAME(a)), (void)0)
+    va_end(_arg.COS_PRM_NAME(a));,/* not va_list */)
 
 // va_list initialization
 #define COS_ARG_VINI(PS,IS) \
