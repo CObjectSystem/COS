@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: contract.h,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -272,7 +272,7 @@ enum {
         COS_CTR_ASS_4(C,COS_PP_STR(C),F,L)
 
 #define COS_CTR_ASS_4(C,S,F,L) \
-        ((void)(COS_ASSERT && ((C) || (cos_exception_assertLoc(S,F,L),0))))
+        ((void)((C) || (cos_exception_assertLoc(S,F,L),0)))
 
 // test invariant
 #define COS_CTR_INV(...) \

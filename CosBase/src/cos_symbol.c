@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <time.h>
 
 enum { MAX_TBL = 50 };
@@ -94,7 +93,8 @@ static inline void
 bhv_setTag(struct Behavior *bhv)
 {
   if (bhv->Object.Any.id) {  // generics case
-    assert(!bhv->id);
+    if (bhv->id) cos_abort("Behavior has already an id");
+
     bhv->id = bhv->Object.Any.id | bhv_tag();
     bhv->Object.Any.id = 0;
   } else                    // classes case
@@ -215,7 +215,8 @@ gen_setMth(void)
   }
 
   // if missing generics, methods might have been loaded before generics
-  assert(n == sym.n_mth);
+  if (n != sym.n_mth)
+    cos_abort("some methods have been loaded before their generics (?)");
 }
 
 static inline void
@@ -348,7 +349,8 @@ sym_init(void)
   }
 
   // check consistency between Class, MetaClass and PropMetaClass
-  assert(n_cls == n_mcl && n_cls == n_pcl);
+  if (n_cls != n_mcl || n_cls != n_pcl)
+    cos_abort("invalid number of (property) meta classes vs classes");
 
   // prepare storage for new symbols
   sym_prepStorage(n_cls,n_gen,n_mth);
@@ -361,7 +363,7 @@ sym_init(void)
       if (tbl[t][s]->Any.rc != cos_tag_method) {
         struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl[t][s]);
         U32 i = bhv->id & sym.msk;
-        assert(!sym.bhv[i]);
+        if (sym.bhv[i]) cos_abort("Behavior slot %u already assigned", i);
         sym.bhv[i] = bhv;
       }
 
@@ -550,7 +552,7 @@ cos_symbol_register(struct Object* sym[])
 {
   U32 i;
 
-  assert(sym);
+  if (!sym) cos_abort("null symbol table");
 
   for (i=0; i < MAX_TBL && tbl[i]; i++)
     if (tbl[i] == sym)
@@ -569,9 +571,10 @@ cos_generic_get(U32 id)
 {
   struct Generic *gen = STATIC_CAST(struct Generic*, sym.bhv[id & sym.msk]);
 
-  assert(gen
-      && gen->Behavior.Object.Any.id == COS_CLS_NAME(Generic).Behavior.id
-      && gen->Behavior.id == id);
+  if (!gen
+    || gen->Behavior.id != id
+    || gen->Behavior.Object.Any.id != COS_CLS_NAME(Generic).Behavior.id)
+    cos_abort("invalid generic id %d", id);
 
   return gen;
 }
@@ -593,9 +596,10 @@ cos_class_get(U32 id)
 {
   struct Class *cls = STATIC_CAST(struct Class*, sym.bhv[id & sym.msk]);
 
-  assert(cls
-      && cls->Behavior.Object.Any.id != COS_CLS_NAME(Generic).Behavior.id
-      && cls->Behavior.id == id);
+  if (!cls
+    || cls->Behavior.id != id
+    || cls->Behavior.Object.Any.id == COS_CLS_NAME(Generic).Behavior.id)
+    cos_abort("invalid class id %d", id);
 
   return cls;
 }
@@ -616,16 +620,16 @@ cos_class_getWithStr(STR str)
   switch(p-str) {
   case 1:
     cls = cos_class_get(cls->Behavior.id)->spr;
-    assert( cls_isMeta(cls) );
+    TestAssert( cls_isMeta(cls) );
     break;
 
   case 2:
     cls = cos_class_get(cls->Behavior.id);
-    assert( cls_isProp(cls) );
+    TestAssert( cls_isProp(cls) );
     break;
 
   default:
-    assert( !cls_isMeta(cls) && !cls_isProp(cls) );
+    TestAssert( !cls_isMeta(cls) && !cls_isProp(cls) );
   }
 
   return cls;

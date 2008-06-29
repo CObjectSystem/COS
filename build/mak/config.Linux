@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Linux,v 1.2 2008/06/28 21:27:53 ldeniau Exp $
+# | $Id: config.Linux,v 1.3 2008/06/29 14:48:28 ldeniau Exp $
 # |
 #
 
@@ -101,8 +101,7 @@ CCFLAGS    += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
               -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
               -Wpointer-arith -Wbad-function-cast -Wcast-align -Wcast-qual \
               -Wfloat-equal -Wconversion -Wno-conversion \
-              -Winline \
-#              -Werror 
+              -Winline
 endif
 
 # end of makefile

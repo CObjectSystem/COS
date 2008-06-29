@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.h,v 1.1 2008/06/27 16:17:19 ldeniau Exp $
+ | $Id: tests.h,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -49,8 +49,10 @@ void ut_contract(void);
 void ut_autorelease(void);
 
 void st_methods(void);
+void st_methods_ptr(void);
 void st_nextmethods(void);
 void st_multimethods(void);
+void st_multimethods_ptr(void);
 
 void st_pxymethods(void);
 void st_pxynextmethods(void);

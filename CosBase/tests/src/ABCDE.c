@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include <assert.h>
 #include "generics.h"
 
 enum { MAX_LEN = 50 };
@@ -301,7 +300,7 @@ endmethod
 // rnk 2
 defmethod(void, gdoY, A, A)
   gcat2Str(_1,_2,"-AA");
-  assert( !next_method_p );
+  TestAssert( !next_method_p );
 endmethod
 
 // rnk 3

@@ -29,27 +29,25 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-#undef NDEBUG
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include <errno.h>
 
 static STR tag[] = { "Invalid", "Debug", "Trace", "Warning", "Error", "Abort" };
-static BOOL on[] = { NO,
-  cos_msg_debug >= COS_LOGMSG,
-  cos_msg_trace >= COS_LOGMSG,
-  cos_msg_warn  >= COS_LOGMSG,
-  cos_msg_error >= COS_LOGMSG,
-  cos_msg_abort >= COS_LOGMSG
+
+BOOL cos_logmsg_level[cos_msg_last] = { NO,
+  cos_msg_debug >= COS_LOGMSG_LEVEL,
+  cos_msg_trace >= COS_LOGMSG_LEVEL,
+  cos_msg_warn  >= COS_LOGMSG_LEVEL,
+  cos_msg_error >= COS_LOGMSG_LEVEL,
+  cos_msg_abort >= COS_LOGMSG_LEVEL
 };
 
 void
@@ -57,21 +55,27 @@ cos_logmsg_setLevel(int lvl)
 {
   int i;
   
-  assert( lvl > cos_msg_invalid && lvl < cos_msg_last );
+  if (lvl <= cos_msg_invalid || lvl >= cos_msg_last) {
+    cos_trace("logmsg_setLevel discarding level %d out of range", lvl);
+    return;
+  }
 
   for (i = 0; i <= lvl; i++)
-    on[i] = NO;
+    cos_logmsg_level[i] = NO;
     
   for (; i < cos_msg_last; i++)
-    on[i] = YES;
+    cos_logmsg_level[i] = YES;
 }
 
 void
 (cos_logmsg)(int lvl, STR file, int line, STR fmt, ...)
 {
-  assert( lvl > cos_msg_invalid && lvl < cos_msg_last );
+  if (lvl <= cos_msg_invalid || lvl >= cos_msg_last) {
+    cos_logmsg(cos_msg_trace, file, line, "logmsg discarding level %d out of range", lvl);
+    return;
+  }
 
-  if (on[lvl]) {
+  if (cos_logmsg_level[lvl]) {
     va_list va;
 
     va_start(va,fmt);
@@ -87,3 +91,4 @@ void
   if (lvl == cos_msg_abort)
     abort();
 }
+

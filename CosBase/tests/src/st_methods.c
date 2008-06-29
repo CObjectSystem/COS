@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: st_methods.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #include "tests.h"
 #include "generics.h"
 
-enum { N = 20000000 };
+enum { N = 15000000 * sizeof(void*) };
 
 void
 st_methods(void)
@@ -99,9 +99,75 @@ st_multimethods(void)
 }
 
 void
+st_methods_ptr(void)
+{
+  useclass(Counter);
+  usegeneric((gincr)gincr_s,
+             (gincrBy1)gincrBy1_s, (gincrBy2)gincrBy2_s, (gincrBy3)gincrBy3_s,
+             (gincrBy4)gincrBy4_s, (gincrBy5)gincrBy5_s);
+
+  OBJ cnt = gnew(Counter);
+  OBJ ret;
+
+  IMP1 gincr_p    = cos_method_lookup1((SEL)gincr_s   , cos_any_id(cnt));
+  IMP1 gincrBy1_p = cos_method_lookup1((SEL)gincrBy1_s, cos_any_id(cnt));
+  IMP1 gincrBy2_p = cos_method_lookup1((SEL)gincrBy2_s, cos_any_id(cnt));
+  IMP1 gincrBy3_p = cos_method_lookup1((SEL)gincrBy3_s, cos_any_id(cnt));
+  IMP1 gincrBy4_p = cos_method_lookup1((SEL)gincrBy4_s, cos_any_id(cnt));
+  IMP1 gincrBy5_p = cos_method_lookup1((SEL)gincrBy5_s, cos_any_id(cnt));
+
+  gincrBy1_arg_t arg1 = { 1 };
+  gincrBy2_arg_t arg2 = { 1,1 };
+  gincrBy3_arg_t arg3 = { 1,1,1 };
+  gincrBy4_arg_t arg4 = { 1,1,1,1 };
+  gincrBy5_arg_t arg5 = { 1,1,1,1,1 };
+
+  STEST( "method pointer (0 argument )", N, N, gincr_p   ((SEL)gincr_s   ,cnt,0    ,&ret) );
+  STEST( "method pointer (1 argument )", N, N, gincrBy1_p((SEL)gincrBy1_s,cnt,&arg1,&ret) );
+  STEST( "method pointer (2 arguments)", N, N, gincrBy2_p((SEL)gincrBy2_s,cnt,&arg2,&ret) );
+  STEST( "method pointer (3 arguments)", N, N, gincrBy3_p((SEL)gincrBy3_s,cnt,&arg3,&ret) );
+  STEST( "method pointer (4 arguments)", N, N, gincrBy4_p((SEL)gincrBy4_s,cnt,&arg4,&ret) );
+  STEST( "method pointer (5 arguments)", N, N, gincrBy5_p((SEL)gincrBy5_s,cnt,&arg5,&ret) );
+  
+  TestAssert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
+
+  grelease(cnt);
+}
+
+void
+st_multimethods_ptr(void)
+{
+  useclass(Counter);
+  usegeneric((gaddTo1)gaddTo1_s, (gaddTo2)gaddTo2_s,
+             (gaddTo3)gaddTo3_s, (gaddTo4)gaddTo4_s);
+
+  OBJ cnt = gnew(Counter);
+  OBJ one = gincr(gnew(Counter));
+  OBJ ret;
+
+  U32 cid = cos_any_id(cnt);
+  U32 oid = cos_any_id(one);
+
+  IMP2 gaddTo1_p = cos_method_lookup2((SEL)gaddTo1_s, cid, oid);
+  IMP3 gaddTo2_p = cos_method_lookup3((SEL)gaddTo2_s, cid, oid, oid);
+  IMP4 gaddTo3_p = cos_method_lookup4((SEL)gaddTo3_s, cid, oid, oid, oid);
+  IMP5 gaddTo4_p = cos_method_lookup5((SEL)gaddTo4_s, cid, oid, oid, oid, oid);
+
+  STEST( "multimethod pointer (rank 2)", N, N, gaddTo1_p((SEL)gaddTo1_s,cnt,one,0,&ret) );
+  STEST( "multimethod pointer (rank 3)", N, N, gaddTo2_p((SEL)gaddTo2_s,cnt,one,one,0,&ret) );
+  STEST( "multimethod pointer (rank 4)", N, N, gaddTo3_p((SEL)gaddTo3_s,cnt,one,one,one,0,&ret) );
+  STEST( "multimethod pointer (rank 5)", N, N, gaddTo4_p((SEL)gaddTo4_s,cnt,one,one,one,one,0,&ret) );
+  
+  TestAssert( gint(cnt) == N+2*N+3*N+4*N );
+
+  grelease(cnt);
+  grelease(one);
+}
+
+void
 st_memory(void)
 {
-  enum { P = N/2 };
+  enum { P = N/2/sizeof(void*) };
   static OBJ arr[P];
   useclass(Counter, AutoRelease);
   OBJ ar = gnew(AutoRelease);

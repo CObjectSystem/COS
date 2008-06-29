@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Darwin,v 1.2 2008/06/28 21:27:53 ldeniau Exp $
+# | $Id: config.Darwin,v 1.3 2008/06/29 14:48:28 ldeniau Exp $
 # |
 #
 
@@ -59,9 +59,9 @@ TAR        := tar czf
 #
 # compiler and linker flags
 #
-CPPFLAGS   := -std=c99 -W -Wall -Werror -pedantic -pipe
-CCFLAGS    := -std=c99 -W -Wall -Werror -pedantic -pipe -O3
-LDFLAGS    := -std=c99 -W -Wall -Werror -pedantic -pipe -O3
+CPPFLAGS   := -std=c99 -W -Wall -pedantic -pipe
+CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
+LDFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
 
 DEBUG_CPP   =
 DEBUG_CC    = -g

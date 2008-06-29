@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.1 2008/06/27 16:17:19 ldeniau Exp $
+ | $Id: tests.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -92,6 +92,9 @@ int main(int argc, char *argv[])
   st_methods();
   st_nextmethods();
   st_multimethods();
+
+  st_methods_ptr();
+  st_multimethods_ptr();
 
   st_pxymethods();
   st_pxynextmethods();

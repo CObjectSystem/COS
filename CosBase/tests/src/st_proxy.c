@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_proxy.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: st_proxy.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,7 @@
 #include "tests.h"
 #include "generics.h"
 
-enum { N = 10000000 };
+enum { N = 5000000 * sizeof(void*) };
 
 void
 st_pxymethods(void)

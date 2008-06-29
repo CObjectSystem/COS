@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.m,v 1.1 2008/06/27 16:17:25 ldeniau Exp $
+ | $Id: st_methods.m,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -64,10 +64,10 @@ st_multimethods()
   id cnt = [Counter new];
   id one = [[Counter new] incr];
 
-  STEST( "multimethod (rank 2)", N, N, [cnt addTo1: one] );
-  STEST( "multimethod (rank 3)", N, N, [cnt addTo2: one :one] );
-  STEST( "multimethod (rank 4)", N, N, [cnt addTo3: one :one :one] );
-  STEST( "multimethod (rank 5)", N, N, [cnt addTo4: one :one :one :one] );
+  STEST( "method & visitor pattern (rank 2)", N, N, [cnt addTo1: one] );
+  STEST( "method & visitor pattern (rank 3)", N, N, [cnt addTo2: one :one] );
+  STEST( "method & visitor pattern (rank 4)", N, N, [cnt addTo3: one :one :one] );
+  STEST( "method & visitor pattern (rank 5)", N, N, [cnt addTo4: one :one :one :one] );
 
   assert( [cnt value] == N+2*N+3*N+4*N );
 

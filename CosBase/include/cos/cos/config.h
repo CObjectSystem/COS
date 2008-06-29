@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.2 2008/06/27 16:45:54 ldeniau Exp $
+ | $Id: config.h,v 1.3 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -50,16 +50,12 @@
 #define COS_CONTRACT COS_CONTRACT_PRE // COS_CONTRACT_POST, COS_CONTRACT_ALL
 #endif
 
-#ifndef COS_ASSERT // default TestAssert mode (see cos/cos/contract.h)
-#define COS_ASSERT COS_YES // COS_NO = *never* perform test
-#endif
-
-#ifndef COS_LOGMSG // default logmsg level (see cos/cos/cosapi.h)
-#define COS_LOGMSG cos_msg_trace
-#endif
-
 #ifndef COS_FAST_MESSAGE // default message inlining (see cos/cos/dispatch.h)
-#define COS_FAST_MESSAGE 2 // inline up to rank 2
+#define COS_FAST_MESSAGE 3 // inline up to rank 3
+#endif
+
+#ifndef COS_LOGMSG_LEVEL // default logmsg level (see cos/cos/cosapi.h)
+#define COS_LOGMSG_LEVEL cos_msg_trace
 #endif
 
 /* NOTE-CONF: C99 dialect + Thread Local Storage

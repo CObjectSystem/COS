@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.2 2008/06/28 21:27:53 ldeniau Exp $
+# | $Id: Makefile,v 1.3 2008/06/29 14:48:28 ldeniau Exp $
 # |
 #
 
@@ -38,8 +38,6 @@ include ../build/prologue
 library = CosBase
 version = $(COS_VERSION)
 targets = debug profile release
-
-# CCFLAGS += -DCOS_FAST_MESSAGE=9 --param large-function-growth=1000
 
 include $(MAKDIR)/epilogue
 

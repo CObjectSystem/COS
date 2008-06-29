@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: cos.h,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -48,17 +48,23 @@
 extern "C" {
 #endif
 
+/* NOTE-USER: COS config header
+ */
+#include <cos/cos/local.h>
+#include <cos/cos/config.h>
+
+/* NOTE-USER: POSIX header
+ */
+#if COS_POSIX
+#include <unistd.h>
+#endif
+
 /* NOTE-USER: C headers
  */
 #include <stddef.h>
 #include <stdarg.h>
 #include <limits.h>
 #include <setjmp.h>
-
-/* NOTE-USER: COS config header
- */
-#include <cos/cos/local.h>
-#include <cos/cos/config.h>
 
 /* NOTE-USER: COS preprocessor headers
  */

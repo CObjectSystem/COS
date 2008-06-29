@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.cpp,v 1.1 2008/06/27 16:17:25 ldeniau Exp $
+ | $Id: st_methods.cpp,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -47,12 +47,12 @@ st_methods()
   Counter cnt;
   IIncr &inc = cnt;
 
-  STEST( "method (0 argument )", N, N, inc.incr() );
-  STEST( "method (1 argument )", N, N, inc.incrBy(1) );
-  STEST( "method (2 arguments)", N, N, inc.incrBy(1,1) );
-  STEST( "method (3 arguments)", N, N, inc.incrBy(1,1,1) );
-  STEST( "method (4 arguments)", N, N, inc.incrBy(1,1,1,1) );
-  STEST( "method (5 arguments)", N, N, inc.incrBy(1,1,1,1,1) );
+  STEST( "virtual member function (0 argument )", N, N, inc.incr() );
+  STEST( "virtual member function (1 argument )", N, N, inc.incrBy(1) );
+  STEST( "virtual member function (2 arguments)", N, N, inc.incrBy(1,1) );
+  STEST( "virtual member function (3 arguments)", N, N, inc.incrBy(1,1,1) );
+  STEST( "virtual member function (4 arguments)", N, N, inc.incrBy(1,1,1,1) );
+  STEST( "virtual member function (5 arguments)", N, N, inc.incrBy(1,1,1,1,1) );
   
   assert( cnt.value() == N+N+2*N+3*N+4*N+5*N );
 }
@@ -66,10 +66,10 @@ st_multimethods()
   IAddTo3 &add3 = cnt, &one3 = cnt1;
   IAddTo4 &add4 = cnt, &one4 = cnt1;
 
-  STEST( "multimethod (rank 2)", N, N, add1.addTo(one1) );
-  STEST( "multimethod (rank 3)", N, N, add2.addTo(one2,one2) );
-  STEST( "multimethod (rank 4)", N, N, add3.addTo(one3,one3,one3) );
-  STEST( "multimethod (rank 5)", N, N, add4.addTo(one4,one4,one4,one4) );
+  STEST( "virtual member function & visitor pattern (rank 2)", N, N, add1.addTo(one1) );
+  STEST( "virtual member function & visitor pattern (rank 3)", N, N, add2.addTo(one2,one2) );
+  STEST( "virtual member function & visitor pattern (rank 4)", N, N, add3.addTo(one3,one3,one3) );
+  STEST( "virtual member function & visitor pattern (rank 5)", N, N, add4.addTo(one4,one4,one4,one4) );
   
   assert( cnt.value() == N+2*N+3*N+4*N );
 }

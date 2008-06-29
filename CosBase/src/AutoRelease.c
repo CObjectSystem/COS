@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -38,11 +38,8 @@
 #include <cos/gen/access.h>
 #include <cos/gen/value.h>
 
-#undef NDEBUG
-
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 /* NOTE-CONF: AutoRelease storage size
  * Init specifies the number of initial slots allocated for
@@ -103,7 +100,6 @@ enlarge(struct AutoRelease* p)
     stk = malloc(sizeof *stk * new_size);
     if (stk) memcpy(stk, p->stk, sizeof *stk * size);
   } else {
-    assert( p->stk );
     new_size = size * COS_AUTORELEASE_RATE;
     stk = realloc(p->stk, sizeof *stk * new_size);
     if (size >= COS_AUTORELEASE_WARN)

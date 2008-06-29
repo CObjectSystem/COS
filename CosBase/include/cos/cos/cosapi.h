@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: cosapi.h,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
  |
 */
 
@@ -108,27 +108,27 @@ cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
    - they can be turned on/off with setLevel.
 */
 #define cos_debug(...) \
-        cos_logmsg(cos_msg_debug,__VA_ARGS__)
+        cos_logmsg(cos_msg_debug,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_trace(...) \
-        cos_logmsg(cos_msg_trace,__VA_ARGS__)
+        cos_logmsg(cos_msg_trace,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_warn( ...) \
-        cos_logmsg(cos_msg_warn,__VA_ARGS__)
+        cos_logmsg(cos_msg_warn,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_error(...) \
-        cos_logmsg(cos_msg_error,__VA_ARGS__)
+        cos_logmsg(cos_msg_error,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_abort(...) \
-        cos_logmsg(cos_msg_abort,__VA_ARGS__)
+        cos_logmsg(cos_msg_abort,__FILE__,__LINE__,__VA_ARGS__)
 
-#define cos_logmsg(lvl,...) \
-        ((void)(lvl >= COS_LOGMSG && ( \
-        cos_logmsg(lvl,__FILE__,__LINE__,__VA_ARGS__) ,0)))
+#define cos_logmsg(lvl,file,line,...) \
+((void)(cos_logmsg_level[lvl] && (cos_logmsg(lvl,file,line,__VA_ARGS__) ,0)))
 
-void   (cos_logmsg)(int lvl, STR file, int line, STR fmt, ...)
-                    __attribute__((__format__(__printf__,4,5)));
-void    cos_logmsg_setLevel(int lvl);
+void (cos_logmsg)(int lvl, STR file, int line, STR fmt, ...)
+                  __attribute__((__format__(__printf__,4,5)));
+
+void cos_logmsg_setLevel(int lvl);
 
 /***********************************************************
  * Implementation
@@ -189,6 +189,8 @@ enum {
   cos_msg_abort,
   cos_msg_last
 };
+
+extern BOOL cos_logmsg_level[cos_msg_last];
 
 /***********************************************************
  * Inlined functions
