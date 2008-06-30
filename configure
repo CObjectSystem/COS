@@ -30,24 +30,9 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: configure,v 1.3 2008/06/28 21:27:53 ldeniau Exp $
+# | $Id: configure,v 1.4 2008/06/30 15:41:11 ldeniau Exp $
 # |
 #
-
-# default settings
-progname=`basename $0`
-major=0
-minor=7
-version=$major.$minor
-prefix=/usr
-config=`uname -s`
-posix=yes
-tls=yes
-tlsdef="__thread"
-datestr=`date`
-options=
-defines=
-cossym=cossym
 
 # directories
 build=`pwd`
@@ -56,6 +41,17 @@ base=`pwd`
 cd $build
 makdir=$base/build/mak
 incdir=$base/CosBase/include
+
+# default settings
+progname=`basename $0`
+version=`cat $base/VERSION`
+release=`cat $base/RELEASE`
+prefix=/usr
+config=`uname -s`
+datestr=`date`
+options=
+defines=
+cossym=cossym
 
 # configurations
 config_list=`ls $makdir/config.* | sed -e "s+$makdir/config\.++g" -e 's/.*~//g'`
@@ -70,9 +66,8 @@ cat <<END-OF-TEXT
     install: $prefix/lib/cos-$version
     prefix : $prefix
     version: $version
+    release: $release
     config : $config
-    posix  : $posix
-    tls    : $tls
     options:$options
     defines:$defines
 
@@ -100,14 +95,6 @@ cat <<END-OF-TEXT
       available configurations: $config_list
       default: --config=$config
 
-    --posix=<no|yes>
-      set the POSIX compliance (include unistd.h).
-      default: --posix=$posix
-
-    --tls=<no|token>
-      set the Thread Local Storage keyword.
-      default: --tls=$tlsdef
-
     --option=<opt_name>
       add extra options to compiler command, multiple options are allowed.
       example: --option="-fsse2" --option="-DMY_DEF"
@@ -134,22 +121,6 @@ while [ "$1" != "" ] ; do
 	val=`expr $1 : '--config=\(.*\)'`
 	if [ "$val" != "" ] ; then
 		config=$val; shift; continue;
-	fi
-
-	val=`expr $1 : '--posix=\(.*\)'`
-	if [ "$val" != "" ] ; then
-	    posix=$val; shift; continue;
-	fi
-
-	val=`expr $1 : '--tls=\(.*\)'`
-	if [ "$val" != "" ] ; then
-	  if [ "$val" = no ] ; then
-            tls=no
-	  else
-	    tls=yes
-            [ "$val" != yes ] && tlsdef="$val"
-          fi
-          shift; continue;
 	fi
 
 	val=`expr $1 : '--option=\(.*\)'`
@@ -183,14 +154,6 @@ fi
 echo "The C Object System is now configured with the following settings:"
 settings
 
-if [ "$posix" = "yes" ] ; then
-  defines="$defines COS_POSIX=1"
-fi
-
-if [ "$tls" = "yes" ] ; then
-  defines="$defines COS_TLS=$tlsdef"
-fi
-
 ##### Start of local configuration #####
 
 out=$makdir/local
@@ -202,9 +165,8 @@ INSTALLDIR   = \$(DESTDIR)$prefix
 
 OSNAME      := $config
 
-COS_VERSION := $major.$minor
-COS_MAJOR   := $major
-COS_MINOR   := $minor
+COS_VERSION := $version
+COS_RELEASE := $release
 COS_SYMBOL  := $cossym
 COS_CCOPTS  :=$options
 
@@ -227,10 +189,9 @@ cat > $out <<END-OF-TEXT
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/local.h>"
 #endif
 
-#define COS_VERSION   $major.$minor
-#define COS_MAJOR     $major
-#define COS_MINOR     $minor
-#define COS_SYMBOL    $cossym
+#define COS_VERSION $version
+#define COS_RELEASE $release
+#define COS_SYMBOL  $cossym
 END-OF-TEXT
 
 for define in $defines; do

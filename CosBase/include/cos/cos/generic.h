@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.2 2008/06/28 21:27:53 ldeniau Exp $
+ | $Id: generic.h,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
@@ -325,7 +325,7 @@ RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
 
 // generic next function definition
 #define COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R) \
-static inline \
+static \
 void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
                          SEL _sel, RET* _ret, COS_PP_CAT(IMP,C) _nxt) \
 { \

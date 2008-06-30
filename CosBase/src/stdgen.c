@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.2 2008/06/27 16:53:06 ldeniau Exp $
+ | $Id: stdgen.c,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
@@ -124,17 +124,17 @@ makgeneric(OBJ, ginstancesUnderstandMessage5, _1, _2, _3, _4, _5, (SEL)msg);
 #include <cos/gen/object.h>
 
 // newXXX (= alloc+initXXX)
-makgeneric(OBJ , gnew        , _1);
-makgeneric(OBJ , gnewWith    , _1, _2);
-makgeneric(OBJ , gnewWith2   , _1, _2, _3);
-makgeneric(OBJ , gnewWith3   , _1, _2, _3, _4);
-makgeneric(OBJ , gnewWith4   , _1, _2, _3, _4, _5);
-makgeneric(OBJ , gnewWithLoc , _1, _2, (STR)file, (int)line);
-makgeneric(OBJ , gnewWithInt , _1, (int)val);
-makgeneric(OBJ , gnewWithStr , _1, (STR)str);
+makgeneric(OBJ , gnew         , _1);
+makgeneric(OBJ , gnewWith     , _1, _2);
+makgeneric(OBJ , gnewWith2    , _1, _2, _3);
+makgeneric(OBJ , gnewWith3    , _1, _2, _3, _4);
+makgeneric(OBJ , gnewWith4    , _1, _2, _3, _4, _5);
+makgeneric(OBJ , gnewWithLoc  , _1, _2, (STR)file, (int)line);
+makgeneric(OBJ , gnewWithInt  , _1, (int)val);
+makgeneric(OBJ , gnewWithStr  , _1, (STR)str);
 
 // clone (=alloc+initWith(T,T))
-makgeneric(OBJ , gclone      , _1);
+makgeneric(OBJ , gclone       , _1);
 
 // allocator, deallocator
 makgeneric(OBJ , galloc       , _1);
@@ -160,8 +160,12 @@ makgeneric(OBJ , gautoRelease , _1);
 
 // identity, conversion, coercion
 makgeneric(OBJ , gisKindOf    , _1, _2);
+makgeneric(OBJ , gisInstanceOf, _1, _2);
 makgeneric(OBJ , gclass       , _1);
 makgeneric(STR , gclassName   , _1);
+
+// inheritance
+makgeneric(OBJ , gsuperClass  , _1);
 
 // comparison
 makgeneric(OBJ , gequal       , _1, _2);

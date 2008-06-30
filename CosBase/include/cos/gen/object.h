@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: object.h,v 1.2 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
@@ -41,17 +41,17 @@
 #endif
 
 // newXXX (= alloc+initXXX)
-defgeneric(OBJ , gnew        , _1);
-defgeneric(OBJ , gnewWith    , _1, _2);
-defgeneric(OBJ , gnewWith2   , _1, _2, _3);
-defgeneric(OBJ , gnewWith3   , _1, _2, _3, _4);
-defgeneric(OBJ , gnewWith4   , _1, _2, _3, _4, _5);
-defgeneric(OBJ , gnewWithLoc , _1, _2, (STR)file, (int)line);
-defgeneric(OBJ , gnewWithInt , _1, (int)val);
-defgeneric(OBJ , gnewWithStr , _1, (STR)str);
+defgeneric(OBJ , gnew         , _1);
+defgeneric(OBJ , gnewWith     , _1, _2);
+defgeneric(OBJ , gnewWith2    , _1, _2, _3);
+defgeneric(OBJ , gnewWith3    , _1, _2, _3, _4);
+defgeneric(OBJ , gnewWith4    , _1, _2, _3, _4, _5);
+defgeneric(OBJ , gnewWithLoc  , _1, _2, (STR)file, (int)line);
+defgeneric(OBJ , gnewWithInt  , _1, (int)val);
+defgeneric(OBJ , gnewWithStr  , _1, (STR)str);
 
 // clone (=alloc+initWith(T,T))
-defgeneric(OBJ , gclone      , _1);
+defgeneric(OBJ , gclone       , _1);
 
 // allocator, deallocator
 defgeneric(OBJ , galloc       , _1);
@@ -77,8 +77,12 @@ defgeneric(OBJ , gautoRelease , _1);
 
 // identity, conversion, coercion
 defgeneric(OBJ , gisKindOf    , _1, _2); // returns True or False
+defgeneric(OBJ , gisInstanceOf, _1, _2); // returns True or False
 defgeneric(OBJ , gclass       , _1);
 defgeneric(STR , gclassName   , _1);
+
+// inheritance
+defgeneric(OBJ , gsuperClass  , _1);
 
 // comparison
 defgeneric(OBJ , gequal       , _1, _2);

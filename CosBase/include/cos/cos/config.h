@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.3 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: config.h,v 1.4 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
@@ -63,12 +63,13 @@
 */
 // #define inline        // __inline__
 // #define restrict      // __restrict__
+// #define va_copy(d,s)  // __va_copy(d,s) // ((d) = (s))
 // #define _Bool         // __bool__
 // #define _Complex      // __complex__
 // #define _LongLong     // __long_long__
 
 /* NOTE-CONF: POSIX and Thread Local Storage
-   define missing keywords here or with 'configure'
+   define system flags here or with SYSFLAGS in the config.xxx makefile
 */
 // #define COS_POSIX 1
 // #define COS_TLS   __thread

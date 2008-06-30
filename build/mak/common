@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.2 2008/06/27 16:45:54 ldeniau Exp $
+# | $Id: common,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
 # |
 #
 
@@ -55,10 +55,10 @@ LIBS    = $(foreach l,$(notdir $(moddeps)),-l$(l)$(TARGETEXT)) \
           $(foreach l,$(notdir $(libdeps)),-l$(l))
 
 # standard flags
-CPPFLAGS    +=               $(SYSFLAGS)
-CCFLAGS     += $(COS_CCOPTS) $(SYSFLAGS)
-DEBUG_CPP   += -DCOS_DEBUG=COS_YES -DCOS_TRACE=COS_YES -DCOS_CONTRACT=COS_CONTRACT_ALL
-DEBUG_CC    += -DCOS_DEBUG=COS_YES -DCOS_TRACE=COS_YES -DCOS_CONTRACT=COS_CONTRACT_ALL
+CPPFLAGS    += $(SYSFLAGS)
+CCFLAGS     += $(SYSFLAGS) $(COS_CCOPTS)
+DEBUG_CPP   += -DCOS_CONTRACT=COS_CONTRACT_ALL
+DEBUG_CC    += -DCOS_CONTRACT=COS_CONTRACT_ALL
 PROFILE_CPP += -DNDEBUG
 PROFILE_CC  += -DNDEBUG
 RELEASE_CPP += -DNDEBUG

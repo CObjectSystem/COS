@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: st_methods.c,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
@@ -65,18 +65,19 @@ st_methods(void)
 void
 st_nextmethods(void)
 {
+  enum { P = N/2 };
   useclass(MilliCounter);
 
   OBJ cnt = gnew(MilliCounter);
 
-  STEST( "next method (0 argument )", N, N, gincr(cnt) );
-  STEST( "next method (1 argument )", N, N, gincrBy1(cnt,1) );
-  STEST( "next method (2 arguments)", N, N, gincrBy2(cnt,1,1) );
-  STEST( "next method (3 arguments)", N, N, gincrBy3(cnt,1,1,1) );
-  STEST( "next method (4 arguments)", N, N, gincrBy4(cnt,1,1,1,1) );
-  STEST( "next method (5 arguments)", N, N, gincrBy5(cnt,1,1,1,1,1) );
+  STEST( "next method (0 argument )", P, P, gincr(cnt) );
+  STEST( "next method (1 argument )", P, P, gincrBy1(cnt,1) );
+  STEST( "next method (2 arguments)", P, P, gincrBy2(cnt,1,1) );
+  STEST( "next method (3 arguments)", P, P, gincrBy3(cnt,1,1,1) );
+  STEST( "next method (4 arguments)", P, P, gincrBy4(cnt,1,1,1,1) );
+  STEST( "next method (5 arguments)", P, P, gincrBy5(cnt,1,1,1,1,1) );
   
-  TestAssert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
+  TestAssert( gint(cnt) == P+P+2*P+3*P+4*P+5*P );
   grelease(cnt);
 }
 
@@ -172,7 +173,7 @@ st_memory(void)
   useclass(Counter, AutoRelease);
   OBJ ar = gnew(AutoRelease);
   size_t i;
-  
+
   i = 0;
   STEST( "new (galloc+ginit)", P, P, arr[i++] = gnew(Counter) );
 

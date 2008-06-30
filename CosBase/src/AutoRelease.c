@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,7 @@
  */
 #define COS_AUTORELEASE_INIT 500
 #define COS_AUTORELEASE_RATE 1.8
-#define COS_AUTORELEASE_WARN 500000 // 0 = *never*
+#define COS_AUTORELEASE_WARN 1000000 // 0 = *never*
 
 // private class
 defclass(AutoRelease,Object)
@@ -186,15 +186,13 @@ endmethod
 
 defmethod(OBJ, gretain, AutoRelease)
   useclass(ExBadMessage);
-  cos_trace("invalid message gretain(AutoRelease)");
-  THROW(ExBadMessage);
+  THROW( gnewWithStr(ExBadMessage, "invalid message gretain(AutoRelease)") );
   COS_UNUSED(_ret);
 endmethod
 
 defmethod(OBJ, gautoRelease, AutoRelease)
   useclass(ExBadMessage);
-  cos_trace("invalid message gautoRelease(AutoRelease)");
-  THROW(ExBadMessage);
+  THROW( gnewWithStr(ExBadMessage, "invalid message gautoRelease(AutoRelease)") );
   COS_UNUSED(_ret);
 endmethod
 

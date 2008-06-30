@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: cos.h,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
@@ -52,12 +52,6 @@ extern "C" {
  */
 #include <cos/cos/local.h>
 #include <cos/cos/config.h>
-
-/* NOTE-USER: POSIX header
- */
-#if COS_POSIX
-#include <unistd.h>
-#endif
 
 /* NOTE-USER: C headers
  */

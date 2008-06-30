@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: Any.c,v 1.2 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@ defmethod(OBJ, gretain, Any)
   useclass(ExBadValue);
 
   switch(self->rc) {
-  case COS_RC_LAST  : THROW(ExBadValue);
+  case COS_RC_LAST  : THROW( gnewWithStr(ExBadValue, "COS_RC_LAST") );
   case COS_RC_STATIC: break;
   case COS_RC_AUTO  : retmethod(gclone(_1));
   default           : ++self->rc;
@@ -71,9 +71,13 @@ endmethod
 
 // ----- identity, conversion, coercion
 
+defmethod(OBJ, gisInstanceOf, Any, Class)
+  retmethod(self1->id == self2->Behavior.id ? True : False);
+endmethod
+
 defmethod(OBJ, gisKindOf, Any, Class)
-  retmethod(self1->id == self2->Behavior.id || cos_any_isKindOf(_1,self2)
-            ? True : False);
+  retmethod(self1->id == self2->Behavior.id
+            || cos_any_isKindOf(_1,self2) ? True : False);
 endmethod
 
 defmethod(OBJ, gclass, Any)
@@ -136,29 +140,29 @@ trace(SEL sel, OBJ obj[])
 defmethod(void, gunrecognizedMessage1, Any)
   OBJ obj[1]; obj[0]=_1;
   trace(_sel,obj);
-  THROW(ExBadMessage);
+  THROW( gnewWithStr(ExBadMessage, _sel->name) );
 endmethod
 
 defmethod(void, gunrecognizedMessage2, Any, Any)
   OBJ obj[2]; obj[0]=_1, obj[1]=_2;
   trace(_sel,obj);
-  THROW(ExBadMessage);
+  THROW( gnewWithStr(ExBadMessage, _sel->name) );
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Any, Any, Any)
   OBJ obj[3]; obj[0]=_1, obj[1]=_2, obj[2]=_3;
   trace(_sel,obj);
-  THROW(ExBadMessage);
+  THROW( gnewWithStr(ExBadMessage, _sel->name) );
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Any, Any, Any, Any)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4;
   trace(_sel,obj);
-  THROW(ExBadMessage);
+  THROW( gnewWithStr(ExBadMessage, _sel->name) );
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Any, Any, Any, Any, Any)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
   trace(_sel,obj);
-  THROW(ExBadMessage);
+  THROW( gnewWithStr(ExBadMessage, _sel->name) );
 endmethod

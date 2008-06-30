@@ -29,11 +29,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Generic.c,v 1.2 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Generic.h>
+#include <cos/gen/value.h>
 
 makclass(Generic,Behavior);
+
+// -----
+
+defmethod(STR, gstr, Generic)
+  retmethod( self->name );
+endmethod

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Functor.c,v 1.2 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
@@ -149,7 +149,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval(Functor1)") );
   }
 endmethod
 
@@ -164,7 +164,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval1(Functor1)") );
   }
 endmethod
 
@@ -186,7 +186,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval(Functor2)") );
   }
 endmethod
 
@@ -203,7 +203,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval1(Functor2)") );
   }
 endmethod
 
@@ -218,7 +218,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval2(Functor2)") );
   }
 endmethod
 
@@ -240,7 +240,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval(Functor3)") );
   }
 endmethod
 
@@ -259,7 +259,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval1(Functor3)") );
   }
 endmethod
 
@@ -278,7 +278,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval2(Functor3)") );
   }
 endmethod
 
@@ -293,7 +293,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval3(Functor3)") );
   }
 endmethod
 
@@ -316,7 +316,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval(Functor4)") );
   }
 endmethod
 
@@ -337,7 +337,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval1(Functor4)") );
   }
 endmethod
 
@@ -362,7 +362,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval2(Functor4)") );
   }
 endmethod
 
@@ -383,7 +383,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval3(Functor4)") );
   }
 endmethod
 
@@ -398,7 +398,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval4(Functor4)") );
   }
 endmethod
 
@@ -421,7 +421,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval(Functor5)") );
   }
 endmethod
 
@@ -444,7 +444,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval1(Functor5)") );
   }
 endmethod
 
@@ -477,7 +477,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval2(Functor5)") );
   }
 endmethod
 
@@ -510,7 +510,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval3(Functor5)") );
   }
 endmethod
 
@@ -533,7 +533,7 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval4(Functor5)") );
   }
 endmethod
 
@@ -548,6 +548,6 @@ retry:
     goto retry;
 
   default:
-    THROW(ExBadArity);
+    THROW( gnewWithStr(ExBadArity, "geval5(Functor5)") );
   }
 endmethod

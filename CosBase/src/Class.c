@@ -29,17 +29,33 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Class.c,v 1.2 2008/06/30 15:41:11 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Class.h>
+#include <cos/gen/object.h>
 #include <cos/gen/message.h>
+#include <cos/gen/value.h>
 
 // -----
 
 makclass(Class,Behavior);
+
+// -----
+
+defmethod(STR, gstr, Class)
+  retmethod( self->name );
+endmethod
+
+defmethod(size_t, gsize, Class)
+  retmethod( self->isz );
+endmethod
+
+defmethod(OBJ, gsuperClass, Class)
+  retmethod( (OBJ)self->spr );
+endmethod
 
 // ----- behavior
 
