@@ -29,19 +29,22 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.cpp,v 1.1 2008/06/27 16:17:25 ldeniau Exp $
+ | $Id: tests.cpp,v 1.2 2008/07/01 09:34:50 ldeniau Exp $
  |
 */
 
 #include <cstdio>
 #include <cstdlib>
+#include <climits>
 
 #include "utest.h"
 #include "tests.hpp"
 
 int main()
 {
-  fprintf(stderr, "\n** C Object System Speed Testsuite (C++) **\n");
+  enum { bits = CHAR_BIT*sizeof(void*) };
+
+  fprintf(stderr, "\n** C Object System Speed Testsuite (C++, %d bits) **\n", bits);
   st_methods();
   st_multimethods();
   st_memory();

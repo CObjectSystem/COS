@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: tests.c,v 1.3 2008/07/01 09:34:50 ldeniau Exp $
  |
 */
 
@@ -50,6 +50,7 @@ on_exit(void)
 
 int main(int argc, char *argv[])
 {
+  enum { bits = CHAR_BIT*sizeof(void*) };
   int init_time = NO;
   int speed_test = NO;
   int i;
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
   }
     
   // testsuites
-  fprintf(stderr, "\n** C Object System Testsuite **\n");
+  fprintf(stderr, "\n** C Object System Testsuite (%d bits) **\n", bits);
   ut_methods();
   ut_classes();
   ut_predlogic();
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
   // speed testsuites
   if (!speed_test) return EXIT_SUCCESS;
   
-  fprintf(stderr, "\n** C Object System Speed Testsuite **\n");
+  fprintf(stderr, "\n** C Object System Speed Testsuite (%d bits) **\n", bits);
   st_methods();
   st_nextmethods();
   st_multimethods();

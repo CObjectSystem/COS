@@ -29,19 +29,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.m,v 1.1 2008/06/27 16:17:25 ldeniau Exp $
+ | $Id: tests.m,v 1.2 2008/07/01 09:34:50 ldeniau Exp $
  |
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "utest.h"
 #include "tests.h"
 
 int main()
 {
-  fprintf(stderr, "\n** C Object System Speed Testsuite (Objective-C) **\n");
+  enum { bits = CHAR_BIT*sizeof(void*) };
+
+  fprintf(stderr, "\n** C Object System Speed Testsuite (Objective-C, %d bits) **\n", bits);
+
   st_methods();
   st_multimethods();
   st_memory();
