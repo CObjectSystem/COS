@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.m,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: st_methods.m,v 1.3 2008/07/01 11:43:15 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,7 @@
 #include "tests.h"
 #include "Counter.h"
 
-enum { N = 20000000 };
+enum { N = 15000000 * sizeof(void*) };
 
 void
 st_methods()
