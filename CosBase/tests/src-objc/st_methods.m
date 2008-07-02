@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.m,v 1.3 2008/07/01 11:43:15 ldeniau Exp $
+ | $Id: st_methods.m,v 1.4 2008/07/02 22:27:28 ldeniau Exp $
  |
 */
 
@@ -78,7 +78,7 @@ st_multimethods()
 void
 st_memory(void)
 {
-  enum { P = N/2 };
+  enum { P = N/2/sizeof(void*) };
   static id arr[P];
   U32 i;
 
