@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: value.h,v 1.2 2008/07/02 17:08:58 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #endif
 
 defgeneric(STR            , gstr     , _1);
-defgeneric(size_t         , gsize    , _1);
+defgeneric(U32            , gsize    , _1);
 
 defgeneric(char           , gchar    , _1);
 defgeneric(short          , gshort   , _1);

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.4 2008/07/02 17:08:58 ldeniau Exp $
  |
 */
 
@@ -91,8 +91,8 @@ static void
 enlarge(struct AutoRelease* p)
 {
   useclass(ExBadAlloc);
-  size_t size = p->top - p->stk;
-  size_t new_size;
+  U32 size = p->top - p->stk;
+  U32 new_size;
   OBJ *stk;
 
   if (p->stk == p->_stk) {
@@ -103,7 +103,7 @@ enlarge(struct AutoRelease* p)
     new_size = size * COS_AUTORELEASE_RATE;
     stk = realloc(p->stk, sizeof *stk * new_size);
     if (size >= COS_AUTORELEASE_WARN)
-      cos_trace("pool at %p hold %u autoreleased objects", (void*)p, (U32)size);
+      cos_trace("pool at %p hold %u autoreleased objects", (void*)p, size);
   }
   
   if (!stk) THROW(ExBadAlloc);
@@ -150,7 +150,7 @@ defmethod(OBJ, gdeinit, AutoRelease)
   while (pool != self)
     grelease((OBJ)pool);
 
-  // ensure transitivity when gRelease sends gAutoRelease
+  // ensure transitivity when grelease sends gautoRelease
   pool = STATIC_CAST(struct AutoRelease*, pool->prv);
 
   // release autoreleased objects
@@ -211,7 +211,7 @@ endmethod
 
 // -----
 
-defmethod(size_t, gsize, AutoRelease)
+defmethod(U32, gsize, AutoRelease)
   retmethod(self->top - self->stk);
 endmethod
 

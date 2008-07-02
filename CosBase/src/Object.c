@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.2 2008/06/27 16:53:06 ldeniau Exp $
+ | $Id: Object.c,v 1.3 2008/07/02 17:08:58 ldeniau Exp $
  |
 */
 
@@ -97,13 +97,19 @@ defmethod(OBJ, galloc, mObject)
   retmethod( (OBJ)obj );
 endmethod
 
-defmethod(OBJ, gallocWith, mObject, Size) // alloc with extra size
-  useclass(ExBadAlloc);
+defmethod(OBJ, gallocWith, mObject, Int32) // alloc with extra size (max 4GB)
+  useclass(ExBadAlloc, ExBadSize);
 
   struct Class *cls = STATIC_CAST(struct Class*, _1);
-  struct Object *obj = malloc(cls->isz + self2->val);
+  size_t sz = cls->isz + (U32)self2->val;
+  struct Object *obj;
+  
+  if (sz < cls->isz)
+    THROW( gnewWithStr(ExBadSize, "memory allocation size too big (overflow)") );
+  
+  obj = malloc(cls->isz + (U32)self2->val);
 
-  if (!obj) THROW(ExBadAlloc);
+  if (!obj) THROW(ExBadAlloc); // throw the class, no allocation!
 
   obj->Any.id = cls->Behavior.id;
   obj->Any.rc = COS_RC_UNIT;

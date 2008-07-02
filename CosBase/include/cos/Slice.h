@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.1 2008/06/27 16:17:14 ldeniau Exp $
+ | $Id: Slice.h,v 1.2 2008/07/02 17:08:57 ldeniau Exp $
  |
 */
 
@@ -44,60 +44,60 @@ defclass(Slice,Value)
 endclass
 
 defclass(Slice1,Slice)
-  size_t start;
-  size_t size;
-  size_t stride;
+  U32 start;
+  U32 size;
+  U32 stride;
 endclass
 
 defclass(Slice2,Slice)
-  size_t start;
-  size_t size  [2];
-  size_t stride[2];
+  U32 start;
+  U32 size  [2];
+  U32 stride[2];
 endclass
 
 defclass(Slice3,Slice)
-  size_t start;
-  size_t size  [3];
-  size_t stride[3];
+  U32 start;
+  U32 size  [3];
+  U32 stride[3];
 endclass
 
 defclass(Slice4,Slice)
-  size_t start;
-  size_t size  [4];
-  size_t stride[4];
+  U32 start;
+  U32 size  [4];
+  U32 stride[4];
 endclass
 
 defclass(Slice5,Slice)
-  size_t start;
-  size_t size  [5];
-  size_t stride[5];
+  U32 start;
+  U32 size  [5];
+  U32 stride[5];
 endclass
 
 // ----- index linearization
 
-static inline size_t
-slice1_index(struct Slice1* s, size_t i1) {
+static inline U32
+slice1_index(struct Slice1* s, U32 i1) {
   return s->start + i1 * s->stride;
 }
 
-static inline size_t
-slice2_index(struct Slice2* s, size_t i1, size_t i2) {
+static inline U32
+slice2_index(struct Slice2* s, U32 i1, U32 i2) {
   return s->start + i1 * s->stride[0] + i2 * s->stride[1];
 }
 
-static inline size_t
-slice3_index(struct Slice3* s, size_t i1, size_t i2, size_t i3) {
+static inline U32
+slice3_index(struct Slice3* s, U32 i1, U32 i2, U32 i3) {
   return s->start + i1 * s->stride[0] + i2 * s->stride[1] + i3 * s->stride[2];
 }
 
-static inline size_t
-slice4_index(struct Slice4* s, size_t i1, size_t i2, size_t i3, size_t i4) {
+static inline U32
+slice4_index(struct Slice4* s, U32 i1, U32 i2, U32 i3, U32 i4) {
   return s->start + i1 * s->stride[0] + i2 * s->stride[1] + i3 * s->stride[2]
                   + i4 * s->stride[3];
 }
 
-static inline size_t
-slice5_index(struct Slice5* s, size_t i1, size_t i2, size_t i3, size_t i4, size_t i5) {
+static inline U32
+slice5_index(struct Slice5* s, U32 i1, U32 i2, U32 i3, U32 i4, U32 i5) {
   return s->start + i1 * s->stride[0] + i2 * s->stride[1] + i3 * s->stride[2]
                   + i4 * s->stride[3] + i5 * s->stride[4];
 }

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
+ | $Id: stdgen.c,v 1.4 2008/07/02 17:08:58 ldeniau Exp $
  |
 */
 
@@ -186,7 +186,7 @@ makgeneric(void, gdeinitialize, _1);
 #include <cos/gen/value.h>
 
 makgeneric(STR            , gstr     , _1);
-makgeneric(size_t         , gsize    , _1);
+makgeneric(U32            , gsize    , _1);
 
 makgeneric(char           , gchar    , _1);
 makgeneric(short          , gshort   , _1);

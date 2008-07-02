@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: class.h,v 1.2 2008/07/02 17:08:58 ldeniau Exp $
  |
 */
 
@@ -122,17 +122,23 @@
 /* class definition
  */
 #define COS_CLS_DEF(...) \
-        COS_PP_IF(COS_CLS_ISROOT(COS_PP_ARG2(__VA_ARGS__,,))) \
-          (COS_CLS_DEF_R(__VA_ARGS__),COS_CLS_DEF_2(__VA_ARGS__))
+        COS_PP_CAT_NARG(COS_CLS_DEF_,__VA_ARGS__)(__VA_ARGS__)
+        
+#define COS_CLS_DEF_1(NAME) \
+        COS_CLS_DEF_2(NAME,Object)
 
-#define COS_CLS_DEF_R(NAME,_) \
+#define COS_CLS_DEF_2(NAME,SUPER) \
+        COS_PP_IF(COS_CLS_ISROOT(SUPER)) \
+          (COS_CLS_DEF_R(NAME),COS_CLS_DEF_N(NAME,SUPER))
+
+#define COS_CLS_DEF_R(NAME) \
         COS_CLS_DEF_DCL(NAME); \
         enum { COS_CLS_RANK(NAME) = 0, \
                COS_MCL_RANK(NAME) = 4, /* 1+rankOf Class */ \
                COS_PCL_RANK(NAME) = 1+COS_MCL_RANK(NAME) }; \
         struct NAME {
 
-#define COS_CLS_DEF_2(NAME,SUPER) \
+#define COS_CLS_DEF_N(NAME,SUPER) \
         COS_CLS_DEF_DCL(NAME); \
         enum { COS_CLS_RANK(NAME) = 1+COS_CLS_RANK(SUPER), \
                COS_MCL_RANK(NAME) = 1+COS_MCL_RANK(SUPER), \
@@ -152,16 +158,22 @@
 /* class instantiation
  */
 #define COS_CLS_MAK(...) \
-        COS_PP_IF(COS_CLS_ISROOT(COS_PP_ARG2(__VA_ARGS__,,))) \
-          (COS_CLS_MAK_R(__VA_ARGS__),COS_CLS_MAK_2(__VA_ARGS__))
+        COS_PP_CAT_NARG(COS_CLS_MAK_,__VA_ARGS__)(__VA_ARGS__)
 
-#define COS_CLS_MAK_R(NAME,_) \
+#define COS_CLS_MAK_1(NAME) \
+        COS_CLS_MAK_2(NAME,Object)
+
+#define COS_CLS_MAK_2(NAME,SUPER) \
+        COS_PP_IF(COS_CLS_ISROOT(SUPER)) \
+          (COS_CLS_MAK_R(NAME),COS_CLS_MAK_N(NAME,SUPER))
+
+#define COS_CLS_MAK_R(NAME) \
 COS_CLS_NAMECHK(NAME) \
 COS_CLS_SIZECHK(NAME) \
 COS_CLS_ROOTCHK(NAME) \
 COS_CLS_COMPMAK(NAME,0,&COS_CLS_NAME(Class))
 
-#define COS_CLS_MAK_2(NAME,SUPER) \
+#define COS_CLS_MAK_N(NAME,SUPER) \
 COS_CLS_NAMECHK(NAME) \
 COS_CLS_SIZECHK(NAME) \
 COS_CLS_RANKCHK(NAME) \

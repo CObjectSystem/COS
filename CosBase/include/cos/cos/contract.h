@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: contract.h,v 1.3 2008/07/02 17:08:58 ldeniau Exp $
  |
 */
 
@@ -68,12 +68,6 @@
     TestAssert( boolean-expr , file , line );
     TestAssert( boolean-expr , string-literal );
     TestAssert( boolean-expr , string-literal , file , line );
-
-  test-type-stmt:
-    TestType( object-expr , class-name );
-    TestType( object-expr , class-name , file , line );
-    TestType( object-expr , class-name , string-literal );
-    TestType( object-expr , class-name , string-literal , file , line );
 
   example1:
 
@@ -134,7 +128,6 @@
 #define COS_DISABLE_PRE
 #define COS_DISABLE_POST
 #define COS_DISABLE_BODY
-#define COS_DISABLE_TestType
 #define COS_DISABLE_TestAssert
 #define COS_DISABLE_TestInvariant
 #endif
@@ -161,10 +154,6 @@
 
 #ifndef COS_DISABLE_BODY
 #define BODY COS_CTR_BODY
-#endif
-
-#ifndef COS_DISABLE_TestType
-#define TestType(...) COS_CTR_TYP(__VA_ARGS__)
 #endif
 
 #ifndef COS_DISABLE_TestAssert
@@ -241,22 +230,6 @@ enum {
 // contract body
 #define COS_CTR_BODY \
     if (_cos_ctr_st != cos_contract_post_st)
-
-// test type
-#define COS_CTR_TYP(...) \
-        COS_PP_CAT_NARG(COS_CTR_TYP_,__VA_ARGS__)(__VA_ARGS__)
-
-#define COS_CTR_TYP_2(O,C) \
-        COS_CTR_TYP_5(O,C,COS_PP_STR(O is not a C),__FILE__,__LINE__)
-
-#define COS_CTR_TYP_3(O,C,S) \
-        COS_CTR_TYP_5(O,C,S,__FILE__,__LINE__)
-
-#define COS_CTR_TYP_4(O,C,F,L) \
-        COS_CTR_TYP_5(O,C,COS_PP_STR(O is not a C),F,L)
-
-#define COS_CTR_TYP_5(O,C,S,F,L) \
-        COS_CTR_ASS_4(cos_any_id(O) == COS_CLS_NAME(C).Behavior.id,S,F,L)
 
 // test assert
 #define COS_CTR_ASS(...) \

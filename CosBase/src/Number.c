@@ -29,14 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Number.c,v 1.2 2008/07/02 17:08:58 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Number.h>
 #include <cos/TrueFalse.h>
-#include <cos/gen/object.h>
 #include <cos/stdgen.h>
 
 makclass(Number  , Value);
@@ -45,7 +44,6 @@ makclass(Floating, Number);
 
 makclass(Int32   , Integral);
 makclass(Int64   , Integral);
-makclass(Size    , Integral);
 
 makclass(Char    , Int32);
 makclass(Short   , Int32);
@@ -68,11 +66,6 @@ defmethod(OBJ, ginitWith, Int64, Int32)
 endmethod
 
 defmethod(OBJ, ginitWith, Int64, Int64)
-  self1->val = self2->val;
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Size, Size)
   self1->val = self2->val;
   retmethod(_1);
 endmethod
@@ -133,10 +126,6 @@ defmethod(S64, glong, Int32)
 endmethod
 
 defmethod(S64, glong, Int64)
-  retmethod(self->val);
-endmethod
-
-defmethod(size_t, gsize, Size)
   retmethod(self->val);
 endmethod
 
@@ -655,10 +644,6 @@ defmethod(OBJ, gbool, Int64)
   retmethod(self->val ? True : False);
 endmethod
 
-defmethod(OBJ, gbool, Size)
-  retmethod(self->val ? True : False);
-endmethod
-
 defmethod(OBJ, gbool, Double)
   retmethod(d_is_neq(self->val,0) ? True : False);
 endmethod
@@ -674,10 +659,6 @@ defmethod(OBJ, gnot, Int32)
 endmethod
 
 defmethod(OBJ, gnot, Int64)
-  retmethod(self->val ? False : True);
-endmethod
-
-defmethod(OBJ, gnot, Size)
   retmethod(self->val ? False : True);
 endmethod
 

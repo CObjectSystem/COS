@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.2 2008/06/30 15:41:11 ldeniau Exp $
+ | $Id: Class.c,v 1.3 2008/07/02 17:08:58 ldeniau Exp $
  |
 */
 
@@ -49,7 +49,7 @@ defmethod(STR, gstr, Class)
   retmethod( self->name );
 endmethod
 
-defmethod(size_t, gsize, Class)
+defmethod(U32, gsize, Class)
   retmethod( self->isz );
 endmethod
 

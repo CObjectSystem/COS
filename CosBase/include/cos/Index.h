@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Index.h,v 1.1 2008/06/27 16:17:14 ldeniau Exp $
+ | $Id: Index.h,v 1.2 2008/07/02 17:08:57 ldeniau Exp $
  |
 */
 
@@ -44,23 +44,23 @@ defclass(Index,Value)
 endclass
 
 defclass(Index1,Index)
-  size_t idx;
+  U32 idx;
 endclass
 
 defclass(Index2,Index)
-  size_t idx[2];
+  U32 idx[2];
 endclass
 
 defclass(Index3,Index)
-  size_t idx[3];
+  U32 idx[3];
 endclass
 
 defclass(Index4,Index)
-  size_t idx[4];
+  U32 idx[4];
 endclass
 
 defclass(Index5,Index)
-  size_t idx[5];
+  U32 idx[5];
 endclass
 
 // ----- automatic constructor

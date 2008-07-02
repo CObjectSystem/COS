@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.1 2008/06/27 16:17:14 ldeniau Exp $
+ | $Id: Number.h,v 1.2 2008/07/02 17:08:57 ldeniau Exp $
  |
 */
 
@@ -57,10 +57,6 @@ endclass
 
 defclass(Int64,Integral)
   S64 val;
-endclass
-
-defclass(Size,Integral)
-  size_t val;
 endclass
 
 defclass(Char ,Int32) endclass
