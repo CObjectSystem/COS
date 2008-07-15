@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autoconst.c,v 1.1 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: ut_autoconst.c,v 1.2 2008/07/15 10:07:07 ldeniau Exp $
  |
 */
 
@@ -47,21 +47,6 @@
 #include "utest.h"
 #include "tests.h"
 #include "generics.h"
-
-static BOOL
-dbl_equ(double a, double b)
-{
-  return a <= b && a >= b;
-}
-
-static BOOL
-cpx_equ(_Complex double _a, _Complex double _b)
-{
-  double *a = (double*)&_a;
-  double *b = (double*)&_b;
-
-  return dbl_equ(a[0],b[0]) && dbl_equ(a[1],b[1]);
-}
 
 static BOOL
 idx_chk(U32 n, OBJ idx)
@@ -234,9 +219,9 @@ ut_autoconst(void)
     UTEST( sht->Int.val ==  1  );
     UTEST( i  ->    val ==  2  );
     UTEST( lng->    val ==  3  );
-    UTEST( dbl_equ(dbl->val,4) );
-    UTEST( cpx_equ(cpx->val,5) );
-    UTEST( cpx_equ(cpx2->val,cpx_ref) );
+    UTEST( dbl_equal(dbl->val,4) );
+    UTEST( cpx_equal(cpx->val,5) );
+    UTEST( cpx_equal(cpx2->val,cpx_ref) );
 
     UTEST( uchr->UInt.val == 'b' );
     UTEST( usht->UInt.val == 10  );

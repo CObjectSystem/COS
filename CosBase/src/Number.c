@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Number.c,v 1.4 2008/07/15 10:07:07 ldeniau Exp $
  |
 */
 
@@ -124,6 +124,58 @@ endmethod
 
 defmethod(OBJ, ginitWith, ULong, ULong)
   self1->val = self2->val;
+  retmethod(_1);
+endmethod
+
+// ----- value constructor
+
+defmethod(OBJ, ginitWithChr, Char, (S8)val)
+  self->Int.val = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithSht, Short, (S16)val)
+  self->Int.val = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithInt, Int, (S32)val)
+  self->val = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithLng, Long, (S64)val)
+  self->val = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithUChr, UChar, (U8)val)
+  self->UInt.val = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithUSht, UShort, (U16)val)
+  self->UInt.val = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithUInt, UInt, (U32)val)
+  self->val = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithULng, ULong, (U64)val)
+  self->val = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithDbl, Double, (double)val)
+  self->val = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithCpx, Complex, (COMPLEX)val)
+  self->val = val;
   retmethod(_1);
 endmethod
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.1 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: init.h,v 1.2 2008/07/15 10:07:06 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,7 @@
 
 // constructors
 defgeneric(OBJ, ginitWithChr , _1, (S8 )val);
-defgeneric(OBJ, ginitWithSht , _1, (S32)val);
+defgeneric(OBJ, ginitWithSht , _1, (S16)val);
 defgeneric(OBJ, ginitWithInt , _1, (S32)val);
 defgeneric(OBJ, ginitWithLng , _1, (S64)val);
 

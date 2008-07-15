@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.5 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: stdgen.c,v 1.6 2008/07/15 10:07:07 ldeniau Exp $
  |
 */
 
@@ -94,7 +94,7 @@ makgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 #include <cos/gen/init.h>
 
 makgeneric(OBJ, ginitWithChr , _1, (S8 )val);
-makgeneric(OBJ, ginitWithSht , _1, (S32)val);
+makgeneric(OBJ, ginitWithSht , _1, (S16)val);
 makgeneric(OBJ, ginitWithInt , _1, (S32)val);
 makgeneric(OBJ, ginitWithLng , _1, (S64)val);
 
