@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.2 2008/06/27 16:53:06 ldeniau Exp $
+ | $Id: Proxy.c,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -44,12 +44,6 @@
 
 makclass(Proxy,Any);
 
-// ----- new
-
-defmethod(OBJ, gnewWith, mProxy, Any)
-  retmethod( ginitWith(galloc(_1),_2) );
-endmethod
-
 // ----- constructor, destructor
 
 defmethod(OBJ, ginitWith, Proxy, Any)
@@ -62,7 +56,7 @@ defmethod(OBJ, gdeinit, Proxy)
   retmethod(_1);
 endmethod
 
-// ----- allocator, deallocator
+// ----- allocator
 
 defmethod(OBJ, galloc, mProxy)
   useclass(ExBadAlloc);
@@ -76,11 +70,6 @@ defmethod(OBJ, galloc, mProxy)
   pxy->Any.rc = COS_RC_UNIT;
 
   retmethod( (OBJ)pxy );
-endmethod
-
-defmethod(void, gdealloc, Proxy)
-  PRE  TestAssert( self->Any.rc == COS_RC_UNIT );
-  BODY free(_1);
 endmethod
 
 // ----- understanding

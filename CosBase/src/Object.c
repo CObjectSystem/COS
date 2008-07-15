@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.3 2008/07/02 17:08:58 ldeniau Exp $
+ | $Id: Object.c,v 1.4 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -42,44 +42,6 @@
 // -----
 
 makclass(Object,Any);
-
-// ----- newXXX, clone
-
-defmethod(OBJ, gnew, mObject)
-  retmethod( ginit(galloc(_1)) );
-endmethod
-
-defmethod(OBJ, gnewWith, mObject, Any)
-  retmethod( ginitWith(galloc(_1),_2) );
-endmethod
-
-defmethod(OBJ, gnewWith2, mObject, Any, Any)
-  retmethod( ginitWith2(galloc(_1),_2,_3) );
-endmethod
-
-defmethod(OBJ, gnewWith3, mObject, Any, Any, Any)
-  retmethod( ginitWith3(galloc(_1),_2,_3,_4) );
-endmethod
-
-defmethod(OBJ, gnewWith4, mObject, Any, Any, Any, Any)
-  retmethod( ginitWith4(galloc(_1),_2,_3,_4,_5) );
-endmethod
-
-defmethod(OBJ, gnewWithLoc, mObject, Any, (STR)file, (int)line)
-  retmethod( ginitWithLoc(galloc(_1),_2,file,line) );
-endmethod
-
-defmethod(OBJ, gnewWithInt, mObject, (int)val)
-  retmethod( ginitWithInt(galloc(_1),val) );
-endmethod
-
-defmethod(OBJ, gnewWithStr, mObject, (STR)str)
-  retmethod( ginitWithStr(galloc(_1),str) );
-endmethod
-
-defmethod(OBJ, gclone, Object)
-  retmethod( ginitWith(galloc(gclass(_1)),_1) );
-endmethod
 
 // ----- allocator, deallocator
 
@@ -97,17 +59,17 @@ defmethod(OBJ, galloc, mObject)
   retmethod( (OBJ)obj );
 endmethod
 
-defmethod(OBJ, gallocWith, mObject, Int32) // alloc with extra size (max 4GB)
+defmethod(OBJ, gallocWith, mObject, UInt) // alloc with extra size (max 4GB)
   useclass(ExBadAlloc, ExBadSize);
 
   struct Class *cls = STATIC_CAST(struct Class*, _1);
-  size_t sz = cls->isz + (U32)self2->val;
+  size_t sz = (size_t)cls->isz + self2->val;
   struct Object *obj;
   
   if (sz < cls->isz)
     THROW( gnewWithStr(ExBadSize, "memory allocation size too big (overflow)") );
   
-  obj = malloc(cls->isz + (U32)self2->val);
+  obj = malloc(sz);
 
   if (!obj) THROW(ExBadAlloc); // throw the class, no allocation!
 
@@ -117,7 +79,3 @@ defmethod(OBJ, gallocWith, mObject, Int32) // alloc with extra size (max 4GB)
   retmethod( (OBJ)obj );
 endmethod
 
-defmethod(void, gdealloc, Object)
-  PRE  TestAssert( self->Any.rc == COS_RC_UNIT );
-  BODY free(_1);
-endmethod

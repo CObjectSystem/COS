@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.h,v 1.1 2008/06/27 16:17:14 ldeniau Exp $
+ | $Id: Exception.h,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,7 @@
 #error "COS: missing #include <cos/Object.h>"
 #endif 
 
-defclass(Exception,Object)
+defclass(Exception)
   STR str;
 endclass
 

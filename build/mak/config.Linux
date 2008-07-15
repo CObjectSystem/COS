@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Linux,v 1.4 2008/06/30 15:41:11 ldeniau Exp $
+# | $Id: config.Linux,v 1.5 2008/07/15 08:00:47 ldeniau Exp $
 # |
 #
 
@@ -60,7 +60,7 @@ TAR        := tar czf
 # compiler and linker flags
 #
 CPPFLAGS   := -std=c99 -W -Wall -pedantic -pipe
-CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
+CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3 --param large-function-growth=200
 LDFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
 
 DEBUG_CPP   =

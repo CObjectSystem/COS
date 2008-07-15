@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.2 2008/07/02 17:08:58 ldeniau Exp $
+ | $Id: Number.c,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -42,40 +42,42 @@ makclass(Number  , Value);
 makclass(Integral, Number);
 makclass(Floating, Number);
 
-makclass(Int32   , Integral);
-makclass(Int64   , Integral);
+makclass(Int     , Integral);
+makclass(UInt    , Integral);
+makclass(Long    , Integral);
+makclass(ULong   , Integral);
 
-makclass(Char    , Int32);
-makclass(Short   , Int32);
-makclass(Int     , Int32);
-makclass(Long    , Int64);
+makclass(Char    , Int);
+makclass(Short   , Int);
+makclass(UChar   , UInt);
+makclass(UShort  , UInt);
 
 makclass(Double  , Floating);
 makclass(Complex , Floating);
 
-// ----- copy
+// ----- copy constructor
 
-defmethod(OBJ, ginitWith, Int32, Int32)
+defmethod(OBJ, ginitWith, Int, Int)
   self1->val = self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, Int64, Int32)
+defmethod(OBJ, ginitWith, Long, Int)
   self1->val = self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, Int64, Int64)
+defmethod(OBJ, ginitWith, Long, Long)
   self1->val = self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, Double, Int32)
+defmethod(OBJ, ginitWith, Double, Int)
   self1->val = self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, Double, Int64)
+defmethod(OBJ, ginitWith, Double, Long)
   self1->val = self2->val;
   retmethod(_1);
 endmethod
@@ -85,12 +87,12 @@ defmethod(OBJ, ginitWith, Double, Double)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, Complex, Int32)
+defmethod(OBJ, ginitWith, Complex, Int)
   self1->val = self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, Complex, Int64)
+defmethod(OBJ, ginitWith, Complex, Long)
   self1->val = self2->val;
   retmethod(_1);
 endmethod
@@ -100,40 +102,78 @@ defmethod(OBJ, ginitWith, Complex, Double)
   retmethod(_1);
 endmethod
 
+defmethod(OBJ, ginitWith2, Complex, Double, Double)
+  self1->val = cpx_make(self2->val, self3->val);
+  retmethod(_1);
+endmethod
+
 defmethod(OBJ, ginitWith, Complex, Complex)
+  self1->val = self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWith, UInt, UInt)
+  self1->val = self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWith, ULong, UInt)
+  self1->val = self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWith, ULong, ULong)
   self1->val = self2->val;
   retmethod(_1);
 endmethod
 
 // ----- value
 
-defmethod(char, gchar, Int32)
-  PRE  TestAssert( self->val >= CHAR_MIN && self->val <= CHAR_MAX );
-  BODY retmethod(self->val);
+defmethod(S8, gchar, Char)
+  retmethod(self->Int.val);
 endmethod
 
-defmethod(short, gshort, Int32)
-  PRE  TestAssert( self->val >= SHRT_MIN && self->val <= SHRT_MAX );
-  BODY retmethod(self->val);
+defmethod(U8, guchar, UChar)
+  retmethod(self->UInt.val);
 endmethod
 
-defmethod(S32, gint, Int32)
+defmethod(S16, gshort, Short)
+  retmethod(self->Int.val);
+endmethod
+
+defmethod(U16, gushort, UShort)
+  retmethod(self->UInt.val);
+endmethod
+
+defmethod(S32, gint, Int)
   retmethod(self->val);
 endmethod
 
-defmethod(S64, glong, Int32)
+defmethod(U32, guint, UInt)
   retmethod(self->val);
 endmethod
 
-defmethod(S64, glong, Int64)
+defmethod(S64, glong, Int)
   retmethod(self->val);
 endmethod
 
-defmethod(double, gdouble, Int32)
+defmethod(U64, gulong, UInt)
   retmethod(self->val);
 endmethod
 
-defmethod(double, gdouble, Int64)
+defmethod(S64, glong, Long)
+  retmethod(self->val);
+endmethod
+
+defmethod(U64, gulong, ULong)
+  retmethod(self->val);
+endmethod
+
+defmethod(double, gdouble, Int)
+  retmethod(self->val);
+endmethod
+
+defmethod(double, gdouble, Long)
   retmethod(self->val);
 endmethod
 
@@ -141,30 +181,30 @@ defmethod(double, gdouble, Double)
   retmethod(self->val);
 endmethod
 
-defmethod(_Complex double, gcomplex, Int32)
+defmethod(COMPLEX, gcomplex, Int)
   retmethod(self->val);
 endmethod
 
-defmethod(_Complex double, gcomplex, Int64)
+defmethod(COMPLEX, gcomplex, Long)
   retmethod(self->val);
 endmethod
 
-defmethod(_Complex double, gcomplex, Double)
+defmethod(COMPLEX, gcomplex, Double)
   retmethod(self->val);
 endmethod
 
-defmethod(_Complex double, gcomplex, Complex)
+defmethod(COMPLEX, gcomplex, Complex)
   retmethod(self->val);
 endmethod
 
 // ----- negate
 
-defmethod(OBJ, gnegate, Int32)
+defmethod(OBJ, gnegate, Int)
   self1->val = -self1->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gnegate, Int64)
+defmethod(OBJ, gnegate, Long)
   self1->val = -self1->val;
   retmethod(_1);
 endmethod
@@ -181,16 +221,6 @@ endmethod
 
 // ----- invert
 
-defmethod(OBJ, ginvert, Int32)
-  self1->val = 1/self1->val;
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginvert, Int64)
-  self1->val = 1/self1->val;
-  retmethod(_1);
-endmethod
-
 defmethod(OBJ, ginvert, Double)
   self1->val = 1/self1->val;
   retmethod(_1);
@@ -203,27 +233,27 @@ endmethod
 
 // ----- addTo
 
-defmethod(OBJ, gaddTo, Int32, Int32)
+defmethod(OBJ, gaddTo, Int, Int)
   self1->val += self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gaddTo, Int64, Int32)
+defmethod(OBJ, gaddTo, Long, Int)
   self1->val += self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gaddTo, Int64, Int64)
+defmethod(OBJ, gaddTo, Long, Long)
   self1->val += self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gaddTo, Double, Int32)
+defmethod(OBJ, gaddTo, Double, Int)
   self1->val += self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gaddTo, Double, Int64)
+defmethod(OBJ, gaddTo, Double, Long)
   self1->val += self2->val;
   retmethod(_1);
 endmethod
@@ -233,12 +263,12 @@ defmethod(OBJ, gaddTo, Double, Double)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gaddTo, Complex, Int32)
+defmethod(OBJ, gaddTo, Complex, Int)
   self1->val += self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gaddTo, Complex, Int64)
+defmethod(OBJ, gaddTo, Complex, Long)
   self1->val += self2->val;
   retmethod(_1);
 endmethod
@@ -253,29 +283,44 @@ defmethod(OBJ, gaddTo, Complex, Complex)
   retmethod(_1);
 endmethod
 
+defmethod(OBJ, gaddTo, UInt, UInt)
+  self1->val += self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gaddTo, ULong, UInt)
+  self1->val += self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gaddTo, ULong, ULong)
+  self1->val += self2->val;
+  retmethod(_1);
+endmethod
+
 // ----- subTo
 
-defmethod(OBJ, gsubTo, Int32, Int32)
+defmethod(OBJ, gsubTo, Int, Int)
   self1->val -= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gsubTo, Int64, Int32)
+defmethod(OBJ, gsubTo, Long, Int)
   self1->val -= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gsubTo, Int64, Int64)
+defmethod(OBJ, gsubTo, Long, Long)
   self1->val -= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gsubTo, Double, Int32)
+defmethod(OBJ, gsubTo, Double, Int)
   self1->val -= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gsubTo, Double, Int64)
+defmethod(OBJ, gsubTo, Double, Long)
   self1->val -= self2->val;
   retmethod(_1);
 endmethod
@@ -285,12 +330,12 @@ defmethod(OBJ, gsubTo, Double, Double)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gsubTo, Complex, Int32)
+defmethod(OBJ, gsubTo, Complex, Int)
   self1->val -= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gsubTo, Complex, Int64)
+defmethod(OBJ, gsubTo, Complex, Long)
   self1->val -= self2->val;
   retmethod(_1);
 endmethod
@@ -307,27 +352,27 @@ endmethod
 
 // ----- mulBy
 
-defmethod(OBJ, gmulBy, Int32, Int32)
+defmethod(OBJ, gmulBy, Int, Int)
   self1->val *= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gmulBy, Int64, Int32)
+defmethod(OBJ, gmulBy, Long, Int)
   self1->val *= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gmulBy, Int64, Int64)
+defmethod(OBJ, gmulBy, Long, Long)
   self1->val *= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gmulBy, Double, Int32)
+defmethod(OBJ, gmulBy, Double, Int)
   self1->val *= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gmulBy, Double, Int64)
+defmethod(OBJ, gmulBy, Double, Long)
   self1->val *= self2->val;
   retmethod(_1);
 endmethod
@@ -337,12 +382,12 @@ defmethod(OBJ, gmulBy, Double, Double)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gmulBy, Complex, Int32)
+defmethod(OBJ, gmulBy, Complex, Int)
   self1->val *= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gmulBy, Complex, Int64)
+defmethod(OBJ, gmulBy, Complex, Long)
   self1->val *= self2->val;
   retmethod(_1);
 endmethod
@@ -357,29 +402,44 @@ defmethod(OBJ, gmulBy, Complex, Complex)
   retmethod(_1);
 endmethod
 
+defmethod(OBJ, gmulBy, UInt, UInt)
+  self1->val *= self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gmulBy, ULong, UInt)
+  self1->val *= self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gmulBy, ULong, ULong)
+  self1->val *= self2->val;
+  retmethod(_1);
+endmethod
+
 // ----- divBy
 
-defmethod(OBJ, gdivBy, Int32, Int32)
+defmethod(OBJ, gdivBy, Int, Int)
   self1->val /= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdivBy, Int64, Int32)
+defmethod(OBJ, gdivBy, Long, Int)
   self1->val /= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdivBy, Int64, Int64)
+defmethod(OBJ, gdivBy, Long, Long)
   self1->val /= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdivBy, Double, Int32)
+defmethod(OBJ, gdivBy, Double, Int)
   self1->val /= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdivBy, Double, Int64)
+defmethod(OBJ, gdivBy, Double, Long)
   self1->val /= self2->val;
   retmethod(_1);
 endmethod
@@ -389,12 +449,12 @@ defmethod(OBJ, gdivBy, Double, Double)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdivBy, Complex, Int32)
+defmethod(OBJ, gdivBy, Complex, Int)
   self1->val /= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdivBy, Complex, Int64)
+defmethod(OBJ, gdivBy, Complex, Long)
   self1->val /= self2->val;
   retmethod(_1);
 endmethod
@@ -409,24 +469,55 @@ defmethod(OBJ, gdivBy, Complex, Complex)
   retmethod(_1);
 endmethod
 
+defmethod(OBJ, gdivBy, UInt, UInt)
+  self1->val /= self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gdivBy, ULong, UInt)
+  self1->val /= self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gdivBy, ULong, ULong)
+  self1->val /= self2->val;
+  retmethod(_1);
+endmethod
+
 // ----- modulo
 
-defmethod(OBJ, gmodulo, Int32, Int32)
+defmethod(OBJ, gmodulo, Int, Int)
   self1->val %= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gmodulo, Int64, Int32)
+defmethod(OBJ, gmodulo, Long, Int)
   self1->val %= self2->val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gmodulo, Int64, Int64)
+defmethod(OBJ, gmodulo, Long, Long)
+  self1->val %= self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gmodulo, UInt, UInt)
+  self1->val %= self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gmodulo, ULong, UInt)
+  self1->val %= self2->val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gmodulo, ULong, ULong)
   self1->val %= self2->val;
   retmethod(_1);
 endmethod
 
 /*
+
 // ----- neg
 
 defmethod(OBJ, gneg, Number)
@@ -572,49 +663,48 @@ endmethod
 defmethod(OBJ, gmod, Int64, Integral)
   retmethod(gmodulo(gautoRelease(gclone(_1)),_2));
 endmethod
-
 */
 
 // ----- compare
 
 useclass(Lesser,Equal,Greater);
 
-defmethod(OBJ, gcompare, Int32, Int32)
+defmethod(OBJ, gcompare, Int, Int)
   retmethod(self1->val < self2->val ? Lesser :
 	    self1->val > self2->val ? Greater : Equal);
 endmethod
 
-defmethod(OBJ, gcompare, Int32, Int64)
+defmethod(OBJ, gcompare, Int, Long)
   retmethod(self1->val < self2->val ? Lesser :
 	    self1->val > self2->val ? Greater : Equal);
 endmethod
 
-defmethod(OBJ, gcompare, Int32, Double)
+defmethod(OBJ, gcompare, Int, Double)
   retmethod(self1->val < self2->val ? Lesser :
 	    self1->val > self2->val ? Greater : Equal);
 endmethod
 
-defmethod(OBJ, gcompare, Int64, Int32)
+defmethod(OBJ, gcompare, Long, Int)
   retmethod(self1->val < self2->val ? Lesser :
 	    self1->val > self2->val ? Greater : Equal);
 endmethod
 
-defmethod(OBJ, gcompare, Int64, Int64)
+defmethod(OBJ, gcompare, Long, Long)
   retmethod(self1->val < self2->val ? Lesser :
 	    self1->val > self2->val ? Greater : Equal);
 endmethod
 
-defmethod(OBJ, gcompare, Int64, Double)
+defmethod(OBJ, gcompare, Long, Double)
   retmethod(self1->val < self2->val ? Lesser :
 	    self1->val > self2->val ? Greater : Equal);
 endmethod
 
-defmethod(OBJ, gcompare, Double, Int32)
+defmethod(OBJ, gcompare, Double, Int)
   retmethod(self1->val < self2->val ? Lesser :
 	    self1->val > self2->val ? Greater : Equal);
 endmethod
 
-defmethod(OBJ, gcompare, Double, Int64)
+defmethod(OBJ, gcompare, Double, Long)
   retmethod(self1->val < self2->val ? Lesser :
 	    self1->val > self2->val ? Greater : Equal);
 endmethod
@@ -624,114 +714,159 @@ defmethod(OBJ, gcompare, Double, Double)
 	    self1->val > self2->val ? Greater : Equal);
 endmethod
 
+defmethod(OBJ, gcompare, UInt, UInt)
+  retmethod(self1->val < self2->val ? Lesser :
+	    self1->val > self2->val ? Greater : Equal);
+endmethod
+
+defmethod(OBJ, gcompare, UInt, ULong)
+  retmethod(self1->val < self2->val ? Lesser :
+	    self1->val > self2->val ? Greater : Equal);
+endmethod
+
+defmethod(OBJ, gcompare, ULong, UInt)
+  retmethod(self1->val < self2->val ? Lesser :
+	    self1->val > self2->val ? Greater : Equal);
+endmethod
+
+defmethod(OBJ, gcompare, ULong, ULong)
+  retmethod(self1->val < self2->val ? Lesser :
+	    self1->val > self2->val ? Greater : Equal);
+endmethod
+
 // ----------
-
-#include <complex.h>
-
-#define d_is_eq(x,y)      ((x)<=(y)                   && (x)>=(y)                  )
-#define z_is_eq(x,yr,yi)  (d_is_eq(creal(x),(yr))     && d_is_eq(cimag(x),(yi))    )
-#define Z_is_eq(x,y)      (d_is_eq(creal(x),creal(y)) && d_is_eq(cimag(x),cimag(y)))
-#define d_is_neq(x,y)     ((x)<(y)                    || (x)>(y)                   )
-#define z_is_neq(x,yr,yi) (d_is_neq(creal(x),(yr))    || d_is_neq(cimag(x),(yi))   )
 
 // ----- bool
 
-defmethod(OBJ, gbool, Int32)
+defmethod(OBJ, gbool, Int)
   retmethod(self->val ? True : False);
 endmethod
 
-defmethod(OBJ, gbool, Int64)
+defmethod(OBJ, gbool, UInt)
+  retmethod(self->val ? True : False);
+endmethod
+
+defmethod(OBJ, gbool, Long)
+  retmethod(self->val ? True : False);
+endmethod
+
+defmethod(OBJ, gbool, ULong)
   retmethod(self->val ? True : False);
 endmethod
 
 defmethod(OBJ, gbool, Double)
-  retmethod(d_is_neq(self->val,0) ? True : False);
+  retmethod(dbl_equal(self->val,0) ? True : False);
 endmethod
 
 defmethod(OBJ, gbool, Complex)
-  retmethod(z_is_neq(self->val,0,0) ? True : False);
+  retmethod(cpx_equal(self->val,0) ? True : False);
 endmethod
 
 // ----- not
 
-defmethod(OBJ, gnot, Int32)
+defmethod(OBJ, gnot, Int)
   retmethod(self->val ? False : True);
 endmethod
 
-defmethod(OBJ, gnot, Int64)
+defmethod(OBJ, gnot, UInt)
+  retmethod(self->val ? False : True);
+endmethod
+
+defmethod(OBJ, gnot, Long)
+  retmethod(self->val ? False : True);
+endmethod
+
+defmethod(OBJ, gnot, ULong)
   retmethod(self->val ? False : True);
 endmethod
 
 defmethod(OBJ, gnot, Double)
-  retmethod(d_is_neq(self->val,0) ? False : True);
+  retmethod(dbl_equal(self->val,0) ? False : True);
 endmethod
 
 defmethod(OBJ, gnot, Complex)
-  retmethod(z_is_neq(self->val,0,0) ? False : True);
+  retmethod(cpx_equal(self->val,0) ? False : True);
 endmethod
 
 // ----- equal
 
-defmethod(OBJ, gequal, Int32, Int32)
+defmethod(OBJ, gequal, Int, Int)
   retmethod(self1->val == self2->val ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Int32, Int64)
+defmethod(OBJ, gequal, Int, Long)
   retmethod(self1->val == self2->val ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Int32, Double)
-  retmethod(d_is_eq(self2->val,self1->val) ? True : False);
+defmethod(OBJ, gequal, Int, Double)
+  retmethod(dbl_equal(self1->val,self2->val) ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Int32, Complex)
-  retmethod(z_is_eq(self2->val,self1->val,0) ? True : False);
+defmethod(OBJ, gequal, Int, Complex)
+  retmethod(cpx_equal(self1->val,self2->val) ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Int64, Int32)
+defmethod(OBJ, gequal, Long, Int)
   retmethod(self1->val == self2->val ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Int64, Int64)
+defmethod(OBJ, gequal, Long, Long)
   retmethod(self1->val == self2->val ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Int64, Double)
-  retmethod(d_is_eq(self2->val,self1->val) ? True : False);
+defmethod(OBJ, gequal, Long, Double)
+  retmethod(dbl_equal(self1->val,self1->val) ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Int64, Complex)
-  retmethod(z_is_eq(self2->val,self1->val,0) ? True : False);
+defmethod(OBJ, gequal, Long, Complex)
+  retmethod(cpx_equal(self1->val,self2->val) ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Double, Int32)
-  retmethod(d_is_eq(self1->val,self2->val) ? True : False);
+defmethod(OBJ, gequal, Double, Int)
+  retmethod(dbl_equal(self1->val,self2->val) ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Double, Int64)
-  retmethod(d_is_eq(self1->val,self2->val) ? True : False);
+defmethod(OBJ, gequal, Double, Long)
+  retmethod(dbl_equal(self1->val,self2->val) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Double, Double)
-  retmethod(d_is_eq(self1->val,self2->val) ? True : False);
+  retmethod(dbl_equal(self1->val,self2->val) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Double, Complex)
-  retmethod(z_is_eq(self2->val,self1->val,0) ? True : False);
+  retmethod(cpx_equal(self1->val,self2->val) ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Complex, Int32)
-  retmethod(z_is_eq(self1->val,self2->val,0) ? True : False);
+defmethod(OBJ, gequal, Complex, Int)
+  retmethod(cpx_equal(self1->val,self2->val) ? True : False);
 endmethod
 
-defmethod(OBJ, gequal, Complex, Int64)
-  retmethod(z_is_eq(self1->val,self2->val,0) ? True : False);
+defmethod(OBJ, gequal, Complex, Long)
+  retmethod(cpx_equal(self1->val,self2->val) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Complex, Double)
-  retmethod(z_is_eq(self1->val,self2->val,0) ? True : False);
+  retmethod(cpx_equal(self1->val,self2->val) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Complex, Complex)
-  retmethod(Z_is_eq(self1->val,self2->val) ? True : False);
+  retmethod(cpx_equal(self1->val,self2->val) ? True : False);
 endmethod
+
+defmethod(OBJ, gequal, UInt, UInt)
+  retmethod(self1->val == self2->val ? True : False);
+endmethod
+
+defmethod(OBJ, gequal, UInt, ULong)
+  retmethod(self1->val == self2->val ? True : False);
+endmethod
+
+defmethod(OBJ, gequal, ULong, UInt)
+  retmethod(self1->val == self2->val ? True : False);
+endmethod
+
+defmethod(OBJ, gequal, ULong, ULong)
+  retmethod(self1->val == self2->val ? True : False);
+endmethod
+

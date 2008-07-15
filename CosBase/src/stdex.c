@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdex.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: stdex.c,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,7 @@
 #include <cos/signal.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
+#include <cos/gen/init.h>
 
 #include <stdlib.h>
 #include <string.h>

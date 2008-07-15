@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.2 2008/07/02 17:08:57 ldeniau Exp $
+ | $Id: Value.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -43,27 +43,38 @@
 /* Values subclasses:
 
 <- Value
-   <- Index       (size_t x 1-5 dim)
-   <- Slice       (size_t x (1 + 2 x 1-5 dim))
+   <- Index       (U32 x 1-5 dim)
+   <- Range       (U32 x 2 x 1-5 dim)
+   <- Slice       (U32 x (1 + 2 x 1-5 dim))
 
    <- Function    (FUNC)
    <- Pointer     (void*)
-      <- AllocPointer
+      <- AutoPointer
 
    <- Number
       <- Integral
-         <- Int32
+         <- Int
             <- Char
             <- Short
-            <- Int
-         <- Int64
-            <- Long
+         <- UInt
+            <- UChar
+            <- UShort
+         <- Long
+         <- ULong
       <- Floating
          <- Double
          <- Complex
+
+   <- Vector
+     <- ChrVector  <- ChrVector0..9
+     <- ShtVector  <- ShtVector0..9
+     <- IntVector  <- IntVector0..9
+     <- LngVector  <- LngVector0..9
+     <- DblVector  <- DblVector0..9
+     <- CpxVector  <- CpxVector0..9
 */
 
-defclass(Value,Object)
+defclass(Value)
 endclass
 
 #endif // COS_VALUE_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: method.h,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -75,7 +75,7 @@
 
      defmethod(OBJ, gclone   , Object)                        .. endmethod
      defmethod(OBJ, ggetAt   , Array, Range)                  .. endmethod
-     defmethod(OBJ, ggetAtIdx, Array, (size_t)idx)            .. endmethod
+     defmethod(OBJ, ggetAtIdx, Array, (U32)idx)               .. endmethod
      defmethod(OBJ, gprint   , Stream, String)                .. endmethod
      defmethod(OBJ, vprintFmt, Stream, (STR)fmt, (va_list)va) .. endmethod
 */

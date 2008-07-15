@@ -32,26 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.2 2008/06/30 15:41:11 ldeniau Exp $
+ | $Id: object.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
 #error "COS: missing #include <cos/Object.h>"
 #endif
-
-// newXXX (= alloc+initXXX)
-defgeneric(OBJ , gnew         , _1);
-defgeneric(OBJ , gnewWith     , _1, _2);
-defgeneric(OBJ , gnewWith2    , _1, _2, _3);
-defgeneric(OBJ , gnewWith3    , _1, _2, _3, _4);
-defgeneric(OBJ , gnewWith4    , _1, _2, _3, _4, _5);
-defgeneric(OBJ , gnewWithLoc  , _1, _2, (STR)file, (int)line);
-defgeneric(OBJ , gnewWithInt  , _1, (int)val);
-defgeneric(OBJ , gnewWithStr  , _1, (STR)str);
-
-// clone (=alloc+initWith(T,T))
-defgeneric(OBJ , gclone       , _1);
 
 // allocator, deallocator
 defgeneric(OBJ , galloc       , _1);
@@ -65,7 +52,6 @@ defgeneric(OBJ , ginitWith2   , _1, _2, _3);
 defgeneric(OBJ , ginitWith3   , _1, _2, _3, _4);
 defgeneric(OBJ , ginitWith4   , _1, _2, _3, _4, _5);
 defgeneric(OBJ , ginitWithLoc , _1, _2, (STR)file, (int)line);
-defgeneric(OBJ , ginitWithInt , _1, (int)val);
 defgeneric(OBJ , ginitWithStr , _1, (STR)str);
 defgeneric(OBJ , gdeinit      , _1);
 
@@ -98,5 +84,52 @@ defgeneric(void, gthrow       , _1, (STR)file, (int)line);
 // initialization
 defgeneric(void, ginitialize  , _1);
 defgeneric(void, gdeinitialize, _1);
+
+// ----- inliners -----
+
+// newXXX (= alloc+initXXX)
+
+static inline OBJ
+gnew(OBJ _1) {
+  return ginit(galloc(_1)); COS_UNUSED(gnew);
+}
+
+static inline OBJ
+gnewWith(OBJ _1, OBJ _2) {
+  return ginitWith(galloc(_1),_2);  COS_UNUSED(gnewWith);
+}
+
+static inline OBJ
+gnewWith2(OBJ _1, OBJ _2, OBJ _3) {
+  return ginitWith2(galloc(_1),_2,_3);  COS_UNUSED(gnewWith2);
+}
+
+static inline OBJ
+gnewWith3(OBJ _1, OBJ _2, OBJ _3, OBJ _4) {
+  return ginitWith3(galloc(_1),_2,_3,_4);  COS_UNUSED(gnewWith3);
+}
+
+static inline OBJ
+gnewWith4(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5) {
+  return ginitWith4(galloc(_1),_2,_3,_4,_5);  COS_UNUSED(gnewWith4);
+}
+
+static inline OBJ
+gnewWithLoc(OBJ _1, OBJ _2, STR file, int line) {
+  return ginitWithLoc(galloc(_1),_2,file,line); COS_UNUSED(gnewWithLoc);
+}
+
+static inline OBJ
+gnewWithStr(OBJ _1, STR str) {
+  return ginitWithStr(galloc(_1),str); COS_UNUSED(gnewWithStr);
+}
+
+// clone (=alloc+initWith(T,T))
+
+static inline OBJ
+gclone(OBJ _1) {
+  OBJ cls = (OBJ)cos_class_get(cos_any_id(_1)); // gclass(_1)
+  return ginitWith(galloc(cls),_1); COS_UNUSED(gclone);
+}
 
 #endif // COS_GEN_OBJECT_H

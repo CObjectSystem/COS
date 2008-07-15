@@ -1,10 +1,10 @@
-#ifndef COS_TUPLE_H
-#define COS_TUPLE_H
+#ifndef COS_RANGE_H
+#define COS_RANGE_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS Tuples
+ | COS Range
  |
  o---------------------------------------------------------------------o
  |
@@ -32,58 +32,51 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Tuple.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: Range.h,v 1.1 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
-#endif 
+#include <cos/Value.h>
 
 // ----- definitions
 
-defclass(Tuple,Object)
+defclass(Range,Value)
 endclass
 
-defclass(Tuple2,Tuple)
-  OBJ obj[2];
+defclass(Range1,Range)
+  U32 start;
+  U32 size;
 endclass
 
-defclass(Tuple3,Tuple)
-  OBJ obj[3];
+defclass(Range2,Range)
+  U32 start [2];
+  U32 size  [2];
 endclass
 
-defclass(Tuple4,Tuple)
-  OBJ obj[4];
+defclass(Range3,Range)
+  U32 start [3];
+  U32 size  [3];
 endclass
 
-defclass(Tuple5,Tuple)
-  OBJ obj[5];
+defclass(Range4,Range)
+  U32 start [4];
+  U32 size  [4];
 endclass
 
-defclass(Tuple6,Tuple)
-  OBJ obj[6];
+defclass(Range5,Range)
+  U32 start [5];
+  U32 size  [5];
 endclass
 
-defclass(Tuple7,Tuple)
-  OBJ obj[7];
-endclass
+// ----- automatic constructors
 
-defclass(Tuple8,Tuple)
-  OBJ obj[8];
-endclass
+#define aRange(starts,sizes) \
+        aRangeN(COS_PP_IF(COS_PP_ISTUPLE(starts))(COS_PP_NARG starts,1), \
+                starts,sizes)
 
-defclass(Tuple9,Tuple)
-  OBJ obj[9];
-endclass
+#define aRangeN(N,starts,sizes) ( (OBJ)&(struct COS_PP_CAT(Range,N)) { \
+        {{{{ COS_CLS_NAME(COS_PP_CAT(Range,N)).Behavior.id, COS_RC_AUTO }}}}, \
+         COS_PP_IF(COS_PP_ISONE(N))(starts, { COS_PP_SEQ(starts) }), \
+         COS_PP_IF(COS_PP_ISONE(N))(sizes , { COS_PP_SEQ(sizes)  }) } )
 
-// ----- automatic constructor
-
-#define aTuple(...) \
-        aTuple_(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
-
-#define aTuple_(N,...) ( (OBJ)&(struct COS_PP_CAT(Tuple,N)) { \
-        {{ COS_CLS_NAME(COS_PP_CAT(Tuple,N)).Behavior.id, COS_RC_AUTO }}, \
-         { __VA_ARGS__ } } )
-
-#endif // COS_TUPLE_H
+#endif // COS_RANGE_H

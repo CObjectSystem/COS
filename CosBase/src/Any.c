@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.2 2008/06/30 15:41:11 ldeniau Exp $
+ | $Id: Any.c,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -37,9 +37,18 @@
 #include <cos/gen/object.h>
 #include <cos/gen/message.h>
 
+#include <stdlib.h>
+
 // -----
 
 makclass(Any,_);
+
+// ----- deallocator
+
+defmethod(void, gdealloc, Any)
+  PRE  TestAssert( self->rc == COS_RC_UNIT );
+  BODY free(_1);
+endmethod
 
 // ----- ownership
 

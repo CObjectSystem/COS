@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Pointer.h,v 1.1 2008/06/27 16:17:14 ldeniau Exp $
+ | $Id: Pointer.h,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -44,7 +44,7 @@ defclass(Pointer,Value)
   void *ptr;
 endclass
 
-defclass(AllocPointer,Pointer)
+defclass(AutoPointer,Pointer)
   void (*pfree)(void*);
 endclass
 
@@ -58,8 +58,8 @@ endclass
         {{ COS_CLS_NAME(Pointer).Behavior.id, COS_RC_AUTO }}, \
          (ptr) } )
 
-#define aAllocPointer(ptr, pfree) ( (OBJ)&(struct AllocPointer) {{ \
-        {{ COS_CLS_NAME(AllocPointer).Behavior.id, COS_RC_AUTO }}, \
+#define aAutoPointer(ptr, pfree) ( (OBJ)&(struct AutoPointer) {{ \
+        {{ COS_CLS_NAME(AutoPointer).Behavior.id, COS_RC_AUTO }}, \
          (ptr) }, (pfree) } )
 
 #define aFunction(fct) ( (OBJ)&(struct Function) { \

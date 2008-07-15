@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.2 2008/07/02 17:08:57 ldeniau Exp $
+ | $Id: Slice.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -105,11 +105,11 @@ slice5_index(struct Slice5* s, U32 i1, U32 i2, U32 i3, U32 i4, U32 i5) {
 // ----- automatic constructors
 
 #define aSlice(start,sizes,strides) \
-        aSlice_(COS_PP_IF(COS_PP_ISTUPLE(sizes))(COS_PP_NARG sizes,1), \
+        aSliceN(COS_PP_IF(COS_PP_ISTUPLE(sizes))(COS_PP_NARG sizes,1), \
                 start,sizes,strides)
 
-#define aSlice_(N,start,sizes,strides) ( (OBJ)&(struct COS_PP_CAT(Slice,N)) { \
-        {{{ COS_CLS_NAME(COS_PP_CAT(Slice,N)).Behavior.id, COS_RC_AUTO }}}, \
+#define aSliceN(N,start,sizes,strides) ( (OBJ)&(struct COS_PP_CAT(Slice,N)) { \
+        {{{{ COS_CLS_NAME(COS_PP_CAT(Slice,N)).Behavior.id, COS_RC_AUTO }}}}, \
          start, \
          COS_PP_IF(COS_PP_ISONE(N))(sizes  , { COS_PP_SEQ(sizes)   }), \
          COS_PP_IF(COS_PP_ISONE(N))(strides, { COS_PP_SEQ(strides) }) } )

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
+ | $Id: generic.h,v 1.4 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -92,7 +92,7 @@
      defgeneric(OBJ, gclone   , _1);                         // rank 1
      defgeneric(OBJ, ggetAt   , _1, _2);                     // rank 2
      defgeneric(OBJ, ggetAt   , _1, at);                     // rank 2
-     defgeneric(OBJ, ggetAtIdx, _1, (size_t)idx);            // rank 1
+     defgeneric(OBJ, ggetAtIdx, _1, (U32)idx);               // rank 1
      defgeneric(OBJ, gprint   , stream, _2);                 // rank 2
 
      defgenericv(OBJ, vprintFmt, stream, (STR)fmt, ...);     // rank 1

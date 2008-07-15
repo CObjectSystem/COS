@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.4 2008/07/02 17:08:58 ldeniau Exp $
+ | $Id: stdgen.c,v 1.5 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -39,21 +39,25 @@
 #include <cos/gen/access.h>
 
 // generic accessors
-makgeneric(OBJ, gput     , _1, _2);
-makgeneric(OBJ, gget     , _1);
-makgeneric(OBJ, gdrop    , _1);
-makgeneric(OBJ, gupdate  , _1, _2);
+makgeneric(OBJ, gput     , to, what);
+makgeneric(OBJ, gget     , from);
+makgeneric(OBJ, gdrop    , from);
+makgeneric(OBJ, gupdate  , to, what);
 
 // generic accessors with location
-makgeneric(OBJ, gputAt   , _1, _2, at);
-makgeneric(OBJ, ggetAt   , _1, at);
-makgeneric(OBJ, gdropAt  , _1, at);
-makgeneric(OBJ, gupdateAt, _1, _2, at);
+makgeneric(OBJ, gputAt   , to, what, at);
+makgeneric(OBJ, ggetAt   , from, at);
+makgeneric(OBJ, gdropAt  , from, at);
+makgeneric(OBJ, gupdateAt, to, what, at);
 
 // stack-like or queue-like accessors
-makgeneric(OBJ, gpush    , _1, _2);
-makgeneric(OBJ, gtop     , _1);
-makgeneric(OBJ, gpop     , _1);
+makgeneric(OBJ, gpush    , to, what); // alias for gput
+makgeneric(OBJ, gtop     , from);     // alias for gget
+makgeneric(OBJ, gpop     , from);     // alias for gdrop
+
+// plain array accessors
+makgeneric(void, ggetValue  , from, what);
+makgeneric(void, ggetValueAt, from, what, at);
 
 // -------------------------
 #include <cos/gen/calc.h>
@@ -85,6 +89,35 @@ makgeneric(OBJ, geval2, _1, (OBJ)arg1,(OBJ)arg2);
 makgeneric(OBJ, geval3, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 makgeneric(OBJ, geval4, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 makgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
+
+// -------------------------
+#include <cos/gen/init.h>
+
+makgeneric(OBJ, ginitWithChr , _1, (S8 )val);
+makgeneric(OBJ, ginitWithSht , _1, (S32)val);
+makgeneric(OBJ, ginitWithInt , _1, (S32)val);
+makgeneric(OBJ, ginitWithLng , _1, (S64)val);
+
+makgeneric(OBJ, ginitWithUChr, _1, (U8 )val);
+makgeneric(OBJ, ginitWithUSht, _1, (U16)val);
+makgeneric(OBJ, ginitWithUInt, _1, (U32)val);
+makgeneric(OBJ, ginitWithULng, _1, (U64)val);
+
+makgeneric(OBJ, ginitWithDbl , _1, (double )val);
+makgeneric(OBJ, ginitWithCpx , _1, (COMPLEX)val);
+
+makgeneric(OBJ, ginitWithChrPtr , _1, (U32)n, (S8 *)val);
+makgeneric(OBJ, ginitWithShtPtr , _1, (U32)n, (S16*)val);
+makgeneric(OBJ, ginitWithIntPtr , _1, (U32)n, (S32*)val);
+makgeneric(OBJ, ginitWithLngPtr , _1, (U32)n, (S64*)val);
+
+makgeneric(OBJ, ginitWithUChrPtr, _1, (U32)n, (U8 *)val);
+makgeneric(OBJ, ginitWithUShtPtr, _1, (U32)n, (U16*)val);
+makgeneric(OBJ, ginitWithUIntPtr, _1, (U32)n, (U32*)val);
+makgeneric(OBJ, ginitWithULngPtr, _1, (U32)n, (U64*)val);
+
+makgeneric(OBJ, ginitWithDblPtr , _1, (U32)n, (double *)val);
+makgeneric(OBJ, ginitWithCpxPtr , _1, (U32)n, (COMPLEX*)val);
 
 // -------------------------
 #include <cos/gen/logic.h>
@@ -123,19 +156,6 @@ makgeneric(OBJ, ginstancesUnderstandMessage5, _1, _2, _3, _4, _5, (SEL)msg);
 // -------------------------
 #include <cos/gen/object.h>
 
-// newXXX (= alloc+initXXX)
-makgeneric(OBJ , gnew         , _1);
-makgeneric(OBJ , gnewWith     , _1, _2);
-makgeneric(OBJ , gnewWith2    , _1, _2, _3);
-makgeneric(OBJ , gnewWith3    , _1, _2, _3, _4);
-makgeneric(OBJ , gnewWith4    , _1, _2, _3, _4, _5);
-makgeneric(OBJ , gnewWithLoc  , _1, _2, (STR)file, (int)line);
-makgeneric(OBJ , gnewWithInt  , _1, (int)val);
-makgeneric(OBJ , gnewWithStr  , _1, (STR)str);
-
-// clone (=alloc+initWith(T,T))
-makgeneric(OBJ , gclone       , _1);
-
 // allocator, deallocator
 makgeneric(OBJ , galloc       , _1);
 makgeneric(OBJ , gallocWith   , _1, _2);
@@ -148,7 +168,6 @@ makgeneric(OBJ , ginitWith2   , _1, _2, _3);
 makgeneric(OBJ , ginitWith3   , _1, _2, _3, _4);
 makgeneric(OBJ , ginitWith4   , _1, _2, _3, _4, _5);
 makgeneric(OBJ , ginitWithLoc , _1, _2, (STR)file, (int)line);
-makgeneric(OBJ , ginitWithInt , _1, (int)val);
 makgeneric(OBJ , ginitWithStr , _1, (STR)str);
 makgeneric(OBJ , gdeinit      , _1);
 
@@ -185,15 +204,20 @@ makgeneric(void, gdeinitialize, _1);
 // -------------------------
 #include <cos/gen/value.h>
 
-makgeneric(STR            , gstr     , _1);
-makgeneric(U32            , gsize    , _1);
+makgeneric(STR    , gstr     , _1);
+makgeneric(U32    , gsize    , _1);
 
-makgeneric(char           , gchar    , _1);
-makgeneric(short          , gshort   , _1);
-makgeneric(S32            , gint     , _1);
-makgeneric(S64            , glong    , _1);
-makgeneric(double         , gdouble  , _1);
-makgeneric(_Complex double, gcomplex , _1);
+makgeneric(S8     , gchar    , _1);
+makgeneric(U8     , guchar   , _1);
+makgeneric(S16    , gshort   , _1);
+makgeneric(U16    , gushort  , _1);
+makgeneric(S32    , gint     , _1);
+makgeneric(U32    , guint    , _1);
+makgeneric(S64    , glong    , _1);
+makgeneric(U64    , gulong   , _1);
+makgeneric(double , gdouble  , _1);
+makgeneric(COMPLEX, gcomplex , _1);
 
-makgeneric(void*          , gpointer , _1);
-makgeneric(FUNC           , gfunction, _1);
+makgeneric(void*  , gpointer , _1);
+makgeneric(FUNC   , gfunction, _1);
+

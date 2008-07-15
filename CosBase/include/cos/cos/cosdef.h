@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.2 2008/06/27 16:45:54 ldeniau Exp $
+ | $Id: cosdef.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -40,17 +40,22 @@
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/cosdef.h>"
 #endif
 
+typedef signed   char  S8;
+typedef unsigned char  U8;
+typedef signed   short S16;
+typedef unsigned short U16;
+
 #if UINT_MAX >= 4294967295UL
-typedef signed   int S32;
-typedef unsigned int U32;
+typedef signed   int   S32;
+typedef unsigned int   U32;
 #else
-typedef signed   long S32;
-typedef unsigned long U32;
+typedef signed   long  S32;
+typedef unsigned long  U32;
 #endif
 
 #if ULONG_MAX >= 18446744073709551615ULL
-typedef signed   long S64;
-typedef unsigned long U64;
+typedef signed   long  S64;
+typedef unsigned long  U64;
 #elif ULLONG_MAX >= 18446744073709551615ULL
 typedef signed   long long S64;
 typedef unsigned long long U64;
@@ -62,6 +67,8 @@ typedef unsigned _LongLong U64;
 #endif
 
 typedef _Bool BOOL;
+typedef _Complex double COMPLEX;
+
 typedef const char* STR; // string literal
 typedef struct OBJ* OBJ; // ADT, never defined
 typedef const struct Generic* SEL;
@@ -103,27 +110,27 @@ struct cos_exception_protect {
 // dispatch caches
 struct cos_method_cache1 {
   struct cos_method_slot1 **slot;
-  size_t msk;
+  U32 msk;
 };
 
 struct cos_method_cache2 {
   struct cos_method_slot2 **slot;
-  size_t msk;
+  U32 msk;
 };
 
 struct cos_method_cache3 {
   struct cos_method_slot3 **slot;
-  size_t msk;
+  U32 msk;
 };
 
 struct cos_method_cache4 {
   struct cos_method_slot4 **slot;
-  size_t msk;
+  U32 msk;
 };
 
 struct cos_method_cache5 {
   struct cos_method_slot5 **slot;
-  size_t msk;
+  U32 msk;
 };
 
 // dispatch slots

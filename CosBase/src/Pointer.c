@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Pointer.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Pointer.c,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -38,13 +38,14 @@
 #include <cos/gen/object.h>
 
 makclass(Pointer,Value);
-makclass(AllocPointer,Pointer);
+makclass(AutoPointer,Pointer);
 makclass(Function,Value);
 
 // -----
 
-defmethod(OBJ, gdeinit, AllocPointer)
+defmethod(OBJ, gdeinit, AutoPointer)
   if (self->pfree)
     self->pfree(self->Pointer.ptr), self->Pointer.ptr = 0;
   retmethod(_1);
 endmethod
+

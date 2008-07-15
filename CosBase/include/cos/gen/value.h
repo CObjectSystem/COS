@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.2 2008/07/02 17:08:58 ldeniau Exp $
+ | $Id: value.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -40,17 +40,21 @@
 #error "COS: missing #include <cos/Object.h>"
 #endif
 
-defgeneric(STR            , gstr     , _1);
-defgeneric(U32            , gsize    , _1);
+defgeneric(STR    , gstr     , _1);
+defgeneric(U32    , gsize    , _1);
 
-defgeneric(char           , gchar    , _1);
-defgeneric(short          , gshort   , _1);
-defgeneric(S32            , gint     , _1);
-defgeneric(S64            , glong    , _1);
-defgeneric(double         , gdouble  , _1);
-defgeneric(_Complex double, gcomplex , _1);
+defgeneric(S8     , gchar    , _1);
+defgeneric(U8     , guchar   , _1);
+defgeneric(S16    , gshort   , _1);
+defgeneric(U16    , gushort  , _1);
+defgeneric(S32    , gint     , _1);
+defgeneric(U32    , guint    , _1);
+defgeneric(S64    , glong    , _1);
+defgeneric(U64    , gulong   , _1);
+defgeneric(double , gdouble  , _1);
+defgeneric(COMPLEX, gcomplex , _1);
 
-defgeneric(void*          , gpointer , _1);
-defgeneric(FUNC           , gfunction, _1);
+defgeneric(void*  , gpointer , _1);
+defgeneric(FUNC   , gfunction, _1);
 
 #endif // COS_GEN_VALUE_H

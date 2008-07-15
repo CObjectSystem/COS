@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: access.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: access.h,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -41,20 +41,24 @@
 #endif 
 
 // generic accessors
-defgeneric(OBJ, gput     , _1, _2);
-defgeneric(OBJ, gget     , _1);
-defgeneric(OBJ, gdrop    , _1);
-defgeneric(OBJ, gupdate  , _1, _2);
+defgeneric(OBJ, gput     , to, what);
+defgeneric(OBJ, gget     , from);
+defgeneric(OBJ, gdrop    , from);
+defgeneric(OBJ, gupdate  , to, what);
 
 // generic accessors with location
-defgeneric(OBJ, gputAt   , _1, _2, at);
-defgeneric(OBJ, ggetAt   , _1, at);
-defgeneric(OBJ, gdropAt  , _1, at);
-defgeneric(OBJ, gupdateAt, _1, _2, at);
+defgeneric(OBJ, gputAt   , to, what, at);
+defgeneric(OBJ, ggetAt   , from, at);
+defgeneric(OBJ, gdropAt  , from, at);
+defgeneric(OBJ, gupdateAt, to, what, at);
 
 // stack-like or queue-like accessors
-defgeneric(OBJ, gpush    , _1, _2); // alias for gput
-defgeneric(OBJ, gtop     , _1);     // alias for gget
-defgeneric(OBJ, gpop     , _1);     // alias for gdrop
+defgeneric(OBJ, gpush    , to, what); // alias for gput
+defgeneric(OBJ, gtop     , from);     // alias for gget
+defgeneric(OBJ, gpop     , from);     // alias for gdrop
+
+// plain array accessors
+defgeneric(void, ggetValue  , from, what);
+defgeneric(void, ggetValueAt, from, what, at);
 
 #endif // COS_GEN_ACCESS_H

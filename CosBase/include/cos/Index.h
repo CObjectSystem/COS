@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Index.h,v 1.2 2008/07/02 17:08:57 ldeniau Exp $
+ | $Id: Index.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
  |
 */
 
@@ -66,10 +66,10 @@ endclass
 // ----- automatic constructor
 
 #define aIndex(...) \
-        aIndex_(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
+        aIndexN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
 
-#define aIndex_(N,...) ( (OBJ)&(struct COS_PP_CAT(Index,N)) { \
-        {{ COS_CLS_NAME(COS_PP_CAT(Index,N)).Behavior.id, COS_RC_AUTO }}, \
-         COS_PP_IF(COS_PP_ISONE(N))(__VA_ARGS__, { __VA_ARGS__ }) } )
+#define aIndexN(N,...) ( (OBJ)&(struct COS_PP_CAT(Index,N)) { \
+        {{{{ COS_CLS_NAME(COS_PP_CAT(Index,N)).Behavior.id, COS_RC_AUTO }}}}, \
+         COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) } )
 
 #endif // COS_INDEX_H
