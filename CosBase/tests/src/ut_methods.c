@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_methods.c,v 1.1 2008/06/27 16:17:24 ldeniau Exp $
+ | $Id: ut_methods.c,v 1.2 2008/07/15 10:12:36 ldeniau Exp $
  |
 */
 
@@ -64,7 +64,7 @@ ut_methods(void)
     UTEST( ginstancesUnderstandMessage1(Any, (SEL)galloc)     == False );
 
     UTEST(          gunderstandMessage1(Any, (SEL)gdealloc)   == True  );
-    UTEST( ginstancesUnderstandMessage1(Any, (SEL)gdealloc)   == False );
+    UTEST( ginstancesUnderstandMessage1(Any, (SEL)gdealloc)   == True  );
 
     UTEST(          gunderstandMessage1(Any, (SEL)gclass)     == True  );
     UTEST( ginstancesUnderstandMessage1(Any, (SEL)gclass)     == True  );
