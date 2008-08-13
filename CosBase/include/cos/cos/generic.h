@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.4 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: generic.h,v 1.5 2008/08/13 09:28:12 ldeniau Exp $
  |
 */
 
@@ -41,6 +41,9 @@
 #endif
 
 /* NOTE-USER: generic declaration, definition and instantiation
+
+   generic-reference:
+     genericref( generic-name )
 
    generic-declaration:
      usegeneric( generic-decl-list );
@@ -103,11 +106,16 @@
 /* generic keywords:
  */
 #ifdef  COS_DISABLE_ALL
+#define COS_DISABLE_genericref
 #define COS_DISABLE_usegeneric
 #define COS_DISABLE_defgeneric
 #define COS_DISABLE_makgeneric
 #define COS_DISABLE_defgenericv
 #define COS_DISABLE_makgenericv
+#endif
+
+#ifndef COS_DISABLE_genericref
+#define genericref(G) COS_GEN_REF(G)
 #endif
 
 #ifndef COS_DISABLE_usegeneric
@@ -143,6 +151,11 @@
    A  = number of arguments > 0 (bool)
    R  = return-type is not void (bool)
 */
+
+/* generic reference
+ */
+#define COS_GEN_REF(NAME) \
+        ((OBJ)(void*)&COS_GEN_NAME(NAME))
 
 /* generic declaration
  */

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: method.h,v 1.3 2008/08/13 09:28:12 ldeniau Exp $
  |
 */
 
@@ -41,6 +41,9 @@
 #endif
 
 /* NOTE-USER: method declaration, definition and instantiation
+
+   method-reference:
+     methodref( generic-name , class-list )
 
    method-declaration:
      usemethod( method-decl );
@@ -83,6 +86,7 @@
 /* method keywords:
  */
 #ifdef  COS_DISABLE_ALL
+#define COS_DISABLE_methodref
 #define COS_DISABLE_usemethod
 #define COS_DISABLE_defmethod
 #define COS_DISABLE_endmethod
@@ -92,6 +96,10 @@
 #define COS_DISABLE_next_method_p
 #define COS_DISABLE_forward_message
 #define COS_DISABLE_retval
+#endif
+
+#ifndef COS_DISABLE_methodref
+#define methodref(...) COS_MTH_REF(__VA_ARGS__)
 #endif
 
 #ifndef COS_DISABLE_usemethod
@@ -133,6 +141,11 @@
 /***********************************************************
  * Implementation
  */
+
+/* method reference
+ */
+#define COS_MTH_REF(NAME,...) \
+        ((OBJ)(void*)&COS_MTH_NAME(NAME,(__VA_ARGS__)))
 
 /* method declaration
  */

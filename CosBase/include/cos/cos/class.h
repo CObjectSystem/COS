@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.2 2008/07/02 17:08:58 ldeniau Exp $
+ | $Id: class.h,v 1.3 2008/08/13 09:28:12 ldeniau Exp $
  |
 */
 
@@ -41,6 +41,9 @@
 #endif
 
 /* NOTE-USER: class declaration, definition and instantiation
+
+   class-reference:
+     classref( class-name );
 
    class-declaration:
      useclass( class-decl-list );
@@ -81,10 +84,15 @@
 /* class keywords:
  */
 #ifdef  COS_DISABLE_ALL
+#define COS_DISABLE_classref
 #define COS_DISABLE_useclass
 #define COS_DISABLE_defclass
 #define COS_DISABLE_endclass
 #define COS_DISABLE_makclass
+#endif
+
+#ifndef COS_DISABLE_classref
+#define classref(C) COS_CLS_REF(C)
 #endif
 
 #ifndef COS_DISABLE_useclass
@@ -106,6 +114,11 @@
 /***********************************************************
  * Implementation
  */
+
+/* class reference
+ */
+#define COS_CLS_REF(NAME) \
+        ((OBJ)(void*)&COS_CLS_NAME(NAME))
 
 /* class declaration
  */
