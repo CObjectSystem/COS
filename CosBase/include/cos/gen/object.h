@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: object.h,v 1.4 2008/08/14 08:53:57 ldeniau Exp $
  |
 */
 
@@ -87,8 +87,7 @@ defgeneric(void, gdeinitialize, _1);
 
 // ----- inliners -----
 
-// newXXX (= alloc+initXXX)
-
+// inliner gnewXXX (= galloc() + ginitXXX())
 static inline OBJ
 gnew(OBJ _1) {
   return ginit(galloc(_1)); COS_UNUSED(gnew);
@@ -124,12 +123,17 @@ gnewWithStr(OBJ _1, STR str) {
   return ginitWithStr(galloc(_1),str); COS_UNUSED(gnewWithStr);
 }
 
-// clone (=alloc+initWith(T,T))
-
+// inliner gclone (= galloc() + ginitWith(T,T))
 static inline OBJ
 gclone(OBJ _1) {
   OBJ cls = (OBJ)cos_class_get(cos_any_id(_1)); // gclass(_1)
   return ginitWith(galloc(cls),_1); COS_UNUSED(gclone);
+}
+
+// inliner gcopy (= gdeinit() + ginitWith(T,T))
+static inline OBJ
+gcopy(OBJ _1, OBJ _2) {
+  return ginitWith(gdeinit(_1),_2); COS_UNUSED(gcopy);
 }
 
 #endif // COS_GEN_OBJECT_H
