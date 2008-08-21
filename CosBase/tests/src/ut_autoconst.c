@@ -29,12 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autoconst.c,v 1.2 2008/07/15 10:07:07 ldeniau Exp $
+ | $Id: ut_autoconst.c,v 1.3 2008/08/21 15:45:07 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Number.h>
+#include <cos/Vector.h>
 #include <cos/Index.h>
 #include <cos/Range.h>
 #include <cos/Slice.h>
@@ -49,102 +50,102 @@
 #include "generics.h"
 
 static BOOL
-idx_chk(U32 n, OBJ idx)
+idx_chk(S32 n, OBJ idx)
 {
   BOOL res = YES;
-  U32 i = 0;
+  S32 i = 0;
 
   switch(n) {
    case 1:
      for (; i < n; i++)
-       res = res && ((struct Index1*)idx)->idx    == i+1;
+       res = res && ((struct Index1*)idx)->value    == i+1;
 
    case 2:
      for (; i < n; i++)
-       res = res && ((struct Index2*)idx)->idx[i] == i+1;
+       res = res && ((struct Index2*)idx)->value[i] == i+1;
 
    case 3:
      for (; i < n; i++)
-       res = res && ((struct Index3*)idx)->idx[i] == i+1;
+       res = res && ((struct Index3*)idx)->value[i] == i+1;
 
    case 4:
      for (; i < n; i++)
-       res = res && ((struct Index4*)idx)->idx[i] == i+1;
+       res = res && ((struct Index4*)idx)->value[i] == i+1;
 
    case 5:
      for (; i < n; i++)
-       res = res && ((struct Index5*)idx)->idx[i] == i+1;
+       res = res && ((struct Index5*)idx)->value[i] == i+1;
   }  
 
   return res;
 }
 
 static BOOL
-rng_chk(U32 n, OBJ rng)
+rng_chk(S32 n, OBJ rng)
 {
   BOOL res = YES;
-  U32 i = 0;
+  S32 i = 0;
 
   switch(n) {
    case 1:
      for (; i < n; i++)
        res = res && ((struct Range1*)rng)->start    == i+1
-                 && ((struct Range1*)rng)->size     == n-i;
+                 && ((struct Range1*)rng)->size     == (U32)(n-i);
 
    case 2:
      for (; i < n; i++)
        res = res && ((struct Range2*)rng)->start[i] == i+1
-                 && ((struct Range2*)rng)->size [i] == n-i;
+                 && ((struct Range2*)rng)->size [i] == (U32)(n-i);
 
    case 3:
      for (; i < n; i++)
        res = res && ((struct Range3*)rng)->start[i] == i+1
-                 && ((struct Range3*)rng)->size [i] == n-i;
+                 && ((struct Range3*)rng)->size [i] == (U32)(n-i);
 
    case 4:
      for (; i < n; i++)
        res = res && ((struct Range4*)rng)->start[i] == i+1
-                 && ((struct Range4*)rng)->size [i] == n-i;
+                 && ((struct Range4*)rng)->size [i] == (U32)(n-i);
 
    case 5:
      for (; i < n; i++)
        res = res && ((struct Range5*)rng)->start[i] == i+1
-                 && ((struct Range5*)rng)->size [i] == n-i;
+                 && ((struct Range5*)rng)->size [i] == (U32)(n-i);
   }  
 
   return res;
 }
 
 static BOOL
-slc_chk(U32 n, OBJ slc)
+slc_chk(S32 n, OBJ slc)
 {
   BOOL res = ((struct Slice1*)slc)->start == n;
-  U32 i = 0;
+  S32 i = 0;
 
   switch(n) {
    case 1:
      for (; i < n; i++)
-       res = res && ((struct Slice1*)slc)->size    == i+1
+       res = res && ((struct Slice1*)slc)->size    == (U32)(i+1)
                  && ((struct Slice1*)slc)->stride  == n-i;
 
    case 2:
      for (; i < n; i++)
-       res = res && ((struct Slice2*)slc)->size  [i] == i+1
+       res = res && ((struct Slice2*)slc)->size  [i] == (U32)(i+1)
                  && ((struct Slice2*)slc)->stride[i] == n-i;
 
    case 3:
      for (; i < n; i++)
-       res = res && ((struct Slice3*)slc)->size  [i] == i+1
+       res = res && ((struct Slice3*)slc)->size  [i] == (U32)(i+1)
                  && ((struct Slice3*)slc)->stride[i] == n-i;
 
    case 4:
      for (; i < n; i++)
-       res = res && ((struct Slice4*)slc)->size  [i] == i+1
+       res = res && ((struct Slice4*)slc)->size  [i] == (U32)(i+1)
                  && ((struct Slice4*)slc)->stride[i] == n-i;
 
    case 5:
      for (; i < n; i++)
-       res = res && ((struct Slice5*)slc)->size  [i] == i+1
+       res = res && ((struct Slice5*)slc)->size  [i] == (U32)(i+1)
                  && ((struct Slice5*)slc)->stride[i] == n-i;
   }  
 
@@ -157,7 +158,7 @@ obj_chk(OBJ obj)
   OBJ cpy = gclone(obj);
   OBJ res = gequal(obj, cpy);
 
-  TestAssert( res == True || res == False );
+  test_assert( res == True || res == False );
 
   return grelease(cpy) == Nil && res == True;
 }
@@ -173,11 +174,6 @@ ut_autoconst(void)
   OBJ _cpx  = aCpx(5);
   OBJ _cpx2 = aCpx(6,7);
 
-  OBJ _uchr = aUChr('b');
-  OBJ _usht = aUSht(10);
-  OBJ _uint = aUInt(11);
-  OBJ _ulng = aULng(12);
-
 #define ref(T,a) struct T *a = (struct T*)_##a 
   ref(Char   ,chr );
   ref(Short  ,sht );
@@ -187,10 +183,6 @@ ut_autoconst(void)
   ref(Complex,cpx );
   ref(Complex,cpx2);
 
-  ref(UChar  ,uchr);
-  ref(UShort ,usht);
-  ref(UInt   ,uint);
-  ref(ULong  ,ulng);
 #undef ref
 
   OBJ idx1 = aIndex(1);
@@ -211,22 +203,17 @@ ut_autoconst(void)
   OBJ slc4 = aSlice(4, (1,2,3,4),   (4,3,2,1));
   OBJ slc5 = aSlice(5, (1,2,3,4,5), (5,4,3,2,1));
 
-  COMPLEX cpx_ref = *(double[]){6,7};
+  COMPLEX cpx_ref = *(DOUBLE[]){6,7};
 
   UTEST_START("automatic objects")
 
-    UTEST( chr->Int.val == 'a' );
-    UTEST( sht->Int.val ==  1  );
-    UTEST( i  ->    val ==  2  );
-    UTEST( lng->    val ==  3  );
-    UTEST( dbl_equal(dbl->val,4) );
-    UTEST( cpx_equal(cpx->val,5) );
-    UTEST( cpx_equal(cpx2->val,cpx_ref) );
-
-    UTEST( uchr->UInt.val == 'b' );
-    UTEST( usht->UInt.val == 10  );
-    UTEST( uint->     val == 11  );
-    UTEST( ulng->     val == 12  );
+    UTEST( chr->Int.value == 'a' );
+    UTEST( sht->Int.value ==  1  );
+    UTEST( i  ->    value ==  2  );
+    UTEST( lng->    value ==  3  );
+    UTEST( dbl_equal(dbl->value,4) );
+    UTEST( cpx_equal(cpx->value,5) );
+    UTEST( cpx_equal(cpx2->value,cpx_ref) );
 
     UTEST( idx_chk(1, idx1) );
     UTEST( idx_chk(2, idx2) );
@@ -253,10 +240,6 @@ ut_autoconst(void)
     UTEST( obj_chk(_dbl) );
     UTEST( obj_chk(_cpx) );
     UTEST( obj_chk(_cpx2) );
-    UTEST( obj_chk(_uchr) );
-    UTEST( obj_chk(_usht) );
-    UTEST( obj_chk(_uint) );
-    UTEST( obj_chk(_ulng) );
 
     UTEST( obj_chk(idx1) );
     UTEST( obj_chk(idx2) );
@@ -278,3 +261,108 @@ ut_autoconst(void)
 
   UTEST_END
 }
+
+void
+ut_autovector(void)
+{
+  OBJ intv1 = aIntVec(1);
+  OBJ intv2 = aIntVec(1,2);
+  OBJ intv3 = aIntVec(1,2,3);
+  OBJ intv4 = aIntVec(1,2,3,4);
+  OBJ intv5 = aIntVec(1,2,3,4,5);
+  OBJ intv6 = aIntVec(1,2,3,4,5,6);
+  OBJ intv7 = aIntVec(1,2,3,4,5,6,7);
+  OBJ intv8 = aIntVec(1,2,3,4,5,6,7,8);
+  OBJ intv9 = aIntVec(1,2,3,4,5,6,7,8,9);
+  OBJ intvn = aIntVec(1,2,3,4,5,6,7,8,9,10);
+  OBJ intvv = aIntSubVec((struct IntVector*)intvn, 4, 4);
+
+  OBJ lngv1 = aLngVec(1);
+  OBJ lngv2 = aLngVec(1,2);
+  OBJ lngv3 = aLngVec(1,2,3);
+  OBJ lngv4 = aLngVec(1,2,3,4);
+  OBJ lngv5 = aLngVec(1,2,3,4,5);
+  OBJ lngv6 = aLngVec(1,2,3,4,5,6);
+  OBJ lngv7 = aLngVec(1,2,3,4,5,6,7);
+  OBJ lngv8 = aLngVec(1,2,3,4,5,6,7,8);
+  OBJ lngv9 = aLngVec(1,2,3,4,5,6,7,8,9);
+  OBJ lngvn = aLngVec(1,2,3,4,5,6,7,8,9,10);
+  OBJ lngvv = aLngSubVec((struct LngVector*)lngvn, 4, 4);
+
+  OBJ dblv1 = aDblVec(1);
+  OBJ dblv2 = aDblVec(1,2);
+  OBJ dblv3 = aDblVec(1,2,3);
+  OBJ dblv4 = aDblVec(1,2,3,4);
+  OBJ dblv5 = aDblVec(1,2,3,4,5);
+  OBJ dblv6 = aDblVec(1,2,3,4,5,6);
+  OBJ dblv7 = aDblVec(1,2,3,4,5,6,7);
+  OBJ dblv8 = aDblVec(1,2,3,4,5,6,7,8);
+  OBJ dblv9 = aDblVec(1,2,3,4,5,6,7,8,9);
+  OBJ dblvn = aDblVec(1,2,3,4,5,6,7,8,9,10);
+  OBJ dblvv = aDblSubVec((struct DblVector*)dblvn, 4, 4);
+
+  OBJ cpxv1 = aCpxVec(1);
+  OBJ cpxv2 = aCpxVec(1,2);
+  OBJ cpxv3 = aCpxVec(1,2,3);
+  OBJ cpxv4 = aCpxVec(1,2,3,4);
+  OBJ cpxv5 = aCpxVec(1,2,3,4,5);
+  OBJ cpxv6 = aCpxVec(1,2,3,4,5,6);
+  OBJ cpxv7 = aCpxVec(1,2,3,4,5,6,7);
+  OBJ cpxv8 = aCpxVec(1,2,3,4,5,6,7,8);
+  OBJ cpxv9 = aCpxVec(1,2,3,4,5,6,7,8,9);
+  OBJ cpxvn = aCpxVec(1,2,3,4,5,6,7,8,9,10);
+  OBJ cpxvv = aCpxSubVec((struct CpxVector*)cpxvn, 4, 4);
+
+  UTEST_START("automatic vectors")
+
+    UTEST( obj_chk(intv1) );
+    UTEST( obj_chk(intv2) );
+    UTEST( obj_chk(intv3) );
+    UTEST( obj_chk(intv4) );
+    UTEST( obj_chk(intv5) );
+    UTEST( obj_chk(intv6) );
+    UTEST( obj_chk(intv7) );
+    UTEST( obj_chk(intv8) );
+    UTEST( obj_chk(intv9) );
+    UTEST( obj_chk(intvn) );
+    UTEST( obj_chk(intvv) );
+
+    UTEST( obj_chk(lngv1) );
+    UTEST( obj_chk(lngv2) );
+    UTEST( obj_chk(lngv3) );
+    UTEST( obj_chk(lngv4) );
+    UTEST( obj_chk(lngv5) );
+    UTEST( obj_chk(lngv6) );
+    UTEST( obj_chk(lngv7) );
+    UTEST( obj_chk(lngv8) );
+    UTEST( obj_chk(lngv9) );
+    UTEST( obj_chk(lngvn) );
+    UTEST( obj_chk(lngvv) );
+
+    UTEST( obj_chk(dblv1) );
+    UTEST( obj_chk(dblv2) );
+    UTEST( obj_chk(dblv3) );
+    UTEST( obj_chk(dblv4) );
+    UTEST( obj_chk(dblv5) );
+    UTEST( obj_chk(dblv6) );
+    UTEST( obj_chk(dblv7) );
+    UTEST( obj_chk(dblv8) );
+    UTEST( obj_chk(dblv9) );
+    UTEST( obj_chk(dblvn) );
+    UTEST( obj_chk(dblvv) );
+
+    UTEST( obj_chk(cpxv1) );
+    UTEST( obj_chk(cpxv2) );
+    UTEST( obj_chk(cpxv3) );
+    UTEST( obj_chk(cpxv4) );
+    UTEST( obj_chk(cpxv5) );
+    UTEST( obj_chk(cpxv6) );
+    UTEST( obj_chk(cpxv7) );
+    UTEST( obj_chk(cpxv8) );
+    UTEST( obj_chk(cpxv9) );
+    UTEST( obj_chk(cpxvn) );
+    UTEST( obj_chk(cpxvv) );
+
+  UTEST_END
+}
+

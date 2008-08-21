@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: tests.h,v 1.4 2008/08/21 15:45:07 ldeniau Exp $
  |
 */
 
@@ -48,6 +48,7 @@ void ut_exception(void);
 void ut_contract(void);
 void ut_autorelease(void);
 void ut_autoconst(void);
+void ut_autovector(void);
 
 void st_methods(void);
 void st_methods_ptr(void);

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_proxy.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: st_proxy.c,v 1.3 2008/08/21 15:45:07 ldeniau Exp $
  |
 */
 
@@ -62,7 +62,7 @@ st_pxymethods(void)
   STEST( "method through proxy (4 arguments)", N, N, gincrBy4(pxy,1,1,1,1) );
   STEST( "method through proxy (5 arguments)", N, N, gincrBy5(pxy,1,1,1,1,1) );
 
-  TestAssert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
+  test_assert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
   
   grelease(pxy);
 }
@@ -92,7 +92,7 @@ st_pxynextmethods(void)
   STEST( "next method through proxy (4 arguments)", N, N, gincrBy4(pxy,1,1,1,1) );
   STEST( "next method through proxy (5 arguments)", N, N, gincrBy5(pxy,1,1,1,1,1) );
 
-  TestAssert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
+  test_assert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
   
   grelease(pxy);
 }
@@ -113,7 +113,7 @@ st_pxymultimethods(void)
   STEST( "multimethod through proxy (rank 4)", N, N, gaddTo3(pxy,one,one,one) );
   STEST( "multimethod through proxy (rank 5)", N, N, gaddTo4(pxy,one,one,one,one) );
   
-  TestAssert( gint(pxy) == N+2*N+3*N+4*N );
+  test_assert( gint(pxy) == N+2*N+3*N+4*N );
   grelease(pxy);
   grelease(one);
 }

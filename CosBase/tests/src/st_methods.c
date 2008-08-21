@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.c,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
+ | $Id: st_methods.c,v 1.4 2008/08/21 15:45:07 ldeniau Exp $
  |
 */
 
@@ -57,7 +57,7 @@ st_methods(void)
   STEST( "method (4 arguments)", N, N, gincrBy4(cnt,1,1,1,1) );
   STEST( "method (5 arguments)", N, N, gincrBy5(cnt,1,1,1,1,1) );
   
-  TestAssert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
+  test_assert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
 
   grelease(cnt);
 }
@@ -77,7 +77,7 @@ st_nextmethods(void)
   STEST( "next method (4 arguments)", P, P, gincrBy4(cnt,1,1,1,1) );
   STEST( "next method (5 arguments)", P, P, gincrBy5(cnt,1,1,1,1,1) );
   
-  TestAssert( gint(cnt) == P+P+2*P+3*P+4*P+5*P );
+  test_assert( gint(cnt) == P+P+2*P+3*P+4*P+5*P );
   grelease(cnt);
 }
 
@@ -94,7 +94,7 @@ st_multimethods(void)
   STEST( "multimethod (rank 4)", N, N, gaddTo3(cnt,one,one,one) );
   STEST( "multimethod (rank 5)", N, N, gaddTo4(cnt,one,one,one,one) );
   
-  TestAssert( gint(cnt) == N+2*N+3*N+4*N );
+  test_assert( gint(cnt) == N+2*N+3*N+4*N );
   grelease(cnt);
   grelease(one);
 }
@@ -130,7 +130,7 @@ st_methods_ptr(void)
   STEST( "method pointer (4 arguments)", N, N, gincrBy4_p((SEL)gincrBy4_s,cnt,&arg4,&ret) );
   STEST( "method pointer (5 arguments)", N, N, gincrBy5_p((SEL)gincrBy5_s,cnt,&arg5,&ret) );
   
-  TestAssert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
+  test_assert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
 
   grelease(cnt);
 }
@@ -159,7 +159,7 @@ st_multimethods_ptr(void)
   STEST( "multimethod pointer (rank 4)", N, N, gaddTo3_p((SEL)gaddTo3_s,cnt,one,one,one,0,&ret) );
   STEST( "multimethod pointer (rank 5)", N, N, gaddTo4_p((SEL)gaddTo4_s,cnt,one,one,one,one,0,&ret) );
   
-  TestAssert( gint(cnt) == N+2*N+3*N+4*N );
+  test_assert( gint(cnt) == N+2*N+3*N+4*N );
 
   grelease(cnt);
   grelease(one);
@@ -189,6 +189,9 @@ st_memory(void)
   cos_logmsg_setLevel(cos_msg_trace);
 
   STEST( "release (gdeinit+dealloc)", P, 1, grelease(ar) );
+
+  i = 0;
+  STEST( "new + release", P, P, grelease(gnew(Counter)) );
 }
 
 void

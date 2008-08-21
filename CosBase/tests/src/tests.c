@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.4 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: tests.c,v 1.5 2008/08/21 15:45:07 ldeniau Exp $
  |
 */
 
@@ -84,6 +84,7 @@ int main(int argc, char *argv[])
   ut_contract();
   ut_autorelease();
   ut_autoconst();
+  ut_autovector();
 
   utest_stat();
 
