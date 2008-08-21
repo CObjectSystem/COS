@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Slice.h,v 1.4 2008/08/21 15:53:43 ldeniau Exp $
  |
 */
 
@@ -40,37 +40,42 @@
 
 // ----- definitions
 
+/* NOTE-USER: negative indexes
+   negative indexes mean starting from the end
+   e.g. -1 is the last element
+ */
+
 defclass(Slice,Value)
 endclass
 
 defclass(Slice1,Slice)
-  U32 start;
+  S32 start;
   U32 size;
-  U32 stride;
+  S32 stride;
 endclass
 
 defclass(Slice2,Slice)
-  U32 start;
+  S32 start;
   U32 size  [2];
-  U32 stride[2];
+  S32 stride[2];
 endclass
 
 defclass(Slice3,Slice)
-  U32 start;
+  S32 start;
   U32 size  [3];
-  U32 stride[3];
+  S32 stride[3];
 endclass
 
 defclass(Slice4,Slice)
-  U32 start;
+  S32 start;
   U32 size  [4];
-  U32 stride[4];
+  S32 stride[4];
 endclass
 
 defclass(Slice5,Slice)
-  U32 start;
+  S32 start;
   U32 size  [5];
-  U32 stride[5];
+  S32 stride[5];
 endclass
 
 // ----- index linearization

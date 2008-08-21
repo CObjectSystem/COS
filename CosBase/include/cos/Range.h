@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.1 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Range.h,v 1.2 2008/08/21 15:53:43 ldeniau Exp $
  |
 */
 
@@ -40,31 +40,36 @@
 
 // ----- definitions
 
+/* NOTE-USER: negative indexes
+   negative indexes mean starting from the end
+   e.g. -1 is the last element
+ */
+
 defclass(Range,Value)
 endclass
 
 defclass(Range1,Range)
-  U32 start;
+  S32 start;
   U32 size;
 endclass
 
 defclass(Range2,Range)
-  U32 start [2];
+  S32 start [2];
   U32 size  [2];
 endclass
 
 defclass(Range3,Range)
-  U32 start [3];
+  S32 start [3];
   U32 size  [3];
 endclass
 
 defclass(Range4,Range)
-  U32 start [4];
+  S32 start [4];
   U32 size  [4];
 endclass
 
 defclass(Range5,Range)
-  U32 start [5];
+  S32 start [5];
   U32 size  [5];
 endclass
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.3 2008/07/02 17:08:58 ldeniau Exp $
+ | $Id: contract.h,v 1.4 2008/08/21 15:53:43 ldeniau Exp $
  |
 */
 
@@ -60,25 +60,25 @@
     BODY statement
 
   test-invariant-stmt:
-    TestInvariant( object-expr );
-    TestInvariant( object-expr , file , line );
+    test_invariant( object-expr );
+    test_invariant( object-expr , file , line );
 
   test-assert-stmt:
-    TestAssert( boolean-expr );
-    TestAssert( boolean-expr , file , line );
-    TestAssert( boolean-expr , string-literal );
-    TestAssert( boolean-expr , string-literal , file , line );
+    test_assert( boolean-expr );
+    test_assert( boolean-expr , file , line );
+    test_assert( boolean-expr , string-literal );
+    test_assert( boolean-expr , string-literal , file , line );
 
   example1:
 
     defmethod(..)
       PRE {
-        TestInvariant(_1 [, file, line]);
-        TestAssert(pre-cond [, str] [, file, line]);
+        test_invariant(_1 [, file, line]);
+        test_assert(pre-cond [, str] [, file, line]);
       }
       POST {
-        TestInvariant(_1 [, file, line]);
-        TestAssert(post-cond [, str] [, file, line]);
+        test_invariant(_1 [, file, line]);
+        test_assert(post-cond [, str] [, file, line]);
       }
       BODY {
         // ...
@@ -91,10 +91,10 @@
     long foo(..) {
       defcontract(long)
       PRE {
-        TestAssert(pre-cond [, str] [, file, line]);
+        test_assert(pre-cond [, str] [, file, line]);
       }
       POST {
-        TestAssert(post-cond [, str] [, file, line]);
+        test_assert(post-cond [, str] [, file, line]);
       }
       BODY {
         // ...
@@ -111,12 +111,12 @@
   - PRE and POST conditions are always ANDed (i.e. conjunction) with inherited
     contracts. This rule differs from the one used in Eiffel
     (see "Behavioral Contracts and Behavioral Subtyping" for motivation)
-  - TestInvariant sends the message ginvariant to its argument.
+  - test_invariant sends the message ginvariant to its argument.
 
   contract precedences:
   - COS_CONTRACT_PRE  enables PRE sections
   - COS_CONTRACT_POST enables PRE and POST sections
-  - COS_CONTRACT_ALL  enables PRE and POST sections plus TestInvariant
+  - COS_CONTRACT_ALL  enables PRE and POST sections plus test_invariant
 */
 
 /* contract keywords:
@@ -128,8 +128,8 @@
 #define COS_DISABLE_PRE
 #define COS_DISABLE_POST
 #define COS_DISABLE_BODY
-#define COS_DISABLE_TestAssert
-#define COS_DISABLE_TestInvariant
+#define COS_DISABLE_test_assert
+#define COS_DISABLE_test_invariant
 #endif
 
 #ifndef COS_DISABLE_defcontract
@@ -156,12 +156,12 @@
 #define BODY COS_CTR_BODY
 #endif
 
-#ifndef COS_DISABLE_TestAssert
-#define TestAssert(...) COS_CTR_ASS(__VA_ARGS__)
+#ifndef COS_DISABLE_test_assert
+#define test_assert(...) COS_CTR_ASS(__VA_ARGS__)
 #endif
 
-#ifndef COS_DISABLE_TestInvariant
-#define TestInvariant(...) COS_CTR_INV(__VA_ARGS__)
+#ifndef COS_DISABLE_test_invariant
+#define test_invariant(...) COS_CTR_INV(__VA_ARGS__)
 #endif
 
 /* contract precedences:

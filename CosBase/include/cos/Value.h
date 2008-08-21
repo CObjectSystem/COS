@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Value.h,v 1.4 2008/08/21 15:53:43 ldeniau Exp $
  |
 */
 
@@ -56,22 +56,10 @@
          <- Int
             <- Char
             <- Short
-         <- UInt
-            <- UChar
-            <- UShort
          <- Long
-         <- ULong
       <- Floating
          <- Double
          <- Complex
-
-   <- Vector
-     <- ChrVector  <- ChrVector0..9
-     <- ShtVector  <- ShtVector0..9
-     <- IntVector  <- IntVector0..9
-     <- LngVector  <- LngVector0..9
-     <- DblVector  <- DblVector0..9
-     <- CpxVector  <- CpxVector0..9
 */
 
 defclass(Value)

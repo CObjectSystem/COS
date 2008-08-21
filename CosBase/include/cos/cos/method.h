@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.3 2008/08/13 09:28:12 ldeniau Exp $
+ | $Id: method.h,v 1.4 2008/08/21 15:53:43 ldeniau Exp $
  |
 */
 
@@ -95,7 +95,7 @@
 #define COS_DISABLE_next_method
 #define COS_DISABLE_next_method_p
 #define COS_DISABLE_forward_message
-#define COS_DISABLE_retval
+#define COS_DISABLE_RETVAL
 #endif
 
 #ifndef COS_DISABLE_methodref
@@ -134,8 +134,8 @@
 #define forward_message(...) COS_MTH_FWD(__VA_ARGS__)
 #endif
 
-#ifndef COS_DISABLE_retval
-#define retval COS_MTH_RETVAL
+#ifndef COS_DISABLE_RETVAL
+#define RETVAL COS_MTH_RETVAL
 #endif
 
 /***********************************************************

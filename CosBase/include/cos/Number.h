@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Number.h,v 1.4 2008/08/21 15:53:43 ldeniau Exp $
  |
 */
 
@@ -52,112 +52,86 @@ endclass
 // ----- integral
 
 defclass(Int, Integral)
-  S32 val;
-endclass
-
-defclass(UInt, Integral)
-  U32 val;
+  S32 value;
 endclass
 
 defclass(Long, Integral)
-  S64 val;
+  S64 value;
 endclass
 
-defclass(ULong, Integral)
-  U64 val;
-endclass
-
-defclass(Char ,   Int) endclass
-defclass(Short,   Int) endclass
-defclass(UChar,  UInt) endclass
-defclass(UShort, UInt) endclass
+defclass(Char , Int) endclass
+defclass(Short, Int) endclass
 
 // ----- floating
 
 defclass(Double, Floating)
-  double val;
+  DOUBLE value;
 endclass
 
 defclass(Complex, Floating)
-  COMPLEX val;
+  COMPLEX value;
 endclass
 
 // ----- automatic constructors
 
-#define aChr(val) ( (OBJ)&(struct Char) {{ \
+#define aChr(value) ( (OBJ)&(struct Char) {{ \
         {{{{{ COS_CLS_NAME(Char).Behavior.id, COS_RC_AUTO }}}}}, \
-         (S8)(val) }} )
+         (S8)(value) }} )
 
-#define aUChr(val) ( (OBJ)&(struct UChar) {{ \
-        {{{{{ COS_CLS_NAME(UChar).Behavior.id, COS_RC_AUTO }}}}}, \
-         (U8)(val) }} )
-
-#define aSht(val) ( (OBJ)&(struct Short) {{ \
+#define aSht(value) ( (OBJ)&(struct Short) {{ \
         {{{{{ COS_CLS_NAME(Short).Behavior.id, COS_RC_AUTO }}}}}, \
-         (S16)(val) }} )
+         (S16)(value) }} )
 
-#define aUSht(val) ( (OBJ)&(struct UShort) {{ \
-        {{{{{ COS_CLS_NAME(UShort).Behavior.id, COS_RC_AUTO }}}}}, \
-         (U16)(val) }} )
-
-#define aInt(val) ( (OBJ)&(struct Int) { \
+#define aInt(value) ( (OBJ)&(struct Int) { \
         {{{{{ COS_CLS_NAME(Int).Behavior.id, COS_RC_AUTO }}}}}, \
-         (val) } )
+         (value) } )
 
-#define aUInt(val) ( (OBJ)&(struct UInt) { \
-        {{{{{ COS_CLS_NAME(UInt).Behavior.id, COS_RC_AUTO }}}}}, \
-         (val) } )
-
-#define aLng(val) ( (OBJ)&(struct Long) { \
+#define aLng(value) ( (OBJ)&(struct Long) { \
         {{{{{ COS_CLS_NAME(Long).Behavior.id, COS_RC_AUTO }}}}}, \
-         (val) } )
+         (value) } )
 
-#define aULng(val) ( (OBJ)&(struct ULong) { \
-        {{{{{ COS_CLS_NAME(ULong).Behavior.id, COS_RC_AUTO }}}}}, \
-         (val) } )
-
-#define aDbl(val) ( (OBJ)&(struct Double) { \
+#define aDbl(value) ( (OBJ)&(struct Double) { \
         {{{{{ COS_CLS_NAME(Double).Behavior.id, COS_RC_AUTO }}}}}, \
-         (val) } )
+         (value) } )
 
 #define aCpx(...) \
         COS_PP_CAT_NARG(aCpx,__VA_ARGS__)(__VA_ARGS__)
 
-#define aCpx1(val) ( (OBJ)&(struct Complex) { \
+#define aCpx1(value) ( (OBJ)&(struct Complex) { \
         {{{{{ COS_CLS_NAME(Complex).Behavior.id, COS_RC_AUTO }}}}}, \
-         (val) } )
+         (value) } )
 
-#define aCpx2(re,im) ( (OBJ)&(struct Complex) { \
+#define aCpx2(real,imag) ( (OBJ)&(struct Complex) { \
         {{{{{ COS_CLS_NAME(Complex).Behavior.id, COS_RC_AUTO }}}}}, \
-         *(double[]) {(re),(im)} } )
+         *(DOUBLE[]) {(real),(imag)} } )
 
 // ---- inliners
 
 static inline BOOL
-dbl_equal(double x, double y)
+dbl_equal(DOUBLE x, DOUBLE y)
 {
   return x <= y && x >= y;
   COS_UNUSED(dbl_equal);
 }
 
 static inline COMPLEX
-cpx_make(double x, double y)
+cpx_make(DOUBLE x, DOUBLE y)
 {
-  return *(double[]){ x, y };
+  return *(DOUBLE[]){ x, y };
   COS_UNUSED(cpx_make);
 }
 
-static inline double
+static inline DOUBLE
 cpx_real(COMPLEX x)
 {
-  return ((double*)&x)[0];
+  return ((DOUBLE*)&x)[0];
   COS_UNUSED(cpx_real);
 }
 
-static inline double
+static inline DOUBLE
 cpx_imag(COMPLEX x)
 {
-  return ((double*)&x)[1];
+  return ((DOUBLE*)&x)[1];
   COS_UNUSED(cpx_imag);
 }
 

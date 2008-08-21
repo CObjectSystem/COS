@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: cosdef.h,v 1.4 2008/08/21 15:53:43 ldeniau Exp $
  |
 */
 
@@ -66,7 +66,8 @@ typedef unsigned _LongLong U64;
 #error "COS: 64 bits integers not supported"
 #endif
 
-typedef _Bool BOOL;
+typedef _Bool           BOOL;
+typedef          double DOUBLE;
 typedef _Complex double COMPLEX;
 
 typedef const char* STR; // string literal

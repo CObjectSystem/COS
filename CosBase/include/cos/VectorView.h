@@ -1,10 +1,10 @@
-#ifndef COS_INDEX_H
-#define COS_INDEX_H
+#ifndef COS_VECTORVIEW_H
+#define COS_VECTORVIEW_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS Index
+ | COS Vectors View (sliced)
  |
  o---------------------------------------------------------------------o
  |
@@ -32,49 +32,35 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Index.h,v 1.4 2008/08/21 15:53:43 ldeniau Exp $
+ | $Id: VectorView.h,v 1.1 2008/08/21 15:53:43 ldeniau Exp $
  |
 */
 
-#include <cos/Value.h>
+#include <cos/Vector.h>
+#include <cos/Slice.h>
 
-// ----- definitions
-
-/* NOTE-USER: negative indexes
-   negative indexes mean starting from the end
-   e.g. -1 is the last element
- */
-
-defclass(Index,Value)
+defclass(IntVectorView, IntVector)
+  S32 *value;
+  OBJ vector;
+  struct Slice1 slice;
 endclass
 
-defclass(Index1,Index)
-  S32 value;
+defclass(LngVectorView, LngVector)
+  S64 *value;
+  OBJ vector;
+  struct Slice1 slice;
 endclass
 
-defclass(Index2,Index)
-  S32 value[2];
+defclass(DblVectorView, DblVector)
+  DOUBLE *value;
+  OBJ vector;
+  struct Slice1 slice;
 endclass
 
-defclass(Index3,Index)
-  S32 value[3];
+defclass(CpxVectorView, CpxVector)
+  COMPLEX *value;
+  OBJ vector;
+  struct Slice1 slice;
 endclass
 
-defclass(Index4,Index)
-  S32 value[4];
-endclass
-
-defclass(Index5,Index)
-  S32 value[5];
-endclass
-
-// ----- automatic constructor
-
-#define aIndex(...) \
-        aIndexN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
-
-#define aIndexN(N,...) ( (OBJ)&(struct COS_PP_CAT(Index,N)) { \
-        {{{{ COS_CLS_NAME(COS_PP_CAT(Index,N)).Behavior.id, COS_RC_AUTO }}}}, \
-         COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) } )
-
-#endif // COS_INDEX_H
+#endif // COS_VECTORVIEW_H

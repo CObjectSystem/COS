@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.2 2008/07/15 10:07:06 ldeniau Exp $
+ | $Id: init.h,v 1.3 2008/08/21 15:53:43 ldeniau Exp $
  |
 */
 
@@ -45,26 +45,14 @@ defgeneric(OBJ, ginitWithChr , _1, (S8 )val);
 defgeneric(OBJ, ginitWithSht , _1, (S16)val);
 defgeneric(OBJ, ginitWithInt , _1, (S32)val);
 defgeneric(OBJ, ginitWithLng , _1, (S64)val);
-
-defgeneric(OBJ, ginitWithUChr, _1, (U8 )val);
-defgeneric(OBJ, ginitWithUSht, _1, (U16)val);
-defgeneric(OBJ, ginitWithUInt, _1, (U32)val);
-defgeneric(OBJ, ginitWithULng, _1, (U64)val);
-
-defgeneric(OBJ, ginitWithDbl , _1, (double )val);
+defgeneric(OBJ, ginitWithDbl , _1, (DOUBLE )val);
 defgeneric(OBJ, ginitWithCpx , _1, (COMPLEX)val);
 
 defgeneric(OBJ, ginitWithChrPtr , _1, (U32)n, (S8 *)val);
 defgeneric(OBJ, ginitWithShtPtr , _1, (U32)n, (S16*)val);
 defgeneric(OBJ, ginitWithIntPtr , _1, (U32)n, (S32*)val);
 defgeneric(OBJ, ginitWithLngPtr , _1, (U32)n, (S64*)val);
-
-defgeneric(OBJ, ginitWithUChrPtr, _1, (U32)n, (U8 *)val);
-defgeneric(OBJ, ginitWithUShtPtr, _1, (U32)n, (U16*)val);
-defgeneric(OBJ, ginitWithUIntPtr, _1, (U32)n, (U32*)val);
-defgeneric(OBJ, ginitWithULngPtr, _1, (U32)n, (U64*)val);
-
-defgeneric(OBJ, ginitWithDblPtr , _1, (U32)n, (double *)val);
+defgeneric(OBJ, ginitWithDblPtr , _1, (U32)n, (DOUBLE *)val);
 defgeneric(OBJ, ginitWithCpxPtr , _1, (U32)n, (COMPLEX*)val);
 
 // newXXX (= alloc+initXXX)
@@ -90,27 +78,7 @@ gnewWithLng(OBJ _1, S64 val) {
 }
 
 static inline OBJ
-gnewWithUChr(OBJ _1, U8 val) {
-  return ginitWithUChr(galloc(_1),val); COS_UNUSED(gnewWithUChr);
-}
-
-static inline OBJ
-gnewWithUSht(OBJ _1, U16 val) {
-  return ginitWithUSht(galloc(_1),val); COS_UNUSED(gnewWithUSht);
-}
-
-static inline OBJ
-gnewWithUInt(OBJ _1, U32 val) {
-  return ginitWithUInt(galloc(_1),val); COS_UNUSED(gnewWithUInt);
-}
-
-static inline OBJ
-gnewWithULng(OBJ _1, U64 val) {
-  return ginitWithULng(galloc(_1),val); COS_UNUSED(gnewWithULng);
-}
-
-static inline OBJ
-gnewWithDbl(OBJ _1, double val) {
+gnewWithDbl(OBJ _1, DOUBLE val) {
   return ginitWithDbl(galloc(_1),val); COS_UNUSED(gnewWithDbl);
 }
 
@@ -142,27 +110,7 @@ gnewWithLngPtr(OBJ _1, U32 n, S64 *val) {
 }
 
 static inline OBJ
-gnewWithUChrPtr(OBJ _1, U32 n, U8 *val) {
-  return ginitWithUChrPtr(galloc(_1),n,val); COS_UNUSED(gnewWithUChrPtr);
-}
-
-static inline OBJ
-gnewWithUShtPtr(OBJ _1, U32 n, U16 *val) {
-  return ginitWithUShtPtr(galloc(_1),n,val); COS_UNUSED(gnewWithUShtPtr);
-}
-
-static inline OBJ
-gnewWithUIntPtr(OBJ _1, U32 n, U32 *val) {
-  return ginitWithUIntPtr(galloc(_1),n,val); COS_UNUSED(gnewWithUIntPtr);
-}
-
-static inline OBJ
-gnewWithULngPtr(OBJ _1, U32 n, U64 *val) {
-  return ginitWithULngPtr(galloc(_1),n,val); COS_UNUSED(gnewWithULngPtr);
-}
-
-static inline OBJ
-gnewWithDblPtr(OBJ _1, U32 n, double *val) {
+gnewWithDblPtr(OBJ _1, U32 n, DOUBLE *val) {
   return ginitWithDblPtr(galloc(_1),n,val); COS_UNUSED(gnewWithDblPtr);
 }
 
