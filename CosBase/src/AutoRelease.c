@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.4 2008/07/02 17:08:58 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.5 2008/08/21 15:54:36 ldeniau Exp $
  |
 */
 
@@ -187,13 +187,13 @@ endmethod
 defmethod(OBJ, gretain, AutoRelease)
   useclass(ExBadMessage);
   THROW( gnewWithStr(ExBadMessage, "invalid message gretain(AutoRelease)") );
-  COS_UNUSED(_ret);
+  COS_UNUSED(RETVAL);
 endmethod
 
 defmethod(OBJ, gautoRelease, AutoRelease)
   useclass(ExBadMessage);
   THROW( gnewWithStr(ExBadMessage, "invalid message gautoRelease(AutoRelease)") );
-  COS_UNUSED(_ret);
+  COS_UNUSED(RETVAL);
 endmethod
 
 // -----

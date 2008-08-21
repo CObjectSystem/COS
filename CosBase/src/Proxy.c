@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Proxy.c,v 1.4 2008/08/21 15:54:36 ldeniau Exp $
  |
 */
 
@@ -77,106 +77,106 @@ endmethod
 // rank 1
 defmethod(OBJ, gunderstandMessage1, Proxy, (SEL)msg)
   next_method(self1,msg);
-  if (retval == False) forward_message(self1->obj);
+  if (RETVAL == False) forward_message(self1->obj);
 endmethod
 
 // rank 2
 defmethod(OBJ, gunderstandMessage2, Proxy, Any, (SEL)msg)
   next_method(self1,self2,msg);
-  if (retval == False) forward_message(self1->obj,_2);
+  if (RETVAL == False) forward_message(self1->obj,_2);
 endmethod
 
 defmethod(OBJ, gunderstandMessage2, Any, Proxy, (SEL)msg)
   next_method(self1,self2,msg);
-  if (retval == False) forward_message(_1,self2->obj);
+  if (RETVAL == False) forward_message(_1,self2->obj);
 endmethod
 
 defmethod(OBJ, gunderstandMessage2, Proxy, Proxy, (SEL)msg)
   next_method(self1,self2,msg);
-  if (retval == False) forward_message(self2->obj,self2->obj);
+  if (RETVAL == False) forward_message(self2->obj,self2->obj);
 endmethod
 
 // rank 3
 defmethod(OBJ, gunderstandMessage3, Proxy, Any, Any, (SEL)msg)
   next_method(self1,self2,self3,msg);
-  if (retval == False) forward_message(self1->obj,_2,_3);
+  if (RETVAL == False) forward_message(self1->obj,_2,_3);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Any, Proxy, Any, (SEL)msg)
   next_method(self1,self2,self3,msg);
-  if (retval == False) forward_message(_1,self2->obj,_3);
+  if (RETVAL == False) forward_message(_1,self2->obj,_3);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Any, Any, Proxy, (SEL)msg)
   next_method(self1,self2,self3,msg);
-  if (retval == False) forward_message(_1,_2,self3->obj);
+  if (RETVAL == False) forward_message(_1,_2,self3->obj);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Proxy, Proxy, Any, (SEL)msg)
   next_method(self1,self2,self3,msg);
-  if (retval == False) forward_message(self1->obj,self2->obj,_3);
+  if (RETVAL == False) forward_message(self1->obj,self2->obj,_3);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Proxy, Any, Proxy, (SEL)msg)
   next_method(self1,self2,self3,msg);
-  if (retval == False) forward_message(self1->obj,_2,self3->obj);
+  if (RETVAL == False) forward_message(self1->obj,_2,self3->obj);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Any, Proxy, Proxy, (SEL)msg)
   next_method(self1,self2,self3,msg);
-  if (retval == False) forward_message(_1,self2->obj,self3->obj);
+  if (RETVAL == False) forward_message(_1,self2->obj,self3->obj);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Proxy, Proxy, Proxy, (SEL)msg)
   next_method(self1,self2,self3,msg);
-  if (retval == False) forward_message(self1->obj,self2->obj,self3->obj);
+  if (RETVAL == False) forward_message(self1->obj,self2->obj,self3->obj);
 endmethod
 
 // rank 4
 defmethod(OBJ, gunderstandMessage4, Proxy, Any, Any, Any, (SEL)msg)
   next_method(self1,self2,self3,self4,msg);
-  if (retval == False) forward_message(self1->obj,_2,_3,_4);
+  if (RETVAL == False) forward_message(self1->obj,_2,_3,_4);
 endmethod
 
 defmethod(OBJ, gunderstandMessage4, Any, Proxy, Any, Any, (SEL)msg)
   next_method(self1,self2,self3,self4,msg);
-  if (retval == False) forward_message(_1,self2->obj,_3,_4);
+  if (RETVAL == False) forward_message(_1,self2->obj,_3,_4);
 endmethod
 
 defmethod(OBJ, gunderstandMessage4, Any, Any, Proxy, Any, (SEL)msg)
   next_method(self1,self2,self3,self4,msg);
-  if (retval == False) forward_message(_1,_2,self3->obj,_4);
+  if (RETVAL == False) forward_message(_1,_2,self3->obj,_4);
 endmethod
 
 defmethod(OBJ, gunderstandMessage4, Any, Any, Any, Proxy, (SEL)msg)
   next_method(self1,self2,self3,self4,msg);
-  if (retval == False) forward_message(_1,_2,_3,self4->obj);
+  if (RETVAL == False) forward_message(_1,_2,_3,self4->obj);
 endmethod
 
 // rank 5
 defmethod(OBJ, gunderstandMessage5, Proxy, Any, Any, Any, Any, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
-  if (retval == False) forward_message(self1->obj,_2,_3,_4,_5);
+  if (RETVAL == False) forward_message(self1->obj,_2,_3,_4,_5);
 endmethod
 
 defmethod(OBJ, gunderstandMessage5, Any, Proxy, Any, Any, Any, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
-  if (retval == False) forward_message(_1,self2->obj,_3,_4,_5);
+  if (RETVAL == False) forward_message(_1,self2->obj,_3,_4,_5);
 endmethod
 
 defmethod(OBJ, gunderstandMessage5, Any, Any, Proxy, Any, Any, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
-  if (retval == False) forward_message(_1,_2,self3->obj,_4,_5);
+  if (RETVAL == False) forward_message(_1,_2,self3->obj,_4,_5);
 endmethod
 
 defmethod(OBJ, gunderstandMessage5, Any, Any, Any, Proxy, Any, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
-  if (retval == False) forward_message(_1,_2,_3,self4->obj,_5);
+  if (RETVAL == False) forward_message(_1,_2,_3,self4->obj,_5);
 endmethod
 
 defmethod(OBJ, gunderstandMessage5, Any, Any, Any, Any, Proxy, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
-  if (retval == False) forward_message(_1,_2,_3,_4,self5->obj);
+  if (RETVAL == False) forward_message(_1,_2,_3,_4,self5->obj);
 endmethod
 
 // ----- unrecognized

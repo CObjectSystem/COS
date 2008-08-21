@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Index.c,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Index.c,v 1.3 2008/08/21 15:54:36 ldeniau Exp $
  |
 */
 
@@ -45,72 +45,72 @@ makclass(Index4,Index);
 makclass(Index5,Index);
 
 defmethod(OBJ, ginitWith, Index1, Index1)
-  self1->idx = self2->idx;
+  self1->value = self2->value;
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Index2, Index2)
-  self1->idx[0] = self2->idx[0];
-  self1->idx[1] = self2->idx[1];
+  self1->value[0] = self2->value[0];
+  self1->value[1] = self2->value[1];
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Index3, Index3)
-  self1->idx[0] = self2->idx[0];
-  self1->idx[1] = self2->idx[1];
-  self1->idx[2] = self2->idx[2];
+  self1->value[0] = self2->value[0];
+  self1->value[1] = self2->value[1];
+  self1->value[2] = self2->value[2];
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Index4, Index4)
-  self1->idx[0] = self2->idx[0];
-  self1->idx[1] = self2->idx[1];
-  self1->idx[2] = self2->idx[2];
-  self1->idx[3] = self2->idx[3];
+  self1->value[0] = self2->value[0];
+  self1->value[1] = self2->value[1];
+  self1->value[2] = self2->value[2];
+  self1->value[3] = self2->value[3];
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Index5, Index5)
-  self1->idx[0] = self2->idx[0];
-  self1->idx[1] = self2->idx[1];
-  self1->idx[2] = self2->idx[2];
-  self1->idx[3] = self2->idx[3];
-  self1->idx[4] = self2->idx[4];
+  self1->value[0] = self2->value[0];
+  self1->value[1] = self2->value[1];
+  self1->value[2] = self2->value[2];
+  self1->value[3] = self2->value[3];
+  self1->value[4] = self2->value[4];
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gequal, Index1, Index1)
-  BOOL res = self1->idx == self2->idx;
+  BOOL res = self1->value == self2->value;
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Index2, Index2)
-  BOOL res = self1->idx[0] == self2->idx[0]
-          && self1->idx[1] == self2->idx[1];
+  BOOL res = self1->value[0] == self2->value[0]
+          && self1->value[1] == self2->value[1];
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Index3, Index3)
-  BOOL res = self1->idx[0] == self2->idx[0]
-          && self1->idx[1] == self2->idx[1]
-          && self1->idx[2] == self2->idx[2];
+  BOOL res = self1->value[0] == self2->value[0]
+          && self1->value[1] == self2->value[1]
+          && self1->value[2] == self2->value[2];
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Index4, Index4)
-  BOOL res = self1->idx[0] == self2->idx[0]
-          && self1->idx[1] == self2->idx[1]
-          && self1->idx[2] == self2->idx[2]
-          && self1->idx[3] == self2->idx[3];
+  BOOL res = self1->value[0] == self2->value[0]
+          && self1->value[1] == self2->value[1]
+          && self1->value[2] == self2->value[2]
+          && self1->value[3] == self2->value[3];
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Index5, Index5)
-  BOOL res = self1->idx[0] == self2->idx[0]
-          && self1->idx[1] == self2->idx[1]
-          && self1->idx[2] == self2->idx[2]
-          && self1->idx[3] == self2->idx[3]
-          && self1->idx[4] == self2->idx[4];
+  BOOL res = self1->value[0] == self2->value[0]
+          && self1->value[1] == self2->value[1]
+          && self1->value[2] == self2->value[2]
+          && self1->value[3] == self2->value[3]
+          && self1->value[4] == self2->value[4];
   retmethod( res ? True : False );
 endmethod
 

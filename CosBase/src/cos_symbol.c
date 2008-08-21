@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.3 2008/08/21 15:54:36 ldeniau Exp $
  |
 */
 
@@ -620,16 +620,16 @@ cos_class_getWithStr(STR str)
   switch(p-str) {
   case 1:
     cls = cos_class_get(cls->Behavior.id)->spr;
-    TestAssert( cls_isMeta(cls) );
+    test_assert( cls_isMeta(cls) );
     break;
 
   case 2:
     cls = cos_class_get(cls->Behavior.id);
-    TestAssert( cls_isProp(cls) );
+    test_assert( cls_isProp(cls) );
     break;
 
   default:
-    TestAssert( !cls_isMeta(cls) && !cls_isProp(cls) );
+    test_assert( !cls_isMeta(cls) && !cls_isProp(cls) );
   }
 
   return cls;

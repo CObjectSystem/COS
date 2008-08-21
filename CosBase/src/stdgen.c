@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.6 2008/07/15 10:07:07 ldeniau Exp $
+ | $Id: stdgen.c,v 1.7 2008/08/21 15:54:36 ldeniau Exp $
  |
 */
 
@@ -97,26 +97,14 @@ makgeneric(OBJ, ginitWithChr , _1, (S8 )val);
 makgeneric(OBJ, ginitWithSht , _1, (S16)val);
 makgeneric(OBJ, ginitWithInt , _1, (S32)val);
 makgeneric(OBJ, ginitWithLng , _1, (S64)val);
-
-makgeneric(OBJ, ginitWithUChr, _1, (U8 )val);
-makgeneric(OBJ, ginitWithUSht, _1, (U16)val);
-makgeneric(OBJ, ginitWithUInt, _1, (U32)val);
-makgeneric(OBJ, ginitWithULng, _1, (U64)val);
-
-makgeneric(OBJ, ginitWithDbl , _1, (double )val);
+makgeneric(OBJ, ginitWithDbl , _1, (DOUBLE )val);
 makgeneric(OBJ, ginitWithCpx , _1, (COMPLEX)val);
 
 makgeneric(OBJ, ginitWithChrPtr , _1, (U32)n, (S8 *)val);
 makgeneric(OBJ, ginitWithShtPtr , _1, (U32)n, (S16*)val);
 makgeneric(OBJ, ginitWithIntPtr , _1, (U32)n, (S32*)val);
 makgeneric(OBJ, ginitWithLngPtr , _1, (U32)n, (S64*)val);
-
-makgeneric(OBJ, ginitWithUChrPtr, _1, (U32)n, (U8 *)val);
-makgeneric(OBJ, ginitWithUShtPtr, _1, (U32)n, (U16*)val);
-makgeneric(OBJ, ginitWithUIntPtr, _1, (U32)n, (U32*)val);
-makgeneric(OBJ, ginitWithULngPtr, _1, (U32)n, (U64*)val);
-
-makgeneric(OBJ, ginitWithDblPtr , _1, (U32)n, (double *)val);
+makgeneric(OBJ, ginitWithDblPtr , _1, (U32)n, (DOUBLE *)val);
 makgeneric(OBJ, ginitWithCpxPtr , _1, (U32)n, (COMPLEX*)val);
 
 // -------------------------
@@ -204,20 +192,22 @@ makgeneric(void, gdeinitialize, _1);
 // -------------------------
 #include <cos/gen/value.h>
 
-makgeneric(STR    , gstr     , _1);
-makgeneric(U32    , gsize    , _1);
+makgeneric(STR  , gstr , _1);
+makgeneric(U32  , gsize, _1);
+makgeneric(void*, gptr, _1);
+makgeneric(FUNC , gfct, _1);
 
-makgeneric(S8     , gchar    , _1);
-makgeneric(U8     , guchar   , _1);
-makgeneric(S16    , gshort   , _1);
-makgeneric(U16    , gushort  , _1);
-makgeneric(S32    , gint     , _1);
-makgeneric(U32    , guint    , _1);
-makgeneric(S64    , glong    , _1);
-makgeneric(U64    , gulong   , _1);
-makgeneric(double , gdouble  , _1);
-makgeneric(COMPLEX, gcomplex , _1);
+makgeneric(S8     , gchr, _1);
+makgeneric(S16    , gsht, _1);
+makgeneric(S32    , gint, _1);
+makgeneric(S64    , glng, _1);
+makgeneric(DOUBLE , gdbl, _1);
+makgeneric(COMPLEX, gcpx, _1);
 
-makgeneric(void*  , gpointer , _1);
-makgeneric(FUNC   , gfunction, _1);
+makgeneric(S8*     , gchrPtr, _1);
+makgeneric(S16*    , gshtPtr, _1);
+makgeneric(S32*    , gintPtr, _1);
+makgeneric(S64*    , glngPtr, _1);
+makgeneric(DOUBLE* , gdblPtr, _1);
+makgeneric(COMPLEX*, gcpxPtr, _1);
 

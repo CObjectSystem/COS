@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.3 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Any.c,v 1.4 2008/08/21 15:54:36 ldeniau Exp $
  |
 */
 
@@ -46,7 +46,7 @@ makclass(Any,_);
 // ----- deallocator
 
 defmethod(void, gdealloc, Any)
-  PRE  TestAssert( self->rc == COS_RC_UNIT );
+  PRE  test_assert( self->rc == COS_RC_UNIT );
   BODY free(_1);
 endmethod
 

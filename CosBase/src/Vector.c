@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Object (root class)
+ | COS Vector
  |
  o---------------------------------------------------------------------o
  |
@@ -29,43 +29,42 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.5 2008/08/21 15:54:36 ldeniau Exp $
+ | $Id: Vector.c,v 1.1 2008/08/21 15:54:36 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <cos/Number.h>
+#include <cos/Vector.h>
 #include <cos/gen/object.h>
+#include <cos/gen/init.h>
 
-#include <stdlib.h>
+makclass(Vector);
 
-// -----
+// ------ Vector cluster front-end
 
-makclass(Object,Any);
-
-// ----- allocator, deallocator
-
-static void*
-object_alloc(OBJ _cls, U32 extra_size)
-{
-  useclass(ExBadAlloc);
-  struct Class *cls = STATIC_CAST(struct Class*, _cls);
-  struct Object *obj = malloc(cls->isz + extra_size);
-
-  if (!obj) THROW(ExBadAlloc); // throw the class -> no allocation!
-
-  obj->Any.id = cls->Behavior.id;
-  obj->Any.rc = COS_RC_UNIT;
-
-  return obj;
-}
-
-defmethod(OBJ, galloc, mObject)
-  retmethod( object_alloc(_1, 0) );
+defmethod(OBJ, galloc, mVector)
+  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gallocWith, mObject, Int) // alloc with extra size (max 2GB)
-  test_assert( self2->value >= 0 );
-  retmethod( object_alloc(_1, self2->value) );
+defmethod(OBJ, gdeinit, Vector)
+  retmethod(_1);
+endmethod
+
+// ----- constructors from a vector
+
+defmethod(OBJ, ginitWithIntPtr, mVector, (U32)n, (S32*)val)
+  retmethod( ginitWith(_1, aIntVecRef(n,val)) );
+endmethod
+
+defmethod(OBJ, ginitWithLngPtr, mVector, (U32)n, (S64*)val)
+  retmethod( ginitWith(_1, aLngVecRef(n,val)) );
+endmethod
+
+defmethod(OBJ, ginitWithDblPtr, mVector, (U32)n, (DOUBLE*)val)
+  retmethod( ginitWith(_1, aDblVecRef(n,val)) );
+endmethod
+
+defmethod(OBJ, ginitWithCpxPtr, mVector, (U32)n, (COMPLEX*)val)
+  retmethod( ginitWith(_1, aCpxVecRef(n,val)) );
 endmethod
 
