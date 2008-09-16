@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.3 2008/08/13 09:28:12 ldeniau Exp $
+ | $Id: class.h,v 1.4 2008/09/16 08:07:35 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,7 @@
 /* NOTE-USER: class declaration, definition and instantiation
 
    class-reference:
-     classref( class-name );
+     classref( class-name-list )
 
    class-declaration:
      useclass( class-decl-list );
@@ -92,7 +92,7 @@
 #endif
 
 #ifndef COS_DISABLE_classref
-#define classref(C) COS_CLS_REF(C)
+#define classref(...) COS_CLS_REF(__VA_ARGS__)
 #endif
 
 #ifndef COS_DISABLE_useclass
@@ -117,7 +117,10 @@
 
 /* class reference
  */
-#define COS_CLS_REF(NAME) \
+#define COS_CLS_REF(...) \
+        COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_CLS_REF_1))
+
+#define COS_CLS_REF_1(NAME) \
         ((OBJ)(void*)&COS_CLS_NAME(NAME))
 
 /* class declaration
