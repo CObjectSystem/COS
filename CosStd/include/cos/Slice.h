@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Slice.h,v 1.2 2008/09/28 20:12:39 ldeniau Exp $
  |
 */
 
@@ -204,8 +204,8 @@ Slice5_iscontiguous(struct Slice5 *s) {
 
 static inline void
 Slice1_range(struct Slice1 *s, struct Range1 *r, U32 size) {
-  U32 start = Index_normalize(r->start, size);
-  U32 end   = Index_normalize(r->end  , size);
+  U32 start = index_abs(r->start, size);
+  U32 end   = index_abs(r->end  , size);
   s->size   = (end - start + r->stride) / r->stride;
   s->stride = r->stride;
   s->start  = start;  
@@ -216,8 +216,8 @@ Slice2_range(struct Slice2 *s, struct Range2 *r, U32 size[2]) {
   U32 i = 2, s0 = 0, ss = 1;
 
   while (i--) {
-    U32 start = Index_normalize(r->start[i], size[i]);
-    U32 end   = Index_normalize(r->end  [i], size[i]);
+    U32 start = index_abs(r->start[i], size[i]);
+    U32 end   = index_abs(r->end  [i], size[i]);
     s->size  [i] = (end - start + r->stride[i]) / r->stride[i];
     s->stride[i] = r->stride[i] * ss;
     s0 += s->stride[i] * start;
@@ -231,8 +231,8 @@ Slice3_range(struct Slice3 *s, struct Range3 *r, U32 size[3]) {
   U32 i = 3, s0 = 0, ss = 1;
 
   while (i--) {
-    U32 start = Index_normalize(r->start[i], size[i]);
-    U32 end   = Index_normalize(r->end  [i], size[i]);
+    U32 start = index_abs(r->start[i], size[i]);
+    U32 end   = index_abs(r->end  [i], size[i]);
     s->size  [i] = (end - start + r->stride[i]) / r->stride[i];
     s->stride[i] = r->stride[i] * ss;
     s0 += s->stride[i] * start;
@@ -246,8 +246,8 @@ Slice4_range(struct Slice4 *s, struct Range4 *r, U32 size[4]) {
   U32 i = 4, s0 = 0, ss = 1;
 
   while (i--) {
-    U32 start = Index_normalize(r->start[i], size[i]);
-    U32 end   = Index_normalize(r->end  [i], size[i]);
+    U32 start = index_abs(r->start[i], size[i]);
+    U32 end   = index_abs(r->end  [i], size[i]);
     s->size  [i] = (end - start + r->stride[i]) / r->stride[i];
     s->stride[i] = r->stride[i] * ss;
     s0 += s->stride[i] * start;
@@ -261,8 +261,8 @@ Slice5_range(struct Slice5 *s, struct Range5 *r, U32 size[5]) {
   U32 i = 5, s0 = 0, ss = 1;
 
   while (i--) {
-    U32 start = Index_normalize(r->start[i], size[i]);
-    U32 end   = Index_normalize(r->end  [i], size[i]);
+    U32 start = index_abs(r->start[i], size[i]);
+    U32 end   = index_abs(r->end  [i], size[i]);
     s->size  [i] = (end - start + r->stride[i]) / r->stride[i];
     s->stride[i] = r->stride[i] * ss;
     s0 += s->stride[i] * start;

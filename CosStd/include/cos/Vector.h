@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Vector.h,v 1.2 2008/09/28 20:12:39 ldeniau Exp $
  |
 */
 
@@ -134,14 +134,13 @@ defclass(IntVector8, IntVector) I32 _value[]; endclass
 defclass(IntVector9, IntVector) I32 _value[]; endclass
 defclass(IntVectorN, IntVector) I32 _value[]; endclass
 
-#define aIntVec(...) \
-        aVectorT(Int,I32,__VA_ARGS__)
+#define aIntVec(...)                   aVectorT   (Int,I32,__VA_ARGS__)
+#define aIntVecRef(size,array)         aVectorRefT(Int,size,array)
+#define aIntSubVec(vector,start,size)  aSubVectorT(Int,vector,start,size)
 
-#define aIntVecRef(size,array) \
-        aVectorRefT(Int,size,array)
-
-#define aIntSubVec(vector,start,size) \
-        aSubVectorT(Int,vector,start,size)
+#define atIntVec(...)                  atVectorT   (Int,I32,__VA_ARGS__)
+#define atIntVecRef(size,array)        atVectorRefT(Int,size,array)
+#define atIntSubVec(vector,start,size) atSubVectorT(Int,vector,start,size)
 
 // ----- Vector of integer (I64)
 
@@ -157,14 +156,13 @@ defclass(LngVector8, LngVector) I64 _value[]; endclass
 defclass(LngVector9, LngVector) I64 _value[]; endclass
 defclass(LngVectorN, LngVector) I64 _value[]; endclass
 
-#define aLngVec(...) \
-        aVectorT(Lng,I64,__VA_ARGS__)
+#define aLngVec(...)                   aVectorT   (Lng,I64,__VA_ARGS__)
+#define aLngVecRef(size,array)         aVectorRefT(Lng,size,array)
+#define aLngSubVec(vector,start,size)  aSubVectorT(Lng,vector,start,size)
 
-#define aLngVecRef(size,array) \
-        aVectorRefT(Lng,size,array)
-
-#define aLngSubVec(vector,start,size) \
-        aSubVectorT(Lng,vector,start,size)
+#define atLngVec(...)                  atVectorT   (Lng,I64,__VA_ARGS__)
+#define atLngVecRef(size,array)        atVectorRefT(Lng,size,array)
+#define atLngSubVec(vector,start,size) atSubVectorT(Lng,vector,start,size)
 
 // ----- Vector of double
 
@@ -180,14 +178,13 @@ defclass(DblVector8, DblVector) R64 _value[]; endclass
 defclass(DblVector9, DblVector) R64 _value[]; endclass
 defclass(DblVectorN, DblVector) R64 _value[]; endclass
 
-#define aDblVec(...) \
-        aVectorT(Dbl,R64,__VA_ARGS__)
+#define aDblVec(...)                   aVectorT   (Dbl,R64,__VA_ARGS__)
+#define aDblVecRef(size,array)         aVectorRefT(Dbl,size,array)
+#define aDblSubVec(vector,start,size)  aSubVectorT(Dbl,vector,start,size)
 
-#define aDblVecRef(size,array) \
-        aVectorRefT(Dbl,size,array)
-
-#define aDblSubVec(vector,start,size) \
-        aSubVectorT(Dbl,vector,start,size)
+#define atDblVec(...)                  atVectorT   (Dbl,R64,__VA_ARGS__)
+#define atDblVecRef(size,array)        atVectorRefT(Dbl,size,array)
+#define atDblSubVec(vector,start,size) atSubVectorT(Dbl,vector,start,size)
 
 // ----- Vector of complex
 
@@ -203,29 +200,37 @@ defclass(CpxVector8, CpxVector) C64 _value[]; endclass
 defclass(CpxVector9, CpxVector) C64 _value[]; endclass
 defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
 
-#define aCpxVec(...)           ( (OBJ)atVectorT(Cpx,C64,__VA_ARGS__) )
-#define atCpxVec(...)                 atVectorT(Cpx,C64,__VA_ARGS__)
-#define aCpxVecRef(size,array)        aVectorRefT(Cpx,size,array)
-#define aCpxSubVec(vector,start,size) aSubVectorT(Cpx,vector,start,size)
+#define aCpxVec(...)                   aVectorT   (Cpx,C64,__VA_ARGS__)
+#define aCpxVecRef(size,array)         aVectorRefT(Cpx,size,array)
+#define aCpxSubVec(vector,start,size)  aSubVectorT(Cpx,vector,start,size)
+
+#define atCpxVec(...)                  atVectorT   (Cpx,C64,__VA_ARGS__)
+#define atCpxVecRef(size,array)        atVectorRefT(Cpx,size,array)
+#define atCpxSubVec(vector,start,size) atSubVectorT(Cpx,vector,start,size)
 
 // ----- automatic constructors implementation
 
+#define aVectorT(P,T,...) \
+        ( (OBJ)atVectorT(P,T,__VA_ARGS__) )
 #define atVectorT(P,T,...) \
         atVectorN(P,T,COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),10)) \
                   (N,COS_PP_NARG(__VA_ARGS__)),__VA_ARGS__)
-
 #define atVectorN(P,T,N,...) \
         ( &(struct COS_PP_CAT3(P,Vector,N)) {{ \
           {{{ COS_CLS_NAME(COS_PP_CAT3(P,Vector,N)).Behavior.id, COS_RC_AUTO }}}, \
           (T[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__) }} )
 
 #define aVectorRefT(P,size,array) \
-        ( (OBJ)&(struct COS_PP_CAT(P,Vector)) { \
+        ( (OBJ)atVectorRefT(P,size,array) )
+#define atVectorRefT(P,size,array) \
+        ( &(struct COS_PP_CAT(P,Vector)) { \
           {{{ COS_CLS_NAME(COS_PP_CAT(P,Vector)).Behavior.id, COS_RC_AUTO }}}, \
           (array), (size) } )
 
 #define aSubVectorT(P,vector,substart,subsize) \
-        ( (OBJ)COS_PP_CAT(P,SubVector_init)(&(struct COS_PP_CAT(P,SubVector)) {{ \
+        ( (OBJ)atSubVectorT(P,vector,substart,subsize) )
+#define atSubVectorT(P,vector,substart,subsize) \
+        ( COS_PP_CAT(P,SubVector_init)(&(struct COS_PP_CAT(P,SubVector)) {{ \
           {{{ COS_CLS_NAME(COS_PP_CAT(P,SubVector)).Behavior.id, COS_RC_AUTO }}}, \
           (subsize), 0 }, (vector) }, (substart)) )
 
@@ -242,7 +247,7 @@ IntSubVector_init(struct IntSubVector *subvec, I32 substart)
   U32 start;
 
   test_assert( vec_spr == IntVector );
-  start = Index_normalize(substart, vec->size);
+  start = index_abs(substart, vec->size);
   test_assert( start + svec->size <= vec->size );
   svec->value = vec->value + start;
 
@@ -260,7 +265,7 @@ LngSubVector_init(struct LngSubVector *subvec, I32 substart)
   U32 start;
 
   test_assert( vec_spr == LngVector );
-  start = Index_normalize(substart, vec->size);
+  start = index_abs(substart, vec->size);
   test_assert( start + svec->size <= vec->size );
   svec->value = vec->value + start;
 
@@ -278,7 +283,7 @@ DblSubVector_init(struct DblSubVector *subvec, I32 substart)
   U32 start;
 
   test_assert( vec_spr == DblVector );
-  start = Index_normalize(substart, vec->size);
+  start = index_abs(substart, vec->size);
   test_assert( start + svec->size <= vec->size );
   svec->value = vec->value + start;
 
@@ -296,7 +301,7 @@ CpxSubVector_init(struct CpxSubVector *subvec, I32 substart)
   U32 start;
 
   test_assert( vec_spr == CpxVector );
-  start = Index_normalize(substart, vec->size);
+  start = index_abs(substart, vec->size);
   test_assert( start + svec->size <= vec->size );
   svec->value = vec->value + start;
 

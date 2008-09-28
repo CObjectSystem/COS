@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: DblVector.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: DblVector.c,v 1.2 2008/09/28 20:12:39 ldeniau Exp $
  |
 */
 
@@ -143,7 +143,7 @@ defmethod(OBJ, ginitWith, mDblVector, Sequence1)
   struct DblVector* vec = vector_alloc(self2->size);
 
   for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = Sequence1_value(self2, i);
+    vec->value[i] = Sequence1_eval(self2, i);
 
   retmethod((OBJ)vec);
 endmethod
@@ -180,7 +180,7 @@ defmethod(OBJ, ginitWith2, mDblVector, DblVector, Range1)
 
   retmethod((OBJ)vec);
 endmethod
-
+/*
 defmethod(OBJ, ginitWith2, mDblVector, DblVector, Slice1)
   struct DblVector* vec = vector_alloc(self3->size);
   U32 j = self3->start + (self3->start < 0) * self2->size;
@@ -190,7 +190,7 @@ defmethod(OBJ, ginitWith2, mDblVector, DblVector, Slice1)
 
   retmethod((OBJ)vec);
 endmethod
-
+*/
 defmethod(OBJ, ginitWith2, mDblVector, DblVector, IntVector)
   struct DblVector* vec = vector_alloc(self3->size);
 
