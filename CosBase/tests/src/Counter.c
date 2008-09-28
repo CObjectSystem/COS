@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Counter.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: Counter.c,v 1.2 2008/09/28 20:25:10 ldeniau Exp $
  |
 */
 
@@ -57,7 +57,7 @@ endmethod
 
 // --- getter
 
-defmethod(S32, gint, Counter)
+defmethod(I32, gint, Counter)
   retmethod(self->val);
 endmethod
 
