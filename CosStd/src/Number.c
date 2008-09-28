@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.5 2008/08/21 15:54:36 ldeniau Exp $
+ | $Id: Number.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
@@ -108,22 +108,22 @@ endmethod
 
 // ----- value constructor
 
-defmethod(OBJ, ginitWithChr, Char, (S8)val)
+defmethod(OBJ, ginitWithChr, Char, (I8)val)
   self->Int.value = val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWithSht, Short, (S16)val)
+defmethod(OBJ, ginitWithSht, Short, (I16)val)
   self->Int.value = val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWithInt, Int, (S32)val)
+defmethod(OBJ, ginitWithInt, Int, (INT)val)
   self->value = val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWithLng, Long, (S64)val)
+defmethod(OBJ, ginitWithLng, Long, (LONG)val)
   self->value = val;
   retmethod(_1);
 endmethod
@@ -140,23 +140,23 @@ endmethod
 
 // ----- value
 
-defmethod(S8, gchr, Char)
+defmethod(I8, gchr, Char)
   retmethod(self->Int.value);
 endmethod
 
-defmethod(S16, gsht, Short)
+defmethod(I16, gsht, Short)
   retmethod(self->Int.value);
 endmethod
 
-defmethod(S32, gint, Int)
+defmethod(INT, gint, Int)
   retmethod(self->value);
 endmethod
 
-defmethod(S64, glng, Int)
+defmethod(LONG, glng, Int)
   retmethod(self->value);
 endmethod
 
-defmethod(S64, glng, Long)
+defmethod(LONG, glng, Long)
   retmethod(self->value);
 endmethod
 

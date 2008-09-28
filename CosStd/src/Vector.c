@@ -1,10 +1,7 @@
-#ifndef COS_GEN_VALUE_H
-#define COS_GEN_VALUE_H
-
 /*
  o---------------------------------------------------------------------o
  |
- | COS value generics (C types)
+ | COS Vector
  |
  o---------------------------------------------------------------------o
  |
@@ -32,31 +29,42 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.5 2008/09/28 19:48:21 ldeniau Exp $
+ | $Id: Vector.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
-#endif
+#include <cos/Object.h>
+#include <cos/Vector.h>
+#include <cos/gen/object.h>
+#include <cos/gen/init.h>
 
-defgeneric(STR  , gstr , _1);
-defgeneric(U32  , gsize, _1);
-defgeneric(void*, gptr, _1);
-defgeneric(FUNC , gfct, _1);
+makclass(Vector);
 
-defgeneric(I8   , gchr, _1);
-defgeneric(I16  , gsht, _1);
-defgeneric(I32  , gint, _1);
-defgeneric(I64  , glng, _1);
-defgeneric(R64  , gdbl, _1);
-defgeneric(C64  , gcpx, _1);
+// ------ Vector cluster front-end
 
-defgeneric(I8*  , gchrPtr, _1);
-defgeneric(I16* , gshtPtr, _1);
-defgeneric(I32* , gintPtr, _1);
-defgeneric(I64* , glngPtr, _1);
-defgeneric(R64* , gdblPtr, _1);
-defgeneric(C64* , gcpxPtr, _1);
+defmethod(OBJ, galloc, mVector)
+  retmethod(_1);
+endmethod
 
-#endif // COS_GEN_VALUE_H
+defmethod(OBJ, gdeinit, Vector)
+  retmethod(_1);
+endmethod
+
+// ----- constructors from a vector
+
+defmethod(OBJ, ginitWithIntPtr, mVector, (U32)n, (I32*)val)
+  retmethod( ginitWith(_1, aIntVecRef(n,val)) );
+endmethod
+
+defmethod(OBJ, ginitWithLngPtr, mVector, (U32)n, (I64*)val)
+  retmethod( ginitWith(_1, aLngVecRef(n,val)) );
+endmethod
+
+defmethod(OBJ, ginitWithDblPtr, mVector, (U32)n, (R64*)val)
+  retmethod( ginitWith(_1, aDblVecRef(n,val)) );
+endmethod
+
+defmethod(OBJ, ginitWithCpxPtr, mVector, (U32)n, (C64*)val)
+  retmethod( ginitWith(_1, aCpxVecRef(n,val)) );
+endmethod
+

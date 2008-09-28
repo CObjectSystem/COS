@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.7 2008/08/21 15:54:36 ldeniau Exp $
+ | $Id: stdgen.c,v 1.8 2008/09/28 19:51:51 ldeniau Exp $
  |
 */
 
@@ -93,19 +93,29 @@ makgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 // -------------------------
 #include <cos/gen/init.h>
 
-makgeneric(OBJ, ginitWithChr , _1, (S8 )val);
-makgeneric(OBJ, ginitWithSht , _1, (S16)val);
-makgeneric(OBJ, ginitWithInt , _1, (S32)val);
-makgeneric(OBJ, ginitWithLng , _1, (S64)val);
-makgeneric(OBJ, ginitWithDbl , _1, (DOUBLE )val);
-makgeneric(OBJ, ginitWithCpx , _1, (COMPLEX)val);
+makgeneric(OBJ , ginitWithObj  , _1, (OBJ)_2);
+makgeneric(OBJ , ginitWithObj2 , _1, (OBJ)_2, (OBJ)_3);
+makgeneric(OBJ , ginitWithObj3 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4);
+makgeneric(OBJ , ginitWithObj4 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5);
+makgeneric(OBJ , ginitWithObj5 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6);
+makgeneric(OBJ , ginitWithObj6 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7);
+makgeneric(OBJ , ginitWithObj7 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7, (OBJ)_8);
+makgeneric(OBJ , ginitWithObj8 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7, (OBJ)_8, (OBJ)_9);
+makgeneric(OBJ , ginitWithObj9 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7, (OBJ)_8, (OBJ)_9, (OBJ)_10);
 
-makgeneric(OBJ, ginitWithChrPtr , _1, (U32)n, (S8 *)val);
-makgeneric(OBJ, ginitWithShtPtr , _1, (U32)n, (S16*)val);
-makgeneric(OBJ, ginitWithIntPtr , _1, (U32)n, (S32*)val);
-makgeneric(OBJ, ginitWithLngPtr , _1, (U32)n, (S64*)val);
-makgeneric(OBJ, ginitWithDblPtr , _1, (U32)n, (DOUBLE *)val);
-makgeneric(OBJ, ginitWithCpxPtr , _1, (U32)n, (COMPLEX*)val);
+makgeneric(OBJ, ginitWithChr , _1, (I8 )val);
+makgeneric(OBJ, ginitWithSht , _1, (I16)val);
+makgeneric(OBJ, ginitWithInt , _1, (I32)val);
+makgeneric(OBJ, ginitWithLng , _1, (I64)val);
+makgeneric(OBJ, ginitWithDbl , _1, (R64)val);
+makgeneric(OBJ, ginitWithCpx , _1, (C64)val);
+
+makgeneric(OBJ, ginitWithChrPtr , _1, (U32)n, (I8 *)val);
+makgeneric(OBJ, ginitWithShtPtr , _1, (U32)n, (I16*)val);
+makgeneric(OBJ, ginitWithIntPtr , _1, (U32)n, (I32*)val);
+makgeneric(OBJ, ginitWithLngPtr , _1, (U32)n, (I64*)val);
+makgeneric(OBJ, ginitWithDblPtr , _1, (U32)n, (R64*)val);
+makgeneric(OBJ, ginitWithCpxPtr , _1, (U32)n, (C64*)val);
 
 // -------------------------
 #include <cos/gen/logic.h>
@@ -145,45 +155,48 @@ makgeneric(OBJ, ginstancesUnderstandMessage5, _1, _2, _3, _4, _5, (SEL)msg);
 #include <cos/gen/object.h>
 
 // allocator, deallocator
-makgeneric(OBJ , galloc       , _1);
-makgeneric(OBJ , gallocWith   , _1, _2);
-makgeneric(void, gdealloc     , _1);
+makgeneric(OBJ , galloc        , _1);
+makgeneric(OBJ , gallocWithSize, _1, (size_t)extra);
+makgeneric(void, gdealloc      , _1);
 
 // constructors, destructor
-makgeneric(OBJ , ginit        , _1);
-makgeneric(OBJ , ginitWith    , _1, _2);
-makgeneric(OBJ , ginitWith2   , _1, _2, _3);
-makgeneric(OBJ , ginitWith3   , _1, _2, _3, _4);
-makgeneric(OBJ , ginitWith4   , _1, _2, _3, _4, _5);
-makgeneric(OBJ , ginitWithLoc , _1, _2, (STR)file, (int)line);
-makgeneric(OBJ , ginitWithStr , _1, (STR)str);
-makgeneric(OBJ , gdeinit      , _1);
+makgeneric(OBJ , ginit         , _1);
+makgeneric(OBJ , ginitWith     , _1, _2);
+makgeneric(OBJ , ginitWith2    , _1, _2, _3);
+makgeneric(OBJ , ginitWith3    , _1, _2, _3, _4);
+makgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
+makgeneric(OBJ , ginitWithLoc  , _1, _2, (STR)file, (int)line);
+makgeneric(OBJ , ginitWithStr  , _1, (STR)str);
+makgeneric(OBJ , gdeinit       , _1);
 
 // ownership
-makgeneric(OBJ , gretain      , _1);
-makgeneric(OBJ , grelease     , _1);
-makgeneric(U32 , gretainCount , _1);
-makgeneric(OBJ , gautoRelease , _1);
+makgeneric(OBJ , gretain       , _1);
+makgeneric(OBJ , grelease      , _1);
+makgeneric(U32 , gretainCount  , _1);
+makgeneric(OBJ , gautoRelease  , _1);
 
 // identity, conversion, coercion
-makgeneric(OBJ , gisKindOf    , _1, _2);
-makgeneric(OBJ , gisInstanceOf, _1, _2);
-makgeneric(OBJ , gclass       , _1);
-makgeneric(STR , gclassName   , _1);
+makgeneric(OBJ , gisKindOf     , _1, _2);
+makgeneric(OBJ , gisInstanceOf , _1, _2);
+makgeneric(OBJ , gclass        , _1);
+makgeneric(STR , gclassName    , _1);
 
 // inheritance
-makgeneric(OBJ , gsuperClass  , _1);
+makgeneric(OBJ , gsuperClass   , _1);
 
 // comparison
-makgeneric(OBJ , gequal       , _1, _2);
-makgeneric(OBJ , gcompare     , _1, _2);
-makgeneric(U32 , ghash        , _1);
+makgeneric(OBJ , gequal        , _1, _2);
+makgeneric(OBJ , gcompare      , _1, _2);
+makgeneric(U32 , ghash         , _1);
+
+// adjust object
+makgeneric(OBJ , gadjust       , _1);
 
 // exception
-makgeneric(void, gthrow       , _1, (STR)file, (int)line);
+makgeneric(void, gthrow        , _1, (STR)file, (int)line);
 
 // contract
-makgeneric(void, ginvariant   , _1, (STR)file, (int)line);
+makgeneric(void, ginvariant    , _1, (STR)file, (int)line);
 
 // initialization
 makgeneric(void, ginitialize  , _1);
@@ -197,17 +210,17 @@ makgeneric(U32  , gsize, _1);
 makgeneric(void*, gptr, _1);
 makgeneric(FUNC , gfct, _1);
 
-makgeneric(S8     , gchr, _1);
-makgeneric(S16    , gsht, _1);
-makgeneric(S32    , gint, _1);
-makgeneric(S64    , glng, _1);
-makgeneric(DOUBLE , gdbl, _1);
-makgeneric(COMPLEX, gcpx, _1);
+makgeneric(I8   , gchr, _1);
+makgeneric(I16  , gsht, _1);
+makgeneric(I32  , gint, _1);
+makgeneric(I64  , glng, _1);
+makgeneric(R64  , gdbl, _1);
+makgeneric(C64  , gcpx, _1);
 
-makgeneric(S8*     , gchrPtr, _1);
-makgeneric(S16*    , gshtPtr, _1);
-makgeneric(S32*    , gintPtr, _1);
-makgeneric(S64*    , glngPtr, _1);
-makgeneric(DOUBLE* , gdblPtr, _1);
-makgeneric(COMPLEX*, gcpxPtr, _1);
+makgeneric(I8*  , gchrPtr, _1);
+makgeneric(I16* , gshtPtr, _1);
+makgeneric(I32* , gintPtr, _1);
+makgeneric(I64* , glngPtr, _1);
+makgeneric(R64* , gdblPtr, _1);
+makgeneric(C64* , gcpxPtr, _1);
 

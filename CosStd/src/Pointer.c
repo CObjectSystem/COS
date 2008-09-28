@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Value
+ | COS Pointer
  |
  o---------------------------------------------------------------------o
  |
@@ -29,20 +29,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.c,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Pointer.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <cos/Value.h>
+#include <cos/Pointer.h>
 #include <cos/gen/object.h>
 
+makclass(Pointer,Value);
+makclass(AutoPointer,Pointer);
+makclass(Function,Value);
+
 // -----
 
-makclass(Value);
-
-// -----
-
-defmethod(OBJ, gdeinit, Value)
+defmethod(OBJ, gdeinit, AutoPointer)
+  if (self->pfree)
+    self->pfree(self->Pointer.ptr), self->Pointer.ptr = 0;
   retmethod(_1);
 endmethod
+

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.4 2008/08/14 08:53:57 ldeniau Exp $
+ | $Id: object.h,v 1.5 2008/09/28 19:48:21 ldeniau Exp $
  |
 */
 
@@ -41,49 +41,52 @@
 #endif
 
 // allocator, deallocator
-defgeneric(OBJ , galloc       , _1);
-defgeneric(OBJ , gallocWith   , _1, _2);
-defgeneric(void, gdealloc     , _1);
+defgeneric(OBJ , galloc        , _1);
+defgeneric(OBJ , gallocWithSize, _1, (size_t)extra);
+defgeneric(void, gdealloc      , _1);
 
 // constructors, destructor
-defgeneric(OBJ , ginit        , _1);
-defgeneric(OBJ , ginitWith    , _1, _2); // ginitWith(T,T) = copy constructor
-defgeneric(OBJ , ginitWith2   , _1, _2, _3);
-defgeneric(OBJ , ginitWith3   , _1, _2, _3, _4);
-defgeneric(OBJ , ginitWith4   , _1, _2, _3, _4, _5);
-defgeneric(OBJ , ginitWithLoc , _1, _2, (STR)file, (int)line);
-defgeneric(OBJ , ginitWithStr , _1, (STR)str);
-defgeneric(OBJ , gdeinit      , _1);
+defgeneric(OBJ , ginit         , _1);
+defgeneric(OBJ , ginitWith     , _1, _2); // includes copy ctor ginitWith(T,T)
+defgeneric(OBJ , ginitWith2    , _1, _2, _3);
+defgeneric(OBJ , ginitWith3    , _1, _2, _3, _4);
+defgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
+defgeneric(OBJ , ginitWithLoc  , _1, _2, (STR)file, (int)line);
+defgeneric(OBJ , ginitWithStr  , _1, (STR)str);
+defgeneric(OBJ , gdeinit       , _1);
 
 // ownership
-defgeneric(OBJ , gretain      , _1);
-defgeneric(OBJ , grelease     , _1);
-defgeneric(U32 , gretainCount , _1);
-defgeneric(OBJ , gautoRelease , _1);
+defgeneric(OBJ , gretain       , _1);
+defgeneric(OBJ , grelease      , _1);
+defgeneric(U32 , gretainCount  , _1);
+defgeneric(OBJ , gautoRelease  , _1);
 
 // identity, conversion, coercion
-defgeneric(OBJ , gisKindOf    , _1, _2); // returns True or False
-defgeneric(OBJ , gisInstanceOf, _1, _2); // returns True or False
-defgeneric(OBJ , gclass       , _1);
-defgeneric(STR , gclassName   , _1);
+defgeneric(OBJ , gisKindOf     , _1, _2); // returns True or False
+defgeneric(OBJ , gisInstanceOf , _1, _2); // returns True or False
+defgeneric(OBJ , gclass        , _1);
+defgeneric(STR , gclassName    , _1);
 
 // inheritance
-defgeneric(OBJ , gsuperClass  , _1);
+defgeneric(OBJ , gsuperClass   , _1);
 
 // comparison
-defgeneric(OBJ , gequal       , _1, _2);
-defgeneric(OBJ , gcompare     , _1, _2); // return Equal, Lesser or Greater
-defgeneric(U32 , ghash        , _1);
+defgeneric(OBJ , gequal        , _1, _2);
+defgeneric(OBJ , gcompare      , _1, _2); // return Equal, Lesser or Greater
+defgeneric(U32 , ghash         , _1);
+
+// adjust object (capacity to size)
+defgeneric(OBJ , gadjust       , _1);
 
 // contract
-defgeneric(void, ginvariant   , _1, (STR)file, (int)line);
+defgeneric(void, ginvariant    , _1, (STR)file, (int)line);
 
 // exception
-defgeneric(void, gthrow       , _1, (STR)file, (int)line);
+defgeneric(void, gthrow        , _1, (STR)file, (int)line);
 
 // initialization
-defgeneric(void, ginitialize  , _1);
-defgeneric(void, gdeinitialize, _1);
+defgeneric(void, ginitialize   , _1);
+defgeneric(void, gdeinitialize , _1);
 
 // ----- inliners -----
 
@@ -115,25 +118,24 @@ gnewWith4(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5) {
 
 static inline OBJ
 gnewWithLoc(OBJ _1, OBJ _2, STR file, int line) {
-  return ginitWithLoc(galloc(_1),_2,file,line); COS_UNUSED(gnewWithLoc);
+  return ginitWithLoc(galloc(_1),_2,file,line);  COS_UNUSED(gnewWithLoc);
 }
 
 static inline OBJ
 gnewWithStr(OBJ _1, STR str) {
-  return ginitWithStr(galloc(_1),str); COS_UNUSED(gnewWithStr);
+  return ginitWithStr(galloc(_1),str);  COS_UNUSED(gnewWithStr);
 }
 
-// inliner gclone (= galloc() + ginitWith(T,T))
+// inliner gclone
 static inline OBJ
 gclone(OBJ _1) {
-  OBJ cls = (OBJ)cos_class_get(cos_any_id(_1)); // gclass(_1)
-  return ginitWith(galloc(cls),_1); COS_UNUSED(gclone);
+  return ginitWith(galloc(gclass(_1)),_1);  COS_UNUSED(gclone);
 }
 
-// inliner gcopy (= gdeinit() + ginitWith(T,T))
+// inliner gcopy
 static inline OBJ
 gcopy(OBJ _1, OBJ _2) {
-  return ginitWith(gdeinit(_1),_2); COS_UNUSED(gcopy);
+  return _1 != _2 ? ginitWith(gdeinit(_1),_2) : _1;  COS_UNUSED(gcopy);
 }
 
 #endif // COS_GEN_OBJECT_H

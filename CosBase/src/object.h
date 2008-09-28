@@ -1,7 +1,10 @@
+#ifndef COS_SRC_OBJECT_H
+#define COS_SRC_OBJECT_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Pointer
+ | COS object private header
  |
  o---------------------------------------------------------------------o
  |
@@ -29,23 +32,24 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Pointer.c,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: object.h,v 1.1 2008/09/28 19:52:59 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
-#include <cos/Pointer.h>
-#include <cos/gen/object.h>
+static inline void*
+object_alloc(OBJ _cls, size_t extra)
+{
+  useclass(ExBadAlloc);
+  struct Class *cls = STATIC_CAST(struct Class*, _cls);
+  struct Object *obj = calloc(1, cls->isz + extra);
 
-makclass(Pointer,Value);
-makclass(AutoPointer,Pointer);
-makclass(Function,Value);
+  if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
 
-// -----
+  obj->Any.id = cls->Behavior.id;
+  obj->Any.rc = COS_RC_UNIT;
 
-defmethod(OBJ, gdeinit, AutoPointer)
-  if (self->pfree)
-    self->pfree(self->Pointer.ptr), self->Pointer.ptr = 0;
-  retmethod(_1);
-endmethod
+  return obj;
+}
+
+#endif // COS_SRC_OBJECT_H
 

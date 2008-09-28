@@ -1,7 +1,10 @@
+#ifndef COS_POINTER_H
+#define COS_POINTER_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Ordered
+ | COS Pointer
  |
  o---------------------------------------------------------------------o
  |
@@ -29,16 +32,41 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Ordered.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Pointer.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
-#include <cos/Ordered.h>
+#include <cos/Value.h>
 
-// -----
+// ----- definitions
 
-makclass(Ordered,Nil);
-makclass(Equal,Ordered);
-makclass(Lesser,Ordered);
-makclass(Greater,Ordered);
+defclass(Pointer,Value)
+  void *ptr;
+endclass
+
+defclass(AutoPointer,Pointer)
+  void (*pfree)(void*);
+endclass
+
+defclass(Function,Value)
+  FUNC fct;
+endclass
+
+// ----- automatic constructors
+
+#define aPointer(ptr)  ( (OBJ)atPointer(ptr) )
+#define atPointer(ptr) ( &(struct Pointer) { \
+        {{ COS_CLS_NAME(Pointer).Behavior.id, COS_RC_AUTO }}, \
+         (ptr) } )
+
+#define aAutoPointer(ptr, pfree)  ( (OBJ)atAutoPointer(ptr, pfree) )
+#define atAutoPointer(ptr, pfree) ( &(struct AutoPointer) {{ \
+        {{ COS_CLS_NAME(AutoPointer).Behavior.id, COS_RC_AUTO }}, \
+         (ptr) }, (pfree) } )
+
+#define aFunction(fct)  ( (OBJ)atFunction(fct) )
+#define atFunction(fct) ( &(struct Function) { \
+        {{ COS_CLS_NAME(Function).Behavior.id, COS_RC_AUTO }}, \
+         (fct) })
+
+#endif // COS_POINTER_H

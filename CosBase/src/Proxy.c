@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.4 2008/08/21 15:54:36 ldeniau Exp $
+ | $Id: Proxy.c,v 1.5 2008/09/28 19:51:51 ldeniau Exp $
  |
 */
 
@@ -39,6 +39,7 @@
 #include <cos/gen/message.h>
 
 #include <stdlib.h>
+#include "object.h"
 
 // -----
 
@@ -52,24 +53,14 @@ defmethod(OBJ, ginitWith, Proxy, Any)
 endmethod
 
 defmethod(OBJ, gdeinit, Proxy)
-  grelease(self->obj);
+  if (self->obj) grelease(self->obj);
   retmethod(_1);
 endmethod
 
 // ----- allocator
 
 defmethod(OBJ, galloc, mProxy)
-  useclass(ExBadAlloc);
-
-  struct Class *cls = STATIC_CAST(struct Class*, _1);
-  struct Proxy *pxy = malloc(cls->isz);
-
-  if (!pxy) THROW(ExBadAlloc);
-
-  pxy->Any.id = cls->Behavior.id;
-  pxy->Any.rc = COS_RC_UNIT;
-
-  retmethod( (OBJ)pxy );
+  retmethod( object_alloc(_1, 0) );
 endmethod
 
 // ----- understanding

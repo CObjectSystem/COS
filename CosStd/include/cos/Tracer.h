@@ -1,10 +1,10 @@
-#ifndef COS_GEN_VALUE_H
-#define COS_GEN_VALUE_H
+#ifndef COS_TRACER_H
+#define COS_TRACER_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS value generics (C types)
+ | COS Tracer (proxy)
  |
  o---------------------------------------------------------------------o
  |
@@ -32,31 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.5 2008/09/28 19:48:21 ldeniau Exp $
+ | $Id: Tracer.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
-#endif
+#include <cos/Proxy.h>
 
-defgeneric(STR  , gstr , _1);
-defgeneric(U32  , gsize, _1);
-defgeneric(void*, gptr, _1);
-defgeneric(FUNC , gfct, _1);
+defclass(Tracer,Proxy)
+  STR file;
+  int line;
+endclass
 
-defgeneric(I8   , gchr, _1);
-defgeneric(I16  , gsht, _1);
-defgeneric(I32  , gint, _1);
-defgeneric(I64  , glng, _1);
-defgeneric(R64  , gdbl, _1);
-defgeneric(C64  , gcpx, _1);
-
-defgeneric(I8*  , gchrPtr, _1);
-defgeneric(I16* , gshtPtr, _1);
-defgeneric(I32* , gintPtr, _1);
-defgeneric(I64* , glngPtr, _1);
-defgeneric(R64* , gdblPtr, _1);
-defgeneric(C64* , gcpxPtr, _1);
-
-#endif // COS_GEN_VALUE_H
+#endif // COS_TRACER_H

@@ -1,7 +1,10 @@
+#ifndef COS_INDEX_H
+#define COS_INDEX_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Object (root class)
+ | COS Index
  |
  o---------------------------------------------------------------------o
  |
@@ -29,27 +32,55 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.6 2008/09/28 19:51:51 ldeniau Exp $
+ | $Id: Index.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
-#include <cos/gen/object.h>
+#include <cos/Value.h>
 
-#include <stdlib.h>
-#include "object.h"
+// ----- definitions
 
-// -----
+defclass(Index,Value)
+endclass
 
-makclass(Object,Any);
+defclass(Index1,Index)
+  I32 index;
+endclass
 
-// ----- allocator, deallocator
+defclass(Index2,Index)
+  I32 index[2];
+endclass
 
-defmethod(OBJ, galloc, mObject)
-  retmethod( object_alloc(_1, 0) );
-endmethod
+defclass(Index3,Index)
+  I32 index[3];
+endclass
 
-defmethod(OBJ, gallocWithSize, mObject, (size_t)extra)
-  retmethod( object_alloc(_1, extra) );
-endmethod
+defclass(Index4,Index)
+  I32 index[4];
+endclass
 
+defclass(Index5,Index)
+  I32 index[5];
+endclass
+
+/* NOTE-USER: indexing policy
+   indexing starts at zero
+   negative indexes mean starting from the end
+   e.g. 0 is the first element, -1 is the last element
+ */
+
+static inline U32
+index_abs(I32 index, U32 size) {
+  return index + (index < 0) * size;
+}
+
+// ----- automatic constructor
+
+#define aIndex(...)  ( (OBJ)atIndexN(__VA_ARGS__) )
+#define atIndex(...) atIndexN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
+
+#define atIndexN(N,...) ( &(struct COS_PP_CAT(Index,N)) { \
+        {{{{ COS_CLS_NAME(COS_PP_CAT(Index,N)).Behavior.id, COS_RC_AUTO }}}}, \
+         COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) } )
+
+#endif // COS_INDEX_H

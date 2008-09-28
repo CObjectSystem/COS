@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Index.c,v 1.3 2008/08/21 15:54:36 ldeniau Exp $
+ | $Id: Index.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
@@ -37,80 +37,86 @@
 #include <cos/Index.h>
 #include <cos/gen/object.h>
 
-makclass(Index ,Value);
-makclass(Index1,Index);
-makclass(Index2,Index);
-makclass(Index3,Index);
-makclass(Index4,Index);
-makclass(Index5,Index);
+makclass(Index , Value);
+makclass(Index1, Index);
+makclass(Index2, Index);
+makclass(Index3, Index);
+makclass(Index4, Index);
+makclass(Index5, Index);
+
+// ----- copy
 
 defmethod(OBJ, ginitWith, Index1, Index1)
-  self1->value = self2->value;
+  self1->index = self2->index;
+
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Index2, Index2)
-  self1->value[0] = self2->value[0];
-  self1->value[1] = self2->value[1];
+  self1->index[0] = self2->index[0],
+  self1->index[1] = self2->index[1];
+
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Index3, Index3)
-  self1->value[0] = self2->value[0];
-  self1->value[1] = self2->value[1];
-  self1->value[2] = self2->value[2];
+  for (int i = 0; i < 3; i++)
+    self1->index[i] = self2->index[i];
+
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Index4, Index4)
-  self1->value[0] = self2->value[0];
-  self1->value[1] = self2->value[1];
-  self1->value[2] = self2->value[2];
-  self1->value[3] = self2->value[3];
+  for (int i = 0; i < 4; i++)
+    self1->index[i] = self2->index[i];
+
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Index5, Index5)
-  self1->value[0] = self2->value[0];
-  self1->value[1] = self2->value[1];
-  self1->value[2] = self2->value[2];
-  self1->value[3] = self2->value[3];
-  self1->value[4] = self2->value[4];
+  for (int i = 0; i < 5; i++)
+    self1->index[i] = self2->index[i];
+
   retmethod(_1);
 endmethod
 
+// ----- equality
+
 defmethod(OBJ, gequal, Index1, Index1)
-  BOOL res = self1->value == self2->value;
-  retmethod( res ? True : False );
+  retmethod( self1->index == self2->index ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Index2, Index2)
-  BOOL res = self1->value[0] == self2->value[0]
-          && self1->value[1] == self2->value[1];
+  BOOL res = self1->index[0] == self2->index[0]
+          && self1->index[1] == self2->index[1];
+
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Index3, Index3)
-  BOOL res = self1->value[0] == self2->value[0]
-          && self1->value[1] == self2->value[1]
-          && self1->value[2] == self2->value[2];
+  BOOL res = self1->index[0] == self2->index[0];
+
+  for (int i = 1; res && i < 3; i++)
+    res = res && self1->index[i] == self2->index[i];
+
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Index4, Index4)
-  BOOL res = self1->value[0] == self2->value[0]
-          && self1->value[1] == self2->value[1]
-          && self1->value[2] == self2->value[2]
-          && self1->value[3] == self2->value[3];
+  BOOL res = self1->index[0] == self2->index[0];
+
+  for (int i = 1; res && i < 4; i++)
+    res = res && self1->index[i] == self2->index[i];
+
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Index5, Index5)
-  BOOL res = self1->value[0] == self2->value[0]
-          && self1->value[1] == self2->value[1]
-          && self1->value[2] == self2->value[2]
-          && self1->value[3] == self2->value[3]
-          && self1->value[4] == self2->value[4];
+  BOOL res = self1->index[0] == self2->index[0];
+
+  for (int i = 1; res && i < 5; i++)
+    res = res && self1->index[i] == self2->index[i];
+
   retmethod( res ? True : False );
 endmethod
 

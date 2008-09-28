@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.2 2008/06/30 15:41:11 ldeniau Exp $
+ | $Id: Functor.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
@@ -38,14 +38,18 @@
 #include <cos/gen/object.h>
 #include <cos/gen/eval.h>
 
-makclass(Functor ,Object );
-makclass(Functor1,Functor);
-makclass(Functor2,Functor);
-makclass(Functor3,Functor);
-makclass(Functor4,Functor);
-makclass(Functor5,Functor);
+makclass(Functor , Object );
+makclass(Functor1, Functor);
+makclass(Functor2, Functor);
+makclass(Functor3, Functor);
+makclass(Functor4, Functor);
+makclass(Functor5, Functor);
 
 // -----
+
+useclass(ExBadArity);
+
+// ----- ctors
 
 defmethod(OBJ, ginitWith, Functor1, Functor1)
   self->Functor.arity = self2->Functor.arity;
@@ -92,6 +96,8 @@ defmethod(OBJ, ginitWith, Functor5, Functor5)
   retmethod(_1);
 endmethod
 
+// ----- dtors
+
 defmethod(OBJ, gdeinit, Functor1)
   if (self->arg) grelease(self->arg);
   retmethod(_1);
@@ -129,40 +135,21 @@ endmethod
 
 // ----- Eval
 
-useclass(ExBadArity);
-
 // Functor1
 
-static inline int
-arity1(struct Functor1* f) {
-  return f->arg != NIL;
-}
-
 defmethod(OBJ, geval, Functor1)
-retry:
   switch(self->Functor.arity) {
   case 1: /* 1 */
     retmethod(self->fct(self->arg));
-
-  case -1:
-    self->Functor.arity = arity1(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval(Functor1)") );
   }
 endmethod
 
 defmethod(OBJ, geval1, Functor1, (OBJ)arg1)
-retry:
   switch(self->Functor.arity) {
   case 0: /* 0 */
     retmethod(self->fct(arg1));
-
-  case -1:
-    self->Functor.arity = arity1(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval1(Functor1)") );
   }
@@ -170,53 +157,30 @@ endmethod
 
 // ----- Functor2
 
-static inline int
-arity2(struct Functor2* f) {
-  return (f->arg[0] != NIL) | ((f->arg[1] != NIL) << 1);
-}
-
 defmethod(OBJ, geval, Functor2)
-retry:
   switch(self->Functor.arity) {
   case 3: /* 1 1 */
     retmethod(self->fct(self->arg[0],self->arg[1]));
-
-  case -1:
-    self->Functor.arity = arity2(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval(Functor2)") );
   }
 endmethod
 
 defmethod(OBJ, geval1, Functor2, (OBJ)arg1)
-retry:
   switch(self->Functor.arity) {
   case 1: /* 1 0 */
     retmethod(self->fct(self->arg[0],arg1        ));
   case 2: /* 0 1 */
     retmethod(self->fct(arg1        ,self->arg[1]));
-
-  case -1:
-    self->Functor.arity = arity2(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval1(Functor2)") );
   }
 endmethod
 
 defmethod(OBJ, geval2, Functor2, (OBJ)arg1, (OBJ)arg2)
-retry:
   switch(self->Functor.arity) {
   case 0: /* 0 0 */
     retmethod(self->fct(arg1,arg2));
-
-  case -1:
-    self->Functor.arity = arity2(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval2(Functor2)") );
   }
@@ -224,28 +188,16 @@ endmethod
 
 // ----- Functor3
 
-static inline int
-arity3(struct Functor3* f) {
-  return (f->arg[0] != NIL) | ((f->arg[1] != NIL) << 1) | ((f->arg[2] != NIL) << 2);
-}
-
 defmethod(OBJ, geval, Functor3)
-retry:
   switch(self->Functor.arity) {
   case 7: /* 1 1 1 */
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2]));
-
-  case -1:
-    self->Functor.arity = arity3(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval(Functor3)") );
   }
 endmethod
 
 defmethod(OBJ, geval1, Functor3, (OBJ)arg1)
-retry:
   switch(self->Functor.arity) {
   case 3: /* 1 1 0 */
     retmethod(self->fct(self->arg[0],self->arg[1],arg1        ));
@@ -253,18 +205,12 @@ retry:
     retmethod(self->fct(self->arg[0],arg1        ,self->arg[2]));
   case 6: /* 0 1 1 */
     retmethod(self->fct(arg1        ,self->arg[1],self->arg[2]));
-
-  case -1:
-    self->Functor.arity = arity3(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval1(Functor3)") );
   }
 endmethod
 
 defmethod(OBJ, geval2, Functor3, (OBJ)arg1, (OBJ)arg2)
-retry:
   switch(self->Functor.arity) {
   case 1: /* 1 0 0 */
     retmethod(self->fct(self->arg[0],arg1        ,arg2        ));
@@ -272,26 +218,15 @@ retry:
     retmethod(self->fct(arg1        ,self->arg[1],arg2        ));
   case 4: /* 0 0 1 */
     retmethod(self->fct(arg1        ,arg2        ,self->arg[2]));
-
-  case -1:
-    self->Functor.arity = arity3(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval2(Functor3)") );
   }
 endmethod
 
 defmethod(OBJ, geval3, Functor3, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3)
-retry:
   switch(self->Functor.arity) {
   case 0: /* 0 0 0 */
     retmethod(self->fct(arg1,arg2,arg3));
-
-  case -1:
-    self->Functor.arity = arity3(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval3(Functor3)") );
   }
@@ -299,29 +234,16 @@ endmethod
 
 // ----- Functor4
 
-static inline int
-arity4(struct Functor4* f) {
-  return (f->arg[0] != NIL) | ((f->arg[1] != NIL) << 1) | ((f->arg[2] != NIL) << 2)
-                            | ((f->arg[3] != NIL) << 3);
-}
-
 defmethod(OBJ, geval, Functor4)
-retry:
   switch(self->Functor.arity) {
   case 15: /* 1 1 1 1 */
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],self->arg[3]));
-
-  case -1:
-    self->Functor.arity = arity4(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval(Functor4)") );
   }
 endmethod
 
 defmethod(OBJ, geval1, Functor4, (OBJ)arg1)
-retry:
   switch(self->Functor.arity) {
   case  7: /* 1 1 1 0 */
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],arg1        ));
@@ -331,18 +253,12 @@ retry:
     retmethod(self->fct(self->arg[0],arg1        ,self->arg[2],self->arg[3]));
   case 14: /* 0 1 1 1 */
     retmethod(self->fct(arg1        ,self->arg[1],self->arg[2],self->arg[3]));
-
-  case -1:
-    self->Functor.arity = arity4(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval1(Functor4)") );
   }
 endmethod
 
 defmethod(OBJ, geval2, Functor4, (OBJ)arg1, (OBJ)arg2)
-retry:
   switch(self->Functor.arity) {
   case  3: /* 1 1 0 0 */
     retmethod(self->fct(self->arg[0],self->arg[1],arg1        ,arg2        ));
@@ -356,18 +272,12 @@ retry:
     retmethod(self->fct(arg1        ,self->arg[1],arg2        ,self->arg[3]));
   case 12: /* 0 0 1 1 */
     retmethod(self->fct(arg1        ,arg2        ,self->arg[2],self->arg[3]));
-
-  case -1:
-    self->Functor.arity = arity4(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval2(Functor4)") );
   }
 endmethod
 
 defmethod(OBJ, geval3, Functor4, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3)
-retry:
   switch(self->Functor.arity) {
   case 1: /* 1 0 0 0 */
     retmethod(self->fct(self->arg[0],arg1        ,arg2        ,arg3        ));
@@ -377,26 +287,15 @@ retry:
     retmethod(self->fct(arg1        ,arg2        ,self->arg[2],arg3        ));
   case 8: /* 0 0 0 1 */
     retmethod(self->fct(arg1        ,arg2        ,arg3        ,self->arg[3]));
-
-  case -1:
-    self->Functor.arity = arity4(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval3(Functor4)") );
   }
 endmethod
 
 defmethod(OBJ, geval4, Functor4, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3, (OBJ)arg4)
-retry:
   switch(self->Functor.arity) {
   case 0: /* 0 0 0 0 */
     retmethod(self->fct(arg1,arg2,arg3,arg4));
-
-  case -1:
-    self->Functor.arity = arity4(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval4(Functor4)") );
   }
@@ -404,29 +303,16 @@ endmethod
 
 // ----- Functor5
 
-static inline int
-arity5(struct Functor5* f) {
-  return (f->arg[0] != NIL) | ((f->arg[1] != NIL) << 1) | ((f->arg[2] != NIL) << 2)
-                            | ((f->arg[3] != NIL) << 3) | ((f->arg[4] != NIL) << 4);
-}
-
 defmethod(OBJ, geval, Functor5)
-retry:
   switch(self->Functor.arity) {
   case 31: /* 1 1 1 1 1 */
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],self->arg[3],self->arg[4]));
-
-  case -1:
-    self->Functor.arity = arity5(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval(Functor5)") );
   }
 endmethod
 
 defmethod(OBJ, geval1, Functor5, (OBJ)arg1)
-retry:
   switch(self->Functor.arity) {
   case 15: /* 1 1 1 1 0 */
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],self->arg[3],arg1        ));
@@ -438,18 +324,12 @@ retry:
     retmethod(self->fct(self->arg[0],arg1        ,self->arg[2],self->arg[3],self->arg[4]));
   case 30: /* 0 1 1 1 1 */
     retmethod(self->fct(arg1        ,self->arg[1],self->arg[2],self->arg[3],self->arg[4]));
-
-  case -1:
-    self->Functor.arity = arity5(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval1(Functor5)") );
   }
 endmethod
 
 defmethod(OBJ, geval2, Functor5, (OBJ)arg1, (OBJ)arg2)
-retry:
   switch(self->Functor.arity) {
   case  7: /* 1 1 1 0 0 */
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],arg1        ,arg2        ));
@@ -471,18 +351,12 @@ retry:
     retmethod(self->fct(arg1        ,self->arg[1],arg2        ,self->arg[3],self->arg[4]));
   case 28: /* 0 0 1 1 1 */
     retmethod(self->fct(arg1        ,arg2        ,self->arg[2],self->arg[3],self->arg[4]));
-
-  case -1:
-    self->Functor.arity = arity5(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval2(Functor5)") );
   }
 endmethod
 
 defmethod(OBJ, geval3, Functor5, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3)
-retry:
   switch(self->Functor.arity) {
   case  3: /* 1 1 0 0 0 */
     retmethod(self->fct(self->arg[0],self->arg[1],arg1        ,arg2        ,arg3        ));
@@ -504,18 +378,12 @@ retry:
     retmethod(self->fct(arg1        ,arg2        ,self->arg[2],arg3        ,self->arg[4]));
   case 24: /* 0 0 0 1 1 */
     retmethod(self->fct(arg1        ,arg2        ,arg3        ,self->arg[3],self->arg[4]));
-
-  case -1:
-    self->Functor.arity = arity5(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval3(Functor5)") );
   }
 endmethod
 
 defmethod(OBJ, geval4, Functor5, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3, (OBJ)arg4)
-retry:
   switch(self->Functor.arity) {
   case  1: /* 1 0 0 0 0 */
     retmethod(self->fct(self->arg[0],arg1        ,arg2        ,arg3        ,arg4        ));
@@ -527,26 +395,15 @@ retry:
     retmethod(self->fct(arg1        ,arg2        ,arg3        ,self->arg[3],arg4        ));
   case 16: /* 0 0 0 0 1 */
     retmethod(self->fct(arg1        ,arg2        ,arg3        ,arg4        ,self->arg[4]));
-
-  case -1:
-    self->Functor.arity = arity5(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval4(Functor5)") );
   }
 endmethod
 
 defmethod(OBJ, geval5, Functor5, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3, (OBJ)arg4, (OBJ)arg5)
-retry:
   switch(self->Functor.arity) {
   case 0: /* 0 0 0 0 0 */
     retmethod(self->fct(arg1,arg2,arg3,arg4,arg5));
-
-  case -1:
-    self->Functor.arity = arity5(self);
-    goto retry;
-
   default:
     THROW( gnewWithStr(ExBadArity, "geval5(Functor5)") );
   }

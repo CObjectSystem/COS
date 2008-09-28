@@ -1,10 +1,10 @@
-#ifndef COS_VECTORVIEW_H
-#define COS_VECTORVIEW_H
+#ifndef COS_POINT_H
+#define COS_POINT_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vectors View (sliced)
+ | COS Point
  |
  o---------------------------------------------------------------------o
  |
@@ -32,35 +32,44 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: VectorView.h,v 1.1 2008/08/21 15:53:43 ldeniau Exp $
+ | $Id: Point.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
-#include <cos/Vector.h>
-#include <cos/Slice.h>
+#include <cos/Value.h>
 
-defclass(IntVectorView, IntVector)
-  S32 *value;
-  OBJ vector;
-  struct Slice1 slice;
+// ----- definitions
+
+defclass(Point, Value)
 endclass
 
-defclass(LngVectorView, LngVector)
-  S64 *value;
-  OBJ vector;
-  struct Slice1 slice;
+defclass(Point1, Point)
+  R64 value;
 endclass
 
-defclass(DblVectorView, DblVector)
-  DOUBLE *value;
-  OBJ vector;
-  struct Slice1 slice;
+defclass(Point2, Point)
+  R64 value[2];
 endclass
 
-defclass(CpxVectorView, CpxVector)
-  COMPLEX *value;
-  OBJ vector;
-  struct Slice1 slice;
+defclass(Point3, Point)
+  R64 value[3];
 endclass
 
-#endif // COS_VECTORVIEW_H
+defclass(Point4, Point)
+  R64 value[4];
+endclass
+
+defclass(Point5, Point)
+  R64 value[5];
+endclass
+
+// ----- automatic constructor
+
+#define aPoint(...)  ( (OBJ)atPoint(__VA_ARGS__) )
+#define atPoint(...) atPointN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
+
+#define atPointN(N,...) ( &(struct COS_PP_CAT(Point,N)) { \
+        {{{{ COS_CLS_NAME(COS_PP_CAT(Point,N)).Behavior.id, COS_RC_AUTO }}}}, \
+         COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) } )
+
+#endif // COS_POINT_H

@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vector
+ | COS Value
  |
  o---------------------------------------------------------------------o
  |
@@ -29,42 +29,20 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.1 2008/08/21 15:54:36 ldeniau Exp $
+ | $Id: Value.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <cos/Vector.h>
+#include <cos/Value.h>
 #include <cos/gen/object.h>
-#include <cos/gen/init.h>
 
-makclass(Vector);
+// -----
 
-// ------ Vector cluster front-end
+makclass(Value);
 
-defmethod(OBJ, galloc, mVector)
+// -----
+
+defmethod(OBJ, gdeinit, Value)
   retmethod(_1);
 endmethod
-
-defmethod(OBJ, gdeinit, Vector)
-  retmethod(_1);
-endmethod
-
-// ----- constructors from a vector
-
-defmethod(OBJ, ginitWithIntPtr, mVector, (U32)n, (S32*)val)
-  retmethod( ginitWith(_1, aIntVecRef(n,val)) );
-endmethod
-
-defmethod(OBJ, ginitWithLngPtr, mVector, (U32)n, (S64*)val)
-  retmethod( ginitWith(_1, aLngVecRef(n,val)) );
-endmethod
-
-defmethod(OBJ, ginitWithDblPtr, mVector, (U32)n, (DOUBLE*)val)
-  retmethod( ginitWith(_1, aDblVecRef(n,val)) );
-endmethod
-
-defmethod(OBJ, ginitWithCpxPtr, mVector, (U32)n, (COMPLEX*)val)
-  retmethod( ginitWith(_1, aCpxVecRef(n,val)) );
-endmethod
-

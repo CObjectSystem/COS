@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.4 2008/08/21 15:53:43 ldeniau Exp $
+ | $Id: cosdef.h,v 1.5 2008/09/28 19:48:21 ldeniau Exp $
  |
 */
 
@@ -40,41 +40,52 @@
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/cosdef.h>"
 #endif
 
-typedef signed   char  S8;
-typedef unsigned char  U8;
-typedef signed   short S16;
-typedef unsigned short U16;
+typedef signed   char      I8 , BYTE;
+typedef unsigned char      U8 , UBYTE;
+
+typedef signed   short     I16, SHORT;
+typedef unsigned short     U16, USHORT;
 
 #if UINT_MAX >= 4294967295UL
-typedef signed   int   S32;
-typedef unsigned int   U32;
+typedef signed   int       I32, INT;
+typedef unsigned int       U32, UINT;
 #else
-typedef signed   long  S32;
-typedef unsigned long  U32;
+typedef signed   long      I32, INT;
+typedef unsigned long      U32, UINT;
 #endif
 
 #if ULONG_MAX >= 18446744073709551615ULL
-typedef signed   long  S64;
-typedef unsigned long  U64;
+typedef signed   long      I64, LONG;
+typedef unsigned long      U64, ULONG;
 #elif ULLONG_MAX >= 18446744073709551615ULL
-typedef signed   long long S64;
-typedef unsigned long long U64;
+typedef signed   long long I64, LONG;
+typedef unsigned long long U64, ULONG;
 #elif defined(_LongLong)
-typedef signed   _LongLong S64;
-typedef unsigned _LongLong U64;
+typedef signed   _LongLong I64, LONG;
+typedef unsigned _LongLong U64, ULONG;
 #else
 #error "COS: 64 bits integers not supported"
 #endif
 
-typedef _Bool           BOOL;
-typedef          double DOUBLE;
-typedef _Complex double COMPLEX;
+typedef _Bool                   BOOL;
+typedef          double    R64, DOUBLE;
+typedef _Complex double    C64, COMPLEX;
 
-typedef const char* STR; // string literal
-typedef struct OBJ* OBJ; // ADT, never defined
-typedef const struct Generic* SEL;
+typedef ptrdiff_t               INDEX;
+typedef size_t                  SIZE;
+
+typedef const char*             STR; // string literal
+typedef struct OBJ*             OBJ; // ADT, never defined
+typedef const struct Generic*   SEL;
 
 typedef void (*FUNC)(void);
+typedef OBJ  (*FCT0)(void);
+typedef OBJ  (*FCT1)(OBJ);
+typedef OBJ  (*FCT2)(OBJ,OBJ);
+typedef OBJ  (*FCT3)(OBJ,OBJ,OBJ);
+typedef OBJ  (*FCT4)(OBJ,OBJ,OBJ,OBJ);
+typedef OBJ  (*FCT5)(OBJ,OBJ,OBJ,OBJ,OBJ);
+
 typedef void (*IMP1)(SEL,OBJ,                void*,void*);
 typedef void (*IMP2)(SEL,OBJ,OBJ,            void*,void*);
 typedef void (*IMP3)(SEL,OBJ,OBJ,OBJ,        void*,void*);

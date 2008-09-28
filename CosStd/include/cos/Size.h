@@ -1,10 +1,10 @@
-#ifndef COS_GEN_VALUE_H
-#define COS_GEN_VALUE_H
+#ifndef COS_SIZE_H
+#define COS_SIZE_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS value generics (C types)
+ | COS Size
  |
  o---------------------------------------------------------------------o
  |
@@ -32,31 +32,42 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.5 2008/09/28 19:48:21 ldeniau Exp $
+ | $Id: Size.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
-#endif
+#include <cos/Value.h>
 
-defgeneric(STR  , gstr , _1);
-defgeneric(U32  , gsize, _1);
-defgeneric(void*, gptr, _1);
-defgeneric(FUNC , gfct, _1);
+defclass(Size,Value)
+endclass
 
-defgeneric(I8   , gchr, _1);
-defgeneric(I16  , gsht, _1);
-defgeneric(I32  , gint, _1);
-defgeneric(I64  , glng, _1);
-defgeneric(R64  , gdbl, _1);
-defgeneric(C64  , gcpx, _1);
+defclass(Size1,Size)
+  U32 size;
+endclass
 
-defgeneric(I8*  , gchrPtr, _1);
-defgeneric(I16* , gshtPtr, _1);
-defgeneric(I32* , gintPtr, _1);
-defgeneric(I64* , glngPtr, _1);
-defgeneric(R64* , gdblPtr, _1);
-defgeneric(C64* , gcpxPtr, _1);
+defclass(Size2,Size)
+  U32 size[2];
+endclass
 
-#endif // COS_GEN_VALUE_H
+defclass(Size3,Size)
+  U32 size[3];
+endclass
+
+defclass(Size4,Size)
+  U32 size[4];
+endclass
+
+defclass(Size5,Size)
+  U32 size[5];
+endclass
+
+// ----- automatic constructor
+
+#define aSize(...)  ( (OBJ)atSize(__VA_ARGS__) )
+#define atSize(...) atSizeN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
+
+#define atSizeN(N,...) ( &(struct COS_PP_CAT(Size,N)) { \
+        {{{{ COS_CLS_NAME(COS_PP_CAT(Size,N)).Behavior.id, COS_RC_AUTO }}}}, \
+         COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) } )
+
+#endif // COS_SIZE_H
