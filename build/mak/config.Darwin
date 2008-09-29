@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Darwin,v 1.4 2008/06/30 15:41:11 ldeniau Exp $
+# | $Id: config.Darwin,v 1.5 2008/09/29 13:16:05 ldeniau Exp $
 # |
 #
 
@@ -43,8 +43,8 @@ LIBTYPE := archive shared
 #
 DEP        := gcc -MM -MT $(basename $@).o
 CPP        := gcc -E
-CC         := gcc
-LD         := gcc
+CC         := gcc -arch x86_64
+LD         := gcc -arch x86_64
 AR         := ar -cr
 RANLIB     := ranlib
 STRIP      := strip
@@ -60,7 +60,7 @@ TAR        := tar czf
 # compiler and linker flags
 #
 CPPFLAGS   := -std=c99 -W -Wall -pedantic -pipe
-CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
+CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3 --param large-function-growth=200 --param inline-unit-growth=100
 LDFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
 
 DEBUG_CPP   =

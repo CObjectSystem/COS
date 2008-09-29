@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.3 2008/08/21 15:54:36 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.4 2008/09/29 13:15:32 ldeniau Exp $
  |
 */
 
@@ -500,7 +500,7 @@ cos_init(void)
     double t0, t1;
 
     init_done = YES;
-    (COS_SYMBOL)();
+    // (COS_SYMBOL)();
     // cos_trace("cos_init");
 
     t0 = clock();
