@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.8 2008/09/28 19:51:51 ldeniau Exp $
+ | $Id: stdgen.c,v 1.9 2008/09/29 09:21:21 ldeniau Exp $
  |
 */
 
@@ -156,7 +156,7 @@ makgeneric(OBJ, ginstancesUnderstandMessage5, _1, _2, _3, _4, _5, (SEL)msg);
 
 // allocator, deallocator
 makgeneric(OBJ , galloc        , _1);
-makgeneric(OBJ , gallocWithSize, _1, (size_t)extra);
+makgeneric(OBJ , gallocWithSize, _1, (SIZE)extra);
 makgeneric(void, gdealloc      , _1);
 
 // constructors, destructor

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.4 2008/08/21 15:54:36 ldeniau Exp $
+ | $Id: Any.c,v 1.5 2008/09/29 09:21:21 ldeniau Exp $
  |
 */
 
@@ -99,9 +99,9 @@ endmethod
 
 /*
 defmethod(U32, ghash, Any)
-  STATIC_ASSERT(sizeof_OBJ_greater_than_sizeof_size_t,
-                sizeof(OBJ) <= sizeof(size_t));
-  retmethod( ((size_t)_1 >> 2) * 2621124293u + 1 );
+  STATIC_ASSERT(sizeof_OBJ_greater_than_sizeof_SIZE,
+                sizeof(OBJ) <= sizeof(SIZE));
+  retmethod( ((SIZE)_1 >> 2) * 2621124293u + 1 );
 endmethod
 */
 

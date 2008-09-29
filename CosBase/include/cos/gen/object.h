@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.5 2008/09/28 19:48:21 ldeniau Exp $
+ | $Id: object.h,v 1.6 2008/09/29 09:21:21 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,7 @@
 
 // allocator, deallocator
 defgeneric(OBJ , galloc        , _1);
-defgeneric(OBJ , gallocWithSize, _1, (size_t)extra);
+defgeneric(OBJ , gallocWithSize, _1, (SIZE)extra);
 defgeneric(void, gdealloc      , _1);
 
 // constructors, destructor
