@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS makefile -- epilogue
+# | COS makefile -- utilities
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,28 +29,11 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: epilogue,v 1.2 2008/09/29 09:48:19 ldeniau Exp $
+# | $Id: utils,v 1.1 2008/09/29 09:48:19 ldeniau Exp $
 # |
 #
 
-# default settings
-include $(MAKDIR)/default
+clean:
+	find . \( -name '*~' -o -name '.*~' \) -exec rm {} \;
 
-# load project rules
-ifneq ($(program),)
-include $(MAKDIR)/program
-else ifneq ($(library),)
-include $(MAKDIR)/library
-else ifneq ($(plug-in),)
-include $(MAKDIR)/plug-in
-endif
-
-# load package rules
-ifneq ($(package),)
-include $(MAKDIR)/package
-endif
-
-# utilities
-include $(MAKDIR)/utils
-
-# end of makefile
+# end of script
