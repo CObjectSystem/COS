@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.4 2008/06/30 15:41:11 ldeniau Exp $
+ | $Id: config.h,v 1.5 2008/09/29 09:15:12 ldeniau Exp $
  |
 */
 
@@ -51,7 +51,7 @@
 #endif
 
 #ifndef COS_FAST_MESSAGE // default message inlining (see cos/cos/dispatch.h)
-#define COS_FAST_MESSAGE 3 // inline up to rank 3
+#define COS_FAST_MESSAGE 9 // always inline first level lookup
 #endif
 
 #ifndef COS_LOGMSG_LEVEL // default logmsg level (see cos/cos/cosapi.h)

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.4 2008/07/15 08:00:46 ldeniau Exp $
+# | $Id: Makefile,v 1.5 2008/09/29 09:15:13 ldeniau Exp $
 # |
 #
 
@@ -39,8 +39,6 @@ program = testCosBase
 version = $(COS_VERSION)
 targets = debug # profile release
 moddeps = ../../CosBase
-
-CCFLAGS += -DCOS_FAST_MESSAGE=9 #--param large-function-growth=1000 # only gcc >= 3.4
 
 include $(MAKDIR)/epilogue
 
