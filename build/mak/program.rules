@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.3 2008/09/29 09:15:13 ldeniau Exp $
+# | $Id: program.rules,v 1.4 2008/09/29 09:40:55 ldeniau Exp $
 # |
 #
 
@@ -76,8 +76,14 @@ $(BUILDDIR)/$(BINDIR)/$(program)$(TARGET_EXT): \
 	@$(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/_$(COS_SYMBOL).c -o $(<D)/_$(COS_SYMBOL).o
 ifneq ($(SHOW),yes)
 	@$(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/_$(COS_SYMBOL).o -o $@ $(LIBS) $(SYSLIBS)
+ifeq ($(TARGET),release)
+	@$(STRIP) $@
+endif
 else
 	 $(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/_$(COS_SYMBOL).o -o $@ $(LIBS) $(SYSLIBS)
+ifeq ($(TARGET),release)
+	 $(STRIP) $@
+endif
 endif
 
 #

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.4 2008/09/28 20:25:10 ldeniau Exp $
+# | $Id: Makefile,v 1.5 2008/09/29 09:40:55 ldeniau Exp $
 # |
 #
 
@@ -37,7 +37,7 @@ include ../build/prologue
 
 library = CosBase
 version = $(COS_VERSION)
-targets = debug # profile release
+targets = debug profile release
 
 include $(MAKDIR)/epilogue
 
