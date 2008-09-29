@@ -29,11 +29,11 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: utils,v 1.1 2008/09/29 09:48:19 ldeniau Exp $
+# | $Id: utils,v 1.2 2008/09/29 09:50:01 ldeniau Exp $
 # |
 #
 
 clean:
-	find . \( -name '*~' -o -name '.*~' \) -exec rm {} \;
+	find . -name '*~' -exec rm {} \;
 
 # end of script

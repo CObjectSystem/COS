@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+# | $Id: Makefile,v 1.2 2008/09/29 09:50:01 ldeniau Exp $
 # |
 #
 
@@ -41,8 +41,5 @@ targets = debug # profile release
 moddeps = ../CosBase
 
 include $(MAKDIR)/epilogue
-
-clean:
-	find . -name '*~' -exec rm {} \;
 
 # end of makefile

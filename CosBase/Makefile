@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.5 2008/09/29 09:40:55 ldeniau Exp $
+# | $Id: Makefile,v 1.6 2008/09/29 09:50:01 ldeniau Exp $
 # |
 #
 
@@ -40,8 +40,5 @@ version = $(COS_VERSION)
 targets = debug profile release
 
 include $(MAKDIR)/epilogue
-
-clean:
-	find . -name '*~' -exec rm {} \;
 
 # end of makefile
