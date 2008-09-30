@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.m,v 1.2 2008/07/01 09:34:50 ldeniau Exp $
+ | $Id: tests.m,v 1.3 2008/09/30 15:40:13 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,8 @@
 #include "utest.h"
 #include "tests.h"
 
-int main()
+int
+main(void)
 {
   enum { bits = CHAR_BIT*sizeof(void*) };
 

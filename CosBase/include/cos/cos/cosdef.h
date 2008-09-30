@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.5 2008/09/28 19:48:21 ldeniau Exp $
+ | $Id: cosdef.h,v 1.6 2008/09/30 15:40:13 ldeniau Exp $
  |
 */
 
@@ -103,19 +103,19 @@ typedef struct OBJ_as_SEL* OBJ_as_SEL; // ADT, never defined
 
 // exception context
 struct cos_exception_context {
-  struct cos_exception_context *nxt;
+  struct cos_exception_context *prv;
   struct cos_exception_protect *stk;
   BOOL unstk;
   volatile OBJ ex;
   volatile STR file;
   volatile int line;
-  volatile int st;
+  volatile int tag;
   cos_exception_jmpbuf buf;
 };
 
 // exception protection
 struct cos_exception_protect {
-  struct cos_exception_protect *nxt;
+  struct cos_exception_protect *prv;
   OBJ const *obj;
 };
 

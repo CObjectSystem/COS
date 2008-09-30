@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.3 2008/09/30 08:18:23 ldeniau Exp $
+ | $Id: cosapi.h,v 1.4 2008/09/30 15:40:12 ldeniau Exp $
  |
 */
 
@@ -97,6 +97,7 @@ void   cos_exception_errnoLoc(int err, STR file, int line);
 void   cos_exception_throwLoc(OBJ ex, STR file, int line);
 BOOL   cos_exception_catch(OBJ ex, OBJ cls);
 BOOL   cos_exception_uncaught(void);
+void   cos_exception_context(struct cos_exception_context*);
 
 cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
 
@@ -161,14 +162,12 @@ BOOL cos_method_understand5_(struct cos_method_slot5**,SEL,U32,U32,U32,U32,U32);
 
 // global variables (per thread)
 #if COS_TLS
-extern __thread struct cos_exception_context* cos_exception_cxt;
 extern __thread struct cos_method_cache1 cos_method_cache1;
 extern __thread struct cos_method_cache2 cos_method_cache2;
 extern __thread struct cos_method_cache3 cos_method_cache3;
 extern __thread struct cos_method_cache4 cos_method_cache4;
 extern __thread struct cos_method_cache5 cos_method_cache5;
 #else
-extern          struct cos_exception_context* cos_exception_cxt;
 extern          struct cos_method_cache1 cos_method_cache1;
 extern          struct cos_method_cache2 cos_method_cache2;
 extern          struct cos_method_cache3 cos_method_cache3;
@@ -178,7 +177,7 @@ extern          struct cos_method_cache5 cos_method_cache5;
 
 // components tags
 enum {
-  cos_tag_invalid,
+  cos_tag_invalid = 0,
   cos_tag_class,
   cos_tag_mclass,
   cos_tag_pclass,
@@ -188,9 +187,17 @@ enum {
   cos_tag_last
 };
 
+// try-endtry tags
+enum {
+  cos_tag_try     = 0,
+  cos_tag_throw   = 1,
+  cos_tag_catch   = 2,
+	cos_tag_finally = 4
+};
+
 // messages levels
 enum {
-  cos_msg_invalid,
+  cos_msg_invalid = 0,
   cos_msg_debug,
   cos_msg_trace,
   cos_msg_warn,
@@ -212,12 +219,38 @@ cos_any_id(OBJ obj)
   COS_UNUSED(cos_any_id);
 }
 
+#if COS_TLS || !COS_POSIX // -----------------------------
+
+static inline struct cos_exception_context*
+cos_exception_context_get(void)
+{
+  extern __thread struct cos_exception_context *cos_exception_cxt_;
+  return cos_exception_cxt_;
+  COS_UNUSED(cos_exception_context_get);
+}
+
+static inline void
+cos_exception_context_set(struct cos_exception_context *cxt)
+{
+  extern __thread struct cos_exception_context *cos_exception_cxt_;
+  return cos_exception_cxt_ = cxt;
+  COS_UNUSED(cos_exception_context_set);
+}
+
+#else // COS_POSIX && !COS_TLS ---------------------------
+
+struct cos_exception_context*
+			 cos_exception_context_get(void);
+void   cos_exception_context_set(struct cos_exception_context*);
+
+#endif // ------------------------------------------------
+
 static inline struct cos_exception_protect
 cos_exception_protect(struct cos_exception_protect *ptr, OBJ const *obj)
 {
-  struct cos_exception_context *cxt = cos_exception_cxt;
+  struct cos_exception_context *cxt = cos_exception_context_get();
 
-  ptr->nxt = cxt->stk;
+  ptr->prv = cxt->stk;
   ptr->obj = obj;
   cxt->stk = ptr;
 

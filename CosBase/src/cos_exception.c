@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.2 2008/09/30 08:18:23 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.3 2008/09/30 15:40:13 ldeniau Exp $
  |
 */
 
@@ -39,15 +39,42 @@
 
 #include <stdlib.h>
 
-static struct cos_exception_context cxt0;
+static struct cos_exception_context _cxt0;
 
-#if COS_TLS
-__thread struct cos_exception_context *cos_exception_cxt = &cxt0;
-#elif COS_POSIX
-         struct cos_exception_context *cos_exception_cxt = &cxt0;
-#else
-         struct cos_exception_context *cos_exception_cxt = &cxt0;
-#endif
+#if COS_TLS || !COS_POSIX // -----------------------------
+
+__thread struct cos_exception_context *cos_exception_cxt_ = &_cxt0;
+
+#else // COS_POSIX && !COS_TLS ---------------------------
+
+#include <pthread.h>
+
+static pthread_key_t _cxt_key;
+
+void
+cos_exception_context_set(struct cos_exception_context *cxt)
+{
+	 test_assert( pthread_setspecific(_cxt_key, cxt) == 0 );
+}
+
+struct cos_exception_context*
+cos_exception_context_get(void)
+{
+  struct cos_exception_context *cxt = pthread_getspecific(_cxt_key);
+	if (cxt) return cxt;
+	 
+	cos_exception_context_set(&_cxt0);
+  return &_cxt0;
+}
+
+static void
+_cxt_init(void)
+{
+	test_assert( pthread_key_create(&_cxt_key, 0) == 0 );
+	cos_exception_context_set(&_cxt0);
+}
+
+#endif // ------------------------------------------------
 
 static void
 unwind_stack(struct cos_exception_context *cxt)
@@ -58,7 +85,7 @@ unwind_stack(struct cos_exception_context *cxt)
 
   while (p) {
     if (*p->obj) grelease(*p->obj);
-    p = p->nxt;
+    p = p->prv;
   }
 
   cxt->unstk = NO;
@@ -81,11 +108,11 @@ static cos_exception_handler handler = verbose_terminate;
 static void
 terminate(void)
 {
-  if (handler)
-    handler(cos_exception_cxt->ex,
-            cos_exception_cxt->file,
-            cos_exception_cxt->line);
-
+  if (handler) {
+    struct cos_exception_context *cxt = cos_exception_context_get();
+    handler(cxt->ex, cxt->file, cxt->line);
+  }
+	
   exit(EXIT_FAILURE);
 }
 
@@ -101,13 +128,23 @@ void
 cos_exception_throwLoc(OBJ ex, STR file, int line)
 {
   gthrow(ex,file,line);
-  terminate(); // safer if an overridden gThrow returns.
+  terminate(); // safer if an overridden gthrow returns.
 }
 
 BOOL
 cos_exception_uncaught(void)
 {
-  return cos_exception_cxt->unstk;
+  return cos_exception_context_get()->unstk;
+}
+
+void
+cos_exception_context(struct cos_exception_context *cxt)
+{
+  cxt->prv   = cos_exception_context_get();
+  cxt->stk   = 0;
+  cxt->unstk = NO;
+  cxt->ex    = NIL;
+  cos_exception_context_set(cxt);
 }
 
 // -----
@@ -124,22 +161,29 @@ cos_exception_setTerminate(cos_exception_handler new)
 
 defmethod(void, gthrow, Any, (STR)file, (int)line)
 
-  struct cos_exception_context *cxt = cos_exception_cxt;
+  struct cos_exception_context *cxt = cos_exception_context_get();
 
   cxt->ex   = self->rc == COS_RC_AUTO ? gclone(_1) : _1;
   cxt->file = file;
   cxt->line = line;
 
-  if (cos_exception_uncaught() == YES)
+  if (cxt->unstk == YES)
     terminate();
 
   unwind_stack(cxt);
 
-  if (cxt == &cxt0)
+  if (cxt == &_cxt0)
     terminate();
 
-  cos_exception_lngjmp(cxt->buf, cxt->st | cos_exception_throw_st);
+  cos_exception_lngjmp(cxt->buf, cxt->tag | cos_tag_throw);
 
+endmethod
+
+defmethod(void, ginitialize, pmException)
+  if (!_cxt0.prv) {
+		_cxt0.prv = &_cxt0;
+	  _cxt_init();
+  }
 endmethod
 
 /*
@@ -153,7 +197,7 @@ endmethod
 void
 cos_exception_showStack(FILE *fp)
 {
-  struct cos_exception_protect *p = cos_exception_cxt->stk;
+  struct cos_exception_protect *p = cos_exception_context_get()->stk;
   U32 i = 0;
 
   if (!fp) fp = stderr;
@@ -161,6 +205,6 @@ cos_exception_showStack(FILE *fp)
   while (p) {
     fprintf(fp, "prt[%4u] = %-25s\n",
             i, *p->obj ? gclassName(*p->obj) : "NIL");
-    ++i, p = p->nxt;
+    ++i, p = p->prv;
   }
 }

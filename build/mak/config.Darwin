@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Darwin,v 1.5 2008/09/29 13:16:05 ldeniau Exp $
+# | $Id: config.Darwin,v 1.6 2008/09/30 15:40:14 ldeniau Exp $
 # |
 #
 
@@ -41,10 +41,12 @@ LIBTYPE := archive shared
 #
 # tools
 #
-DEP        := gcc -MM -MT $(basename $@).o
-CPP        := gcc -E
-CC         := gcc -arch x86_64
-LD         := gcc -arch x86_64
+#CC         := gcc-4 -m64
+CC         := gcc -m64
+DEP         = $(CC) -MM -MT $(basename $@).o
+CPP        := $(CC) -E
+CC         := $(CC)
+LD         := $(CC)
 AR         := ar -cr
 RANLIB     := ranlib
 STRIP      := strip
@@ -88,7 +90,7 @@ SHEXT       = .dylib
 #
 # system specific settings
 #
-SYSFLAGS   := -DCOS_POSIX=1 \
+SYSFLAGS   := -DCOS_POSIX=YES -DCOS_TLS=NO -D__thread= \
               -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
               -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS    := -lpthread -ldl

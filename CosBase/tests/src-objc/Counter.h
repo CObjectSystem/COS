@@ -32,14 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Counter.h,v 1.1 2008/06/27 16:17:25 ldeniau Exp $
+ | $Id: Counter.h,v 1.2 2008/09/30 15:40:13 ldeniau Exp $
  |
 */
 
-#include <objc/Object.h>
+#include <Cocoa/Cocoa.h>
 #include "Protocols.h"
 
-@interface Counter : Object <Incr,AddTo1,AddTo2,AddTo3,AddTo4> {
+@interface Counter : NSObject <Incr,AddTo1,AddTo2,AddTo3,AddTo4> {
 @private // states
   U32 _val;
 }

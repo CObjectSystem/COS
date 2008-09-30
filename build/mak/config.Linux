@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Linux,v 1.5 2008/07/15 08:00:47 ldeniau Exp $
+# | $Id: config.Linux,v 1.6 2008/09/30 15:40:14 ldeniau Exp $
 # |
 #
 
@@ -41,10 +41,11 @@ LIBTYPE := archive shared
 #
 # tools
 #
-DEP         = gcc -MM -MT $(basename $@).o
-CPP        := gcc -E
 CC         := gcc
-LD         := gcc
+DEP         = $(CC) -MM -MT $(basename $@).o
+CPP        := $(CC) -E
+CC         := $(CC)
+LD         := $(CC)
 AR         := ar -cr
 RANLIB     := ranlib
 STRIP      := strip
@@ -88,7 +89,7 @@ SHEXT      := .so
 #
 # system specific settings
 #
-SYSFLAGS   := -DCOS_POSIX=1 -DCOS_TLS=__thread \
+SYSFLAGS   := -DCOS_POSIX=YES -DCOS_TLS=YES \
               -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
               -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS    := -lpthread -ldl

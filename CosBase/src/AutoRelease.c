@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.6 2008/09/30 08:18:23 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.7 2008/09/30 15:40:13 ldeniau Exp $
  |
 */
 
@@ -40,10 +40,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-
-/* NOTE-INFO: AutoRelease and threads
- * This code assumes the creation of a new pool for each new thread
- */
 
 /* NOTE-CONF: AutoRelease storage size
  * Init specifies the number of initial slots allocated for
@@ -58,17 +54,15 @@
 
 // private class
 defclass(AutoRelease,Object)
+  struct AutoRelease *prv;
   OBJ *stk;
   OBJ *top;
   OBJ *end;
-  OBJ  prv;
   OBJ  tmp;
   OBJ _stk[16];
 endclass
 
 makclass(AutoRelease,Object);
-
-static struct AutoRelease _pool0; // sentinel
 
 // -----
 
@@ -76,10 +70,14 @@ STATIC_ASSERT(COS_AUTORELEASE_RATE_must_be_greater_than_3_div_2,
               COS_AUTORELEASE_RATE >= 1.5);
 STATIC_ASSERT(COS_AUTORELEASE_INIT_must_be_greater_than_100,
               COS_AUTORELEASE_INIT >= 100);
-STATIC_ASSERT(COS_AUTORELEASE_INIT_is_too_small,
-              COS_AUTORELEASE_INIT >= COS_ARRLEN(_pool0._stk)*2);
 STATIC_ASSERT(COS_AUTORELEASE_WARN_is_too_small,
               COS_AUTORELEASE_WARN >= 1000);
+
+/* NOTE-INFO: AutoRelease and threads
+ * This code assumes the creation of a new pool for each new thread
+ */
+
+static struct AutoRelease _pool0; // sentinel
 
 #if COS_TLS || !COS_POSIX // -----------------------------
 
@@ -97,32 +95,39 @@ pool_set(struct AutoRelease *pool)
   _pool = pool;
 }
 
-#else // COS_POSIX ---------------------------------------
+#else // COS_POSIX && !COS_TLS ---------------------------
 
 #include <pthread.h>
 
-static pthread_key_t  _pool_key;
-static pthread_once_t _pool_once = PTHREAD_ONCE_INIT;
+static pthread_key_t _pool_key;
 
-static void
-_pool_init(void)
+static inline void
+pool_set(struct AutoRelease *pool)
 {
-	 test_assert( pthread_key_create(&_pool_key, (void(*)(void*))gdeinit) == 0 );
-	 test_assert( pthread_setspecific(_pool_key, &_pool0) == 0 );
+	test_assert( pthread_setspecific(_pool_key, pool) == 0 );
 }
 
 static inline struct AutoRelease*
 pool_get(void)
 {
-   test_assert( pthread_once(&_pool_once, _pool_init) == 0 );
-	 return pthread_getspecific(_pool_key);
+	struct AutoRelease *pool = pthread_getspecific(_pool_key);
+	if (pool) return pool;
+	 
+	pool_set(&_pool0);
+	return &_pool0;
 }
 
-static inline void
-pool_set(struct AutoRelease *pool)
+static void
+_pool_deinit(void *pool)
 {
-   test_assert( pthread_once(&_pool_once, _pool_init) == 0 );
-	 test_assert( pthread_setspecific(_pool_key, pool) == 0 );
+  if (pool) gdeinit(pool);
+}
+
+static void
+_pool_init(void)
+{
+	test_assert( pthread_key_create(&_pool_key, _pool_deinit) == 0 );
+	pool_set(&_pool0);
 }
 
 #endif // ------------------------------------------------
@@ -154,15 +159,6 @@ enlarge(struct AutoRelease* p)
 }
 
 static inline void
-push(struct AutoRelease* p, OBJ obj)
-{
-  if (p->top == p->end)
-    p->tmp = obj, enlarge(p), p->tmp = NIL;
-
-  *p->top++ = obj;
-}
-
-static inline void
 clear(struct AutoRelease *p)
 {
   if (p->tmp)
@@ -172,13 +168,22 @@ clear(struct AutoRelease *p)
     grelease(*p->top);
 }
 
+static inline void
+push(struct AutoRelease* p, OBJ obj)
+{
+  if (p->top == p->end)
+    p->tmp = obj, enlarge(p), p->tmp = NIL;
+
+  *p->top++ = obj;
+}
+
 // -----
 
 defmethod(OBJ, ginit, AutoRelease)
   self->stk = self->_stk;
   self->top = self->_stk;
   self->end = self->_stk + COS_ARRLEN(self->_stk);
-  self->prv = (OBJ)pool_get();
+  self->prv = pool_get();
   self->tmp = NIL;
   pool_set(self);
   retmethod(_1);
@@ -192,7 +197,7 @@ defmethod(OBJ, gdeinit, AutoRelease)
     grelease((OBJ)pool);
 
   // ensure transitivity when grelease sends gautoRelease
-  pool_set(STATIC_CAST(struct AutoRelease*, self->prv));
+  pool_set(self->prv);
 
   // release autoreleased objects
   clear(self);
@@ -211,15 +216,17 @@ defmethod(void, ginitialize, pmAutoRelease)
     // cos_trace("ginitialize(pmAutoRelease)");
     _pool0.Object.Any.id = COS_CLS_NAME(AutoRelease).Behavior.id;
     _pool0.Object.Any.rc = COS_RC_STATIC;
-    ginit((OBJ)(void*)&_pool0);
+    _pool0.prv = &_pool0;
+		_pool_init();
+    ginit((void*)&_pool0);
   }
 endmethod
 
 defmethod(void, gdeinitialize, pmAutoRelease)
   if (_pool0.prv) {
     // cos_trace("gdeinitialize(pmAutoRelease)");
-    gdeinit((OBJ)(void*)&_pool0);
-    _pool0.prv = NIL;
+    gdeinit((void*)&_pool0);
+    _pool0.prv = 0;
   }
 endmethod
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: exception.h,v 1.2 2008/09/30 15:40:13 ldeniau Exp $
  |
 */
 
@@ -236,27 +236,15 @@
  * Implementation
  */
 
-// try states
-enum {
-  cos_exception_try_st,
-  cos_exception_throw_st,
-  cos_exception_catch_st
-};
-
 // blocks
 #define COS_EX_TRY \
   { \
     /* local exception context */ \
     struct cos_exception_context _ex_lcxt; \
-    _ex_lcxt.nxt   = cos_exception_cxt; \
-    _ex_lcxt.stk   = 0; \
-    _ex_lcxt.unstk = COS_NO; \
-    _ex_lcxt.ex    = COS_NIL; \
-    /* gobal context updated */ \
-    cos_exception_cxt = &_ex_lcxt; \
+    cos_exception_context(&_ex_lcxt); \
     /* save jump location */ \
-    _ex_lcxt.st = cos_exception_setjmp(_ex_lcxt.buf); \
-    if (_ex_lcxt.st == cos_exception_try_st) {
+    _ex_lcxt.tag = cos_exception_setjmp(_ex_lcxt.buf); \
+    if (_ex_lcxt.tag == cos_tag_try) {
 
 #define COS_EX_CATCH(...) \
         COS_PP_CAT_NARG(COS_EX_CATCH_,__VA_ARGS__)(__VA_ARGS__)
@@ -265,28 +253,28 @@ enum {
         COS_EX_CATCH_2(C,)
 
 #define COS_EX_CATCH_2(C,E) \
-    } else if (_ex_lcxt.st == cos_exception_throw_st && \
+    } else if (_ex_lcxt.tag == cos_tag_throw && \
                cos_exception_catch(_ex_lcxt.ex,C)) { \
       COS_PP_IF(COS_PP_ISBLANK(E))(,COS_EX_MAK(E);) \
-      int _ex_st_ = (_ex_lcxt.st = cos_exception_catch_st, (void)_ex_st_, 0);
+      int _ex_tag_ = (_ex_lcxt.tag = cos_tag_catch, (void)_ex_tag_, 0);
 
 #define COS_EX_CATCH_ANY(E) \
-    } else if (_ex_lcxt.st == cos_exception_throw_st) { \
+    } else if (_ex_lcxt.tag == cos_tag_throw) { \
       COS_PP_IF(COS_PP_ISBLANK(E))(,COS_EX_MAK(E);) \
-      int _ex_st_ = (_ex_lcxt.st = cos_exception_catch_st, (void)_ex_st_, 0);
+      int _ex_tag_ = (_ex_lcxt.tag = cos_tag_catch, (void)_ex_tag_, 0);
 
 #define COS_EX_FINALLY(E) \
     } { \
       COS_PP_IF(COS_PP_ISBLANK(E))(,COS_EX_MAK(E);) \
       /* gobal context updated */ \
-      int _ex_cxt_ = (cos_exception_cxt = _ex_lcxt.nxt, (void)_ex_cxt_, 0);
+      int _ex_cxt_ = (cos_exception_context_set(_ex_lcxt.prv), (void)_ex_cxt_, 0);
 
 #define COS_EX_ENDTRY \
     } \
-    if (cos_exception_cxt == &_ex_lcxt) \
+    if (cos_exception_context_get() == &_ex_lcxt) \
       /* gobal context updated */ \
-      cos_exception_cxt = _ex_lcxt.nxt; \
-    if ((_ex_lcxt.st & cos_exception_throw_st) != 0) \
+      cos_exception_context_set(_ex_lcxt.prv); \
+    if ((_ex_lcxt.tag & cos_tag_throw) != 0) \
       COS_EX_RETHROW(); \
   }
 
@@ -319,7 +307,7 @@ enum {
           cos_exception_protect(&COS_PP_CAT3(_ex_prt_,O,_), &O)
 
 #define COS_EX_UNPRT(O) \
-        (cos_exception_cxt->stk = COS_PP_CAT3(_ex_prt_,O,_).nxt)
+        (cos_exception_context_get()->stk = COS_PP_CAT3(_ex_prt_,O,_).prv)
 
 // context saving
 #ifdef sigsetjmp

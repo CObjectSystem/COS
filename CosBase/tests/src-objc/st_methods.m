@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.m,v 1.4 2008/07/02 22:27:28 ldeniau Exp $
+ | $Id: st_methods.m,v 1.5 2008/09/30 15:40:13 ldeniau Exp $
  |
 */
 
@@ -53,9 +53,9 @@ st_methods()
   STEST( "method (4 arguments)", N, N, [cnt incrBy: 1 :1 :1 :1] );
   STEST( "method (5 arguments)", N, N, [cnt incrBy: 1 :1 :1 :1 :1] );
   
-  assert( [cnt value] == N+N+2*N+3*N+4*N+5*N );
+  assert( (U32)[cnt value] == (U32)(N+N+2*N+3*N+4*N+5*N) );
 
-  [cnt free];
+  [cnt dealloc];
 }
 
 void
@@ -69,10 +69,10 @@ st_multimethods()
   STEST( "method & visitor pattern (rank 4)", N, N, [cnt addTo3: one :one :one] );
   STEST( "method & visitor pattern (rank 5)", N, N, [cnt addTo4: one :one :one :one] );
 
-  assert( [cnt value] == N+2*N+3*N+4*N );
+  assert( (U32)[cnt value] == (U32)(N+2*N+3*N+4*N) );
 
-  [cnt free];
-  [one free];
+  [cnt dealloc];
+  [one dealloc];
 }
 
 void
@@ -86,5 +86,5 @@ st_memory(void)
   STEST( "alloc+init", P, P, arr[i++] = [[Counter alloc] init] );
 
   i = 0;
-  STEST( "free", P, P, [arr[i++] free] );
+  STEST( "dealloc", P, P, [arr[i++] dealloc] );
 }
