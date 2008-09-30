@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch1.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: cos_dispatch1.c,v 1.2 2008/09/30 08:18:23 ldeniau Exp $
  |
 */
 
@@ -58,7 +58,14 @@ static void init(SEL,OBJ,void*,void*);
 
 static struct cos_method_slot1 sentinel = { &sentinel,init,0,0 };
 static struct cos_method_slot1 *cache_empty = &sentinel;
+
+#if COS_TLS
 __thread struct cos_method_cache1 cos_method_cache1 = { &cache_empty, 0 };
+#elif COS_POSIX
+         struct cos_method_cache1 cos_method_cache1 = { &cache_empty, 0 };
+#else
+         struct cos_method_cache1 cos_method_cache1 = { &cache_empty, 0 };
+#endif
 
 static void
 init(SEL _sel, OBJ _1, void *_arg, void *_ret)

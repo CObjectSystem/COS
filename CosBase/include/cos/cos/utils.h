@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utils.h,v 1.1 2008/09/29 10:42:41 ldeniau Exp $
+ | $Id: utils.h,v 1.2 2008/09/30 08:18:23 ldeniau Exp $
  |
  o
 */
@@ -40,6 +40,9 @@
 #ifndef COS_COS_COS_H
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/utils.h>"
 #endif 
+
+// array size
+#define COS_ARRLEN(a) (sizeof (a) / sizeof *(a))
 
 // fast unrolled loop
 #define COS_LOOP(N,...) \

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.5 2008/08/21 15:54:36 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.6 2008/09/30 08:18:23 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,10 @@
 
 #include <stdlib.h>
 #include <string.h>
+
+/* NOTE-INFO: AutoRelease and threads
+ * This code assumes the creation of a new pool for each new thread
+ */
 
 /* NOTE-CONF: AutoRelease storage size
  * Init specifies the number of initial slots allocated for
@@ -64,28 +68,64 @@ endclass
 
 makclass(AutoRelease,Object);
 
-// -----
-
-/* NOTE-INFO: AutoRelease and threads
-   This code assumes a new pool creation for each new thread
- */
-static struct AutoRelease pool0; // sentinel
-static __thread struct AutoRelease *pool = &pool0;
+static struct AutoRelease _pool0; // sentinel
 
 // -----
-
-#define ARR_LEN(a) (sizeof (a) / sizeof *(a))
 
 STATIC_ASSERT(COS_AUTORELEASE_RATE_must_be_greater_than_3_div_2,
               COS_AUTORELEASE_RATE >= 1.5);
 STATIC_ASSERT(COS_AUTORELEASE_INIT_must_be_greater_than_100,
               COS_AUTORELEASE_INIT >= 100);
 STATIC_ASSERT(COS_AUTORELEASE_INIT_is_too_small,
-              COS_AUTORELEASE_INIT >= ARR_LEN(pool0._stk)*2);
+              COS_AUTORELEASE_INIT >= COS_ARRLEN(_pool0._stk)*2);
 STATIC_ASSERT(COS_AUTORELEASE_WARN_is_too_small,
               COS_AUTORELEASE_WARN >= 1000);
 
-// -----
+#if COS_TLS || !COS_POSIX // -----------------------------
+
+static __thread struct AutoRelease *_pool = &_pool0;
+
+static inline struct AutoRelease*
+pool_get(void)
+{
+  return _pool;
+}
+
+static inline void
+pool_set(struct AutoRelease *pool)
+{
+  _pool = pool;
+}
+
+#else // COS_POSIX ---------------------------------------
+
+#include <pthread.h>
+
+static pthread_key_t  _pool_key;
+static pthread_once_t _pool_once = PTHREAD_ONCE_INIT;
+
+static void
+_pool_init(void)
+{
+	 test_assert( pthread_key_create(&_pool_key, (void(*)(void*))gdeinit) == 0 );
+	 test_assert( pthread_setspecific(_pool_key, &_pool0) == 0 );
+}
+
+static inline struct AutoRelease*
+pool_get(void)
+{
+   test_assert( pthread_once(&_pool_once, _pool_init) == 0 );
+	 return pthread_getspecific(_pool_key);
+}
+
+static inline void
+pool_set(struct AutoRelease *pool)
+{
+   test_assert( pthread_once(&_pool_once, _pool_init) == 0 );
+	 test_assert( pthread_setspecific(_pool_key, pool) == 0 );
+}
+
+#endif // ------------------------------------------------
 
 static void
 enlarge(struct AutoRelease* p)
@@ -137,21 +177,22 @@ clear(struct AutoRelease *p)
 defmethod(OBJ, ginit, AutoRelease)
   self->stk = self->_stk;
   self->top = self->_stk;
-  self->end = self->_stk + ARR_LEN(self->_stk);
-  self->prv = (OBJ)pool;
+  self->end = self->_stk + COS_ARRLEN(self->_stk);
+  self->prv = (OBJ)pool_get();
   self->tmp = NIL;
-  pool = self;
+  pool_set(self);
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gdeinit, AutoRelease)
+  struct AutoRelease *pool;
 
   // safer to release pool(s) above self first
-  while (pool != self)
+  while ((pool = pool_get()) != self)
     grelease((OBJ)pool);
 
   // ensure transitivity when grelease sends gautoRelease
-  pool = STATIC_CAST(struct AutoRelease*, pool->prv);
+  pool_set(STATIC_CAST(struct AutoRelease*, self->prv));
 
   // release autoreleased objects
   clear(self);
@@ -166,19 +207,19 @@ endmethod
 // -----
 
 defmethod(void, ginitialize, pmAutoRelease)
-  if (!pool0.prv) {
+  if (!_pool0.prv) {
     // cos_trace("ginitialize(pmAutoRelease)");
-    pool0.Object.Any.id = COS_CLS_NAME(AutoRelease).Behavior.id;
-    pool0.Object.Any.rc = COS_RC_STATIC;
-    ginit((OBJ)(void*)&pool0);
+    _pool0.Object.Any.id = COS_CLS_NAME(AutoRelease).Behavior.id;
+    _pool0.Object.Any.rc = COS_RC_STATIC;
+    ginit((OBJ)(void*)&_pool0);
   }
 endmethod
 
 defmethod(void, gdeinitialize, pmAutoRelease)
-  if (pool0.prv) {
+  if (_pool0.prv) {
     // cos_trace("gdeinitialize(pmAutoRelease)");
-    gdeinit((OBJ)(void*)&pool0);
-    pool0.prv = NIL;
+    gdeinit((OBJ)(void*)&_pool0);
+    _pool0.prv = NIL;
   }
 endmethod
 
@@ -204,7 +245,7 @@ defmethod(OBJ, gautoRelease, Any)
   switch (self->rc) {
   case COS_RC_STATIC: break;
   case COS_RC_AUTO  : obj = gclone(obj);
-  default           : push(pool,obj);
+  default           : push(pool_get(), obj);
   }
   retmethod(obj);
 endmethod
@@ -226,6 +267,7 @@ endmethod
 void
 cos_autorelease_showStack(FILE *fp)
 {
+  struct AutoRelease *pool = pool_get();
   OBJ *top = pool->top;
   U32 i;
 

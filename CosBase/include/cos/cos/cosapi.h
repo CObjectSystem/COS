@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: cosapi.h,v 1.3 2008/09/30 08:18:23 ldeniau Exp $
  |
 */
 
@@ -160,12 +160,21 @@ BOOL cos_method_understand4_(struct cos_method_slot4**,SEL,U32,U32,U32,U32);
 BOOL cos_method_understand5_(struct cos_method_slot5**,SEL,U32,U32,U32,U32,U32);
 
 // global variables (per thread)
+#if COS_TLS
 extern __thread struct cos_exception_context* cos_exception_cxt;
 extern __thread struct cos_method_cache1 cos_method_cache1;
 extern __thread struct cos_method_cache2 cos_method_cache2;
 extern __thread struct cos_method_cache3 cos_method_cache3;
 extern __thread struct cos_method_cache4 cos_method_cache4;
 extern __thread struct cos_method_cache5 cos_method_cache5;
+#else
+extern          struct cos_exception_context* cos_exception_cxt;
+extern          struct cos_method_cache1 cos_method_cache1;
+extern          struct cos_method_cache2 cos_method_cache2;
+extern          struct cos_method_cache3 cos_method_cache3;
+extern          struct cos_method_cache4 cos_method_cache4;
+extern          struct cos_method_cache5 cos_method_cache5;
+#endif
 
 // components tags
 enum {

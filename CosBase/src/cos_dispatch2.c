@@ -16,7 +16,7 @@
  |
  | This file is part of the C Object System framework.
  |
- | The C Object System is free software; you can redistribute it and/or
+ | The C Object System is free software; you can redistribute it and/orCOS_TLS
  | modify it under the terms of the GNU Lesser General Public License
  | as published by the Free Software Foundation; either version 3 of
  | the License, or (at your option) any later version.
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch2.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: cos_dispatch2.c,v 1.2 2008/09/30 08:18:23 ldeniau Exp $
  |
 */
 
@@ -58,7 +58,13 @@ static void init(SEL,OBJ,OBJ,void*,void*);
 
 static struct cos_method_slot2 sentinel = { &sentinel,init,0,0,0 };
 static struct cos_method_slot2 *cache_empty = &sentinel;
- __thread struct cos_method_cache2 cos_method_cache2 = { &cache_empty, 0 };
+#if COS_TLS
+__thread struct cos_method_cache2 cos_method_cache2 = { &cache_empty, 0 };
+#elif COS_POSIX
+         struct cos_method_cache2 cos_method_cache2 = { &cache_empty, 0 };
+#else
+         struct cos_method_cache2 cos_method_cache2 = { &cache_empty, 0 };
+#endif
 
 static void
 init(SEL _sel, OBJ _1, OBJ _2, void *_arg, void *_ret)

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.1 2008/06/27 16:17:18 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.2 2008/09/30 08:18:23 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,14 @@
 #include <stdlib.h>
 
 static struct cos_exception_context cxt0;
+
+#if COS_TLS
 __thread struct cos_exception_context *cos_exception_cxt = &cxt0;
+#elif COS_POSIX
+         struct cos_exception_context *cos_exception_cxt = &cxt0;
+#else
+         struct cos_exception_context *cos_exception_cxt = &cxt0;
+#endif
 
 static void
 unwind_stack(struct cos_exception_context *cxt)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.6 2008/09/29 13:15:32 ldeniau Exp $
+ | $Id: config.h,v 1.7 2008/09/30 08:18:23 ldeniau Exp $
  |
 */
 
@@ -58,7 +58,7 @@
 #define COS_LOGMSG_LEVEL cos_msg_trace
 #endif
 
-/* NOTE-CONF: C99 dialect + Thread Local Storage
+/* NOTE-CONF: C99 dialect
    define missing C99 keywords here or with 'configure'
 */
 // #define inline        // __inline__
@@ -72,8 +72,8 @@
    define system flags here or with SYSFLAGS in the config.xxx makefile
 */
 // #define COS_POSIX 1
-// #define COS_TLS   __thread
-#define __thread
+// #define COS_TLS   1
+// #define __pthread
 
 /* NOTE-CONF: GCC dialect
    Automatic

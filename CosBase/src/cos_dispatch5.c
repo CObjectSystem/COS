@@ -58,7 +58,13 @@ static void init(SEL,OBJ,OBJ,OBJ,OBJ,OBJ,void*,void*);
 
 static struct cos_method_slot5 sentinel = { &sentinel,init,0,0,0,0,0,0 };
 static struct cos_method_slot5 *cache_empty = &sentinel;
+#if COS_TLS
 __thread struct cos_method_cache5 cos_method_cache5 = { &cache_empty, 0 };
+#elif COS_POSIX
+         struct cos_method_cache5 cos_method_cache5 = { &cache_empty, 0 };
+#else
+         struct cos_method_cache5 cos_method_cache5 = { &cache_empty, 0 };
+#endif
 
 static void
 init(SEL _sel, OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5, void *_arg, void *_ret)
