@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.4 2008/09/30 15:40:12 ldeniau Exp $
+ | $Id: cosapi.h,v 1.5 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -97,7 +97,8 @@ void   cos_exception_errnoLoc(int err, STR file, int line);
 void   cos_exception_throwLoc(OBJ ex, STR file, int line);
 BOOL   cos_exception_catch(OBJ ex, OBJ cls);
 BOOL   cos_exception_uncaught(void);
-void   cos_exception_context(struct cos_exception_context*);
+void   cos_exception_initContext(struct cos_exception_context*);
+void   cos_exception_deinitContext(struct cos_exception_context*);
 
 cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
 
@@ -140,7 +141,7 @@ void cos_logmsg_setLevel(int lvl);
         ((void)(COS_PP_CAT(COS_DEBUG_,topic) && (cos_debug(__VA_ARGS__),0)))
 
 // COS symbols init
-void COS_SYMBOL(void);
+void cos_symbol_init(void);
 void cos_symbol_register(struct Object**);
 
 // next-method
@@ -159,21 +160,6 @@ BOOL cos_method_understand2_(struct cos_method_slot2**,SEL,U32,U32);
 BOOL cos_method_understand3_(struct cos_method_slot3**,SEL,U32,U32,U32);
 BOOL cos_method_understand4_(struct cos_method_slot4**,SEL,U32,U32,U32,U32);
 BOOL cos_method_understand5_(struct cos_method_slot5**,SEL,U32,U32,U32,U32,U32);
-
-// global variables (per thread)
-#if COS_TLS
-extern __thread struct cos_method_cache1 cos_method_cache1;
-extern __thread struct cos_method_cache2 cos_method_cache2;
-extern __thread struct cos_method_cache3 cos_method_cache3;
-extern __thread struct cos_method_cache4 cos_method_cache4;
-extern __thread struct cos_method_cache5 cos_method_cache5;
-#else
-extern          struct cos_method_cache1 cos_method_cache1;
-extern          struct cos_method_cache2 cos_method_cache2;
-extern          struct cos_method_cache3 cos_method_cache3;
-extern          struct cos_method_cache4 cos_method_cache4;
-extern          struct cos_method_cache5 cos_method_cache5;
-#endif
 
 // components tags
 enum {
@@ -212,6 +198,69 @@ extern BOOL cos_logmsg_level[cos_msg_last];
  * Inlined functions
  */
 
+#if COS_TLS || !COS_POSIX // -----------------------------
+
+static inline struct cos_method_cache1*
+cos_method_cache1(void)
+{
+  extern __thread struct cos_method_cache1 cos_method_cache1_;
+  return &cos_method_cache1_;
+  COS_UNUSED(cos_method_cache1);
+}
+
+static inline struct cos_method_cache2*
+cos_method_cache2(void)
+{
+  extern __thread struct cos_method_cache2 cos_method_cache2_;
+  return &cos_method_cache2_;
+	COS_UNUSED(cos_method_cache2);
+
+}
+
+static inline struct cos_method_cache3*
+cos_method_cache3(void)
+{
+  extern __thread struct cos_method_cache3 cos_method_cache3_;
+  return &cos_method_cache3_;
+  COS_UNUSED(cos_method_cache3);
+}
+
+static inline struct cos_method_cache4*
+cos_method_cache4(void)
+{
+  extern __thread struct cos_method_cache4 cos_method_cache4_;
+  return &cos_method_cache4_;
+  COS_UNUSED(cos_method_cache4);
+}
+
+static inline struct cos_method_cache5*
+cos_method_cache5(void)
+{
+  extern __thread struct cos_method_cache5 cos_method_cache5_;
+  return &cos_method_cache5_;
+  COS_UNUSED(cos_method_cache5);
+}
+
+static inline struct cos_exception_context*
+cos_exception_context(void)
+{
+  extern __thread struct cos_exception_context *cos_exception_cxt_;
+  return cos_exception_cxt_;
+  COS_UNUSED(cos_exception_context);
+}
+
+#else // COS_POSIX && !COS_TLS ---------------------------
+
+struct cos_method_cache1* cos_method_cache1(void);
+struct cos_method_cache2* cos_method_cache2(void);
+struct cos_method_cache3* cos_method_cache3(void);
+struct cos_method_cache4* cos_method_cache4(void);
+struct cos_method_cache5* cos_method_cache5(void);
+
+struct cos_exception_context* cos_exception_context(void);
+
+#endif // ------------------------------------------------
+
 static inline U32
 cos_any_id(OBJ obj)
 {
@@ -219,36 +268,10 @@ cos_any_id(OBJ obj)
   COS_UNUSED(cos_any_id);
 }
 
-#if COS_TLS || !COS_POSIX // -----------------------------
-
-static inline struct cos_exception_context*
-cos_exception_context_get(void)
-{
-  extern __thread struct cos_exception_context *cos_exception_cxt_;
-  return cos_exception_cxt_;
-  COS_UNUSED(cos_exception_context_get);
-}
-
-static inline void
-cos_exception_context_set(struct cos_exception_context *cxt)
-{
-  extern __thread struct cos_exception_context *cos_exception_cxt_;
-  return cos_exception_cxt_ = cxt;
-  COS_UNUSED(cos_exception_context_set);
-}
-
-#else // COS_POSIX && !COS_TLS ---------------------------
-
-struct cos_exception_context*
-			 cos_exception_context_get(void);
-void   cos_exception_context_set(struct cos_exception_context*);
-
-#endif // ------------------------------------------------
-
 static inline struct cos_exception_protect
 cos_exception_protect(struct cos_exception_protect *ptr, OBJ const *obj)
 {
-  struct cos_exception_context *cxt = cos_exception_context_get();
+  struct cos_exception_context *cxt = cos_exception_context();
 
   ptr->prv = cxt->stk;
   ptr->obj = obj;

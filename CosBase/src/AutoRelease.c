@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.7 2008/09/30 15:40:13 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.8 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -93,6 +93,11 @@ static inline void
 pool_set(struct AutoRelease *pool)
 {
   _pool = pool;
+}
+
+static void
+_pool_init(void)
+{
 }
 
 #else // COS_POSIX && !COS_TLS ---------------------------

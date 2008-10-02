@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.3 2008/09/30 15:40:13 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.4 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -45,33 +45,44 @@ static struct cos_exception_context _cxt0;
 
 __thread struct cos_exception_context *cos_exception_cxt_ = &_cxt0;
 
+static inline void
+cxt_set(struct cos_exception_context *cxt)
+{
+  return cos_exception_cxt_ = cxt;
+}
+
 #else // COS_POSIX && !COS_TLS ---------------------------
 
 #include <pthread.h>
 
 static pthread_key_t _cxt_key;
 
-void
-cos_exception_context_set(struct cos_exception_context *cxt)
+static inline void
+cxt_set(struct cos_exception_context *cxt)
 {
 	 test_assert( pthread_setspecific(_cxt_key, cxt) == 0 );
 }
 
 struct cos_exception_context*
-cos_exception_context_get(void)
+cos_exception_context(void)
 {
   struct cos_exception_context *cxt = pthread_getspecific(_cxt_key);
 	if (cxt) return cxt;
 	 
-	cos_exception_context_set(&_cxt0);
+	cxt_set(&_cxt0);
   return &_cxt0;
 }
 
-static void
-_cxt_init(void)
+#ifndef __GNUC__
+#error "COS: pthread requires either TLS or GCC constructor"
+#endif
+
+static void cxt_init(void) __attribute__((constructor));
+static void cxt_init(void)
 {
-	test_assert( pthread_key_create(&_cxt_key, 0) == 0 );
-	cos_exception_context_set(&_cxt0);
+  if ( pthread_key_create(&_cxt_key, 0) )
+	  cos_abort("unable to initialize exceptions");
+	cxt_set(&_cxt0);
 }
 
 #endif // ------------------------------------------------
@@ -109,7 +120,7 @@ static void
 terminate(void)
 {
   if (handler) {
-    struct cos_exception_context *cxt = cos_exception_context_get();
+    struct cos_exception_context *cxt = cos_exception_context();
     handler(cxt->ex, cxt->file, cxt->line);
   }
 	
@@ -134,17 +145,28 @@ cos_exception_throwLoc(OBJ ex, STR file, int line)
 BOOL
 cos_exception_uncaught(void)
 {
-  return cos_exception_context_get()->unstk;
+  return cos_exception_context()->unstk;
 }
 
 void
-cos_exception_context(struct cos_exception_context *cxt)
+cos_exception_initContext(struct cos_exception_context *cxt)
 {
-  cxt->prv   = cos_exception_context_get();
+  cxt->prv   = cos_exception_context();
   cxt->stk   = 0;
   cxt->unstk = NO;
   cxt->ex    = NIL;
-  cos_exception_context_set(cxt);
+  cxt_set(cxt);
+}
+
+void
+cos_exception_deinitContext(struct cos_exception_context *cxt)
+{
+	cxt_set(cxt->prv);
+
+	if ( (cxt->tag & cos_tag_throw) )
+		cos_exception_throwLoc(cxt->ex,cxt->file,cxt->line); // rethrow
+
+	if (cxt->ex) grelease(cxt->ex);
 }
 
 // -----
@@ -161,12 +183,16 @@ cos_exception_setTerminate(cos_exception_handler new)
 
 defmethod(void, gthrow, Any, (STR)file, (int)line)
 
-  struct cos_exception_context *cxt = cos_exception_context_get();
+  struct cos_exception_context *cxt = cos_exception_context();
 
-  cxt->ex   = self->rc == COS_RC_AUTO ? gclone(_1) : _1;
-  cxt->file = file;
-  cxt->line = line;
+  if (cxt->ex != _1) {
+	  if (cxt->ex) grelease(cxt->ex);
 
+    cxt->ex   = self->rc == COS_RC_AUTO ? gclone(_1) : _1;
+    cxt->file = file;
+    cxt->line = line;
+  }
+	
   if (cxt->unstk == YES)
     terminate();
 
@@ -177,13 +203,6 @@ defmethod(void, gthrow, Any, (STR)file, (int)line)
 
   cos_exception_lngjmp(cxt->buf, cxt->tag | cos_tag_throw);
 
-endmethod
-
-defmethod(void, ginitialize, pmException)
-  if (!_cxt0.prv) {
-		_cxt0.prv = &_cxt0;
-	  _cxt_init();
-  }
 endmethod
 
 /*
@@ -197,7 +216,7 @@ endmethod
 void
 cos_exception_showStack(FILE *fp)
 {
-  struct cos_exception_protect *p = cos_exception_context_get()->stk;
+  struct cos_exception_protect *p = cos_exception_context()->stk;
   U32 i = 0;
 
   if (!fp) fp = stderr;

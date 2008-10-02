@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_exception.c,v 1.1 2008/06/27 16:17:19 ldeniau Exp $
+ | $Id: ut_exception.c,v 1.2 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -77,23 +77,19 @@ ut_exception(void)
   UTEST_START("exception & signal")
 
   // -----
+
   for (i = 0; i < 2; i++)
     TRY
       PRT(a,b);
-      a = gnew(A); b = gnew(B);
+      a = gnew(A); b = gnew(B); c = gnew(C);
 
-      switch(i) {
-      case 0:
-        c = gnew(C);
-        gcatStr(c," is not thrown");
-        break;
-
-      case 1:
-        c = gnew(C);
-        gcatStr(c," is thrown");
+      if(i == 0) {
+				gcatStr(c," is not thrown");
+				UNPRT(a); // unprotect 'a' and 'b'
+      } else {
+			  gcatStr(c," is thrown");
         file = __FILE__, line = __LINE__, THROW(c);
       }
-      UNPRT(a); // unprotect 'a' and objects protected after 'a'
 
     CATCH(D)
       UTEST( !"CATCH(D) should not be reached" );
@@ -109,41 +105,31 @@ ut_exception(void)
     CATCH_ANY()
       UTEST( !"CATCH_ANY() should not be reached" );
 
-    FINALLY(ex)
-      if (ex) {
-        UTEST( i == 1 );
-        UTEST( ex == c );
-        UTEST( check_str(ex, "C has been caught as an A") );
-        UTEST( ex_file == file && ex_line == line );
-      } else {
-        UTEST( i == 0 );
+    FINALLY
+      if (i == 0) {
         UTEST( check_str(c, "C is not thrown") );
-        UTEST( grelease(a) == Nil );
-        UTEST( grelease(b) == Nil );
-      }
-
-      UTEST( grelease(c) == Nil );
+			  grelease(c);
+		  } else {
+        UTEST( check_str(c, "C has been caught as an A") );
+			}
     ENDTRY
 
   // -----
+
   TRY
       TRY
         file = __FILE__, line = __LINE__, THROW(gnew(A));
       CATCH(A, ex)
-        UTEST( ex_file == file && ex_line == line );
-        RETHROW(ex);
-      FINALLY(ex)
-        // still excuted before the rethrow
-        UTEST( check_str(ex, "A") );
-        UTEST( ex_file == file && ex_line == line );
+        UTEST( gisInstanceOf(ex,A) == True );
+				UTEST( ex_file == file && ex_line == line );
+        RETHROW();
+      FINALLY
       ENDTRY // rethrow is now effective
-  CATCH(A)
+  CATCH(A, ex)
     // catch the rethrow
-  FINALLY(ex)
-    UTEST( ex != NO );
-    UTEST( check_str(ex, "A") );
-    UTEST( ex_file == file && ex_line == line );
-    UTEST( grelease(ex) == Nil );
+    UTEST( gisInstanceOf(ex,A) == True );
+		UTEST( ex_file == file && ex_line == line );
+  FINALLY
   ENDTRY
 
   // -----
@@ -154,7 +140,6 @@ ut_exception(void)
       raise(sig[i]);
     CATCH(ExSignal, ex)
       UTEST( gint(ex) == sig[i] );
-      grelease(ex);
     ENDTRY
     
   UTEST_END

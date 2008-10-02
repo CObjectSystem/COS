@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.1 2008/06/27 16:17:19 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.2 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -106,14 +106,14 @@ ut_autorelease(void)
           for (; i < 600; i++)
             arr[i] = gretain(gautoRelease(gnew(A)));
           THROW(Nil);
-        FINALLY()
+        FINALLY
           UTEST( gsize(ar3) == 300 ), ar3 = NIL;
         ENDTRY // rethrow Nil
-      FINALLY()
+      FINALLY
         UTEST( gsize(ar2) == 200 ), ar2 = NIL;
       ENDTRY // rethrow Nil
     CATCH_ANY() // catch Nil
-    FINALLY()
+    FINALLY
       UTEST( gsize(ar1) == 100 ), ar1 = NIL;
     ENDTRY
     UTEST( gsize(ar) == 0 );

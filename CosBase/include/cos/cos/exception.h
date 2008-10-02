@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.2 2008/09/30 15:40:13 ldeniau Exp $
+ | $Id: exception.h,v 1.3 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -59,10 +59,10 @@
     CATCH_ANY( exception-name_opt ) statement
 
   finally-stmt:
-    FINALLY( exception-name_opt ) statement
+    FINALLY statement
 
   rethrow-statement:
-    RETHROW( exception-name_opt );
+    RETHROW();
 
   throw-statement:
     THROW( object-expr );
@@ -79,19 +79,15 @@
     CATCH(String [,ex])
       code optionally using local ex, ex_file and ex_line where ex is an
       *instance* of a subclass of String.
-        e.g. raised by THROW(gnewWithStr(String, "message"));
+			e.g. raised by THROW(gnewWithStr(String, "message"));
     CATCH(mExBadAlloc [,ex])
       code optionally using local ex, ex_file and ex_line where ex is a
       *subclass* of the class ExBadAlloc.
-        e.g. raised by THROW(ExBadAlloc)
+			e.g. raised by THROW(ExBadAlloc)
     CATCH_ANY([ex])
-      equivalent to CATCH(Object [,ex]) but slightly more efficient.
-    FINALLY([ex])
-      cleanup code (always executed) optionally using local ex, ex_file and
-      ex_line where ex would be the thrown/rethrown exception object *or* NIL
-      if try succeeded. If ex is an instance not already released in a catch
-      block, it should be either released or rethrown here.
-        e.g. if (ex != NIL) grelease(ex);
+      almost equivalent to CATCH(Any [,ex]).
+    FINALLY
+      cleanup code (always executed)
     ENDTRY
 
   where:
@@ -99,31 +95,10 @@
     *except* that the use of return (or retmethod), break, continue, goto or
     longjump to jump *inside/outside* of these blocks is *FORBIDDEN*
     (unchecked error!).
-  - Throwing exceptions within CATCH and FINALLY blocks is valid. As a matter
-    of fact, combining both CATCH and FINALLY blocks in the same TRY-ENDTRY
-    scope is equivalent to:
-
-      TRY                     TRY
-                                TRY
-        ..                        ..
-      CATCH(C1)                 CATCH(C1)
-        ..                        ..
-      CATCH(C2)                 CATCH(C2)
-        ..                        ..
-      CATCH_ANY()               CATCH_ANY()
-        ..                        ..
-                                ENDTRY
-      FINALLY(E)              FINALLY(E)
-        ..                      ..
-      ENDTRY                  ENDTRY
-
-    except that:
-    - left case is more efficient.
-    - right case FINALLY(E) doesn't have access to the inner TRY-ENDTRY
-      exception unless it is rethrown.
+  - Throwing exceptions within a TRY-ENDTRY block is valid.
 
   - CATCH and FINALLY blocks are optional, but it makes sense to have
-    at least one CATCH block. Within these blocks, THROW(E) and RETHROW([E])
+    at least one CATCH block. Within these blocks, THROW(E) and RETHROW()
     can be freely used.
   - If an uncaught exception reaches ENDTRY, it will be automatically rethrown.
   - If an uncaught exception reaches the end of the program, ex_terminate()
@@ -209,7 +184,7 @@
 #endif
 
 #ifndef COS_DISABLE_FINALLY
-#define FINALLY(E) COS_EX_FINALLY(E)
+#define FINALLY COS_EX_FINALLY
 #endif
 
 #ifndef COS_DISABLE_ENDTRY
@@ -221,7 +196,7 @@
 #endif
 
 #ifndef COS_DISABLE_RETHROW
-#define RETHROW(E) COS_EX_RETHROW(E)
+#define RETHROW() COS_EX_RETHROW()
 #endif
 
 #ifndef COS_DISABLE_PRT
@@ -239,12 +214,10 @@
 // blocks
 #define COS_EX_TRY \
   { \
-    /* local exception context */ \
-    struct cos_exception_context _ex_lcxt; \
-    cos_exception_context(&_ex_lcxt); \
-    /* save jump location */ \
-    _ex_lcxt.tag = cos_exception_setjmp(_ex_lcxt.buf); \
-    if (_ex_lcxt.tag == cos_tag_try) {
+    struct cos_exception_context _cos_ex_lcxt; \
+    cos_exception_initContext(&_cos_ex_lcxt); \
+    _cos_ex_lcxt.tag = cos_exception_setjmp(_cos_ex_lcxt.buf); \
+    if (_cos_ex_lcxt.tag == cos_tag_try) {
 
 #define COS_EX_CATCH(...) \
         COS_PP_CAT_NARG(COS_EX_CATCH_,__VA_ARGS__)(__VA_ARGS__)
@@ -253,36 +226,30 @@
         COS_EX_CATCH_2(C,)
 
 #define COS_EX_CATCH_2(C,E) \
-    } else if (_ex_lcxt.tag == cos_tag_throw && \
-               cos_exception_catch(_ex_lcxt.ex,C)) { \
+    } else if (_cos_ex_lcxt.tag == cos_tag_throw && \
+               cos_exception_catch(_cos_ex_lcxt.ex,C)) { \
       COS_PP_IF(COS_PP_ISBLANK(E))(,COS_EX_MAK(E);) \
-      int _ex_tag_ = (_ex_lcxt.tag = cos_tag_catch, (void)_ex_tag_, 0);
+      int _cos_ex_tag_ = (_cos_ex_lcxt.tag = cos_tag_catch, (void)_cos_ex_tag_, 0);
 
 #define COS_EX_CATCH_ANY(E) \
-    } else if (_ex_lcxt.tag == cos_tag_throw) { \
+    } else if (_cos_ex_lcxt.tag == cos_tag_throw) { \
       COS_PP_IF(COS_PP_ISBLANK(E))(,COS_EX_MAK(E);) \
-      int _ex_tag_ = (_ex_lcxt.tag = cos_tag_catch, (void)_ex_tag_, 0);
+      int _cos_ex_tag_ = (_cos_ex_lcxt.tag = cos_tag_catch, (void)_cos_ex_tag_, 0);
 
-#define COS_EX_FINALLY(E) \
-    } { \
-      COS_PP_IF(COS_PP_ISBLANK(E))(,COS_EX_MAK(E);) \
-      /* gobal context updated */ \
-      int _ex_cxt_ = (cos_exception_context_set(_ex_lcxt.prv), (void)_ex_cxt_, 0);
+#define COS_EX_FINALLY \
+    } if ( !(_cos_ex_lcxt.tag & cos_tag_finally) ) { \
+      int _cos_ex_tag_ = (_cos_ex_lcxt.tag |= cos_tag_finally, (void)_cos_ex_tag_, 0);
 
 #define COS_EX_ENDTRY \
     } \
-    if (cos_exception_context_get() == &_ex_lcxt) \
-      /* gobal context updated */ \
-      cos_exception_context_set(_ex_lcxt.prv); \
-    if ((_ex_lcxt.tag & cos_tag_throw) != 0) \
-      COS_EX_RETHROW(); \
+    cos_exception_deinitContext(&_cos_ex_lcxt); \
   }
 
 // exception local binding
 #define COS_EX_MAK(E) \
-  OBJ E = _ex_lcxt.ex; \
-  STR COS_PP_CAT(E,_file) = (COS_UNUSED(COS_PP_CAT(E,_file)), _ex_lcxt.file); \
-  int COS_PP_CAT(E,_line) = (COS_UNUSED(COS_PP_CAT(E,_line)), _ex_lcxt.line)
+  OBJ E = _cos_ex_lcxt.ex; \
+  STR COS_PP_CAT(E,_file) = (COS_UNUSED(COS_PP_CAT(E,_file)), _cos_ex_lcxt.file); \
+  int COS_PP_CAT(E,_line) = (COS_UNUSED(COS_PP_CAT(E,_line)), _cos_ex_lcxt.line)
 
 // throwing exception
 #define COS_EX_THROW(...) \
@@ -294,20 +261,19 @@
 #define COS_EX_THROW_3(E,F,L) \
         cos_exception_throwLoc(E,F,L)
 
-#define COS_EX_RETHROW(E) \
-        COS_EX_THROW(COS_PP_IF(COS_PP_ISBLANK(E))(_ex_lcxt.ex,E), \
-                     _ex_lcxt.file,_ex_lcxt.line)
+#define COS_EX_RETHROW() \
+        COS_EX_THROW(_cos_ex_lcxt.ex,_cos_ex_lcxt.file,_cos_ex_lcxt.line)
 
 // pointer protection
 #define COS_EX_PRT(...) \
         COS_PP_SEPWITH(COS_PP_MAP((__VA_ARGS__),COS_EX_PRT_1),;)
 
 #define COS_EX_PRT_1(O) \
-        struct cos_exception_protect COS_PP_CAT3(_ex_prt_,O,_) = \
-          cos_exception_protect(&COS_PP_CAT3(_ex_prt_,O,_), &O)
+        struct cos_exception_protect COS_PP_CAT3(_cos_ex_prt_,O,_) = \
+          cos_exception_protect(&COS_PP_CAT3(_cos_ex_prt_,O,_), &O)
 
 #define COS_EX_UNPRT(O) \
-        (cos_exception_context_get()->stk = COS_PP_CAT3(_ex_prt_,O,_).prv)
+        (cos_exception_context()->stk = COS_PP_CAT3(_cos_ex_prt_,O,_).prv)
 
 // context saving
 #ifdef sigsetjmp

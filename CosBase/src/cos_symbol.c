@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.4 2008/09/29 13:15:32 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.5 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -363,7 +363,7 @@ sym_init(void)
       if (tbl[t][s]->Any.rc != cos_tag_method) {
         struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl[t][s]);
         U32 i = bhv->id & sym.msk;
-        if (sym.bhv[i]) cos_abort("Behavior slot %u already assigned", i);
+        if (sym.bhv[i]) cos_abort("behavior slot %u already assigned", i);
         sym.bhv[i] = bhv;
       }
 
@@ -500,7 +500,7 @@ cos_init(void)
     double t0, t1;
 
     init_done = YES;
-    // (COS_SYMBOL)();
+    cos_symbol_init();
     // cos_trace("cos_init");
 
     t0 = clock();

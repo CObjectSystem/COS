@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: dispatch.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: dispatch.h,v 1.2 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -52,8 +52,8 @@ static inline IMP1
 cos_method_fastLookup1(SEL _sel, U32 id1)
 {
   U32 key = cos_method_hkey1(_sel->Behavior.id,id1);
-  struct cos_method_slot1 **slot =
-    cos_method_cache1.slot + (key & cos_method_cache1.msk);
+	struct cos_method_cache1 *cache = cos_method_cache1();
+  struct cos_method_slot1 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&
@@ -68,8 +68,8 @@ static inline BOOL
 cos_method_understand1(SEL _sel, U32 id1)
 {
   U32 key = cos_method_hkey1(_sel->Behavior.id,id1);
-  struct cos_method_slot1 **slot =
-    cos_method_cache1.slot + (key & cos_method_cache1.msk);
+	struct cos_method_cache1 *cache = cos_method_cache1();
+  struct cos_method_slot1 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&
@@ -92,8 +92,8 @@ static inline IMP2
 cos_method_fastLookup2(SEL _sel, U32 id1, U32 id2)
 {
   U32 key = cos_method_hkey2(_sel->Behavior.id,id1,id2);
-  struct cos_method_slot2 **slot =
-    cos_method_cache2.slot + (key & cos_method_cache2.msk);
+	struct cos_method_cache2 *cache = cos_method_cache2();
+  struct cos_method_slot2 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&
@@ -109,8 +109,8 @@ static inline BOOL
 cos_method_understand2(SEL _sel, U32 id1, U32 id2)
 {
   U32 key = cos_method_hkey2(_sel->Behavior.id,id1,id2);
-  struct cos_method_slot2 **slot =
-    cos_method_cache2.slot + (key & cos_method_cache2.msk);
+	struct cos_method_cache2 *cache = cos_method_cache2();
+  struct cos_method_slot2 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&
@@ -134,8 +134,8 @@ static inline IMP3
 cos_method_fastLookup3(SEL _sel, U32 id1, U32 id2, U32 id3)
 {
   U32 key = cos_method_hkey3(_sel->Behavior.id,id1,id2,id3);
-  struct cos_method_slot3 **slot =
-    cos_method_cache3.slot + (key & cos_method_cache3.msk);
+	struct cos_method_cache3 *cache = cos_method_cache3();
+  struct cos_method_slot3 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&
@@ -152,8 +152,8 @@ static inline BOOL
 cos_method_understand3(SEL _sel, U32 id1, U32 id2, U32 id3)
 {
   U32 key = cos_method_hkey3(_sel->Behavior.id,id1,id2,id3);
-  struct cos_method_slot3 **slot =
-    cos_method_cache3.slot + (key & cos_method_cache3.msk);
+	struct cos_method_cache3 *cache = cos_method_cache3();
+  struct cos_method_slot3 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&
@@ -178,8 +178,8 @@ static inline IMP4
 cos_method_fastLookup4(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4)
 {
   U32 key = cos_method_hkey4(_sel->Behavior.id,id1,id2,id3,id4);
-  struct cos_method_slot4 **slot =
-    cos_method_cache4.slot + (key & cos_method_cache4.msk);
+	struct cos_method_cache4 *cache = cos_method_cache4();
+  struct cos_method_slot4 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&
@@ -197,8 +197,8 @@ static inline BOOL
 cos_method_understand4(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4)
 {
   U32 key = cos_method_hkey4(_sel->Behavior.id,id1,id2,id3,id4);
-  struct cos_method_slot4 **slot =
-    cos_method_cache4.slot + (key & cos_method_cache4.msk);
+	struct cos_method_cache4 *cache = cos_method_cache4();
+  struct cos_method_slot4 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&
@@ -224,8 +224,8 @@ static inline IMP5
 cos_method_fastLookup5(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
   U32 key = cos_method_hkey5(_sel->Behavior.id,id1,id2,id3,id4,id5);
-  struct cos_method_slot5 **slot =
-    cos_method_cache5.slot + (key & cos_method_cache5.msk);
+	struct cos_method_cache5 *cache = cos_method_cache5();
+  struct cos_method_slot5 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&
@@ -244,8 +244,8 @@ static inline BOOL
 cos_method_understand5(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
   U32 key = cos_method_hkey5(_sel->Behavior.id,id1,id2,id3,id4,id5);
-  struct cos_method_slot5 **slot =
-    cos_method_cache5.slot + (key & cos_method_cache5.msk);
+	struct cos_method_cache5 *cache = cos_method_cache5();
+  struct cos_method_slot5 **slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&

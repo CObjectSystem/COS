@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_contract.c,v 1.1 2008/06/27 16:17:19 ldeniau Exp $
+ | $Id: ut_contract.c,v 1.2 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -55,7 +55,6 @@ check_ctr(OBJ cls, int val, STR res)
     gdoC(_1, val);
   CATCH_ANY(ex)
     ret = !strcmp(gstr(ex), "val == 0");
-    grelease(ex);
   ENDTRY
 
   ret = !strcmp(s, res);

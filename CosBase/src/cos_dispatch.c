@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: cos_dispatch.c,v 1.2 2008/10/02 08:44:43 ldeniau Exp $
  |
 */
 
@@ -55,12 +55,13 @@ void cos_method_clearCaches(void)
 void
 cos_method_showCache1(FILE *fp)
 {
+  struct cos_method_cache1 *cache = cos_method_cache1();
   U32 i, n=0, d=0;
 
   if (!fp) fp = stderr;
 
-  for (i=0; i <= cos_method_cache1.msk; i++) {
-    struct cos_method_slot1 *slot = cos_method_cache1.slot[i];
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot1 *slot = cache->slot[i];
 
     if (slot->idg) {
       U32 j=0;
@@ -88,12 +89,13 @@ cos_method_showCache1(FILE *fp)
 void
 cos_method_showCache2(FILE *fp)
 {
+  struct cos_method_cache2 *cache = cos_method_cache2();
   U32 i, n=0, d=0;
 
   if (!fp) fp = stderr;
 
-  for (i=0; i <= cos_method_cache2.msk; i++) {
-    struct cos_method_slot2 *slot = cos_method_cache2.slot[i];
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot2 *slot = cache->slot[i];
 
     if (slot->idg) {
       U32 j=0;
@@ -122,12 +124,13 @@ cos_method_showCache2(FILE *fp)
 void
 cos_method_showCache3(FILE *fp)
 {
+  struct cos_method_cache3 *cache = cos_method_cache3();
   U32 i, n=0, d=0;
 
   if (!fp) fp = stderr;
 
-  for (i=0; i <= cos_method_cache3.msk; i++) {
-    struct cos_method_slot3 *slot = cos_method_cache3.slot[i];
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot3 *slot = cache->slot[i];
 
     if (slot->idg) {
       U32 j=0;
@@ -157,12 +160,13 @@ cos_method_showCache3(FILE *fp)
 void
 cos_method_showCache4(FILE *fp)
 {
+  struct cos_method_cache4 *cache = cos_method_cache4();
   U32 i, n=0, d=0;
 
   if (!fp) fp = stderr;
 
-  for (i=0; i <= cos_method_cache4.msk; i++) {
-    struct cos_method_slot4 *slot = cos_method_cache4.slot[i];
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot4 *slot = cache->slot[i];
 
     if (slot->idg) {
       U32 j=0;
@@ -193,12 +197,13 @@ cos_method_showCache4(FILE *fp)
 void
 cos_method_showCache5(FILE *fp)
 {
+  struct cos_method_cache5 *cache = cos_method_cache5();
   U32 i, n=0, d=0;
 
   if (!fp) fp = stderr;
 
-  for (i=0; i <= cos_method_cache5.msk; i++) {
-    struct cos_method_slot5 *slot = cos_method_cache5.slot[i];
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot5 *slot = cache->slot[i];
 
     if (slot->idg) {
       U32 j=0;
