@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Darwin,v 1.6 2008/09/30 15:40:14 ldeniau Exp $
+# | $Id: config.Darwin,v 1.7 2008/10/02 08:45:09 ldeniau Exp $
 # |
 #
 
@@ -41,7 +41,6 @@ LIBTYPE := archive shared
 #
 # tools
 #
-#CC         := gcc-4 -m64
 CC         := gcc -m64
 DEP         = $(CC) -MM -MT $(basename $@).o
 CPP        := $(CC) -E
@@ -78,7 +77,7 @@ RELEASE_CC  =
 RELEASE_LD  = 
 
 SHARED_CC   = -dynamiclib -fPIC
-SHARED_LD   = -dynamiclib -fPIC -Wl,-install_name,$(@F)
+SHARED_LD   = -dynamiclib -fPIC -Wl,-install_name,$(@F) -Wl,-U,_cos_symbol_init
 
 #
 # libraries pre/post-fix and path

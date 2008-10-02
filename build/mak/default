@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.1 2008/06/27 16:17:26 ldeniau Exp $
+# | $Id: default,v 1.2 2008/10/02 08:45:09 ldeniau Exp $
 # |
 #
 
@@ -64,7 +64,7 @@ STRIP = echo 1>&/dev/null
 endif
 
 # remove cossym file
-objects := $(filter-out $(COS_SYMBOL),$(objects))
+objects := $(filter-out _$(COSSYM),$(objects))
 
 ifeq ($(objects),)
 $(error unable to find .c source files)

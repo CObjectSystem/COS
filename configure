@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: configure,v 1.4 2008/06/30 15:41:11 ldeniau Exp $
+# | $Id: configure,v 1.5 2008/10/02 08:45:09 ldeniau Exp $
 # |
 #
 
@@ -46,12 +46,12 @@ incdir=$base/CosBase/include
 progname=`basename $0`
 version=`cat $base/VERSION`
 release=`cat $base/RELEASE`
+cossym=cossym
 prefix=/usr
 config=`uname -s`
 datestr=`date`
 options=
 defines=
-cossym=cossym
 
 # configurations
 config_list=`ls $makdir/config.* | sed -e "s+$makdir/config\.++g" -e 's/.*~//g'`
@@ -113,40 +113,45 @@ END-OF-TEXT
 
 # parse arguments
 while [ "$1" != "" ] ; do
+
 	val=`expr $1 : '--prefix=\(.*\)'`
 	if [ "$val" != "" ] ; then
-		prefix=$val; shift; continue;
+		prefix=$val;
+		shift; continue;
 	fi
 
 	val=`expr $1 : '--config=\(.*\)'`
 	if [ "$val" != "" ] ; then
-		config=$val; shift; continue;
+		config=$val;
+		shift; continue;
 	fi
 
 	val=`expr $1 : '--option=\(.*\)'`
 	if [ "$val" != "" ] ; then
-		options="$options $val"; shift; continue;
+		options="$options $val";
+		shift; continue;
 	fi
 
 	val=`expr $1 : '--define=\(.*\)'`
 	if [ "$val" != "" ] ; then
-		defines="$defines $val"; shift; continue;
+		defines="$defines $val";
+		shift; continue;
 	fi
 
-    if   [ "$1" = "--help" ] ; then
-       usage
-    else
-      echo "Unknown option: $1"
-      usage
-	fi
+  if [ "$1" = "--help" -o \
+	     "$1" =  "-help" ] ; then
+    usage
+  fi
 
-	shift
+  echo "Unknown option: $1"
+  usage
+
 done
 
 if [ ! -f "$makdir/config.$config" ] ; then
 	echo "Unknown configuration: $config"
 	echo "Please use the --config option to specify another build configuration"
-    echo "Available configurations:" $config_list
+	echo "Available configurations:" $config_list
 	exit 1
 fi
 
@@ -164,10 +169,10 @@ cat > $out <<END-OF-TEXT
 INSTALLDIR   = \$(DESTDIR)$prefix
 
 OSNAME      := $config
+COSSYM      := $cossym
 
 COS_VERSION := $version
 COS_RELEASE := $release
-COS_SYMBOL  := $cossym
 COS_CCOPTS  :=$options
 
 # end of config
@@ -191,7 +196,6 @@ cat > $out <<END-OF-TEXT
 
 #define COS_VERSION $version
 #define COS_RELEASE $release
-#define COS_SYMBOL  $cossym
 END-OF-TEXT
 
 for define in $defines; do

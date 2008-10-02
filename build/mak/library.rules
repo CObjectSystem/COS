@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library.rules,v 1.5 2008/09/30 15:40:14 ldeniau Exp $
+# | $Id: library.rules,v 1.6 2008/10/02 08:45:09 ldeniau Exp $
 # |
 #
 
@@ -82,19 +82,19 @@ $(BUILDDIR)/$(LIBDIR)/$(LIBPREFIX)$(library)$(TARGET_EXT)$(SHEXT): \
   $(foreach o,$(objects),$(BUILDDIR)/$(OBJDIR)/$(TARGET)/$(o).o)
 	@echo "*** Building" $@
 	@$(MKDIR) $(@D)
-	@$(EXEDIR)/$(COS_SYMBOL)  --out=$(<D)/_$(COS_SYMBOL).c                  --static
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/_$(COS_SYMBOL).c -o $(<D)/_$(COS_SYMBOL).o
-	@$(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/_$(COS_SYMBOL).o -o $@.$(version) $(LIBS) $(SYSLIBS)
-	@$(EXEDIR)/$(COS_SYMBOL)  --out=$(<D)/_$(COS_SYMBOL).c    $@.$(version) --static
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/_$(COS_SYMBOL).c -o $(<D)/_$(COS_SYMBOL).o
+	@$(EXEDIR)/$(COSSYM) --auto --out=$(<D)/_$(COSSYM).c
+	@$(CC) $(INCLUDE) $(CCFLAGS)   -c $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
+	@$(LD) $(LIBRARY) $(LDFLAGS)   $^ $(<D)/_$(COSSYM).o -o $@.$(version) $(LIBS) $(SYSLIBS)
+	@$(EXEDIR)/$(COSSYM) --auto --out=$(<D)/_$(COSSYM).c    $@.$(version)
+	@$(CC) $(INCLUDE) $(CCFLAGS)   -c $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
 ifneq ($(SHOW),yes)
-	@$(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/_$(COS_SYMBOL).o -o $@.$(version) $(LIBS) $(SYSLIBS)
+	@$(LD) $(LIBRARY) $(LDFLAGS)   $^ $(<D)/_$(COSSYM).o -o $@.$(version) $(LIBS) $(SYSLIBS)
 	@$(LN) $(@F).$(version) $@
 #ifeq ($(TARGET),release)
 #	@$(STRIP) $@
 #endif
 else
-	 $(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/_$(COS_SYMBOL).o -o $@.$(version) $(LIBS) $(SYSLIBS)
+	 $(LD) $(LIBRARY) $(LDFLAGS)   $^ $(<D)/_$(COSSYM).o -o $@.$(version) $(LIBS) $(SYSLIBS)
 	 $(LN) $(@F).$(version) $@
 #ifeq ($(TARGET),release)
 #	 $(STRIP) $@

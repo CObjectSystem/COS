@@ -40,11 +40,12 @@ filelist=
 rmgen=
 rmcls=
 rmtrc=
-funname='cossym'
-funattr='__attribute__((constructor))'
+funattr=
 funqual=
-out="${funname}.c"
+out="_cossym.c"
 datestr=`date`
+static='static '
+ctor=' __attribute__((constructor))'
 
 # helper
 usage() {
@@ -60,6 +61,9 @@ cat <<END-OF-TEXT
   Options:
     --help
       This help.
+
+    --auto
+      The symbols registration will be automatically done on load (shared lib)
 
     --in=<file_name>
       Use the content of file_name to specify list of files
@@ -83,17 +87,6 @@ cat <<END-OF-TEXT
     --rmtrc
       Trace removed generics and classes on stderr
 
-    --name=<fun_name>
-      Use the given name for the function returning symbols
-      Default is: $funname
-
-    --attr=<fun_attr>
-      Apply the given attribute for the function returning symbols
-      Default is: $funattr
-
-    --static
-      Qualify the function returning symbols as being static
-
     where lists are names separated by '|' (or egrep patterns)
       e.g. --rmcls='True|False|TrueFalse'
 
@@ -104,56 +97,56 @@ END-OF-TEXT
 
 # parse arguments
 while [ "$1" != "" ] ; do
+
 	val=`expr $1 : '--in=\(.*\)'`
 	if [ "$val" != "" ] ; then
-		filelist="$filelist `cat $val`"; shift; continue;
+		filelist="$filelist `cat $val`";
+		shift; continue;
 	fi
 
 	val=`expr $1 : '--out=\(.*\)'`
 	if [ "$val" != "" ] ; then
-		out="$val"; shift; continue;
+		out="$val";
+		shift; continue;
 	fi
 
 	val=`expr $1 : '--rmgen=\(.*\)'`
 	if [ "$val" != "" ] ; then
-		rmgen="$rmgen $val"; shift; continue;
+		rmgen="$rmgen $val";
+		shift; continue;
 	fi
 
 	val=`expr $1 : '--rmcls=\(.*\)'`
 	if [ "$val" != "" ] ; then
-		rmcls="$rmcls $val"; shift; continue;
+		rmcls="$rmcls $val";
+		shift; continue;
 	fi
 
-	val=`expr $1 : '--name=\(.*\)'`
-	if [ "$val" != "" ] ; then
-		funname="$val"; shift; continue;
+	if [ "$1" = "--auto" ] ; then
+		funqual="$static"
+		funattr="$ctor"
+		shift; continue;
 	fi
 
-	val=`expr $1 : '--attr=\(.*\)'`
-	if [ "$val" != "" ] ; then
-		funattr="$val"; shift; continue;
-	fi
-
-	if [ "$1" = "--static" ] ; then
-		funqual="static "
-
-	elif [ "$1" = "--rmtrc" ] ; then
+	if [ "$1" = "--rmtrc" ] ; then
 		rmtrc="Y"
+		shift; continue;
+	fi
 
-    elif [ "$1" = "--help" ] ; then
-      usage
+	if [ "$1" = "--help" -o \
+	     "$1" =  "-help" ] ; then
+		usage
+	fi
 
-	else
-		val=`expr $1 : '--\(.*\)'`
-        if [ "$val" != "" ] ; then
-            echo "Unknown option: $1"
-            usage
-        fi
+	val=`expr $1 : '--\(.*\)'`
+	if [ "$val" != "" ] ; then
+		echo "Unknown option: $1"
+		usage
+	fi
 
-        filelist="$filelist $1"
-    fi
-
+	filelist="$filelist $1"
 	shift
+	
 done
 
 token='[A-Za-z_][A-Za-z0-9_]*'
@@ -163,14 +156,14 @@ if [ "$filelist" != "" ] ; then
     sym=`nm   -g -P $filelist                |
       	 grep -E -e "^_?cos_[cgm]_$token D " |
    	     cut  -d ' ' -f 1                    |
-		 sed  -e 's/^_cos/cos/g'             |
+				 sed  -e 's/^_cos/cos/g'             |
        	 sort -u`
     if [ "$rmcls" != "" ] ; then
-        lnk=`nm   -g -P $filelist            |
-        	 grep -E -e "^_?cos_l_$token B " |
-        	 cut  -d ' ' -f 1                |
-			 sed  -e 's/^_cos/cos/g'         |
-        	 sort -u`
+		lnk=`nm   -g -P $filelist            |
+       	 grep -E -e "^_?cos_l_$token B " |
+       	 cut  -d ' ' -f 1                |
+				 sed  -e 's/^_cos/cos/g'         |
+         sort -u`
     fi
 fi
 
@@ -310,8 +303,8 @@ cat >> $out <<END-OF-TEXT
 
 void cos_symbol_register(struct Object**);
 
-${funqual}void $funname(void) $funattr;
-${funqual}void $funname(void)
+${funqual}void cos_symbol_init(void)${funattr};
+${funqual}void cos_symbol_init(void)
 {
    cos_symbol_register(symtbl);
 }
