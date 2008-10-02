@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.c,v 1.4 2008/08/21 15:45:07 ldeniau Exp $
+ | $Id: st_methods.c,v 1.5 2008/10/02 21:09:55 ldeniau Exp $
  |
 */
 
@@ -197,5 +197,5 @@ st_memory(void)
 void
 st_exception(void)
 {
-  STEST( "try-endtry", N/10, N/10, TRY ENDTRY );
+  STEST( "try-endtry", N/100, N/100, TRY ENDTRY );
 }

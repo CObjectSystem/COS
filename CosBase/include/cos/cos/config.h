@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.7 2008/09/30 08:18:23 ldeniau Exp $
+ | $Id: config.h,v 1.8 2008/10/02 21:09:55 ldeniau Exp $
  |
 */
 
@@ -73,7 +73,10 @@
 */
 // #define COS_POSIX 1
 // #define COS_TLS   1
-// #define __pthread
+
+#if !COS_TLS
+#define __thread
+#endif
 
 /* NOTE-CONF: GCC dialect
    Automatic

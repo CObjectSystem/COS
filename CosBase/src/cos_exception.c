@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.5 2008/10/02 14:50:35 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.6 2008/10/02 21:09:55 ldeniau Exp $
  |
 */
 
@@ -52,8 +52,6 @@ cxt_set(struct cos_exception_context *cxt)
 }
 
 #else // COS_POSIX && !COS_TLS ---------------------------
-
-#include <pthread.h>
 
 static pthread_key_t _cxt_key;
 

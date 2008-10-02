@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch2.c,v 1.3 2008/10/02 14:50:35 ldeniau Exp $
+ | $Id: cos_dispatch2.c,v 1.4 2008/10/02 21:09:55 ldeniau Exp $
  |
 */
 
@@ -65,24 +65,19 @@ __thread struct cos_method_cache2 cos_method_cache2_ = { &cache_empty, 0 };
 
 #else // COS_POSIX && !COS_TLS ---------------------------
 
-#include <pthread.h>
-
-static pthread_key_t _cache_key;
+pthread_key_t cos_method_cache2_key;
 
 struct cos_method_cache2*
-cos_method_cache2(void)
+cos_method_cache2_init(void)
 {
-  struct cos_method_cache2 *cache = pthread_getspecific(_cache_key);
-	if (cache) return cache;
-
-  cache = malloc(sizeof *cache);
+  struct cos_method_cache2 *cache = malloc(sizeof *cache);
   if (!cache)
 	  cos_abort("out of memory while creating dispatcher cache2");
 
 	cache->slot = &cache_empty;
 	cache->msk  = 0;
 
-  if ( pthread_setspecific(_cache_key, cache) )
+  if ( pthread_setspecific(cos_method_cache2_key, cache) )
 	  cos_abort("unable to initialize dispatcher cache2");
 
   return cache;
@@ -95,7 +90,7 @@ cos_method_cache2(void)
 static void cache_init(void) __attribute__((constructor));
 static void cache_init(void)
 {
-  if ( pthread_key_create(&_cache_key, free) )
+  if ( pthread_key_create(&cos_method_cache2_key, free) )
 	  cos_abort("unable to initialize dispatcher cache2");
 }
 

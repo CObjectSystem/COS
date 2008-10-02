@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Linux,v 1.6 2008/09/30 15:40:14 ldeniau Exp $
+# | $Id: config.Linux,v 1.7 2008/10/02 21:09:55 ldeniau Exp $
 # |
 #
 
@@ -89,7 +89,7 @@ SHEXT      := .so
 #
 # system specific settings
 #
-SYSFLAGS   := -DCOS_POSIX=YES -DCOS_TLS=YES \
+SYSFLAGS   := -DCOS_POSIX=COS_YES -DCOS_TLS=COS_YES \
               -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
               -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS    := -lpthread -ldl

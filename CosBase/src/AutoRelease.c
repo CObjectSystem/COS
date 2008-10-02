@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.9 2008/10/02 14:50:35 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.10 2008/10/02 21:09:55 ldeniau Exp $
  |
 */
 
@@ -101,8 +101,6 @@ _pool_init(void)
 }
 
 #else // COS_POSIX && !COS_TLS ---------------------------
-
-#include <pthread.h>
 
 static pthread_key_t _pool_key;
 
