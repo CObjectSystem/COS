@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.5 2008/10/02 08:44:43 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.6 2008/10/02 14:50:35 ldeniau Exp $
  |
 */
 
@@ -84,7 +84,7 @@ bhv_tag(void)
   x = x * 2621124293u + 1;       // generator of \frac{\set{N}}{2^{32}\set{N}}
   tag = x & COS_ID_TAGMSK;
 
-  if (!tag) cos_abort("Too many Behavior tags");
+  if (!tag) cos_abort("too many behavior tags");
 
   return tag;
 }
@@ -93,7 +93,7 @@ static inline void
 bhv_setTag(struct Behavior *bhv)
 {
   if (bhv->Object.Any.id) {  // generics case
-    if (bhv->id) cos_abort("Behavior has already an id");
+    if (bhv->id) cos_abort("behavior has already an id");
 
     bhv->id = bhv->Object.Any.id | bhv_tag();
     bhv->Object.Any.id = 0;

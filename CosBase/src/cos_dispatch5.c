@@ -58,13 +58,48 @@ static void init(SEL,OBJ,OBJ,OBJ,OBJ,OBJ,void*,void*);
 
 static struct cos_method_slot5 sentinel = { &sentinel,init,0,0,0,0,0,0 };
 static struct cos_method_slot5 *cache_empty = &sentinel;
-#if COS_TLS
-__thread struct cos_method_cache5 cos_method_cache5 = { &cache_empty, 0 };
-#elif COS_POSIX
-         struct cos_method_cache5 cos_method_cache5 = { &cache_empty, 0 };
-#else
-         struct cos_method_cache5 cos_method_cache5 = { &cache_empty, 0 };
+
+#if COS_TLS || !COS_POSIX // -----------------------------
+
+__thread struct cos_method_cache5 cos_method_cache5_ = { &cache_empty, 0 };
+
+#else // COS_POSIX && !COS_TLS ---------------------------
+
+#include <pthread.h>
+
+static pthread_key_t _cache_key;
+
+struct cos_method_cache5*
+cos_method_cache5(void)
+{
+  struct cos_method_cache5 *cache = pthread_getspecific(_cache_key);
+	if (cache) return cache;
+
+  cache = malloc(sizeof *cache);
+  if (!cache)
+	  cos_abort("out of memory while creating dispatcher cache5");
+
+	cache->slot = &cache_empty;
+	cache->msk  = 0;
+
+  if ( pthread_setspecific(_cache_key, cache) )
+	  cos_abort("unable to initialize dispatcher cache5");
+
+  return cache;
+}
+
+#ifndef __GNUC__
+#error "COS: pthread requires either TLS or GCC constructor"
 #endif
+
+static void cache_init(void) __attribute__((constructor));
+static void cache_init(void)
+{
+  if ( pthread_key_create(&_cache_key, free) )
+	  cos_abort("unable to initialize dispatcher cache5");
+}
+
+#endif // ------------------------------------------------
 
 static void
 init(SEL _sel, OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5, void *_arg, void *_ret)
@@ -113,24 +148,26 @@ enlarge_slot(struct cos_method_slot5 **slot)
 static void
 enlarge_cache(void)
 {
+	struct cos_method_cache5 *cache = cos_method_cache5();
   U32 i, n;
 
-  n = cos_method_cache5.msk ? (cos_method_cache5.msk+1)*2 : 512;
+  n = cache->msk ? (cache->msk+1)*2 : 512;
   cos_method_clearCache5();
 
-  cos_method_cache5.slot = malloc(n * sizeof *cos_method_cache5.slot);
-  if (!cos_method_cache5.slot)
+  cache->slot = malloc(n * sizeof *cache->slot);
+  if (!cache->slot)
     cos_abort("method5_lookup: out of memory");
 
   for (i = 0; i < n; i++)
-    cos_method_cache5.slot[i] = &sentinel;
+    cache->slot[i] = &sentinel;
 
-  cos_method_cache5.msk = n-1;
+  cache->msk = n-1;
 }
 
 static struct cos_method_slot5**
 load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5, BOOL load)
 {
+	struct cos_method_cache5 *cache;
   struct cos_method_slot5 **slot;
   IMP5 fct;
   U32 key;
@@ -149,15 +186,16 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5, BOOL load)
   }
 
   // get slot
-  key  = cos_method_hkey5(_sel->Behavior.id,id1,id2,id3,id4,id5);
-  slot = cos_method_cache5.slot + (key & cos_method_cache5.msk);
+  key   = cos_method_hkey5(_sel->Behavior.id,id1,id2,id3,id4,id5);
+	cache = cos_method_cache5();
+  slot  = cache->slot + (key & cache->msk);
 
   // get cell
-  if (cos_method_cache5.msk < COS_METHOD_MAXSLOT5-1) {
+  if (cache->msk < COS_METHOD_MAXSLOT5-1) {
     if (*slot != &sentinel || slot == &cache_empty) {
       // try to ensure O(1) until MAXSLOT is reached
       enlarge_cache();
-      slot = cos_method_cache5.slot + (key & cos_method_cache5.msk);
+      slot = cache->slot + (key & cache->msk);
     }
     // allocate 1st cell
     enlarge_slot(slot);
@@ -193,8 +231,9 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5, BOOL load)
 
 #define CACHE_GET_SLOT() \
   U32 key = cos_method_hkey5(_sel->Behavior.id,id1,id2,id3,id4,id5); \
-  struct cos_method_slot5 **slot = \
-    cos_method_cache5.slot + (key & cos_method_cache5.msk);
+	struct cos_method_cache5 *cache = cos_method_cache5(); \
+  struct cos_method_slot5 **slot = cache->slot + (key & cache->msk);
+
 
 #define CACHE_MTH_LOAD(load) \
   slot = load_method(_sel,id1,id2,id3,id4,id5,load);
@@ -272,18 +311,19 @@ cos_method_understand5_(struct cos_method_slot5 **slot, SEL _sel,
 void
 cos_method_clearCache5(void)
 {
+	struct cos_method_cache5 *cache = cos_method_cache5();
   U32 i;
 
-  if (cos_method_cache5.slot != &cache_empty) {
-    for (i = 0; i <= cos_method_cache5.msk; i++) {
-      struct cos_method_slot5 **slot = cos_method_cache5.slot+i;
+  if (cache->slot != &cache_empty) {
+    for (i = 0; i <= cache->msk; i++) {
+      struct cos_method_slot5 **slot = cache->slot+i;
 
       if (*slot != &sentinel)
         first_cell(slot), free(*slot);
     }
 
-    free(cos_method_cache5.slot);
-    cos_method_cache5.slot = &cache_empty;
-    cos_method_cache5.msk = 0;
+    free(cache->slot);
+    cache->slot = &cache_empty;
+    cache->msk  = 0;
   }
 }

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Darwin,v 1.7 2008/10/02 08:45:09 ldeniau Exp $
+# | $Id: config.Darwin,v 1.8 2008/10/02 14:50:35 ldeniau Exp $
 # |
 #
 
@@ -61,7 +61,7 @@ TAR        := tar czf
 # compiler and linker flags
 #
 CPPFLAGS   := -std=c99 -W -Wall -pedantic -pipe
-CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3 --param large-function-growth=200 --param inline-unit-growth=100
+CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3 --param large-function-growth=250 --param inline-unit-growth=100
 LDFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
 
 DEBUG_CPP   =
@@ -89,7 +89,7 @@ SHEXT       = .dylib
 #
 # system specific settings
 #
-SYSFLAGS   := -DCOS_POSIX=YES -DCOS_TLS=NO -D__thread= \
+SYSFLAGS   := -DCOS_POSIX=NO -DCOS_TLS=NO -D__thread= \
               -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
               -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS    := -lpthread -ldl

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch3.c,v 1.2 2008/09/30 08:18:23 ldeniau Exp $
+ | $Id: cos_dispatch3.c,v 1.3 2008/10/02 14:50:35 ldeniau Exp $
  |
 */
 
@@ -58,13 +58,48 @@ static void init(SEL,OBJ,OBJ,OBJ,void*,void*);
 
 static struct cos_method_slot3 sentinel = { &sentinel,init,0,0,0,0 };
 static struct cos_method_slot3 *cache_empty = &sentinel;
-#if COS_TLS
-__thread struct cos_method_cache3 cos_method_cache3 = { &cache_empty, 0 };
-#elif COS_POSIX
-         struct cos_method_cache3 cos_method_cache3 = { &cache_empty, 0 };
-#else
-         struct cos_method_cache3 cos_method_cache3 = { &cache_empty, 0 };
+
+#if COS_TLS || !COS_POSIX // -----------------------------
+
+__thread struct cos_method_cache3 cos_method_cache3_ = { &cache_empty, 0 };
+
+#else // COS_POSIX && !COS_TLS ---------------------------
+
+#include <pthread.h>
+
+static pthread_key_t _cache_key;
+
+struct cos_method_cache3*
+cos_method_cache3(void)
+{
+  struct cos_method_cache3 *cache = pthread_getspecific(_cache_key);
+	if (cache) return cache;
+
+  cache = malloc(sizeof *cache);
+  if (!cache)
+	  cos_abort("out of memory while creating dispatcher cache3");
+
+	cache->slot = &cache_empty;
+	cache->msk  = 0;
+
+  if ( pthread_setspecific(_cache_key, cache) )
+	  cos_abort("unable to initialize dispatcher cache3");
+
+  return cache;
+}
+
+#ifndef __GNUC__
+#error "COS: pthread requires either TLS or GCC constructor"
 #endif
+
+static void cache_init(void) __attribute__((constructor));
+static void cache_init(void)
+{
+  if ( pthread_key_create(&_cache_key, free) )
+	  cos_abort("unable to initialize dispatcher cache3");
+}
+
+#endif // ------------------------------------------------
 
 static void
 init(SEL _sel, OBJ _1, OBJ _2, OBJ _3, void *_arg, void *_ret)
@@ -111,24 +146,26 @@ enlarge_slot(struct cos_method_slot3 **slot)
 static void
 enlarge_cache(void)
 {
+	struct cos_method_cache3 *cache = cos_method_cache3();
   U32 i, n;
 
-  n = cos_method_cache3.msk ? (cos_method_cache3.msk+1)*2 : 512;
+  n = cache->msk ? (cache->msk+1)*2 : 512;
   cos_method_clearCache3();
 
-  cos_method_cache3.slot = malloc(n * sizeof *cos_method_cache3.slot);
-  if (!cos_method_cache3.slot)
+  cache->slot = malloc(n * sizeof *cache->slot);
+  if (!cache->slot)
     cos_abort("method3_lookup: out of memory");
 
   for (i = 0; i < n; i++)
-    cos_method_cache3.slot[i] = &sentinel;
+    cache->slot[i] = &sentinel;
 
-  cos_method_cache3.msk = n-1;
+  cache->msk = n-1;
 }
 
 static struct cos_method_slot3**
 load_method(SEL _sel, U32 id1, U32 id2, U32 id3, BOOL load)
 {
+	struct cos_method_cache3 *cache;
   struct cos_method_slot3 **slot;
   IMP3 fct;
   U32 key;
@@ -146,14 +183,15 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, BOOL load)
 
   // get slot
   key  = cos_method_hkey3(_sel->Behavior.id,id1,id2,id3);
-  slot = cos_method_cache3.slot + (key & cos_method_cache3.msk);
+	cache = cos_method_cache3();
+  slot  = cache->slot + (key & cache->msk);
 
   // get cell
-  if (cos_method_cache3.msk < COS_METHOD_MAXSLOT3-1) {
+  if (cache->msk < COS_METHOD_MAXSLOT3-1) {
     if (*slot != &sentinel || slot == &cache_empty) {
       // try to ensure O(1) until MAXSLOT is reached
       enlarge_cache();
-      slot = cos_method_cache3.slot + (key & cos_method_cache3.msk);
+      slot = cache->slot + (key & cache->msk);
     }
     // allocate 1st cell
     enlarge_slot(slot);
@@ -187,8 +225,8 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, BOOL load)
 
 #define CACHE_GET_SLOT() \
   U32 key = cos_method_hkey3(_sel->Behavior.id,id1,id2,id3); \
-  struct cos_method_slot3 **slot = \
-    cos_method_cache3.slot + (key & cos_method_cache3.msk);
+	struct cos_method_cache3 *cache = cos_method_cache3(); \
+  struct cos_method_slot3 **slot = cache->slot + (key & cache->msk);
 
 #define CACHE_MTH_LOAD(load) \
   slot = load_method(_sel,id1,id2,id3,load);
@@ -260,18 +298,19 @@ cos_method_understand3_(struct cos_method_slot3 **slot, SEL _sel,
 void
 cos_method_clearCache3(void)
 {
+	struct cos_method_cache3 *cache = cos_method_cache3();
   U32 i;
 
-  if (cos_method_cache3.slot != &cache_empty) {
-    for (i = 0; i <= cos_method_cache3.msk; i++) {
-      struct cos_method_slot3 **slot = cos_method_cache3.slot+i;
+  if (cache->slot != &cache_empty) {
+    for (i = 0; i <= cache->msk; i++) {
+      struct cos_method_slot3 **slot = cache->slot+i;
 
       if (*slot != &sentinel)
         first_cell(slot), free(*slot);
     }
 
-    free(cos_method_cache3.slot);
-    cos_method_cache3.slot = &cache_empty;
-    cos_method_cache3.msk = 0;
+    free(cache->slot);
+    cache->slot = &cache_empty;
+    cache->msk  = 0;
   }
 }

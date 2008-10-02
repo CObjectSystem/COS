@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.8 2008/10/02 08:44:43 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.9 2008/10/02 14:50:35 ldeniau Exp $
  |
 */
 
@@ -123,16 +123,20 @@ pool_get(void)
 }
 
 static void
-_pool_deinit(void *pool)
+_pool_deinit(void *pool_)
 {
-  if (pool) gdeinit(pool);
+  struct AutoRelease *pool = pool_;
+	
+  while (pool->prv != &_pool0)
+	  pool = pool->prv;
+
+  grelease((OBJ)pool);
 }
 
 static void
 _pool_init(void)
 {
 	test_assert( pthread_key_create(&_pool_key, _pool_deinit) == 0 );
-	pool_set(&_pool0);
 }
 
 #endif // ------------------------------------------------

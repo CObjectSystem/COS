@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.4 2008/10/02 08:44:43 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.5 2008/10/02 14:50:35 ldeniau Exp $
  |
 */
 
@@ -48,7 +48,7 @@ __thread struct cos_exception_context *cos_exception_cxt_ = &_cxt0;
 static inline void
 cxt_set(struct cos_exception_context *cxt)
 {
-  return cos_exception_cxt_ = cxt;
+  cos_exception_cxt_ = cxt;
 }
 
 #else // COS_POSIX && !COS_TLS ---------------------------
@@ -82,7 +82,6 @@ static void cxt_init(void)
 {
   if ( pthread_key_create(&_cxt_key, 0) )
 	  cos_abort("unable to initialize exceptions");
-	cxt_set(&_cxt0);
 }
 
 #endif // ------------------------------------------------
