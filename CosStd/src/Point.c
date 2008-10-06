@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Point.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Point.c,v 1.2 2008/10/06 17:34:58 ldeniau Exp $
  |
 */
 
@@ -48,35 +48,35 @@ makclass(Point5, Point);
 // ----- copy
 
 defmethod(OBJ, ginitWith, Point1, Point1)
-  self1->value = self2->value;
+  self1->coord = self2->coord;
 
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Point2, Point2)
-  self1->value[0] = self2->value[0],
-  self1->value[1] = self2->value[1];
+  self1->coord[0] = self2->coord[0],
+  self1->coord[1] = self2->coord[1];
 
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Point3, Point3)
   for (int i = 0; i < 3; i++)
-    self1->value[i] = self2->value[i];
+    self1->coord[i] = self2->coord[i];
 
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Point4, Point4)
   for (int i = 0; i < 4; i++)
-    self1->value[i] = self2->value[i];
+    self1->coord[i] = self2->coord[i];
 
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Point5, Point5)
   for (int i = 0; i < 5; i++)
-    self1->value[i] = self2->value[i];
+    self1->coord[i] = self2->coord[i];
 
   retmethod(_1);
 endmethod
@@ -84,41 +84,41 @@ endmethod
 // ----- equality
 
 defmethod(OBJ, gequal, Point1, Point1)
-  BOOL res = dbl_equal(self1->value, self2->value);
+  BOOL res = dbl_equal(self1->coord, self2->coord);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Point2, Point2)
-  BOOL res = dbl_equal(self1->value[0], self2->value[0])
-          && dbl_equal(self1->value[1], self2->value[1]);
+  BOOL res = dbl_equal(self1->coord[0], self2->coord[0])
+          && dbl_equal(self1->coord[1], self2->coord[1]);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Point3, Point3)
-  BOOL res = dbl_equal(self1->value[0], self2->value[0]);
+  BOOL res = dbl_equal(self1->coord[0], self2->coord[0]);
 
   for (int i = 1; res && i < 3; i++)
-    res = res && dbl_equal(self1->value[i], self2->value[i]);
+    res = res && dbl_equal(self1->coord[i], self2->coord[i]);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Point4, Point4)
-  BOOL res = dbl_equal(self1->value[0], self2->value[0]);
+  BOOL res = dbl_equal(self1->coord[0], self2->coord[0]);
 
   for (int i = 1; res && i < 4; i++)
-    res = res && dbl_equal(self1->value[i], self2->value[i]);
+    res = res && dbl_equal(self1->coord[i], self2->coord[i]);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Point5, Point5)
-  BOOL res = dbl_equal(self1->value[0], self2->value[0]);
+  BOOL res = dbl_equal(self1->coord[0], self2->coord[0]);
 
   for (int i = 1; res && i < 5; i++)
-    res = res && dbl_equal(self1->value[i], self2->value[i]);
+    res = res && dbl_equal(self1->coord[i], self2->coord[i]);
 
   retmethod( res ? True : False );
 endmethod

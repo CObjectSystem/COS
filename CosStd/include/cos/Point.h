@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Point.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Point.h,v 1.2 2008/10/06 17:34:58 ldeniau Exp $
  |
 */
 
@@ -44,23 +44,23 @@ defclass(Point, Value)
 endclass
 
 defclass(Point1, Point)
-  R64 value;
+  R64 coord;
 endclass
 
 defclass(Point2, Point)
-  R64 value[2];
+  R64 coord[2];
 endclass
 
 defclass(Point3, Point)
-  R64 value[3];
+  R64 coord[3];
 endclass
 
 defclass(Point4, Point)
-  R64 value[4];
+  R64 coord[4];
 endclass
 
 defclass(Point5, Point)
-  R64 value[5];
+  R64 coord[5];
 endclass
 
 // ----- automatic constructor

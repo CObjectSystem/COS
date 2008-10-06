@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.2 2008/09/28 20:12:39 ldeniau Exp $
+ | $Id: Vector.h,v 1.3 2008/10/06 17:34:58 ldeniau Exp $
  |
 */
 
@@ -216,7 +216,7 @@ defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
         atVectorN(P,T,COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),10)) \
                   (N,COS_PP_NARG(__VA_ARGS__)),__VA_ARGS__)
 #define atVectorN(P,T,N,...) \
-        ( &(struct COS_PP_CAT3(P,Vector,N)) {{ \
+        ( (struct COS_PP_CAT(P,Vector)*)&(struct COS_PP_CAT3(P,Vector,N)) {{ \
           {{{ COS_CLS_NAME(COS_PP_CAT3(P,Vector,N)).Behavior.id, COS_RC_AUTO }}}, \
           (T[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__) }} )
 

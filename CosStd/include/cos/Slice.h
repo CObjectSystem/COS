@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.2 2008/09/28 20:12:39 ldeniau Exp $
+ | $Id: Slice.h,v 1.3 2008/10/06 17:34:58 ldeniau Exp $
  |
 */
 
@@ -202,16 +202,18 @@ Slice5_iscontiguous(struct Slice5 *s) {
 
 // ----- conversion
 
-static inline void
+static inline OBJ
 Slice1_range(struct Slice1 *s, struct Range1 *r, U32 size) {
   U32 start = index_abs(r->start, size);
   U32 end   = index_abs(r->end  , size);
   s->size   = (end - start + r->stride) / r->stride;
   s->stride = r->stride;
-  s->start  = start;  
+  s->start  = start;
+
+  return (OBJ)s;  
 }
 
-static inline void
+static inline OBJ
 Slice2_range(struct Slice2 *s, struct Range2 *r, U32 size[2]) {
   U32 i = 2, s0 = 0, ss = 1;
 
@@ -224,9 +226,11 @@ Slice2_range(struct Slice2 *s, struct Range2 *r, U32 size[2]) {
     ss *= size[i];
   }
   s->start = s0;
+
+  return (OBJ)s;
 }
 
-static inline void
+static inline OBJ
 Slice3_range(struct Slice3 *s, struct Range3 *r, U32 size[3]) {
   U32 i = 3, s0 = 0, ss = 1;
 
@@ -239,9 +243,11 @@ Slice3_range(struct Slice3 *s, struct Range3 *r, U32 size[3]) {
     ss *= size[i];
   }
   s->start = s0;
+
+  return (OBJ)s;
 }
 
-static inline void
+static inline OBJ
 Slice4_range(struct Slice4 *s, struct Range4 *r, U32 size[4]) {
   U32 i = 4, s0 = 0, ss = 1;
 
@@ -254,9 +260,11 @@ Slice4_range(struct Slice4 *s, struct Range4 *r, U32 size[4]) {
     ss *= size[i];
   }
   s->start = s0;
+
+  return (OBJ)s;
 }
 
-static inline void
+static inline OBJ
 Slice5_range(struct Slice5 *s, struct Range5 *r, U32 size[5]) {
   U32 i = 5, s0 = 0, ss = 1;
 
@@ -269,32 +277,39 @@ Slice5_range(struct Slice5 *s, struct Range5 *r, U32 size[5]) {
     ss *= size[i];
   }
   s->start = s0;
+
+  return (OBJ)s;
 }
 
 // ----- merging
 
 static inline void
 Slice1_srange(struct Slice1 *sr, struct Range1 *r, struct Slice1 *s) {
+  // TODO
   COS_UNUSED(sr, r, s);
 }
 
 static inline void
 Slice2_srange(struct Slice2 *sr, struct Range2 *r, struct Slice2 *s) {
+  // TODO
   COS_UNUSED(sr, r, s);
 }
 
 static inline void
 Slice3_srange(struct Slice3 *sr, struct Range3 *r, struct Slice3 *s) {
+  // TODO
   COS_UNUSED(sr, r, s);
 }
 
 static inline void
 Slice4_srange(struct Slice4 *sr, struct Range4 *r, struct Slice4 *s) {
+  // TODO
   COS_UNUSED(sr, r, s);
 }
 
 static inline void
 Slice5_srange(struct Slice5 *sr, struct Range5 *r, struct Slice5 *s) {
+  // TODO
   COS_UNUSED(sr, r, s);
 }
 
