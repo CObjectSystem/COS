@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.6 2008/10/02 21:09:55 ldeniau Exp $
+ | $Id: cosapi.h,v 1.7 2008/10/06 10:45:46 ldeniau Exp $
  |
 */
 
@@ -214,7 +214,6 @@ cos_method_cache2(void)
   extern __thread struct cos_method_cache2 cos_method_cache2_;
   return &cos_method_cache2_;
 	COS_UNUSED(cos_method_cache2);
-
 }
 
 static inline struct cos_method_cache3*
@@ -266,8 +265,7 @@ cos_method_cache1(void)
 {
   extern pthread_key_t cos_method_cache1_key;
   struct cos_method_cache1 *cache = pthread_getspecific(cos_method_cache1_key);
-	if (cache) return cache;
-	return cos_method_cache1_init();
+	return cache ? cache : cos_method_cache1_init();
 }
 
 static inline struct cos_method_cache2*
@@ -275,8 +273,7 @@ cos_method_cache2(void)
 {
   extern pthread_key_t cos_method_cache2_key;
   struct cos_method_cache2 *cache = pthread_getspecific(cos_method_cache2_key);
-	if (cache) return cache;
-	return cos_method_cache2_init();
+	return cache ? cache : cos_method_cache2_init();
 }
 
 static inline struct cos_method_cache3*
@@ -284,8 +281,7 @@ cos_method_cache3(void)
 {
   extern pthread_key_t cos_method_cache3_key;
   struct cos_method_cache3 *cache = pthread_getspecific(cos_method_cache3_key);
-	if (cache) return cache;
-	return cos_method_cache3_init();
+	return cache ? cache : cos_method_cache3_init();
 }
 
 static inline struct cos_method_cache4*
@@ -293,8 +289,7 @@ cos_method_cache4(void)
 {
   extern pthread_key_t cos_method_cache4_key;
   struct cos_method_cache4 *cache = pthread_getspecific(cos_method_cache4_key);
-	if (cache) return cache;
-	return cos_method_cache4_init();
+	return cache ? cache : cos_method_cache4_init();
 }
 
 static inline struct cos_method_cache5*
@@ -302,8 +297,7 @@ cos_method_cache5(void)
 {
   extern pthread_key_t cos_method_cache5_key;
   struct cos_method_cache5 *cache = pthread_getspecific(cos_method_cache5_key);
-	if (cache) return cache;
-	return cos_method_cache5_init();
+	return cache ? cache : cos_method_cache5_init();
 }
 
 #endif // ------------------------------------------------
