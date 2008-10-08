@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.4 2008/09/16 08:07:35 ldeniau Exp $
+ | $Id: class.h,v 1.5 2008/10/08 16:17:56 ldeniau Exp $
  |
 */
 
@@ -133,7 +133,7 @@
 
 #define COS_CLS_USE_1(GNAME,LNAME) \
         extern struct Class COS_CLS_NAME(GNAME); \
-        static OBJ const LNAME = (OBJ)(void*)&COS_CLS_NAME(GNAME)
+        static OBJ const LNAME = COS_CLS_REF_1(GNAME)
 
 /* class definition
  */

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.9 2008/09/29 09:21:21 ldeniau Exp $
+ | $Id: stdgen.c,v 1.10 2008/10/08 16:17:56 ldeniau Exp $
  |
 */
 
@@ -81,7 +81,7 @@ makgeneric(OBJ, gdivBy , _1, _2);
 makgeneric(OBJ, gmodulo, _1, _2);
 
 // -------------------------
-#include <cos/gen/eval.h>
+#include <cos/gen/func.h>
 
 makgeneric(OBJ, geval , _1);
 makgeneric(OBJ, geval1, _1, (OBJ)arg1);
@@ -89,6 +89,9 @@ makgeneric(OBJ, geval2, _1, (OBJ)arg1,(OBJ)arg2);
 makgeneric(OBJ, geval3, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 makgeneric(OBJ, geval4, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 makgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
+
+makgeneric(OBJ, gmap  , _1, fun);
+makgeneric(OBJ, gmapAt, _1, fun, at);
 
 // -------------------------
 #include <cos/gen/init.h>
@@ -216,6 +219,13 @@ makgeneric(I32  , gint, _1);
 makgeneric(I64  , glng, _1);
 makgeneric(R64  , gdbl, _1);
 makgeneric(C64  , gcpx, _1);
+
+makgeneric(I8   , gchrAt, _1, at);
+makgeneric(I16  , gshtAt, _1, at);
+makgeneric(I32  , gintAt, _1, at);
+makgeneric(I64  , glngAt, _1, at);
+makgeneric(R64  , gdblAt, _1, at);
+makgeneric(C64  , gcpxAt, _1, at);
 
 makgeneric(I8*  , gchrPtr, _1);
 makgeneric(I16* , gshtPtr, _1);

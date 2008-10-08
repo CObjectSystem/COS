@@ -1,10 +1,10 @@
-#ifndef COS_GEN_EVAL_H
-#define COS_GEN_EVAL_H
+#ifndef COS_GEN_FUNC_H
+#define COS_GEN_FUNC_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS generics for functors and (lazy) expressions
+ | COS generics for functional expressions
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: eval.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: func.h,v 1.1 2008/10/08 16:17:56 ldeniau Exp $
  |
 */
 
@@ -47,4 +47,26 @@ defgeneric(OBJ, geval3, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 defgeneric(OBJ, geval4, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 defgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 
-#endif // COS_GEN_EVAL_H
+defgeneric(void, gapply   , _1, fun);
+defgeneric(void, gapplyAt , _1, fun, at);
+
+defgeneric(OBJ , gmap     , _1, fun);
+defgeneric(OBJ , gmapAt   , _1, fun, at);
+
+defgeneric(OBJ , gmap2    , _1, _2, fun);
+defgeneric(OBJ , gmap2At  , _1, _2, fun, at);
+
+defgeneric(OBJ , gmap3    , _1, _2, _3, fun);
+defgeneric(OBJ , gmap3At  , _1, _2, _3, fun, at);
+
+defgeneric(OBJ , gfilter  , _1, fun);
+defgeneric(OBJ , gfilterAt, _1, fun, at);
+
+defgeneric(OBJ , gfold    , _1, u0, fun);
+defgeneric(OBJ , gfoldAt  , _1, u0, fun, at);
+
+defgeneric(OBJ , gscan    , _1, fun);
+defgeneric(OBJ , gscanAt  , _1, fun, at);
+
+#endif // COS_GEN_FUNC_H
+

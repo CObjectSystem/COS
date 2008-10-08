@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.5 2008/09/28 19:48:21 ldeniau Exp $
+ | $Id: value.h,v 1.6 2008/10/08 16:17:56 ldeniau Exp $
  |
 */
 
@@ -42,8 +42,8 @@
 
 defgeneric(STR  , gstr , _1);
 defgeneric(U32  , gsize, _1);
-defgeneric(void*, gptr, _1);
-defgeneric(FUNC , gfct, _1);
+defgeneric(void*, gptr , _1);
+defgeneric(FUNC , gfct , _1);
 
 defgeneric(I8   , gchr, _1);
 defgeneric(I16  , gsht, _1);
@@ -51,6 +51,13 @@ defgeneric(I32  , gint, _1);
 defgeneric(I64  , glng, _1);
 defgeneric(R64  , gdbl, _1);
 defgeneric(C64  , gcpx, _1);
+
+defgeneric(I8   , gchrAt, _1, at);
+defgeneric(I16  , gshtAt, _1, at);
+defgeneric(I32  , gintAt, _1, at);
+defgeneric(I64  , glngAt, _1, at);
+defgeneric(R64  , gdblAt, _1, at);
+defgeneric(C64  , gcpxAt, _1, at);
 
 defgeneric(I8*  , gchrPtr, _1);
 defgeneric(I16* , gshtPtr, _1);
