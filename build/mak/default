@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.2 2008/10/02 08:45:09 ldeniau Exp $
+# | $Id: default,v 1.3 2008/10/08 16:17:22 ldeniau Exp $
 # |
 #
 
@@ -56,7 +56,7 @@ libtype := $(LIBTYPE)
 endif
 
 ifeq ($(objects),)
-   objects := $(basename $(notdir $(wildcard $(BASEDIR)/$(SRCDIR)/*.c)))
+objects := $(basename $(notdir $(wildcard $(BASEDIR)/$(SRCDIR)/*.c)))
 endif
 
 ifeq ($(STRIP),)

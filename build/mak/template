@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: template,v 1.1 2008/06/27 16:17:27 ldeniau Exp $
+# | $Id: template,v 1.2 2008/10/08 16:17:22 ldeniau Exp $
 # |
 #
 
@@ -47,6 +47,7 @@ version = # major.minor
 targets = # debug profile release
 objects = # list of files
 moddeps = # list of modules with path (e.g. ../CosBase)
+incdeps = # list of extra includes paths
 libdeps = # list of extra libraries [with path] (e.g. pthread or ../mythreadlib)
 
 include $(MAKDIR)/epilogue

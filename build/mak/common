@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.3 2008/06/30 15:41:11 ldeniau Exp $
+# | $Id: common,v 1.4 2008/10/08 16:17:22 ldeniau Exp $
 # |
 #
 
@@ -42,7 +42,8 @@ LIBDIR := lib
 OBJDIR := obj
 
 INCLUDE = -I$(PREFIX)/include/cos -I$(BASEDIR)/$(INCDIR) \
-          $(foreach d,$(moddeps),-I$(d)/$(INCDIR))
+          $(foreach d,$(moddeps),-I$(d)/$(INCDIR)) \
+	  $(foreach d,$(incdeps),-I$(d))
 LIBRARY = -L$(PREFIX)/lib/ -L$(BUILDDIR)/$(LIBDIR) \
           $(patsubst -L%,-L$(BUILDDIR)/%, \
           $(filter-out -L/%, \
