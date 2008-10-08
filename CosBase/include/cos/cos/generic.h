@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.6 2008/10/08 16:17:56 ldeniau Exp $
+ | $Id: generic.h,v 1.7 2008/10/08 16:26:20 ldeniau Exp $
  |
 */
 
@@ -167,7 +167,7 @@
 
 #define COS_GEN_USE_1(GNAME,LNAME) \
         extern struct Generic COS_GEN_NAME(GNAME); \
-        static OBJ const LNAME = GOS_GEN_REF(GNAME)
+        static OBJ const LNAME = COS_GEN_REF(GNAME)
 
 /* generic definition
  */
