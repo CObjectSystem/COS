@@ -1,5 +1,5 @@
-#ifndef COS_GEN_FUNC_H
-#define COS_GEN_FUNC_H
+#ifndef COS_GEN_FUNCTOR_H
+#define COS_GEN_FUNCTOR_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: func.h,v 1.1 2008/10/08 16:17:56 ldeniau Exp $
+ | $Id: functor.h,v 1.1 2008/10/08 16:21:58 ldeniau Exp $
  |
 */
 
@@ -68,5 +68,5 @@ defgeneric(OBJ , gfoldAt  , _1, u0, fun, at);
 defgeneric(OBJ , gscan    , _1, fun);
 defgeneric(OBJ , gscanAt  , _1, fun, at);
 
-#endif // COS_GEN_FUNC_H
+#endif // COS_GEN_FUNCTOR_H
 
