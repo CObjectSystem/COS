@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_exception.c,v 1.3 2008/10/10 13:24:35 ldeniau Exp $
+ | $Id: ut_exception.c,v 1.4 2008/10/10 13:48:53 ldeniau Exp $
  |
 */
 
@@ -69,28 +69,27 @@ useclass(ExSignal);
   useclass(A,B,C,D);
   volatile STR file = 0;
   volatile int line = 0;
-  volatile int i;
+  volatile int do_throw;
   volatile OBJ c = Nil;
   OBJ a = Nil;
   OBJ b = Nil;
+  int i;
 
   UTEST_START("exception & signal")
 
   // -----
 
-  for (i = 0; i < 1; i++)
+  for (do_throw = NO; do_throw <= YES; do_throw++)
     TRY
-      PRT(a,b);
-      a = gnew(A); b = gnew(B); c = gnew(C);
+      a = gnew(A); b = gnew(B); c = gnew(C); PRT(a,b);
 
-      if(i == 0) {
-	      gcatStr(c," is not thrown");
-	      grelease(a), grelease(b);
-	      UNPRT(a); // unprotect 'a' and 'b'
-      } else {
+      if(do_throw == YES) {
 	      gcatStr(c," is thrown");
         file = __FILE__, line = __LINE__, THROW(c);
       }
+
+	    gcatStr(c," is not thrown");
+      UNPRT(a);
 
     CATCH(D)
       UTEST( !"CATCH(D) should not be reached" );
@@ -107,11 +106,13 @@ useclass(ExSignal);
       UTEST( !"CATCH_ANY() should not be reached" );
 
     FINALLY
-      if (i == 0) {
+      if (do_throw == NO) {
         UTEST( check_str(c, "C is not thrown") );
-	      grelease(c);
-      } else
+        grelease(a), grelease(b); grelease(c);
+      }
+      if (do_throw == YES)
         UTEST( check_str(c, "C has been caught as an A") );
+
     ENDTRY // c released is thrown
 
   // -----
@@ -121,8 +122,11 @@ useclass(ExSignal);
       CATCH(A, ex)
         UTEST( gisInstanceOf(ex,A) == True );
 				UTEST( ex_file == file && ex_line == line );
+				line = -line;
         RETHROW();
       FINALLY
+				UTEST( line < 0 );
+				line = -line;
       ENDTRY // rethrow is now effective
   CATCH(A, ex)
     // catch the rethrow
