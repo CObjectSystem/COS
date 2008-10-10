@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.10 2008/10/08 16:17:56 ldeniau Exp $
+ | $Id: stdgen.c,v 1.11 2008/10/10 08:35:02 ldeniau Exp $
  |
 */
 
@@ -81,7 +81,7 @@ makgeneric(OBJ, gdivBy , _1, _2);
 makgeneric(OBJ, gmodulo, _1, _2);
 
 // -------------------------
-#include <cos/gen/func.h>
+#include <cos/gen/functor.h>
 
 makgeneric(OBJ, geval , _1);
 makgeneric(OBJ, geval1, _1, (OBJ)arg1);
