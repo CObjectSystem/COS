@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.6 2008/10/02 21:09:55 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.7 2008/10/10 13:24:34 ldeniau Exp $
  |
 */
 
@@ -200,6 +200,12 @@ defmethod(void, gthrow, Any, (STR)file, (int)line)
 
   cos_exception_lngjmp(cxt->buf, cxt->tag | cos_tag_throw);
 
+endmethod
+
+defmethod(void, gdeinitialize, pmException)
+  struct cos_exception_context *cxt = cos_exception_context();
+  
+  if (cxt->ex != 0) grelease(cxt->ex);
 endmethod
 
 /*

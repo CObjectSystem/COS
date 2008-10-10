@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_exception.c,v 1.2 2008/10/02 08:44:43 ldeniau Exp $
+ | $Id: ut_exception.c,v 1.3 2008/10/10 13:24:35 ldeniau Exp $
  |
 */
 
@@ -65,29 +65,30 @@ check_str(OBJ a, STR res)
 void
 ut_exception(void)
 {
-  useclass(ExSignal);
+useclass(ExSignal);
   useclass(A,B,C,D);
   volatile STR file = 0;
   volatile int line = 0;
   volatile int i;
-  volatile OBJ c = NIL;
-  OBJ a = NIL;
-  OBJ b = NIL;
+  volatile OBJ c = Nil;
+  OBJ a = Nil;
+  OBJ b = Nil;
 
   UTEST_START("exception & signal")
 
   // -----
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 1; i++)
     TRY
       PRT(a,b);
       a = gnew(A); b = gnew(B); c = gnew(C);
 
       if(i == 0) {
-				gcatStr(c," is not thrown");
-				UNPRT(a); // unprotect 'a' and 'b'
+	      gcatStr(c," is not thrown");
+	      grelease(a), grelease(b);
+	      UNPRT(a); // unprotect 'a' and 'b'
       } else {
-			  gcatStr(c," is thrown");
+	      gcatStr(c," is thrown");
         file = __FILE__, line = __LINE__, THROW(c);
       }
 
@@ -108,17 +109,15 @@ ut_exception(void)
     FINALLY
       if (i == 0) {
         UTEST( check_str(c, "C is not thrown") );
-			  grelease(c);
-		  } else {
+	      grelease(c);
+      } else
         UTEST( check_str(c, "C has been caught as an A") );
-			}
-    ENDTRY
+    ENDTRY // c released is thrown
 
   // -----
-
   TRY
-      TRY
-        file = __FILE__, line = __LINE__, THROW(gnew(A));
+    TRY
+      file = __FILE__, line = __LINE__, THROW(gnew(A));
       CATCH(A, ex)
         UTEST( gisInstanceOf(ex,A) == True );
 				UTEST( ex_file == file && ex_line == line );
@@ -141,6 +140,7 @@ ut_exception(void)
     CATCH(ExSignal, ex)
       UTEST( gint(ex) == sig[i] );
     ENDTRY
-    
+
   UTEST_END
 }
+
