@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.11 2008/10/10 08:35:02 ldeniau Exp $
+ | $Id: stdgen.c,v 1.12 2008/10/10 16:37:43 ldeniau Exp $
  |
 */
 
@@ -54,6 +54,10 @@ makgeneric(OBJ, gupdateAt, to, what, at);
 makgeneric(OBJ, gpush    , to, what); // alias for gput
 makgeneric(OBJ, gtop     , from);     // alias for gget
 makgeneric(OBJ, gpop     , from);     // alias for gdrop
+
+// string-like accessors
+makgeneric(OBJ, gconcat  , to, what); // alias for gpush
+makgeneric(OBJ, glast    , from);     // alias for gtop
 
 // plain array accessors
 makgeneric(void, ggetValue  , from, what);
@@ -119,6 +123,7 @@ makgeneric(OBJ, ginitWithIntPtr , _1, (U32)n, (I32*)val);
 makgeneric(OBJ, ginitWithLngPtr , _1, (U32)n, (I64*)val);
 makgeneric(OBJ, ginitWithDblPtr , _1, (U32)n, (R64*)val);
 makgeneric(OBJ, ginitWithCpxPtr , _1, (U32)n, (C64*)val);
+makgeneric(OBJ, ginitWithObjPtr , _1, (U32)n, (OBJ*)obj);
 
 // -------------------------
 #include <cos/gen/logic.h>

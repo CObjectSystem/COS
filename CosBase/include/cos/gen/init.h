@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.4 2008/09/28 19:48:21 ldeniau Exp $
+ | $Id: init.h,v 1.5 2008/10/10 16:37:43 ldeniau Exp $
  |
 */
 
@@ -64,6 +64,7 @@ defgeneric(OBJ, ginitWithIntPtr , _1, (U32)n, (I32*)val);
 defgeneric(OBJ, ginitWithLngPtr , _1, (U32)n, (I64*)val);
 defgeneric(OBJ, ginitWithDblPtr , _1, (U32)n, (R64*)val);
 defgeneric(OBJ, ginitWithCpxPtr , _1, (U32)n, (C64*)val);
+defgeneric(OBJ, ginitWithObjPtr , _1, (U32)n, (OBJ*)obj);
 
 // newXXX (= alloc+initXXX)
 
@@ -172,6 +173,11 @@ gnewWithDblPtr(OBJ _1, U32 n, R64 *val) {
 static inline OBJ
 gnewWithCpxPtr(OBJ _1, U32 n, C64 *val) {
   return ginitWithCpxPtr(galloc(_1),n,val); COS_UNUSED(gnewWithCpxPtr);
+}
+
+static inline OBJ
+gnewWithObjPtr(OBJ _1, U32 n, OBJ *obj) {
+  return ginitWithObjPtr(galloc(_1),n,obj); COS_UNUSED(gnewWithObjPtr);
 }
 
 #endif // COS_GEN_INIT_H
