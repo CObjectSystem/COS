@@ -29,14 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Functor.c,v 1.2 2008/10/10 08:46:40 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Functor.h>
 #include <cos/gen/object.h>
-#include <cos/gen/eval.h>
+#include <cos/gen/functor.h>
 
 makclass(Functor , Object );
 makclass(Functor1, Functor);

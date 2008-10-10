@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Functor.h,v 1.2 2008/10/10 08:46:40 ldeniau Exp $
  |
 */
 
@@ -79,7 +79,7 @@ endclass
 #define atFunctorN(N,F,...) \
         COS_PP_CAT3(Functor,N,_init)(&(struct COS_PP_CAT(Functor,N)) {{ \
         {{ COS_CLS_NAME(COS_PP_CAT(Functor,N)).Behavior.id, COS_RC_AUTO }}, \
-         -1 }, F, COS_PP_IF(COS_PP_ISONE(N))(__VA_ARGS__, { __VA_ARGS__ }) })
+         -1 }, F, COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
 
 // ----- automatic constructor initializers
 

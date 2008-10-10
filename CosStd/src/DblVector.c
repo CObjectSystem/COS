@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: DblVector.c,v 1.4 2008/10/06 17:34:58 ldeniau Exp $
+ | $Id: DblVector.c,v 1.5 2008/10/10 08:46:40 ldeniau Exp $
  |
 */
 
@@ -43,10 +43,10 @@
 #include <cos/Point.h>
 #include <cos/Functor.h>
 #include <cos/Sequence.h>
-#include <cos/gen/object.h>
-#include <cos/gen/eval.h>
 #include <cos/gen/value.h>
 #include <cos/gen/access.h>
+#include <cos/gen/object.h>
+#include <cos/gen/functor.h>
 
 #include <stdlib.h>
 
@@ -157,69 +157,12 @@ defmethod(OBJ, ginitWith, mDblVector, DblVector)
   retmethod((OBJ)vec);
 endmethod
 
-defmethod(OBJ, ginitWith, mDblVector, Sequence1)
-  struct DblVector* vec = vector_alloc(self2->size);
+defmethod(OBJ, ginitWith2, mDblVector, Value, Size1)
+  struct DblVector* vec = vector_alloc(self3->size);
+  double value = gdbl(_2);
 
   for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = Sequence1_eval(self2, i);
-
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mDblVector, Point1)
-  struct DblVector* vec = vector_alloc(1);
-  vec->value[0] = self2->coord;
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mDblVector, Point2)
-  struct DblVector* vec = vector_alloc(2);
-  vec->value[0] = self2->coord[0];
-  vec->value[1] = self2->coord[1];
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mDblVector, Point3)
-  struct DblVector* vec = vector_alloc(3);
-  vec->value[0] = self2->coord[0];
-  vec->value[1] = self2->coord[1];
-  vec->value[2] = self2->coord[2];
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mDblVector, Point4)
-  struct DblVector* vec = vector_alloc(4);
-  vec->value[0] = self2->coord[0];
-  vec->value[1] = self2->coord[1];
-  vec->value[2] = self2->coord[2];
-  vec->value[3] = self2->coord[3];
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mDblVector, Point5)
-  struct DblVector* vec = vector_alloc(5);
-  vec->value[0] = self2->coord[0];
-  vec->value[1] = self2->coord[1];
-  vec->value[2] = self2->coord[2];
-  vec->value[3] = self2->coord[3];
-  vec->value[4] = self2->coord[4];
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith2, mDblVector, Size1, Double)
-  struct DblVector* vec = vector_alloc(self2->size);
-
-  for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = self3->value;
-
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith2, mDblVector, Size1, Functor)
-  struct DblVector* vec = vector_alloc(self2->size);
-
-  for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = gdbl(geval(_3));
+    vec->value[i] = value;
 
   retmethod((OBJ)vec);
 endmethod
@@ -234,7 +177,8 @@ endmethod
 defmethod(OBJ, ginitWith2, mDblVector, DblVector, Slice1)
   struct DblVector* vec = vector_alloc(self3->size);
 
-  test_assert( Slice1_last(self3) < self2->size );
+  test_assert( self3->start < self2->size
+            && Slice1_last(self3) < self2->size );
 
   for (U32 i = 0; i < self3->size; i++)
     vec->value[i] = self2->value[ Slice1_eval(self3,i) ];
@@ -283,10 +227,11 @@ defmethod(OBJ, ginitWith2, mDblSubVector, DblVector, Slice1)
   OBJ vec_spr = (OBJ)cos_class_get(cos_any_id(vec))->spr;
 
   test_assert( vec_spr == DblVector );
-  test_assert( Slice1_iscontiguous(self3) );
-  test_assert( Slice1_last(self3) < self2->size );
+  test_assert( Slice1_iscontiguous(self3)
+            && self3->start < self2->size
+            && Slice1_last(self3) < self2->size );
 
-  retmethod( (OBJ)subvector_alloc((void*)vec, self3->start, self3->size) );
+  retmethod( (OBJ)subvector_alloc((struct DblVector*)vec, self3->start, self3->size) );
 endmethod
 
 defmethod(OBJ, gdeinit, DblSubVector)
@@ -318,16 +263,11 @@ endmethod
 
 // ----- setters
 
-defmethod(OBJ, gput, DblVector, Double)
-  for (U32 i = 0; i < self->size; i++)
-    self1->value[i] = self2->value;
+defmethod(OBJ, gput, DblVector, Value)
+  double value = gdbl(_2);
 
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gput, DblVector, Functor)
   for (U32 i = 0; i < self->size; i++)
-    self1->value[i] = gdbl(geval(_2));
+    self1->value[i] = value;
 
   retmethod(_1);
 endmethod
@@ -343,48 +283,40 @@ defmethod(OBJ, gput, DblVector, DblVector)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gput, DblVector, Sequence1)
-  U32 i, j;
-
-  for (i = j = 0; i < self->size; i++, j++) {
-    if (j >= self2->size) j = 0;
-    self1->value[i] = Sequence1_eval(self2, i);
-  }
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gputAt, DblVector, Double, Index1)
+defmethod(OBJ, gputAt, DblVector, Value, Index1)
   U32 i = index_abs(self3->index, self->size);
 
   test_assert( i < self->size );
-
-  self1->value[i] = self2->value;
+  self1->value[i] = gdbl(_2);
 
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, DblVector, Double, Range1)
+defmethod(OBJ, gputAt, DblVector, Value, Range1)
   struct Slice1 slice[1];
   OBJ s = Slice1_range(slice, self3, self->size);
 
   retmethod( gputAt(_1,_2,s) );  
 endmethod
 
-defmethod(OBJ, gputAt, DblVector, Double, Slice1)
+defmethod(OBJ, gputAt, DblVector, Value, Slice1)
+  double value = gdbl(_2);
+
   test_assert( Slice1_last(self3) < self->size );
 
   for (U32 i = 0; i < self3->size; i++)
-    self1->value[ Slice1_eval(self3,i) ] = self2->value;
+    self1->value[ Slice1_eval(self3,i) ] = value;
 
    retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, DblVector, Double, IntVector)
+defmethod(OBJ, gputAt, DblVector, Value, IntVector)
+  double value = gdbl(_2);
+
   for (U32 i = 0; i < self3->size; i++) {
     U32 j = index_abs(self3->value[i], self->size);
     test_assert( j < self->size );
-    self1->value[j] = self2->value;
+    self1->value[j] = value;
   }
 
   retmethod(_1);  
@@ -436,10 +368,14 @@ endmethod
 
 // ----- getter
 
-defmethod(OBJ, ggetAt, DblVector, Index1)
+defmethod(R64, gdblAt, DblVector, Index1)
   U32 i = index_abs(self2->index, self->size);
   test_assert( i < self->size );
-  retmethod( gautoRelease(aDbl(self->value[i])) );
+  retmethod( self->value[i] );
+endmethod
+
+defmethod(OBJ, ggetAt, DblVector, Index1)
+  retmethod( gautoRelease(aDbl(gdblAt(_1,_2))) );
 endmethod
 
 defmethod(OBJ, ggetAt, DblVector, Range1)
@@ -454,21 +390,15 @@ defmethod(OBJ, ggetAt, DblVector, IntVector)
   retmethod( gautoRelease(gnewWith2(DblVector,_1,_2)) );
 endmethod
 
-defmethod(OBJ, gpop, DblDynVector)
-  struct DblVector *vec = &self->DblDynVectorN.DblVector;
-  test_assert( vec->size > 0 );
-  retmethod( gautoRelease(aDbl(vec->value[--vec->size])) );
-endmethod
+// ----- stack-like accessors and adjustment
 
-// ----- push setter and adjustment
-
-defmethod(OBJ, gpush, DblDynVector, Double)
+defmethod(OBJ, gpush, DblDynVector, Value)
   struct DblVector *vec = &self->DblDynVectorN.DblVector;
 
   if (vec->size == self->capacity)
     dynvector_resizeBy(self, 1.75);
 
-  vec->value[vec->size++] = self2->value;
+  vec->value[vec->size++] = gdbl(_2);
 
   retmethod(_1);
 endmethod
@@ -479,7 +409,6 @@ defmethod(OBJ, gpush, DblDynVector, DblVector)
   if (self->capacity - vec->size < self2->size) {
     double size = vec->size;
 
-    // size *= pow(1.75, log(1+self2->size/self->size) / log(1.75));
     do size *= 1.75;
     while (self->capacity - size < self2->size);
 
@@ -492,144 +421,136 @@ defmethod(OBJ, gpush, DblDynVector, DblVector)
   retmethod(_1);
 endmethod
 
+defmethod(OBJ, gpop, DblDynVector)
+  struct DblVector *vec = &self->DblDynVectorN.DblVector;
+  test_assert( vec->size > 0 );
+  retmethod( gautoRelease(aDbl(vec->value[--vec->size])) );
+endmethod
+
 defmethod(OBJ, gadjust, DblDynVector)
   struct DblVector *vec = &self->DblDynVectorN.DblVector;
+  struct Class *cls = &COS_CLS_NAME(DblDynVectorN);
 
   if (vec->size < self->capacity)
     dynvector_resizeBy(self, 1.0);
 
+  test_assert( cos_any_changeClass(_1, cls) );
+
   retmethod(_1);
 endmethod
+
+// ----- map, fold, ...
+
+defmethod(void, gapply, DblVector, Functor)
+  struct Double *dbl = atDbl(0);
+  OBJ val = (OBJ)dbl;
+  OBJ res;
+
+  for (U32 i = 0; i < self->size; i++) {
+    dbl->value = self->value[i];
+    res = geval1(_2, val);
+    test_assert(res == val);
+    self->value[i] = dbl->value;
+  }
+endmethod
+
+defmethod(OBJ, gmap, DblVector, Functor)
+  struct DblVector* vec = vector_alloc(self->size);
+  struct Double *dbl = atDbl(0);
+  OBJ val = (OBJ)dbl;
+  OBJ res;
+
+  for (U32 i = 0; i < vec->size; i++) {
+    dbl->value = self->value[i];
+    res = geval1(_2, val);
+    test_assert(res == val);
+    vec->value[i] = dbl->value;
+  }
+
+  retmethod((OBJ)vec);
+endmethod
+
+/*
+defmethod(OBJ, gmap, Array, Functor)
+  struct Array *arr = array_alloc(self->size); PRT(arr);
+
+  for (U32 i = 0; i < self->size; i++)
+    arr->value[i] = gretain(geval1(_2, self->value[i]));
+
+  UNPRT(arr);
+  retmethod(gautorelease((OBJ)arr));
+endmethod
+*/
 
 /****************************************************************
- * PROMOTIONS
+ * SPECIAL CASES
  */
 
-// ----- Int, IntVector
-
-defmethod(OBJ, ginitWith, DblVector, IntVector)
-  test_assert(self1->size == self2->size);
-
-  for (U32 i = 0; i < self->size; i++)
-    self1->value[i] = self2->value[i];
-
-  retmethod(_1);
+defmethod(U32, gsize, DblVector)
+  retmethod(self->size);
 endmethod
 
-defmethod(OBJ, ginitWith2, mDblVector, Size1, Int)
+defmethod(R64*, gdblPtr, DblVector)
+  retmethod(self->value);
+endmethod
+
+defmethod(OBJ, ginitWith, mDblVector, Sequence1)
   struct DblVector* vec = vector_alloc(self2->size);
 
   for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = self3->value;
+    vec->value[i] = Sequence1_eval(self2, i);
 
   retmethod((OBJ)vec);
 endmethod
 
-defmethod(OBJ, ginitWith2, mDblDynVector, Size1, Int)
-  struct DblVector* vec = dynvector_alloc(self2->size);
+defmethod(OBJ, gput, DblVector, Sequence1)
+  U32 i, j;
 
-  for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = self3->value;
-
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mDblVector, IntVector)
-  struct DblVector* vec = vector_alloc(self2->size);
-
-  for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = self2->value[i];
-
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mDblDynVector, IntVector)
-  struct DblVector* vec = dynvector_alloc(self2->size);
-
-  for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = self2->value[i];
-
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, gput, DblVector, Int)
-  for (U32 i = 0; i < self->size; i++)
-    self1->value[i] = self2->value;
+  for (i = j = 0; i < self->size; i++, j++) {
+    if (j >= self2->size) j = 0;
+    self1->value[i] = Sequence1_eval(self2, j);
+  }
 
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, DblVector, Int, Index1)
-  U32 idx = self3->index;
-  if (self3->index < 0) idx += self1->size;
-
-  test_assert( idx < self1->size );
-  self1->value[idx] = self2->value;
-
-  retmethod(_1);
-endmethod
-
-// ----- Long, LongVector
-
-defmethod(OBJ, ginitWith, DblVector, LngVector)
-  test_assert(self1->size == self2->size);
-
-  for (U32 i = 0; i < self->size; i++)
-    self1->value[i] = self2->value[i];
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith2, mDblVector, Size1, Long)
-  struct DblVector* vec = vector_alloc(self2->size);
-
-  for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = self3->value;
-
+defmethod(OBJ, ginitWith, mDblVector, Point1)
+  struct DblVector* vec = vector_alloc(1);
+  vec->value[0] = self2->coord;
   retmethod((OBJ)vec);
 endmethod
 
-defmethod(OBJ, ginitWith2, mDblDynVector, Size1, Long)
-  struct DblVector* vec = dynvector_alloc(self2->size);
-
-  for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = self3->value;
-
+defmethod(OBJ, ginitWith, mDblVector, Point2)
+  struct DblVector* vec = vector_alloc(2);
+  vec->value[0] = self2->coord[0];
+  vec->value[1] = self2->coord[1];
   retmethod((OBJ)vec);
 endmethod
 
-defmethod(OBJ, ginitWith, mDblVector, LngVector)
-  struct DblVector* vec = vector_alloc(self2->size);
-
-  for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = self2->value[i];
-
+defmethod(OBJ, ginitWith, mDblVector, Point3)
+  struct DblVector* vec = vector_alloc(3);
+  vec->value[0] = self2->coord[0];
+  vec->value[1] = self2->coord[1];
+  vec->value[2] = self2->coord[2];
   retmethod((OBJ)vec);
 endmethod
 
-defmethod(OBJ, ginitWith, mDblDynVector, LngVector)
-  struct DblVector* vec = dynvector_alloc(self2->size);
-
-  for (U32 i = 0; i < vec->size; i++)
-    vec->value[i] = self2->value[i];
-
+defmethod(OBJ, ginitWith, mDblVector, Point4)
+  struct DblVector* vec = vector_alloc(4);
+  vec->value[0] = self2->coord[0];
+  vec->value[1] = self2->coord[1];
+  vec->value[2] = self2->coord[2];
+  vec->value[3] = self2->coord[3];
   retmethod((OBJ)vec);
 endmethod
 
-defmethod(OBJ, gput, DblVector, Long)
-  for (U32 i = 0; i < self->size; i++)
-    self1->value[i] = self2->value;
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gputAt, DblVector, Long, Index1)
-  U32 idx = self3->index;
-  if (self3->index < 0) idx += self1->size;
-
-  test_assert( idx < self1->size );
-  self1->value[idx] = self2->value;
-
-  retmethod(_1);
+defmethod(OBJ, ginitWith, mDblVector, Point5)
+  struct DblVector* vec = vector_alloc(5);
+  vec->value[0] = self2->coord[0];
+  vec->value[1] = self2->coord[1];
+  vec->value[2] = self2->coord[2];
+  vec->value[3] = self2->coord[3];
+  vec->value[4] = self2->coord[4];
+  retmethod((OBJ)vec);
 endmethod
 
