@@ -32,15 +32,25 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Locker.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Locker.h,v 1.2 2008/10/13 09:17:33 ldeniau Exp $
  |
 */
 
 #include <cos/Proxy.h>
-#include <cos/sys/thread.h>
+
+#if COS_POSIX
+
+#include <pthread.h>
 
 defclass(Locker,Proxy)
-  cos_thread_smutex(lock);
+  pthread_mutex_t lock;
 endclass
+
+#else
+
+defclass(Locker,Proxy)
+endclass
+
+#endif
 
 #endif // COS_LOCKER_H

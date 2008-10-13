@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Locker.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Locker.c,v 1.2 2008/10/13 09:17:33 ldeniau Exp $
  |
 */
 
@@ -44,7 +44,7 @@ makclass(Locker,Proxy);
 
 // -----
 
-#ifndef COS_POSIX_USE    // ----------------------------------------------
+#if !COS_POSIX    // ----------------------------------------------
 
 defmethod(OBJ, galloc, pmLocker)
   retmethod(_1);
@@ -54,37 +54,15 @@ defmethod(OBJ, ginitWith, pmLocker, Any)
   retmethod(_2);
 endmethod
 
-#else // ifdef COS_POSIX_USE ---------------------------------------------
+#else // if COS_POSIX ---------------------------------------------
 
 // ----- constructor
 
 defmethod(OBJ, ginitWith, Locker, Any)
-  cos_thread_mutex_init(self->lock);
+  pthread_mutex_init(&self->lock,0);
+  
   next_method(self,self2);
 endmethod
-
-// ----- ownership
-/*
-defmethod(OBJ, gRelease, Locker)
-  if (!cos_exception_uncaught()) {
-    PRT(_1);
-    lock(self);
-    forward_message(self->Proxy.obj);
-    if (retval == Nil) {
-      unlock(self);
-      cos_thread_mutex_destroy(&self->lock);
-      gDealloc(_1);
-    } else {
-      if (retval == self->Proxy.obj) retval = _1;
-      unlock(self);
-    }
-    UNPRT(_1);
-  } else { // unwinding stack (exception thrown during forward_message)
-    unlock(self);
-    retval = _1;
-  }
-endmethod
-*/
 
 #undef  SORT
 #undef  LOCK
@@ -98,13 +76,13 @@ endmethod
 static inline void
 lock(struct Locker *l)
 {
-  cos_thread_lock(l->lock);
+  pthread_mutex_lock(&l->lock);
 }
 
 static inline void
 unlock(struct Locker *l)
 {
-  cos_thread_unlock(l->lock);
+  pthread_mutex_unlock(&l->lock);
 }
 
 static inline void
@@ -757,4 +735,5 @@ defmethod(void, gunrecognizedMessage5, Locker, Locker, Locker, Locker, Locker)
   UNPRT(_1);
 endmethod
 
-#endif // ifdef COS_POSIX_USE
+#endif // if COS_POSIX
+
