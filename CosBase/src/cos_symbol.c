@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.6 2008/10/02 14:50:35 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.7 2008/10/13 09:09:07 ldeniau Exp $
  |
 */
 
@@ -38,7 +38,6 @@
 #include <cos/MetaClass.h>
 #include <cos/Method.h>
 #include <cos/gen/object.h>
-#include <cos/sys/thread.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -836,29 +835,53 @@ cos_method_fullName(SEL gen, OBJ obj[], char *str, U32 sz)
   return str;
 }
 
-// next-method mutex
-cos_thread_mutex(nxt_lock);
+/*
+ * ----------------------------------------------------------------------------
+ *  Threaded functions
+ * ----------------------------------------------------------------------------
+ */
 
-void
-cos_method_nextClear(void)
-{
-  cos_thread_lock(nxt_lock);
-  nxt_clear();
-  cos_thread_unlock(nxt_lock);
-}
+#if COS_POSIX
+
+#include <pthread.h>
+
+static pthread_mutex_t nxt_lock = PTHREAD_MUTEX_INITIALIZER;
 
 void
 cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
 {
-  cos_thread_lock(nxt_lock);
-  if (*fct == (FUNC)YES)
-    nxt_init(fct,gen,rnk,cls);
-  cos_thread_unlock(nxt_lock);
+  pthread_mutex_lock(&nxt_lock);
+  if (*fct == (FUNC)YES) nxt_init(fct,gen,rnk,cls);
+  pthread_mutex_unlock(&nxt_lock);
 }
+
+void
+cos_method_nextClear(void)
+{
+  pthread_mutex_lock(&nxt_lock);
+  nxt_clear();
+  pthread_mutex_unlock(&nxt_lock);
+}
+
+#else
+
+void
+cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
+{
+  if (*fct == (FUNC)YES) nxt_init(fct,gen,rnk,cls);
+}
+
+void
+cos_method_nextClear(void)
+{
+  nxt_clear();
+}
+
+#endif
 
 /*
  * ----------------------------------------------------------------------------
- *  Debug Functions
+ *  Debug functions
  * ----------------------------------------------------------------------------
  */
 
