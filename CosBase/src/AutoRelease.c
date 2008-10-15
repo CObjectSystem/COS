@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.10 2008/10/02 21:09:55 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.11 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -155,7 +155,7 @@ enlarge(struct AutoRelease* p)
     new_size = size * COS_AUTORELEASE_RATE;
     stk = realloc(p->stk, sizeof *stk * new_size);
     if (size >= COS_AUTORELEASE_WARN)
-      cos_trace("pool at %p hold %u autoreleased objects", (void*)p, size);
+      cos_debug("pool at %p hold %u autoreleased objects", (void*)p, size);
   }
   
   if (!stk) THROW(ExBadAlloc);
@@ -169,7 +169,7 @@ static inline void
 clear(struct AutoRelease *p)
 {
   if (p->tmp)
-    grelease(p->tmp), p->tmp = NIL;
+    grelease(p->tmp), p->tmp = 0;
 
   while (p->top-- > p->stk)
     grelease(*p->top);
@@ -179,7 +179,7 @@ static inline void
 push(struct AutoRelease* p, OBJ obj)
 {
   if (p->top == p->end)
-    p->tmp = obj, enlarge(p), p->tmp = NIL;
+    p->tmp = obj, enlarge(p), p->tmp = 0;
 
   *p->top++ = obj;
 }
@@ -191,7 +191,7 @@ defmethod(OBJ, ginit, AutoRelease)
   self->top = self->_stk;
   self->end = self->_stk + COS_ARRLEN(self->_stk);
   self->prv = pool_get();
-  self->tmp = NIL;
+  self->tmp = 0;
   pool_set(self);
   retmethod(_1);
 endmethod

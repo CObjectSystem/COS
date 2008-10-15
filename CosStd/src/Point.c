@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Point.c,v 1.2 2008/10/06 17:34:58 ldeniau Exp $
+ | $Id: Point.c,v 1.3 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -84,41 +84,41 @@ endmethod
 // ----- equality
 
 defmethod(OBJ, gequal, Point1, Point1)
-  BOOL res = dbl_equal(self1->coord, self2->coord);
+  BOOL res = flt_equal(self1->coord, self2->coord);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Point2, Point2)
-  BOOL res = dbl_equal(self1->coord[0], self2->coord[0])
-          && dbl_equal(self1->coord[1], self2->coord[1]);
+  BOOL res = flt_equal(self1->coord[0], self2->coord[0])
+          && flt_equal(self1->coord[1], self2->coord[1]);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Point3, Point3)
-  BOOL res = dbl_equal(self1->coord[0], self2->coord[0]);
+  BOOL res = flt_equal(self1->coord[0], self2->coord[0]);
 
   for (int i = 1; res && i < 3; i++)
-    res = res && dbl_equal(self1->coord[i], self2->coord[i]);
+    res = res && flt_equal(self1->coord[i], self2->coord[i]);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Point4, Point4)
-  BOOL res = dbl_equal(self1->coord[0], self2->coord[0]);
+  BOOL res = flt_equal(self1->coord[0], self2->coord[0]);
 
   for (int i = 1; res && i < 4; i++)
-    res = res && dbl_equal(self1->coord[i], self2->coord[i]);
+    res = res && flt_equal(self1->coord[i], self2->coord[i]);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Point5, Point5)
-  BOOL res = dbl_equal(self1->coord[0], self2->coord[0]);
+  BOOL res = flt_equal(self1->coord[0], self2->coord[0]);
 
   for (int i = 1; res && i < 5; i++)
-    res = res && dbl_equal(self1->coord[i], self2->coord[i]);
+    res = res && flt_equal(self1->coord[i], self2->coord[i]);
 
   retmethod( res ? True : False );
 endmethod

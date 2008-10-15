@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.3 2008/10/06 17:34:58 ldeniau Exp $
+ | $Id: Vector.h,v 1.4 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -46,9 +46,9 @@
    <- LngVector  <- LngVectorN (0..9)
                  <- LngDynVectorN <- LngDynVector
                  <- LngSubVector
-   <- DblVector  <- DblVectorN (0..9)
-                 <- DblDynVectorN <- DblDynVector
-                 <- DblSubVector
+   <- FltVector  <- FltVectorN (0..9)
+                 <- FltDynVectorN <- FltDynVector
+                 <- FltSubVector
    <- CpxVector  <- CpxVectorN (0..9)
                  <- CpxDynVectorN <- CpxDynVector
                  <- CpxSubVector
@@ -69,7 +69,7 @@ defclass(LngVector, Vector)
   U32  size;
 endclass
 
-defclass(DblVector, Vector)
+defclass(FltVector, Vector)
   R64 *value;
   U32  size;
 endclass
@@ -83,7 +83,7 @@ endclass
 
 defclass(IntDynVectorN, IntVector) endclass
 defclass(LngDynVectorN, LngVector) endclass
-defclass(DblDynVectorN, DblVector) endclass
+defclass(FltDynVectorN, FltVector) endclass
 defclass(CpxDynVectorN, CpxVector) endclass
 
 defclass(IntDynVector, IntDynVectorN)
@@ -94,7 +94,7 @@ defclass(LngDynVector, LngDynVectorN)
   U32 capacity;
 endclass
 
-defclass(DblDynVector, DblDynVectorN)
+defclass(FltDynVector, FltDynVectorN)
   U32 capacity;
 endclass
 
@@ -112,7 +112,7 @@ defclass(LngSubVector, LngVector)
   OBJ vector;
 endclass
 
-defclass(DblSubVector, DblVector)
+defclass(FltSubVector, FltVector)
   OBJ vector;
 endclass
 
@@ -166,25 +166,25 @@ defclass(LngVectorN, LngVector) I64 _value[]; endclass
 
 // ----- Vector of double
 
-defclass(DblVector0, DblVector) R64 _value[]; endclass
-defclass(DblVector1, DblVector) R64 _value[]; endclass
-defclass(DblVector2, DblVector) R64 _value[]; endclass
-defclass(DblVector3, DblVector) R64 _value[]; endclass
-defclass(DblVector4, DblVector) R64 _value[]; endclass
-defclass(DblVector5, DblVector) R64 _value[]; endclass
-defclass(DblVector6, DblVector) R64 _value[]; endclass
-defclass(DblVector7, DblVector) R64 _value[]; endclass
-defclass(DblVector8, DblVector) R64 _value[]; endclass
-defclass(DblVector9, DblVector) R64 _value[]; endclass
-defclass(DblVectorN, DblVector) R64 _value[]; endclass
+defclass(FltVector0, FltVector) R64 _value[]; endclass
+defclass(FltVector1, FltVector) R64 _value[]; endclass
+defclass(FltVector2, FltVector) R64 _value[]; endclass
+defclass(FltVector3, FltVector) R64 _value[]; endclass
+defclass(FltVector4, FltVector) R64 _value[]; endclass
+defclass(FltVector5, FltVector) R64 _value[]; endclass
+defclass(FltVector6, FltVector) R64 _value[]; endclass
+defclass(FltVector7, FltVector) R64 _value[]; endclass
+defclass(FltVector8, FltVector) R64 _value[]; endclass
+defclass(FltVector9, FltVector) R64 _value[]; endclass
+defclass(FltVectorN, FltVector) R64 _value[]; endclass
 
-#define aDblVec(...)                   aVectorT   (Dbl,R64,__VA_ARGS__)
-#define aDblVecRef(size,array)         aVectorRefT(Dbl,size,array)
-#define aDblSubVec(vector,start,size)  aSubVectorT(Dbl,vector,start,size)
+#define aFltVec(...)                   aVectorT   (Flt,R64,__VA_ARGS__)
+#define aFltVecRef(size,array)         aVectorRefT(Flt,size,array)
+#define aFltSubVec(vector,start,size)  aSubVectorT(Flt,vector,start,size)
 
-#define atDblVec(...)                  atVectorT   (Dbl,R64,__VA_ARGS__)
-#define atDblVecRef(size,array)        atVectorRefT(Dbl,size,array)
-#define atDblSubVec(vector,start,size) atSubVectorT(Dbl,vector,start,size)
+#define atFltVec(...)                  atVectorT   (Flt,R64,__VA_ARGS__)
+#define atFltVecRef(size,array)        atVectorRefT(Flt,size,array)
+#define atFltSubVec(vector,start,size) atSubVectorT(Flt,vector,start,size)
 
 // ----- Vector of complex
 
@@ -272,17 +272,17 @@ LngSubVector_init(struct LngSubVector *subvec, I32 substart)
   return subvec;
 }
 
-static inline struct DblSubVector*
-DblSubVector_init(struct DblSubVector *subvec, I32 substart)
+static inline struct FltSubVector*
+FltSubVector_init(struct FltSubVector *subvec, I32 substart)
 {
-  useclass(DblVector);
+  useclass(FltVector);
 
   OBJ vec_spr = (OBJ)cos_class_get(cos_any_id(subvec->vector))->spr;
-  struct DblVector *svec = &subvec->DblVector;
-  struct DblVector *vec  = STATIC_CAST(struct DblVector*, subvec->vector);
+  struct FltVector *svec = &subvec->FltVector;
+  struct FltVector *vec  = STATIC_CAST(struct FltVector*, subvec->vector);
   U32 start;
 
-  test_assert( vec_spr == DblVector );
+  test_assert( vec_spr == FltVector );
   start = index_abs(substart, vec->size);
   test_assert( start + svec->size <= vec->size );
   svec->value = vec->value + start;

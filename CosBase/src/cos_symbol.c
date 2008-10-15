@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.7 2008/10/13 09:09:07 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.8 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -822,7 +822,7 @@ cos_method_name(const struct Method *mth, char *str, U32 sz)
 }
 
 char*
-cos_method_fullName(SEL gen, OBJ obj[], char *str, U32 sz)
+cos_method_callName(SEL gen, OBJ obj[], char *str, U32 sz)
 {
   struct Class *cls[COS_GEN_RNKMAX];
   U32 n_cls = COS_GEN_RNK(gen);
@@ -886,6 +886,75 @@ cos_method_nextClear(void)
  */
 
 #include <cos/cos/debug.h>
+
+static inline STR
+obj_clsName(OBJ obj)
+{
+  return cos_class_get(cos_any_id(obj))->name;
+}
+
+void
+cos_method_trace(STR file, int line, BOOL enter, const struct Method *mth, OBJ obj[])
+{
+  struct Class* const *cls = STATIC_CAST(const struct Method5*, mth)->cls;
+  
+  if (enter)
+  switch( COS_GEN_RNK(mth->gen) ) {
+  case 1: cos_logmsg(cos_msg_debug,file,line,"-> %s(%s) - <%s>",
+                     mth->gen->name,
+                     cls[0]->name,
+                     obj_clsName(obj[0])); return;
+
+  case 2: cos_logmsg(cos_msg_debug,file,line,"-> %s(%s,%s) - <%s,%s>",
+                     mth->gen->name,
+                     cls[0]->name,cls[1]->name,
+                     obj_clsName(obj[0]),obj_clsName(obj[1])); return;
+
+  case 3: cos_logmsg(cos_msg_debug,file,line,"-> %s(%s,%s,%s) - <%s,%s,%s>",
+                     mth->gen->name,
+                     cls[0]->name,cls[1]->name,cls[2]->name,
+                     obj_clsName(obj[0]),obj_clsName(obj[1]),obj_clsName(obj[2])); return;
+
+  case 4: cos_logmsg(cos_msg_debug,file,line,"-> %s(%s,%s,%s,%s) - <%s,%s,%s,%s>",
+                     mth->gen->name,
+                     cls[0]->name,cls[1]->name,cls[2]->name,cls[3]->name,
+                     obj_clsName(obj[0]),obj_clsName(obj[1]),obj_clsName(obj[2]),obj_clsName(obj[3]));
+                     return;
+
+  case 5: cos_logmsg(cos_msg_debug,file,line,"-> %s(%s,%s,%s,%s,%s) - <%s,%s,%s,%s,%s>",
+                     mth->gen->name,
+                     cls[0]->name,cls[1]->name,cls[2]->name,cls[3]->name,cls[4]->name,
+                     obj_clsName(obj[0]),obj_clsName(obj[1]),obj_clsName(obj[2]),obj_clsName(obj[3]),
+                     obj_clsName(obj[4])); return;
+
+  default: cos_abort("invalid generic rank");
+  }
+
+  switch( COS_GEN_RNK(mth->gen) ) {
+  case 1: cos_logmsg(cos_msg_debug,file,line,"<- %s(%s)",
+                     mth->gen->name,
+                     cls[0]->name); return;
+
+  case 2: cos_logmsg(cos_msg_debug,file,line,"<- %s(%s,%s)",
+                     mth->gen->name,
+                     cls[0]->name,cls[1]->name); return;
+
+  case 3: cos_logmsg(cos_msg_debug,file,line,"<- %s(%s,%s,%s)",
+                     mth->gen->name,
+                     cls[0]->name,cls[1]->name,cls[2]->name); return;
+
+  case 4: cos_logmsg(cos_msg_debug,file,line,"<- %s(%s,%s,%s,%s)",
+                     mth->gen->name,
+                     cls[0]->name,cls[1]->name,cls[2]->name,cls[3]->name);
+                     return;
+
+  case 5: cos_logmsg(cos_msg_debug,file,line,"<- %s(%s,%s,%s,%s,%s)",
+                     mth->gen->name,
+                     cls[0]->name,cls[1]->name,cls[2]->name,cls[3]->name,cls[4]->name); return;
+
+  default: cos_abort("invalid generic rank");
+  }
+}
 
 void
 cos_symbol_showSummary(FILE *fp)

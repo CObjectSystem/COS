@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.2 2008/06/28 21:27:53 ldeniau Exp $
+ | $Id: base.h,v 1.3 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,6 @@
 #ifdef  COS_DISABLE_ALL
 #define COS_DISABLE_NO
 #define COS_DISABLE_YES
-#define COS_DISABLE_NIL
 #define COS_DISABLE_STATIC_CAST
 #define COS_DISABLE_STATIC_ASSERT
 #endif
@@ -54,10 +53,6 @@
 
 #ifndef COS_DISABLE_YES
 #define YES COS_YES
-#endif
-
-#ifndef COS_DISABLE_NIL
-#define NIL COS_NIL
 #endif
 
 #ifndef COS_DISABLE_STATIC_CAST
@@ -75,7 +70,6 @@
 // common constants
 #define COS_NO  0
 #define COS_YES 1
-#define COS_NIL ((OBJ)0)
 
 // convert value (C cast)
 #define COS_STATIC_CAST(typename,value) \

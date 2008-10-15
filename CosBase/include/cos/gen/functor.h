@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.1 2008/10/08 16:21:58 ldeniau Exp $
+ | $Id: functor.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@ defgeneric(OBJ, geval3, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 defgeneric(OBJ, geval4, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 defgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 
-defgeneric(void, gapply   , _1, fun);
+defgeneric(void, gapply   , _1, fun);      // in place
 defgeneric(void, gapplyAt , _1, fun, at);
 
 defgeneric(OBJ , gmap     , _1, fun);

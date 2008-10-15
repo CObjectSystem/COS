@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.7 2008/10/06 10:45:46 ldeniau Exp $
+ | $Id: cosapi.h,v 1.8 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -82,7 +82,8 @@ BOOL   cos_method_understand4(SEL,U32,U32,U32,U32);
 BOOL   cos_method_understand5(SEL,U32,U32,U32,U32,U32);
 */
 char*  cos_method_name(const struct Method*,char*,U32);
-char*  cos_method_fullName(SEL,OBJ*,char*,U32);
+char*  cos_method_callName(SEL,OBJ*,char*,U32);
+void   cos_method_trace(STR,int,BOOL,const struct Method*,OBJ*);
 void   cos_method_clearCache1(void);
 void   cos_method_clearCache2(void);
 void   cos_method_clearCache3(void);
@@ -109,11 +110,14 @@ cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
    - a '\n' is automatically added to the end
    - they can be turned on/off with setLevel.
 */
+#define cos_trace(...) \
+        cos_logmsg(cos_msg_trace,__FILE__,__LINE__,__VA_ARGS__)
+
 #define cos_debug(...) \
         cos_logmsg(cos_msg_debug,__FILE__,__LINE__,__VA_ARGS__)
 
-#define cos_trace(...) \
-        cos_logmsg(cos_msg_trace,__FILE__,__LINE__,__VA_ARGS__)
+#define cos_info(...) \
+        cos_logmsg(cos_msg_info,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_warn( ...) \
         cos_logmsg(cos_msg_warn,__FILE__,__LINE__,__VA_ARGS__)
@@ -184,8 +188,9 @@ enum {
 // messages levels
 enum {
   cos_msg_invalid = 0,
-  cos_msg_debug,
   cos_msg_trace,
+  cos_msg_debug,
+  cos_msg_info,
   cos_msg_warn,
   cos_msg_error,
   cos_msg_abort,

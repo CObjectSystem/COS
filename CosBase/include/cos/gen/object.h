@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.6 2008/09/29 09:21:21 ldeniau Exp $
+ | $Id: object.h,v 1.7 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -71,7 +71,7 @@ defgeneric(STR , gclassName    , _1);
 defgeneric(OBJ , gsuperClass   , _1);
 
 // comparison
-defgeneric(OBJ , gequal        , _1, _2);
+defgeneric(OBJ , gequal        , _1, _2); // return True or False
 defgeneric(OBJ , gcompare      , _1, _2); // return Equal, Lesser or Greater
 defgeneric(U32 , ghash         , _1);
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.2 2008/10/10 08:46:40 ldeniau Exp $
+ | $Id: Functor.h,v 1.3 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -43,30 +43,34 @@
 // ----- definitions
 
 defclass(Functor)
-  int arity;
 endclass
 
 defclass(Functor1,Functor)
+  int arity;
   FCT1 fct;
   OBJ  arg;
 endclass
 
 defclass(Functor2,Functor)
+  int arity;
   FCT2 fct;
   OBJ  arg[2];
 endclass
 
 defclass(Functor3,Functor)
+  int arity;
   FCT3 fct;
   OBJ  arg[3];
 endclass
 
 defclass(Functor4,Functor)
+  int arity;
   FCT4 fct;
   OBJ  arg[4];
 endclass
 
 defclass(Functor5,Functor)
+  int arity;
   FCT5 fct;
   OBJ  arg[5];
 endclass
@@ -77,49 +81,49 @@ endclass
 #define atFunctor(F,...) atFunctorN(COS_PP_NARG(__VA_ARGS__),F,__VA_ARGS__)
 
 #define atFunctorN(N,F,...) \
-        COS_PP_CAT3(Functor,N,_init)(&(struct COS_PP_CAT(Functor,N)) {{ \
-        {{ COS_CLS_NAME(COS_PP_CAT(Functor,N)).Behavior.id, COS_RC_AUTO }}, \
-         -1 }, F, COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
+        COS_PP_CAT3(Functor,N,_init)(&(struct COS_PP_CAT(Functor,N)) { \
+        {{{ COS_CLS_NAME(COS_PP_CAT(Functor,N)).Behavior.id, COS_RC_AUTO }}}, \
+         -1, F, COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
 
 // ----- automatic constructor initializers
 
 static inline struct Functor1*
 Functor1_init(struct Functor1* fun) {
-  fun->Functor.arity = fun->arg != NIL;
+  fun->arity = fun->arg != 0;
   return fun;
 }
 
 static inline struct Functor2*
 Functor2_init(struct Functor2* fun) {
-   fun->Functor.arity = (fun->arg[0] != NIL)
-                     | ((fun->arg[1] != NIL) << 1);
+   fun->arity = (fun->arg[0] != 0)
+             | ((fun->arg[1] != 0) << 1);
   return fun;
 }
 
 static inline struct Functor3*
 Functor3_init(struct Functor3* fun) {
-   fun->Functor.arity = (fun->arg[0] != NIL)
-                     | ((fun->arg[1] != NIL) << 1)
-                     | ((fun->arg[2] != NIL) << 2);
+   fun->arity = (fun->arg[0] != 0)
+             | ((fun->arg[1] != 0) << 1)
+             | ((fun->arg[2] != 0) << 2);
   return fun;
 }
 
 static inline struct Functor4*
 Functor4_init(struct Functor4* fun) {
-   fun->Functor.arity = (fun->arg[0] != NIL)
-                     | ((fun->arg[1] != NIL) << 1)
-                     | ((fun->arg[2] != NIL) << 2)
-                     | ((fun->arg[3] != NIL) << 3);
+   fun->arity = (fun->arg[0] != 0)
+             | ((fun->arg[1] != 0) << 1)
+             | ((fun->arg[2] != 0) << 2)
+             | ((fun->arg[3] != 0) << 3);
   return fun;
 }
 
 static inline struct Functor5*
 Functor5_init(struct Functor5* fun) {
-   fun->Functor.arity = (fun->arg[0] != NIL)
-                     | ((fun->arg[1] != NIL) << 1)
-                     | ((fun->arg[2] != NIL) << 2)
-                     | ((fun->arg[3] != NIL) << 3)
-                     | ((fun->arg[4] != NIL) << 4);
+   fun->arity = (fun->arg[0] != 0)
+             | ((fun->arg[1] != 0) << 1)
+             | ((fun->arg[2] != 0) << 2)
+             | ((fun->arg[3] != 0) << 3)
+             | ((fun->arg[4] != 0) << 4);
   return fun;
 }
 

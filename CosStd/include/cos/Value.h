@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Value.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -46,10 +46,10 @@
    <- Size        (1-5 dim)
 
    <- Index       (1-5 dim)
-   <- Slice       (1-5 dim)
-   <- Range       (1-5 dim)
-
    <- Point       (1-5 dim)
+
+   <- Range       (1-5 dim)
+   <- Slice       (1-5 dim)
    <- Sequence    (1-5 dim)
 
    <- Function    (FUNC)
@@ -63,7 +63,7 @@
             <- Short
          <- Long
       <- Floating
-         <- Double
+         <- Float
          <- Complex
 */
 

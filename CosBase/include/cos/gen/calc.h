@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: calc.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: calc.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -57,7 +57,7 @@ defgeneric(OBJ, gmod   , _1, _2); // retval = _1 % _2
    The policy of these methods it to perform the operation 'in place'
    in _1 without any type promotion/coercion and return _1. Therefore if
    the types of _1 and _2 differ, some operations may not be available
-   if they may induce a loss of information (e.g. gaddTo(Long,Double)).
+   if they may induce a loss of information (e.g. gaddTo(Long,Float)).
 */
 defgeneric(OBJ, gnegate, _1);     // _1 = -_1 
 defgeneric(OBJ, ginvert, _1);     // _1 = 1/_1

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.3 2008/10/02 08:44:43 ldeniau Exp $
+ | $Id: exception.h,v 1.4 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -132,16 +132,16 @@
 
     // code using str and s;
 
-    grelease(ap), ap = NIL;
-    grelease(str), str = NIL;
+    grelease(ap), ap = 0;
+    grelease(str), str = 0;
     UNPRT(str); // unprotect str and all objects protected after
 
   example2:
     useclass(String);
 
-    OBJ str = NIL;
-    OBJ ap  = NIL;
-    STR p   = NULL;
+    OBJ str = 0;
+    OBJ ap  = 0;
+    STR p   = 0;
     PRT(str,ap); // protect str *then* ap
     str = gnewWithStr(String,"hello");
     ap  = aAllocPointer(p=malloc(10),free);

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.6 2008/09/28 20:25:10 ldeniau Exp $
+ | $Id: tests.c,v 1.7 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
     if (!strcmp(argv[i], "-s"))
       speed_test = YES;
   }
+
+  cos_logmsg_setLevel(cos_msg_trace);
 
   if (init_time) {
     // must be loaded before first message is sent

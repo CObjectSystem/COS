@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.7 2008/10/10 13:24:34 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.8 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -107,8 +107,8 @@ verbose_terminate(OBJ ex, STR file, int line)
     cos_abort("exception %s thrown at (%s:%d) during stack unwinding "
               "leading to an undefined behavior", gclassName(ex), file, line);
   else
-    cos_trace("exiting with uncaught exception %s thrown at (%s:%d)",
-              gclassName(ex), file, line);
+    cos_info("exiting with uncaught exception %s thrown at (%s:%d)",
+             gclassName(ex), file, line);
 }
 
 static cos_exception_handler handler = verbose_terminate;
@@ -150,8 +150,8 @@ cos_exception_initContext(struct cos_exception_context *cxt)
 {
   cxt->prv   = cos_exception_context();
   cxt->stk   = 0;
-  cxt->unstk = NO;
-  cxt->ex    = NIL;
+  cxt->unstk = 0;
+  cxt->ex    = 0;
   cxt_set(cxt);
 }
 

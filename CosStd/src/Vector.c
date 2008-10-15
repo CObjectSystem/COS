@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Vector.c,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -60,8 +60,8 @@ defmethod(OBJ, ginitWithLngPtr, mVector, (U32)n, (I64*)val)
   retmethod( ginitWith(_1, aLngVecRef(n,val)) );
 endmethod
 
-defmethod(OBJ, ginitWithDblPtr, mVector, (U32)n, (R64*)val)
-  retmethod( ginitWith(_1, aDblVecRef(n,val)) );
+defmethod(OBJ, ginitWithFltPtr, mVector, (U32)n, (R64*)val)
+  retmethod( ginitWith(_1, aFltVecRef(n,val)) );
 endmethod
 
 defmethod(OBJ, ginitWithCpxPtr, mVector, (U32)n, (C64*)val)

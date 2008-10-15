@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.6 2008/09/30 15:40:13 ldeniau Exp $
+ | $Id: cosdef.h,v 1.7 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -68,15 +68,15 @@ typedef unsigned _LongLong U64, ULONG;
 #endif
 
 typedef _Bool                   BOOL;
-typedef          double    R64, DOUBLE;
+typedef          double    R64, FLOAT;
 typedef _Complex double    C64, COMPLEX;
 
 typedef ptrdiff_t               INDEX;
 typedef size_t                  SIZE;
 
 typedef const char*             STR; // string literal
-typedef struct OBJ*             OBJ; // ADT, never defined
-typedef const struct Generic*   SEL;
+typedef struct OBJ*             OBJ; // object ADT, never defined
+typedef const struct Generic*   SEL; // message selector
 
 typedef void (*FUNC)(void);
 typedef OBJ  (*FCT0)(void);

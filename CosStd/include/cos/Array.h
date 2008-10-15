@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.1 2008/10/10 16:38:00 ldeniau Exp $
+ | $Id: Array.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -51,7 +51,7 @@ defclass(Array, Collection)
   U32  size;
 endclass
 
-// ----- Dynamic Array
+// ----- Dynamic array
 
 defclass(DynArrayN, Array)
 endclass
@@ -60,13 +60,13 @@ defclass(DynArray, DynArrayN)
   U32 capacity;
 endclass
 
-// ----- Sub Array
+// ----- Sub array
 
 defclass(SubArray, Array)
   OBJ array;
 endclass
 
-// ----- Small Arrays
+// ----- Fixed size arrays
 
 defclass(Array0, Array) OBJ _object[]; endclass
 defclass(Array1, Array) OBJ _object[]; endclass
@@ -80,7 +80,7 @@ defclass(Array8, Array) OBJ _object[]; endclass
 defclass(Array9, Array) OBJ _object[]; endclass
 defclass(ArrayN, Array) OBJ _object[]; endclass
 
-// ----- automatic constructors implementation
+// ----- automatic constructors
 
 #define aArr(...)                 ( (OBJ)atArr   (__VA_ARGS__     ) )
 #define aArrRef(size,array)       ( (OBJ)atArrRef(size,array      ) )

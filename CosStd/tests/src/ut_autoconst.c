@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autoconst.c,v 1.1 2008/09/28 22:12:30 ldeniau Exp $
+ | $Id: ut_autoconst.c,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -169,7 +169,7 @@ ut_autoconst(void)
   OBJ _sht  = aSht(1);
   OBJ _i    = aInt(2);
   OBJ _lng  = aLng(3);
-  OBJ _dbl  = aDbl(4);
+  OBJ _flt  = aFlt(4);
   OBJ _cpx  = aCpx(5);
   OBJ _cpx2 = aCpx(6,7);
 
@@ -178,7 +178,7 @@ ut_autoconst(void)
   ref(Short  ,sht );
   ref(Int    ,i   );
   ref(Long   ,lng );
-  ref(Double ,dbl );
+  ref(Float  ,flt );
   ref(Complex,cpx );
   ref(Complex,cpx2);
 
@@ -210,7 +210,7 @@ ut_autoconst(void)
     UTEST( sht->Int.value ==  1  );
     UTEST( i  ->    value ==  2  );
     UTEST( lng->    value ==  3  );
-    UTEST( dbl_equal(dbl->value,4) );
+    UTEST( flt_equal(flt->value,4) );
     UTEST( cpx_equal(cpx->value,5) );
     UTEST( cpx_equal(cpx2->value,cpx_ref) );
 
@@ -236,7 +236,7 @@ ut_autoconst(void)
     UTEST( obj_chk(_sht) );
     UTEST( obj_chk(_i  ) );
     UTEST( obj_chk(_lng) );
-    UTEST( obj_chk(_dbl) );
+    UTEST( obj_chk(_flt) );
     UTEST( obj_chk(_cpx) );
     UTEST( obj_chk(_cpx2) );
 
@@ -288,17 +288,17 @@ ut_autovector(void)
   OBJ lngvn = aLngVec(1,2,3,4,5,6,7,8,9,10);
   OBJ lngvv = aLngSubVec(lngvn, 4, 4);
 
-  OBJ dblv1 = aDblVec(1);
-  OBJ dblv2 = aDblVec(1,2);
-  OBJ dblv3 = aDblVec(1,2,3);
-  OBJ dblv4 = aDblVec(1,2,3,4);
-  OBJ dblv5 = aDblVec(1,2,3,4,5);
-  OBJ dblv6 = aDblVec(1,2,3,4,5,6);
-  OBJ dblv7 = aDblVec(1,2,3,4,5,6,7);
-  OBJ dblv8 = aDblVec(1,2,3,4,5,6,7,8);
-  OBJ dblv9 = aDblVec(1,2,3,4,5,6,7,8,9);
-  OBJ dblvn = aDblVec(1,2,3,4,5,6,7,8,9,10);
-  OBJ dblvv = aDblSubVec(dblvn, 4, 4);
+  OBJ fltv1 = aFltVec(1);
+  OBJ fltv2 = aFltVec(1,2);
+  OBJ fltv3 = aFltVec(1,2,3);
+  OBJ fltv4 = aFltVec(1,2,3,4);
+  OBJ fltv5 = aFltVec(1,2,3,4,5);
+  OBJ fltv6 = aFltVec(1,2,3,4,5,6);
+  OBJ fltv7 = aFltVec(1,2,3,4,5,6,7);
+  OBJ fltv8 = aFltVec(1,2,3,4,5,6,7,8);
+  OBJ fltv9 = aFltVec(1,2,3,4,5,6,7,8,9);
+  OBJ fltvn = aFltVec(1,2,3,4,5,6,7,8,9,10);
+  OBJ fltvv = aFltSubVec(fltvn, 4, 4);
 
   OBJ cpxv1 = aCpxVec(1);
   OBJ cpxv2 = aCpxVec(1,2);
@@ -338,17 +338,17 @@ ut_autovector(void)
     UTEST( obj_chk(lngvn) );
     UTEST( obj_chk(lngvv) );
 
-    UTEST( obj_chk(dblv1) );
-    UTEST( obj_chk(dblv2) );
-    UTEST( obj_chk(dblv3) );
-    UTEST( obj_chk(dblv4) );
-    UTEST( obj_chk(dblv5) );
-    UTEST( obj_chk(dblv6) );
-    UTEST( obj_chk(dblv7) );
-    UTEST( obj_chk(dblv8) );
-    UTEST( obj_chk(dblv9) );
-    UTEST( obj_chk(dblvn) );
-    UTEST( obj_chk(dblvv) );
+    UTEST( obj_chk(fltv1) );
+    UTEST( obj_chk(fltv2) );
+    UTEST( obj_chk(fltv3) );
+    UTEST( obj_chk(fltv4) );
+    UTEST( obj_chk(fltv5) );
+    UTEST( obj_chk(fltv6) );
+    UTEST( obj_chk(fltv7) );
+    UTEST( obj_chk(fltv8) );
+    UTEST( obj_chk(fltv9) );
+    UTEST( obj_chk(fltvn) );
+    UTEST( obj_chk(fltvv) );
 
     UTEST( obj_chk(cpxv1) );
     UTEST( obj_chk(cpxv2) );

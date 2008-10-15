@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.8 2008/10/02 21:09:55 ldeniau Exp $
+ | $Id: config.h,v 1.9 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -55,7 +55,22 @@
 #endif
 
 #ifndef COS_LOGMSG_LEVEL // default logmsg level (see cos/cos/cosapi.h)
-#define COS_LOGMSG_LEVEL cos_msg_trace
+#define COS_LOGMSG_LEVEL cos_msg_info // output all messages < cos_msg_info
+#endif
+
+/* NOTE-USER: tracing defmethod
+   - trace defmethod both when entering and exiting
+     #define COS_METHOD_TRACE YES // or NO to disable [default]
+   - the called function is given by COS_METHOD_TRACE_FUNC with signature
+     void fun(STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj);
+     default is cos_method_trace which calls cos_debug() (see cos/cos/cosapi.h)
+*/
+#ifndef COS_METHOD_TRACE
+#define COS_METHOD_TRACE NO
+#endif
+
+#ifndef COS_METHOD_TRACE_FUNC
+#define COS_METHOD_TRACE_FUNC cos_method_trace
 #endif
 
 /* NOTE-CONF: C99 dialect

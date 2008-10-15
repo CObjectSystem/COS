@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.2 2008/10/02 08:44:43 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.3 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -92,7 +92,7 @@ ut_autorelease(void)
 
     // ----
     ar = gnew(AutoRelease);
-    ar1 = ar2 = ar3 = NIL;
+    ar1 = ar2 = ar3 = 0;
     TRY
       ar1 = gnew(AutoRelease);
       for (i = 0; i < 100; i++)
@@ -107,14 +107,14 @@ ut_autorelease(void)
             arr[i] = gretain(gautoRelease(gnew(A)));
           THROW(Nil);
         FINALLY
-          UTEST( gsize(ar3) == 300 ), ar3 = NIL;
+          UTEST( gsize(ar3) == 300 ), ar3 = 0;
         ENDTRY // rethrow Nil
       FINALLY
-        UTEST( gsize(ar2) == 200 ), ar2 = NIL;
+        UTEST( gsize(ar2) == 200 ), ar2 = 0;
       ENDTRY // rethrow Nil
     CATCH_ANY() // catch Nil
     FINALLY
-      UTEST( gsize(ar1) == 100 ), ar1 = NIL;
+      UTEST( gsize(ar1) == 100 ), ar1 = 0;
     ENDTRY
     UTEST( gsize(ar) == 0 );
     grelease(ar); // destroy all chained pools

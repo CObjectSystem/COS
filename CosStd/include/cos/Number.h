@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Number.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -64,8 +64,8 @@ defclass(Short, Int) endclass
 
 // ----- floating
 
-defclass(Double, Floating)
-  DOUBLE value;
+defclass(Float, Floating)
+  FLOAT value;
 endclass
 
 defclass(Complex, Floating)
@@ -94,9 +94,9 @@ endclass
         {{{{{ COS_CLS_NAME(Long).Behavior.id, COS_RC_AUTO }}}}}, \
          (value) } )
 
-#define aDbl(value)  ( (OBJ)atDbl(value) )
-#define atDbl(value) ( &(struct Double) { \
-        {{{{{ COS_CLS_NAME(Double).Behavior.id, COS_RC_AUTO }}}}}, \
+#define aFlt(value)  ( (OBJ)atFlt(value) )
+#define atFlt(value) ( &(struct Float) { \
+        {{{{{ COS_CLS_NAME(Float).Behavior.id, COS_RC_AUTO }}}}}, \
          (value) } )
 
 #define aCpx(...)  ( (OBJ)atCpx(__VA_ARGS__) )
@@ -107,43 +107,43 @@ endclass
          (value) } )
 #define atCpx2(real,imag) ( &(struct Complex) { \
         {{{{{ COS_CLS_NAME(Complex).Behavior.id, COS_RC_AUTO }}}}}, \
-         *(DOUBLE[]) {(real),(imag)} } )
+         *(FLOAT[]) {(real),(imag)} } )
 
 // ---- inliners
 
 static inline BOOL
-dbl_equal(DOUBLE x, DOUBLE y)
+flt_equal(FLOAT x, FLOAT y)
 {
   return x <= y && x >= y;
-  COS_UNUSED(dbl_equal);
+  COS_UNUSED(flt_equal);
 }
 
 static inline COMPLEX
-cpx_make(DOUBLE x, DOUBLE y)
+cpx_make(FLOAT x, FLOAT y)
 {
-  return *(DOUBLE[]){ x, y };
+  return *(FLOAT[]){ x, y };
   COS_UNUSED(cpx_make);
 }
 
-static inline DOUBLE
+static inline FLOAT
 cpx_real(COMPLEX x)
 {
-  return ((DOUBLE*)&x)[0];
+  return ((FLOAT*)&x)[0];
   COS_UNUSED(cpx_real);
 }
 
-static inline DOUBLE
+static inline FLOAT
 cpx_imag(COMPLEX x)
 {
-  return ((DOUBLE*)&x)[1];
+  return ((FLOAT*)&x)[1];
   COS_UNUSED(cpx_imag);
 }
 
 static inline BOOL
 cpx_equal(COMPLEX x, COMPLEX y)
 {
-  return dbl_equal(cpx_real(x), cpx_real(y)) &&
-         dbl_equal(cpx_imag(x), cpx_imag(y));
+  return flt_equal(cpx_real(x), cpx_real(y)) &&
+         flt_equal(cpx_imag(x), cpx_imag(y));
   COS_UNUSED(cpx_equal);
 }
 

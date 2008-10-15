@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.2 2008/06/29 14:48:28 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.3 2008/10/15 19:18:06 ldeniau Exp $
  |
 */
 
@@ -40,11 +40,12 @@
 #include <string.h>
 #include <errno.h>
 
-static STR tag[] = { "Invalid", "Debug", "Trace", "Warning", "Error", "Abort" };
+static STR tag[] = { "Invalid", "Trace", "Debug", "Info", "Warning", "Error", "Abort" };
 
 BOOL cos_logmsg_level[cos_msg_last] = { NO,
-  cos_msg_debug >= COS_LOGMSG_LEVEL,
   cos_msg_trace >= COS_LOGMSG_LEVEL,
+  cos_msg_debug >= COS_LOGMSG_LEVEL,
+  cos_msg_info  >= COS_LOGMSG_LEVEL,
   cos_msg_warn  >= COS_LOGMSG_LEVEL,
   cos_msg_error >= COS_LOGMSG_LEVEL,
   cos_msg_abort >= COS_LOGMSG_LEVEL
@@ -56,11 +57,11 @@ cos_logmsg_setLevel(int lvl)
   int i;
   
   if (lvl <= cos_msg_invalid || lvl >= cos_msg_last) {
-    cos_trace("logmsg_setLevel discarding level %d out of range", lvl);
+    cos_warn("logmsg_setLevel discarding level %d out of range", lvl);
     return;
   }
 
-  for (i = 0; i <= lvl; i++)
+  for (i = 0; i < lvl; i++)
     cos_logmsg_level[i] = NO;
     
   for (; i < cos_msg_last; i++)
@@ -71,7 +72,7 @@ void
 (cos_logmsg)(int lvl, STR file, int line, STR fmt, ...)
 {
   if (lvl <= cos_msg_invalid || lvl >= cos_msg_last) {
-    cos_logmsg(cos_msg_trace, file, line, "logmsg discarding level %d out of range", lvl);
+    (cos_logmsg)(cos_msg_warn, file, line, "logmsg discarding level %d out of range", lvl);
     return;
   }
 
@@ -80,7 +81,7 @@ void
 
     va_start(va,fmt);
     fflush(stdout);
-    fprintf(stderr,"COS-%s:(%s,%d): ",tag[lvl],file ? file : "-",line);
+    fprintf(stderr,"COS-%s:(%s,%04d): ",tag[lvl],file ? file : "-",line);
     vfprintf(stderr,fmt,va);
     if (fmt[0] != '\0' && fmt[strlen(fmt)-1] == ':')
       fprintf(stderr," %s",strerror(errno));
