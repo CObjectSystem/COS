@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.8 2008/10/16 10:46:45 ldeniau Exp $
+ | $Id: tests.c,v 1.9 2008/10/16 12:50:11 ldeniau Exp $
  |
 */
 
@@ -95,8 +95,6 @@ int main(int argc, char *argv[])
   if (!speed_test) return EXIT_SUCCESS;
   
   fprintf(stdout, "\n** C Object System Speed Testsuite (%d bits) **\n", bits);
-
-  test_assert(cos_logmsg_set(0) == COS_LOGMSG_TRACE);
 
   st_methods();
   st_nextmethods();

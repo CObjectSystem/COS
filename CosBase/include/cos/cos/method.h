@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.6 2008/10/16 10:46:44 ldeniau Exp $
+ | $Id: method.h,v 1.7 2008/10/16 12:50:11 ldeniau Exp $
  |
 */
 
@@ -202,7 +202,7 @@ COS_MTH_FUNCDEF(RET,NAME,PS,CS,AS,C,A,R) \
 COS_CTR_BEGCTR
 
 #define COS_MTH_END   \
-  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC_LOC,/*no trace*/) \
+  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC_LOC,/* no trace */) \
   COS_CTR_ENDCTR      \
   goto _cos_mth_fini; \
 }
@@ -260,21 +260,19 @@ static void COS_FCT_NAME(NAME,CS) \
   _cos_mth_slf1 self = (_cos_mth_slf1)_1; COS_PP_SEP(COS_SLF_DECL(C)) \
   /* trace variables (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)( \
-  static const struct Method* _cos_mth_ref = (struct Method*)&COS_MTH_NAME(NAME,CS); \
-  static const STR _cos_mth_file = __FILE__; \
-  OBJ _cos_mth_obj[] = { COS_PP_SEQ(COS_PP_TAKE(C,(_1,_2,_3,_4,_5))) }; \
-  int _cos_mth_line = __LINE__; ,/* no trace */) \
+  static const struct Method* const _cos_mth_ref = (struct Method*)&COS_MTH_NAME(NAME,CS); \
+  int _cos_mth_line;,/* no trace */) \
   /* arguments variables initialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_MTH_ARG)),/* no arg */) \
   /* trace entering the method (if requested) */ \
-  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(1),/* no trace */) \
+  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(1,C,__LINE__),/* no trace */) \
   goto _cos_mth_body; \
   /* exit point */ \
   _cos_mth_fini: \
   /* arguments variables deinitialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_MTH_DEARG)),/* no arg */) \
   /* trace exiting the method (if requested) */ \
-  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(0),/* no trace */) \
+  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(0,C,_cos_mth_line),/* no trace */) \
   return; \
   /* avoid compiler warning for unused identifiers */ \
   COS_PP_IF(R)(/* ret */,COS_UNUSED(_ret);) \
@@ -349,7 +347,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 #define COS_MTH_RET(...) \
   do { \
     COS_PP_IF(COS_PP_NOARG(__VA_ARGS__))(,COS_MTH_RETVAL = (__VA_ARGS__);) \
-    COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC_LOC,/* no trace */) \
+    COS_PP_IFDEF(COS_METHOD_TRACE)(_cos_mth_line = __LINE__;,/* no trace */) \
     goto _cos_ctr_end; \
   } while(0)
 
@@ -392,13 +390,14 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 #define COS_METHOD_TRACE
 #endif
 
-#define COS_MTH_TRC(E) \
-  ((void)(cos_logmsg_level_ <= COS_LOGMSG_DEBUG && ( \
-   cos_method_trace(_cos_mth_file, _cos_mth_line, E, _cos_mth_ref, _cos_mth_obj),0)));
+#define COS_MTH_TRC(E,C,L) \
+  ((void)(cos_logmsg_level_ < COS_LOGMSG_DEBUG && ( \
+   cos_method_trace(__FILE__, L, E, _cos_mth_ref, \
+   (OBJ[]){ COS_PP_SEQ(COS_PP_TAKE(C,(_1,_2,_3,_4,_5))) }),0)));
    
 #define COS_MTH_TRC_LOC \
-  if (COS_CONTRACT < COS_CONTRACT_POST || _cos_ctr_st != cos_contract_post_st) \
-    _cos_mth_line = __LINE__;
+    if (COS_CONTRACT < COS_CONTRACT_POST || _cos_ctr_st != cos_contract_post_st) \
+      _cos_mth_line = __LINE__;
 
 /* method info encoding and decoding
  */
