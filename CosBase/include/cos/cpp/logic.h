@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: logic.h,v 1.2 2008/10/16 10:46:45 ldeniau Exp $
  |
  o
 */
@@ -47,6 +47,9 @@
 // evaluate first element of the following tuple, otherwise evaluate the rest
 #define COS_PP_IF(b) \
         COS_PP_CAT_(COS_PP_IF_,b)
+
+#define COS_PP_IFDEF(m) \
+        COS_PP_IF(COS_PP_ISBLANK(m))
 
 #define COS_PP_NOT(b) \
         COS_PP_CAT_(COS_PP_NOT_,b)()

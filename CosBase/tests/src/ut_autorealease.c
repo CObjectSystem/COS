@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.3 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.4 2008/10/16 10:46:45 ldeniau Exp $
  |
 */
 
@@ -81,7 +81,7 @@ ut_autorelease(void)
 
     // ----
     ar = gnew(AutoRelease);
-    for (i = 1; i <= 100000; i++) {
+    for (i = 1; i <= 1000; i++) {
       size_t s;
       gautoRelease(gnew(A));
       s = gsize(ar);

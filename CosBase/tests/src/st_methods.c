@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.c,v 1.5 2008/10/02 21:09:55 ldeniau Exp $
+ | $Id: st_methods.c,v 1.6 2008/10/16 10:46:45 ldeniau Exp $
  |
 */
 
@@ -173,6 +173,7 @@ st_memory(void)
   useclass(Counter, AutoRelease);
   OBJ ar = gnew(AutoRelease);
   size_t i;
+  int lvl;
 
   i = 0;
   STEST( "new (galloc+ginit)", P, P, arr[i++] = gnew(Counter) );
@@ -184,9 +185,9 @@ st_memory(void)
   STEST( "release", P, P, grelease(arr[i++]) );
 
   i = 0;
-  cos_logmsg_setLevel(cos_msg_warn);
+  lvl = cos_logmsg_set(COS_LOGMSG_WARN);
   STEST( "autoRelease", P, P, gautoRelease(arr[i++]) );
-  cos_logmsg_setLevel(cos_msg_trace);
+  cos_logmsg_set(lvl);
 
   STEST( "release (gdeinit+dealloc)", P, 1, grelease(ar) );
 

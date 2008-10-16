@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.6 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Any.c,v 1.7 2008/10/16 10:46:45 ldeniau Exp $
  |
 */
 
@@ -142,7 +142,7 @@ static void
 trace(SEL sel, OBJ obj[])
 {
   char buf[128];
-  cos_debug("<Any> unrecognized message %s", cos_method_callName(sel,obj,buf,sizeof buf));
+  cos_debug("<Any> unrecognized message %s", cos_method_call(sel,obj,buf,sizeof buf));
 }
 
 defmethod(void, gunrecognizedMessage1, Any)

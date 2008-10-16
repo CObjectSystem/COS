@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.7 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: tests.c,v 1.8 2008/10/16 10:46:45 ldeniau Exp $
  |
 */
 
@@ -45,7 +45,7 @@
 static void
 on_exit(void)
 {
-  fprintf(stderr, "** COS deinit duration: %.3f s\n", cos_deinitDuration());
+  fprintf(stdout, "** COS deinit duration: %.3f s\n", cos_deinitDuration());
 }
 
 int main(int argc, char *argv[])
@@ -55,25 +55,28 @@ int main(int argc, char *argv[])
   int speed_test = NO;
   int i;
   
+  cos_logmsg_set(COS_LOGMSG_DEBUG);
+
   for (i = 1; i < argc; i++) {
-    if (!strcmp(argv[i], "-t"))
+    if (!strcmp(argv[i], "-i"))
       init_time = YES;
     if (!strcmp(argv[i], "-s"))
       speed_test = YES;
+    if (!strcmp(argv[i], "-t"))
+      cos_logmsg_set(COS_LOGMSG_TRACE);
   }
 
-  cos_logmsg_setLevel(cos_msg_trace);
 
   if (init_time) {
     // must be loaded before first message is sent
     atexit(on_exit);
     // first message initialize COS
     gclass(Nil);
-    fprintf(stderr, "** COS init duration: %.3f s\n", cos_initDuration());
+    fprintf(stdout, "** COS init duration: %.3f s\n", cos_initDuration());
   }
     
   // testsuites
-  fprintf(stderr, "\n** C Object System Testsuite (%d bits) **\n", bits);
+  fprintf(stdout, "\n** C Object System Testsuite (%d bits) **\n", bits);
   ut_methods();
   ut_classes();
   ut_predlogic();
@@ -85,15 +88,16 @@ int main(int argc, char *argv[])
   ut_exception();
   ut_contract();
   ut_autorelease();
-//  ut_autoconst();
-//  ut_autovector();
 
   utest_stat();
 
   // speed testsuites
   if (!speed_test) return EXIT_SUCCESS;
   
-  fprintf(stderr, "\n** C Object System Speed Testsuite (%d bits) **\n", bits);
+  fprintf(stdout, "\n** C Object System Speed Testsuite (%d bits) **\n", bits);
+
+  test_assert(cos_logmsg_set(0) == COS_LOGMSG_TRACE);
+
   st_methods();
   st_nextmethods();
   st_multimethods();

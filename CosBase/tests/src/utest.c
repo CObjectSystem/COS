@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utest.c,v 1.1 2008/06/27 16:17:25 ldeniau Exp $
+ | $Id: utest.c,v 1.2 2008/10/16 10:46:45 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,10 @@ static const char *const pass_str = "\033[32mPASS\033[0m";
 static double total_time = 0.0;
 static int    total_pass = 0;
 static int    total_fail = 0;
+
+// -----
+
+FILE *utest_out = 0;
 
 // -----
 
@@ -67,7 +71,9 @@ utest_init(struct utest_info *uti, const char *name, const char *file)
 {
   const char *p = strrchr(file, '/');
 
-  fprintf(stderr, " + %-50s ", name);
+  if (!utest_out) utest_out = stdout;
+  
+  fprintf(utest_out, " + %-50s ", name);
   uti->test_file = p ? p+1: file;
   uti->fail_cnt  = 0;
   uti->test_cnt  = 0;
@@ -77,7 +83,9 @@ utest_init(struct utest_info *uti, const char *name, const char *file)
 void
 stest_init (struct stest_info *sti, const char *name, int itr)
 {
-  fprintf(stderr, " + %-50s ", name);
+  if (!utest_out) utest_out = stdout;
+
+  fprintf(utest_out, " + %-50s ", name);
   sti->i   = 0;
   sti->itr = itr;
   sti->t0  = clock();
@@ -92,14 +100,14 @@ utest_fini(struct utest_info *uti)
   double t = (t1 - uti->test_t0) / CLOCKS_PER_SEC;
   int i;
   
-  fprintf(stderr, "(%.2f s) - %3d/%3d : %s\n",
+  fprintf(utest_out, "(%.2f s) - %3d/%3d : %s\n",
           t,
           uti->test_cnt - uti->fail_cnt,
           uti->test_cnt,
           uti->fail_cnt ? fail_str: pass_str);
 
   for (i = 0; i < uti->fail_cnt && i < MAX_KEEP_FAIL; i++)
-    fprintf(stderr, "   - (%s,%d) %s\n",
+    fprintf(utest_out, "   - (%s,%d) %s\n",
             uti->test_file,
             uti->fail_line[i],
             uti->fail_cond[i]);
@@ -115,7 +123,7 @@ stest_fini (struct stest_info *sti)
   double t1 = clock();
   double t = (t1 - sti->t0) / CLOCKS_PER_SEC;
   
-  fprintf(stderr, "(%.2f s) - %7.0f Kitr/s\n",
+  fprintf(utest_out, "(%.2f s) - %7.0f Kitr/s\n",
           t, sti->itr / t / 1000);
 
   total_time += t;
@@ -143,22 +151,22 @@ stest_clear(void)
 void
 utest_stat(void)
 {
-  fprintf(stderr, " = %5d total, %5d passed, %5d failed"
-                  "            (%.2f s)             %s\n",
-          total_pass+total_fail,
-          total_pass,
-          total_fail,
-          total_time,
-          total_fail ? fail_str : pass_str);
+  fprintf(utest_out, " = %5d total, %5d passed, %5d failed"
+                     "            (%.2f s)             %s\n",
+                     total_pass+total_fail,
+                     total_pass,
+                     total_fail,
+                     total_time,
+                     total_fail ? fail_str : pass_str);
   utest_clear();
 }
 
 void
 stest_stat(void)
 {
-  fprintf(stderr, " = %5d total                        "
-                  "                (%.2f s)\n",
-                  total_pass,
-                  total_time);
+  fprintf(utest_out, " = %5d total                        "
+                     "                (%.2f s)\n",
+                     total_pass,
+                     total_time);
   stest_clear();
 }

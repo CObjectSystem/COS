@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Nil.c,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Nil.c,v 1.3 2008/10/16 10:46:45 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@ static void
 trace(SEL sel, OBJ obj[])
 {
   char buf[128];
-  cos_debug("<Nil> unrecognized message %s", cos_method_callName(sel,obj,buf,sizeof buf));
+  cos_debug("<Nil> unrecognized message %s", cos_method_call(sel,obj,buf,sizeof buf));
 }
 
 static inline void

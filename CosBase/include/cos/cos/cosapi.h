@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.8 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: cosapi.h,v 1.9 2008/10/16 10:46:44 ldeniau Exp $
  |
 */
 
@@ -82,8 +82,9 @@ BOOL   cos_method_understand4(SEL,U32,U32,U32,U32);
 BOOL   cos_method_understand5(SEL,U32,U32,U32,U32,U32);
 */
 char*  cos_method_name(const struct Method*,char*,U32);
-char*  cos_method_callName(SEL,OBJ*,char*,U32);
-void   cos_method_trace(STR,int,BOOL,const struct Method*,OBJ*);
+char*  cos_method_call(SEL,OBJ*,char*,U32);
+char*  cos_method_callName(const struct Method*,OBJ*,char*,U32);
+void (*cos_method_trace)(STR,int,BOOL,const struct Method*,OBJ*);
 void   cos_method_clearCache1(void);
 void   cos_method_clearCache2(void);
 void   cos_method_clearCache3(void);
@@ -105,36 +106,36 @@ cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
 
 /* NOTE-INFO: loggers
    - prototype: void cos_xxx(STR fmt, ...);
-   - all these handlers display on stderr
    - if fmt is ending by ':', the errno string is added
    - a '\n' is automatically added to the end
    - they can be turned on/off with setLevel.
+   - all these handlers display on cos_logmsg_file_ [default=stderr]
 */
 #define cos_trace(...) \
-        cos_logmsg(cos_msg_trace,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_TRACE,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_debug(...) \
-        cos_logmsg(cos_msg_debug,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_DEBUG,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_info(...) \
-        cos_logmsg(cos_msg_info,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_INFO,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_warn( ...) \
-        cos_logmsg(cos_msg_warn,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_WARN,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_error(...) \
-        cos_logmsg(cos_msg_error,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_ERROR,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_abort(...) \
-        cos_logmsg(cos_msg_abort,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_ABORT,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_logmsg(lvl,file,line,...) \
-((void)(cos_logmsg_level[lvl] && (cos_logmsg(lvl,file,line,__VA_ARGS__) ,0)))
+((void)(cos_logmsg_level_ >= (lvl) && (cos_logmsg_(lvl,file,line,__VA_ARGS__),0)))
 
-void (cos_logmsg)(int lvl, STR file, int line, STR fmt, ...)
+void cos_logmsg_(int lvl, STR file, int line, STR fmt, ...)
                   __attribute__((__format__(__printf__,4,5)));
 
-void cos_logmsg_setLevel(int lvl);
+int  cos_logmsg_set(int lvl); // return previous level
 
 /***********************************************************
  * Implementation
@@ -165,6 +166,9 @@ BOOL cos_method_understand3_(struct cos_method_slot3**,SEL,U32,U32,U32);
 BOOL cos_method_understand4_(struct cos_method_slot4**,SEL,U32,U32,U32,U32);
 BOOL cos_method_understand5_(struct cos_method_slot5**,SEL,U32,U32,U32,U32,U32);
 
+// logger message level (not thread safe)
+extern int cos_logmsg_level_;
+
 // components tags
 enum {
   cos_tag_invalid = 0,
@@ -184,20 +188,6 @@ enum {
   cos_tag_catch   = 2,
 	cos_tag_finally = 4
 };
-
-// messages levels
-enum {
-  cos_msg_invalid = 0,
-  cos_msg_trace,
-  cos_msg_debug,
-  cos_msg_info,
-  cos_msg_warn,
-  cos_msg_error,
-  cos_msg_abort,
-  cos_msg_last
-};
-
-extern BOOL cos_logmsg_level[cos_msg_last];
 
 /***********************************************************
  * Inlined functions
@@ -312,6 +302,13 @@ cos_any_id(OBJ obj)
 {
   return COS_STATIC_CAST(struct Any*, obj)->id;
   COS_UNUSED(cos_any_id);
+}
+
+static inline STR
+cos_any_className(OBJ obj)
+{
+  return cos_class_get(cos_any_id(obj))->name;
+  COS_UNUSED(cos_any_className);
 }
 
 static inline struct cos_exception_protect

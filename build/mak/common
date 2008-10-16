@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.5 2008/10/15 19:18:06 ldeniau Exp $
+# | $Id: common,v 1.6 2008/10/16 10:46:45 ldeniau Exp $
 # |
 #
 
@@ -58,11 +58,11 @@ LIBS    = $(foreach l,$(notdir $(moddeps)),-l$(l)$(TARGETEXT)) \
 # standard flags
 CPPFLAGS    += $(SYSFLAGS)
 CCFLAGS     += $(SYSFLAGS) $(COS_CCOPTS)
-DEBUG_CPP   += -DCOS_CONTRACT=COS_CONTRACT_ALL -DCOS_LOGMSG_LEVEL=cos_msg_debug
-DEBUG_CC    += -DCOS_CONTRACT=COS_CONTRACT_ALL -DCOS_LOGMSG_LEVEL=cos_msg_debug
+DEBUG_CPP   += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
+DEBUG_CC    += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
 PROFILE_CPP += -DNDEBUG
 PROFILE_CC  += -DNDEBUG
-RELEASE_CPP += -DNDEBUG
-RELEASE_CC  += -DNDEBUG
+RELEASE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN
+RELEASE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN
 
 # end of makefile

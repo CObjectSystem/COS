@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.3 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.4 2008/10/16 10:46:45 ldeniau Exp $
  |
 */
 
@@ -40,56 +40,48 @@
 #include <string.h>
 #include <errno.h>
 
-static STR tag[] = { "Invalid", "Trace", "Debug", "Info", "Warning", "Error", "Abort" };
+STATIC_ASSERT(COS_LOGMSG_must_be_within_trace_and_abort,
+              COS_LOGMSG >= COS_LOGMSG_TRACE && COS_LOGMSG <= COS_LOGMSG_ABORT);
 
-BOOL cos_logmsg_level[cos_msg_last] = { NO,
-  cos_msg_trace >= COS_LOGMSG_LEVEL,
-  cos_msg_debug >= COS_LOGMSG_LEVEL,
-  cos_msg_info  >= COS_LOGMSG_LEVEL,
-  cos_msg_warn  >= COS_LOGMSG_LEVEL,
-  cos_msg_error >= COS_LOGMSG_LEVEL,
-  cos_msg_abort >= COS_LOGMSG_LEVEL
-};
+FILE *cos_logmsg_out = 0;
+int   cos_logmsg_level_ = COS_LOGMSG;
 
-void
-cos_logmsg_setLevel(int lvl)
+int
+cos_logmsg_set(int lvl)
 {
-  int i;
+  int old;
   
-  if (lvl <= cos_msg_invalid || lvl >= cos_msg_last) {
-    cos_warn("logmsg_setLevel discarding level %d out of range", lvl);
-    return;
-  }
+  if (lvl < COS_LOGMSG_TRACE || lvl > COS_LOGMSG_ABORT)
+    return cos_logmsg_level_;
 
-  for (i = 0; i < lvl; i++)
-    cos_logmsg_level[i] = NO;
-    
-  for (; i < cos_msg_last; i++)
-    cos_logmsg_level[i] = YES;
+  return old=cos_logmsg_level_, cos_logmsg_level_=lvl, old;
 }
 
 void
-(cos_logmsg)(int lvl, STR file, int line, STR fmt, ...)
+cos_logmsg_(int lvl, STR file, int line, STR fmt, ...)
 {
-  if (lvl <= cos_msg_invalid || lvl >= cos_msg_last) {
-    (cos_logmsg)(cos_msg_warn, file, line, "logmsg discarding level %d out of range", lvl);
+  if (lvl < COS_LOGMSG_TRACE || lvl > COS_LOGMSG_ABORT) {
+    cos_logmsg_(COS_LOGMSG_WARN, file, line, "cos_logmsg discarding level %d out of range", lvl);
     return;
   }
 
-  if (cos_logmsg_level[lvl]) {
+  if (lvl >= cos_logmsg_level_) {
+    static STR tag[] = { "Invalid", "Trace", "Debug", "Info ", "Warn ", "Error", "Abort" };
     va_list va;
 
+    if (cos_logmsg_out == 0     ) cos_logmsg_out = stderr;
+    if (cos_logmsg_out == stderr) fflush(stdout);
+   
     va_start(va,fmt);
-    fflush(stdout);
-    fprintf(stderr,"COS-%s:(%s,%04d): ",tag[lvl],file ? file : "-",line);
-    vfprintf(stderr,fmt,va);
+    fprintf(cos_logmsg_out,"COS-%s:(%-16s,%04d): ",tag[lvl],file ? file : "-",line);
+    vfprintf(cos_logmsg_out,fmt,va);
     if (fmt[0] != '\0' && fmt[strlen(fmt)-1] == ':')
-      fprintf(stderr," %s",strerror(errno));
+      fprintf(cos_logmsg_out," %s",strerror(errno));
     putc('\n',stderr);
     va_end(va);
-  }
 
-  if (lvl == cos_msg_abort)
-    abort();
+    if (lvl >= COS_LOGMSG_ABORT)
+      abort();
+  }
 }
 

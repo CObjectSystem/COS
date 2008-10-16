@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.3 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: base.h,v 1.4 2008/10/16 10:46:44 ldeniau Exp $
  |
 */
 
@@ -70,6 +70,14 @@
 // common constants
 #define COS_NO  0
 #define COS_YES 1
+
+// logger message levels
+#define COS_LOGMSG_TRACE 1
+#define COS_LOGMSG_DEBUG 2
+#define COS_LOGMSG_INFO  3
+#define COS_LOGMSG_WARN  4
+#define COS_LOGMSG_ERROR 5
+#define COS_LOGMSG_ABORT 6
 
 // convert value (C cast)
 #define COS_STATIC_CAST(typename,value) \
