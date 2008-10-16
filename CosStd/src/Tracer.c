@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Tracer.c,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Tracer.c,v 1.3 2008/10/16 12:55:10 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,7 @@ trace(struct Tracer *self, SEL sel, OBJ obj[], int pos)
   char buf[128];
   cos_trace("<Tracer:%s:%d> sending message %s to self%d (%p)",
             self->file, self->line,
-            cos_method_fullName(sel,obj,buf,sizeof buf),
+            cos_method_call(sel,obj,buf,sizeof buf),
             pos, (void*)self->Proxy.obj);
 }
 
