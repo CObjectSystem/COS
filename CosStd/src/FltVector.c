@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.1 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: FltVector.c,v 1.2 2008/10/17 18:12:21 ldeniau Exp $
  |
 */
 
@@ -74,14 +74,14 @@ static struct FltVector*
 vector_alloc(U32 size)
 {
   enum { N = 10 };
-  static const OBJ cls[N] = {
+  static struct Class* cls[N] = {
     classref(FltVector0,FltVector1,FltVector2,FltVector3,FltVector4),
     classref(FltVector5,FltVector6,FltVector7,FltVector8,FltVector9) }; 
 
   useclass(FltVectorN);
 
-  OBJ _cl  = size >= N ? FltVectorN : cls[size];
-  OBJ _vec = gallocWithSize(_cl, size * sizeof(FLOAT));
+  OBJ _cls = size >= N ? FltVectorN : (OBJ)cls[size];
+  OBJ _vec = gallocWithSize(_cls, size * sizeof(FLOAT));
   struct FltVectorN *nvec = STATIC_CAST(struct FltVectorN*, _vec);
   struct FltVector  * vec = &nvec->FltVector;
 

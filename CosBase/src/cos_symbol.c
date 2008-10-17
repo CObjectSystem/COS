@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.10 2008/10/16 12:50:11 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.11 2008/10/17 18:12:21 ldeniau Exp $
  |
 */
 
@@ -78,14 +78,12 @@ static inline U32
 bhv_tag(void)
 {
   static U32 x = 1;
-  U32 tag;
 
-  x = x * 2621124293u + 1;       // generator of \frac{\set{N}}{2^{32}\set{N}}
-  tag = x & COS_ID_TAGMSK;
+  x = x * 2621124293u + 1;  // group generator for any \frac{\setN}{2^k\setN}, k=1..32
 
-  if (!tag) cos_abort("too many behavior tags");
+  if (x == 896513217u) cos_abort("too many static behaviors (>1000000)");
 
-  return tag;
+  return x & COS_ID_TAGMSK;  // use only the 27 lower bits (134217727 ids)
 }
 
 static inline void
@@ -152,13 +150,13 @@ gen_strcmp(const void *str, const void *_gen)
 static inline BOOL
 cls_isMeta(struct Class *cls)
 {
-  return cls->Behavior.Object.Any.id == COS_CLS_NAME(MetaClass).Behavior.id;
+  return cos_any_id((OBJ)cls) == cos_class_id(classref(MetaClass));
 }
 
 static inline BOOL
 cls_isProp(struct Class *cls)
 {
-  return cls->Behavior.Object.Any.id == COS_CLS_NAME(PropMetaClass).Behavior.id;
+  return cos_any_id((OBJ)cls) == cos_class_id(classref(PropMetaClass));
 }
 
 static inline void
@@ -365,20 +363,20 @@ sym_init(void)
       case cos_tag_pclass: {
         struct Class *pcl = STATIC_CAST(struct Class*, tbl[t][s]);
         pcl->spr->name = pcl->name+1; // hack: name is shared
-        pcl->Behavior.Object.Any.id = COS_CLS_NAME(PropMetaClass).Behavior.id;
+        pcl->Behavior.Object.Any.id = cos_class_id(classref(PropMetaClass));
         pcl->Behavior.Object.Any.rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_mclass: {
         struct Class *mcl = STATIC_CAST(struct Class*, tbl[t][s]);
-        mcl->Behavior.Object.Any.id = COS_CLS_NAME(MetaClass).Behavior.id;
+        mcl->Behavior.Object.Any.id = cos_class_id(classref(MetaClass));
         mcl->Behavior.Object.Any.rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_generic: {
         struct Generic *gen = STATIC_CAST(struct Generic*, tbl[t][s]);
         sym.gen[sym.n_gen++] = gen;
-        gen->Behavior.Object.Any.id = COS_CLS_NAME(Generic).Behavior.id;
+        gen->Behavior.Object.Any.id = cos_class_id(classref(Generic));
         gen->Behavior.Object.Any.rc = COS_RC_STATIC;
       } break;
 
@@ -388,11 +386,11 @@ sym_init(void)
         sym.mth[sym.n_mth++] = mth;
         mth->Object.Any.rc = COS_RC_STATIC;
         switch(COS_GEN_RNK(mth->gen)) {
-        case 1: mth->Object.Any.id = COS_CLS_NAME(Method1).Behavior.id; break;
-        case 2: mth->Object.Any.id = COS_CLS_NAME(Method2).Behavior.id; break;
-        case 3: mth->Object.Any.id = COS_CLS_NAME(Method3).Behavior.id; break;
-        case 4: mth->Object.Any.id = COS_CLS_NAME(Method4).Behavior.id; break;
-        case 5: mth->Object.Any.id = COS_CLS_NAME(Method5).Behavior.id; break;
+        case 1: mth->Object.Any.id = cos_class_id(classref(Method1)); break;
+        case 2: mth->Object.Any.id = cos_class_id(classref(Method2)); break;
+        case 3: mth->Object.Any.id = cos_class_id(classref(Method3)); break;
+        case 4: mth->Object.Any.id = cos_class_id(classref(Method4)); break;
+        case 5: mth->Object.Any.id = cos_class_id(classref(Method5)); break;
         }
       }}
     }
@@ -556,8 +554,8 @@ cos_generic_get(U32 id)
   struct Generic *gen = STATIC_CAST(struct Generic*, sym.bhv[id & sym.msk]);
 
   if (!gen
-    || gen->Behavior.id != id
-    || gen->Behavior.Object.Any.id != COS_CLS_NAME(Generic).Behavior.id)
+    || cos_generic_id(gen) != id
+    || cos_any_id((OBJ)gen) != cos_class_id(classref(Generic)))
     cos_abort("invalid generic id %d", id);
 
   return gen;
@@ -581,8 +579,8 @@ cos_class_get(U32 id)
   struct Class *cls = STATIC_CAST(struct Class*, sym.bhv[id & sym.msk]);
 
   if (!cls
-    || cls->Behavior.id != id
-    || cls->Behavior.Object.Any.id == COS_CLS_NAME(Generic).Behavior.id)
+    || cos_class_id(cls) != id
+    || cos_any_id((OBJ)cls) == cos_class_id(classref(Generic)))
     cos_abort("invalid class id %d", id);
 
   return cls;

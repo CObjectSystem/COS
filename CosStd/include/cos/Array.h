@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Array.h,v 1.3 2008/10/17 18:12:21 ldeniau Exp $
  |
 */
 
@@ -116,6 +116,7 @@ SubArray_init(struct SubArray *subarr, I32 substart)
   struct Array * arr = STATIC_CAST(struct Array*, subarr->array);
   U32 start;
 
+  // ensure that we have an Array excluding DynArray
   test_assert( arr_spr == Array );
   start = index_abs(substart, arr->size);
   test_assert( start + sarr->size <= arr->size );

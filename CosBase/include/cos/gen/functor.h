@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: functor.h,v 1.3 2008/10/17 18:12:21 ldeniau Exp $
  |
 */
 
@@ -47,26 +47,13 @@ defgeneric(OBJ, geval3, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 defgeneric(OBJ, geval4, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 defgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 
-defgeneric(void, gapply   , _1, fun);      // in place
-defgeneric(void, gapplyAt , _1, fun, at);
-
-defgeneric(OBJ , gmap     , _1, fun);
-defgeneric(OBJ , gmapAt   , _1, fun, at);
-
-defgeneric(OBJ , gmap2    , _1, _2, fun);
-defgeneric(OBJ , gmap2At  , _1, _2, fun, at);
-
-defgeneric(OBJ , gmap3    , _1, _2, _3, fun);
-defgeneric(OBJ , gmap3At  , _1, _2, _3, fun, at);
-
-defgeneric(OBJ , gfilter  , _1, fun);
-defgeneric(OBJ , gfilterAt, _1, fun, at);
-
-defgeneric(OBJ , gfold    , _1, u0, fun);
-defgeneric(OBJ , gfoldAt  , _1, u0, fun, at);
-
-defgeneric(OBJ , gscan    , _1, fun);
-defgeneric(OBJ , gscanAt  , _1, fun, at);
+defgeneric(OBJ , gmap   , _1, fun);
+defgeneric(OBJ , gmap2  , _1, _2, fun);
+defgeneric(OBJ , gmap3  , _1, _2, _3, fun);
+defgeneric(OBJ , gfold  , _1, u0, fun);
+defgeneric(OBJ , gscan  , _1, u0, fun);
+defgeneric(OBJ , gfilter, _1, fun);
+defgeneric(void, gapply , _1, fun);      // in place map
 
 #endif // COS_GEN_FUNCTOR_H
 

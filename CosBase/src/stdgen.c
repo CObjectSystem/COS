@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.13 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: stdgen.c,v 1.14 2008/10/17 18:12:21 ldeniau Exp $
  |
 */
 
@@ -94,8 +94,13 @@ makgeneric(OBJ, geval3, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 makgeneric(OBJ, geval4, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 makgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 
-makgeneric(OBJ, gmap  , _1, fun);
-makgeneric(OBJ, gmapAt, _1, fun, at);
+makgeneric(OBJ , gmap   , _1, fun);
+makgeneric(OBJ , gmap2  , _1, _2, fun);
+makgeneric(OBJ , gmap3  , _1, _2, _3, fun);
+makgeneric(OBJ , gfold  , _1, u0, fun);
+makgeneric(OBJ , gscan  , _1, u0, fun);
+makgeneric(OBJ , gfilter, _1, fun);
+makgeneric(void, gapply , _1, fun);
 
 // -------------------------
 #include <cos/gen/init.h>
@@ -181,6 +186,7 @@ makgeneric(OBJ , gdeinit       , _1);
 makgeneric(OBJ , gretain       , _1);
 makgeneric(OBJ , grelease      , _1);
 makgeneric(U32 , gretainCount  , _1);
+makgeneric(OBJ , gautoRetain   , _1);
 makgeneric(OBJ , gautoRelease  , _1);
 
 // identity, conversion, coercion

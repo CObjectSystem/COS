@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.11 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.12 2008/10/17 18:12:21 ldeniau Exp $
  |
 */
 
@@ -221,7 +221,7 @@ endmethod
 defmethod(void, ginitialize, pmAutoRelease)
   if (!_pool0.prv) {
     // cos_trace("ginitialize(pmAutoRelease)");
-    _pool0.Object.Any.id = COS_CLS_NAME(AutoRelease).Behavior.id;
+    _pool0.Object.Any.id = cos_class_id(classref(AutoRelease));
     _pool0.Object.Any.rc = COS_RC_STATIC;
     _pool0.prv = &_pool0;
 		_pool_init();
@@ -262,6 +262,27 @@ defmethod(OBJ, gautoRelease, Any)
   default           : push(pool_get(), obj);
   }
   retmethod(obj);
+endmethod
+
+defmethod(OBJ, gautoRetain, Any)
+  struct AutoRelease *pool = pool_get();
+
+  if (_1 == *pool->top)
+    --pool->top;
+
+  else {
+    OBJ *top = pool->top-1;
+    OBJ *end = top-10 < pool->stk ? pool->stk : top-10;
+
+    while(top-- > end && *top != _1) ;
+
+    if (_1 == *top)
+      *top = 0;
+    else
+      gretain(_1);
+  }
+
+  retmethod(_1);
 endmethod
 
 // -----

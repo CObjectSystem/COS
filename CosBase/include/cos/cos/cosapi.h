@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.9 2008/10/16 10:46:44 ldeniau Exp $
+ | $Id: cosapi.h,v 1.10 2008/10/17 18:12:20 ldeniau Exp $
  |
 */
 
@@ -309,6 +309,20 @@ cos_any_className(OBJ obj)
 {
   return cos_class_get(cos_any_id(obj))->name;
   COS_UNUSED(cos_any_className);
+}
+
+static inline U32
+cos_class_id(const struct Class *cls)
+{
+  return cls->Behavior.id;
+  COS_UNUSED(cos_class_id);
+}
+
+static inline U32
+cos_generic_id(SEL sel)
+{
+  return sel->Behavior.id;
+  COS_UNUSED(cos_generic_id);
 }
 
 static inline struct cos_exception_protect

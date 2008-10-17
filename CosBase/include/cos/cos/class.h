@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.5 2008/10/08 16:17:56 ldeniau Exp $
+ | $Id: class.h,v 1.6 2008/10/17 18:12:19 ldeniau Exp $
  |
 */
 
@@ -121,7 +121,7 @@
         COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_CLS_REF_1))
 
 #define COS_CLS_REF_1(NAME) \
-        ((OBJ)(void*)&COS_CLS_NAME(NAME))
+        (&COS_CLS_NAME(NAME))
 
 /* class declaration
  */
@@ -133,7 +133,7 @@
 
 #define COS_CLS_USE_1(GNAME,LNAME) \
         extern struct Class COS_CLS_NAME(GNAME); \
-        static OBJ const LNAME = COS_CLS_REF_1(GNAME)
+        static OBJ const LNAME = (void*)COS_CLS_REF_1(GNAME)
 
 /* class definition
  */
