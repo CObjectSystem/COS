@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.12 2008/10/17 18:12:21 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.13 2008/10/17 18:15:44 ldeniau Exp $
  |
 */
 
@@ -172,7 +172,7 @@ clear(struct AutoRelease *p)
     grelease(p->tmp), p->tmp = 0;
 
   while (p->top-- > p->stk)
-    grelease(*p->top);
+    if (*p->top) grelease(*p->top);
 }
 
 static inline void
