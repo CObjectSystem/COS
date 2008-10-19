@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.13 2008/10/17 18:15:44 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.14 2008/10/19 23:25:49 ldeniau Exp $
  |
 */
 
@@ -184,6 +184,21 @@ push(struct AutoRelease* p, OBJ obj)
   *p->top++ = obj;
 }
 
+static inline void
+pop(struct AutoRelease* p, OBJ obj)
+{
+  OBJ *cur = p->top;
+  OBJ *end = cur-10 < p->stk ? p->stk : cur-10;
+
+  while(cur-- > end && *cur != obj) ;
+
+  if (*cur == obj) {
+	*cur = 0;
+    while (p->top > p->stk && *(p->top-1) == 0) --p->top;
+  } else
+    gretain(obj);
+}
+
 // -----
 
 defmethod(OBJ, ginit, AutoRelease)
@@ -265,23 +280,7 @@ defmethod(OBJ, gautoRelease, Any)
 endmethod
 
 defmethod(OBJ, gautoRetain, Any)
-  struct AutoRelease *pool = pool_get();
-
-  if (_1 == *pool->top)
-    --pool->top;
-
-  else {
-    OBJ *top = pool->top-1;
-    OBJ *end = top-10 < pool->stk ? pool->stk : top-10;
-
-    while(top-- > end && *top != _1) ;
-
-    if (_1 == *top)
-      *top = 0;
-    else
-      gretain(_1);
-  }
-
+  pop(pool_get(), _1);
   retmethod(_1);
 endmethod
 
