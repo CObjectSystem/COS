@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.14 2008/10/19 23:25:49 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.15 2008/10/20 08:53:53 ldeniau Exp $
  |
 */
 
@@ -188,15 +188,17 @@ static inline void
 pop(struct AutoRelease* p, OBJ obj)
 {
   OBJ *cur = p->top;
-  OBJ *end = cur-10 < p->stk ? p->stk : cur-10;
+  OBJ *end = cur-5 < p->stk ? p->stk : cur-5;
 
-  while(cur-- > end && *cur != obj) ;
-
-  if (*cur == obj) {
-	*cur = 0;
-    while (p->top > p->stk && *(p->top-1) == 0) --p->top;
-  } else
-    gretain(obj);
+  while(cur-- > end)
+    if (*cur == obj) {
+      *cur = 0;
+      while (!*(p->top-1) && p->top > p->stk)
+        --p->top;
+      return;
+    }
+    
+  gretain(obj);
 }
 
 // -----
