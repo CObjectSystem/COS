@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: TrueFalse.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: TrueFalse.c,v 1.2 2008/10/20 14:41:29 ldeniau Exp $
  |
 */
 
@@ -101,50 +101,64 @@ defmethod(OBJ, gequal, mFalse, mFalse)
 endmethod
 
 /*
- AND | F | T | ?
- ----+---+---+---
-   F | F | F | F
-   T | F | T | ?
-   ? | F | ? | ?
- */
+ AND | F | T | ?      ALL | F | T | ?
+ ----+---+---+---     ----+---+---+---
+   F | F | F | F        F | N | N | N
+   T | F | T | ?        T | F | T | ?
+   ? | F | ? | ?        ? | F | ? | ?
+*/
+
+defmethod(OBJ, gall, mFalse, mTrueFalse)
+  retmethod(Nil);
+endmethod
 
 defmethod(OBJ, gand, mFalse, mTrueFalse)
   retmethod(False);
 endmethod
 
-defmethod(OBJ, gand, mTrueFalse, mFalse)
+defalias (OBJ, (gand)gall, mTrueFalse, mFalse);
+defmethod(OBJ,  gand     , mTrueFalse, mFalse)
   retmethod(False);
 endmethod
 
-defmethod(OBJ, gand, mTrueFalse, mTrueFalse)
+defalias (OBJ, (gand)gall, mTrueFalse, mTrueFalse);
+defmethod(OBJ,  gand     , mTrueFalse, mTrueFalse)
   retmethod(TrueFalse);
 endmethod
 
-defmethod(OBJ, gand, mTrue, mTrue)
+defalias (OBJ, (gand)gall, mTrue, mTrue);
+defmethod(OBJ,  gand     , mTrue, mTrue)
   retmethod(True);
 endmethod
 
 /*
-  OR | F | T | ?
- ----+---+---+---
-   F | F | T | ?
-   T | T | T | T
-   ? | ? | T | ?
+  OR | F | T | ?      ANY | F | T | ?
+ ----+---+---+---     ----+---+---+---
+   F | F | T | ?        F | F | T | ?
+   T | T | T | T        T | N | N | N
+   ? | ? | T | ?        ? | ? | T | ?
  */
+
+defmethod(OBJ, gany, mTrue, mTrueFalse)
+  retmethod(Nil);
+endmethod
 
 defmethod(OBJ, gor, mTrue, mTrueFalse)
   retmethod(True);
 endmethod
 
-defmethod(OBJ, gor, mTrueFalse, mTrue)
+defalias (OBJ, (gor)gany, mTrueFalse, mTrue);
+defmethod(OBJ,  gor     , mTrueFalse, mTrue)
   retmethod(True);
 endmethod
 
-defmethod(OBJ, gor, mFalse, mFalse)
+defalias (OBJ, (gor)gany, mFalse, mFalse);
+defmethod(OBJ,  gor     , mFalse, mFalse)
   retmethod(False);
 endmethod
 
-defmethod(OBJ, gor, mTrueFalse, mTrueFalse)
+defalias (OBJ, (gor)gany, mTrueFalse, mTrueFalse);
+defmethod(OBJ,  gor     , mTrueFalse, mTrueFalse)
   retmethod(TrueFalse);
 endmethod
 
@@ -195,3 +209,4 @@ endmethod
 defmethod(OBJ, gimplies, mTrueFalse, mTrueFalse)
   retmethod(TrueFalse);
 endmethod
+

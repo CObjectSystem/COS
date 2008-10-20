@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.3 2008/10/17 18:12:21 ldeniau Exp $
+ | $Id: functor.h,v 1.4 2008/10/20 14:41:29 ldeniau Exp $
  |
 */
 
@@ -47,13 +47,21 @@ defgeneric(OBJ, geval3, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 defgeneric(OBJ, geval4, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 defgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 
+// in place
+defgeneric(void, gapply , _1, fun);
+
+// map and scan discard on Nil
 defgeneric(OBJ , gmap   , _1, fun);
 defgeneric(OBJ , gmap2  , _1, _2, fun);
 defgeneric(OBJ , gmap3  , _1, _2, _3, fun);
-defgeneric(OBJ , gfold  , _1, u0, fun);
-defgeneric(OBJ , gscan  , _1, u0, fun);
+defgeneric(OBJ , gscan  , _1, _2, fun);
+
+// filter and fold stop on Nil
 defgeneric(OBJ , gfilter, _1, fun);
-defgeneric(void, gapply , _1, fun);      // in place map
+defgeneric(OBJ , gfold  , _1, _2, fun);
+
+// sorting
+defgeneric(OBJ , gsort  , _1, fun);
 
 #endif // COS_GEN_FUNCTOR_H
 

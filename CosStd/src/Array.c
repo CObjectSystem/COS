@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.3 2008/10/17 18:12:21 ldeniau Exp $
+ | $Id: Array.c,v 1.4 2008/10/20 14:41:29 ldeniau Exp $
  |
 */
 
@@ -436,81 +436,109 @@ defmethod(OBJ, gconcat, Array, Array)
   retmethod( gautoRelease((OBJ)arr) );
 endmethod
 
-// ----- map, fold, ...
+// ----- apply
 
 defmethod(void, gapply, Array, Functor)
   for (U32 i = 0; i < self->size; i++)
      geval1(_2, self->object[i]);
 endmethod
 
+// ----- map, map2, map3, scan (Nil -> discard result)
+
 defmethod(OBJ, gmap, Array, Functor)
-  struct Array* arr = array_alloc(self->size);
+  U32 s = self->size;
+  struct Array* arr = dynarray_alloc(s);
 
-  for (U32 i = 0; i < arr->size; i++) {
-      OBJ res = geval1(_2, self->object[i]);
-      arr->object[i] = gretain(res);
-  }
-
-  retmethod( gautoRelease((OBJ)arr) );
-endmethod
-
-defmethod(OBJ, gmap2, Array, Array, Functor)
-  test_assert(self1->size == self2->size);
-
-  struct Array* arr = array_alloc(self->size);
-
-  for (U32 i = 0; i < arr->size; i++) {
-    OBJ res = geval2(_3, self1->object[i], self2->object[i]);
-    arr->object[i] = gretain(res);
-  }
-
-  retmethod( gautoRelease((OBJ)arr) );
-endmethod
-
-defmethod(OBJ, gmap3, Array, Array, Array, Functor)
-  test_assert(self1->size == self2->size && self1->size == self3->size);
-
-  struct Array* arr = array_alloc(self->size);
-
-  for (U32 i = 0; i < arr->size; i++) {
-    OBJ res = geval3(_3, self1->object[i], self2->object[i], self3->object[i]);
-    arr->object[i] = gretain(res);
-  }
-
-  retmethod( gautoRelease((OBJ)arr) );
-endmethod
-
-defmethod(OBJ, gfold, Array, Any, Functor)
-  OBJ res = _2;
-  
-  for (U32 i = 0; i < self->size; i++)
-    res = geval2(_3, res, self->object[i]);
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, gscan, Array, Any, Functor)
-  struct Array* arr = array_alloc(self->size+1);
-  OBJ res = _2;
-
-  for (U32 i = 0; i < self->size; i++) {
-    arr->object[i] = gclone(res);
-    res = geval2(_3, res, self->object[i]);
-  }
-  arr->object[self->size] = gclone(res);
-
-  retmethod( gautoRelease((OBJ)arr) );
-endmethod
-
-defmethod(OBJ, gfilter, Array, Functor)
-  struct Array* arr = dynarray_alloc(self->size);
-
-  for (U32 i = 0; i < arr->size; i++) {
-    OBJ obj = self->object[i];
-    if (geval1(_2, obj) == True)
-      arr->object[arr->size++] = gretain(obj);
+  for (U32 i = 0; i < s; i++) {
+    OBJ res = geval1(_2, self->object[i]);
+    if (res == Nil) continue;
+    arr->object[arr->size++] = gretain(res);
   }
 
   retmethod( gadjust(gautoRelease((OBJ)arr)) );
 endmethod
+
+defmethod(OBJ, gmap2, Array, Array, Functor)
+  U32 s = self1->size < self2->size ? self1->size : self2->size;
+  struct Array* arr = dynarray_alloc(s);
+
+  for (U32 i = 0; i < s; i++) {
+    OBJ res = geval2(_3, self1->object[i], self2->object[i]);
+    if (res == Nil) continue;
+    arr->object[arr->size++] = gretain(res);
+  }
+
+  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+endmethod
+
+defmethod(OBJ, gmap3, Array, Array, Array, Functor)
+  U32 s = self1->size < self2->size ? (self1->size < self3->size ? self1->size : self3->size)
+                                    : (self2->size < self3->size ? self2->size : self3->size);
+  struct Array* arr = dynarray_alloc(s);
+
+  for (U32 i = 0; i < s; i++) {
+    OBJ res = geval3(_3, self1->object[i], self2->object[i], self3->object[i]);
+    if (res == Nil) continue;
+    arr->object[arr->size++] = gretain(res);
+  }
+
+  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+endmethod
+
+defmethod(OBJ, gscan, Any, Array, Functor)
+  U32 s = self2->size;
+  struct Array* arr = dynarray_alloc(s+1);
+  OBJ obj = _1;
+
+  for (U32 i = 0; i < s; i++) {
+    OBJ res = geval2(_3, obj, self2->object[i]);
+    if (res == Nil) continue;
+    arr->object[arr->size++] = gclone(obj);
+    obj = res;
+  }
+  arr->object[arr->size++] = gclone(obj);
+
+  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+endmethod
+
+// ----- filter, fold (Nil -> stop iteration)
+
+defmethod(OBJ, gfilter, Array, Functor)
+  U32 s = self->size;
+  struct Array* arr = dynarray_alloc(s);
+
+  for (U32 i = 0; i < s; i++) {
+    OBJ obj = self->object[i];
+    OBJ res = geval1(_2, obj);
+    if (res == Nil ) break;
+    if (res != True) continue;
+    arr->object[arr->size++] = gretain(obj);
+  }
+
+  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+endmethod
+
+defmethod(OBJ, gfold, Any, Array, Functor)
+  U32 s = self2->size;
+  OBJ obj = _1;
+
+  for (U32 i = 0; i < s; i++) {
+    OBJ res = geval2(_3, obj, self2->object[i]);
+    if (res == Nil) break;
+    obj = res;
+  }
+
+  retmethod(obj);
+endmethod
+
+// ----- sorting
+
+defmethod(OBJ, gsort, Array, Functor)
+  U32 s = self->size;
+  struct Array* arr = array_alloc(s);
+  // TODO
+  
+  retmethod( gautoRelease((OBJ)arr) );
+endmethod
+
 

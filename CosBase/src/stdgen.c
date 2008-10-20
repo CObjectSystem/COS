@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.14 2008/10/17 18:12:21 ldeniau Exp $
+ | $Id: stdgen.c,v 1.15 2008/10/20 14:41:29 ldeniau Exp $
  |
 */
 
@@ -94,13 +94,17 @@ makgeneric(OBJ, geval3, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 makgeneric(OBJ, geval4, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 makgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 
+makgeneric(void, gapply , _1, fun);
+
 makgeneric(OBJ , gmap   , _1, fun);
 makgeneric(OBJ , gmap2  , _1, _2, fun);
 makgeneric(OBJ , gmap3  , _1, _2, _3, fun);
-makgeneric(OBJ , gfold  , _1, u0, fun);
-makgeneric(OBJ , gscan  , _1, u0, fun);
+makgeneric(OBJ , gscan  , _1, _2, fun);
+
 makgeneric(OBJ , gfilter, _1, fun);
-makgeneric(void, gapply , _1, fun);
+makgeneric(OBJ , gfold  , _1, _2, fun);
+
+makgeneric(OBJ , gsort  , _1, fun);
 
 // -------------------------
 #include <cos/gen/init.h>
@@ -139,6 +143,9 @@ makgeneric(OBJ, gand    , _1, _2);
 makgeneric(OBJ, gor     , _1, _2);
 makgeneric(OBJ, gxor    , _1, _2);
 makgeneric(OBJ, gimplies, _1, _2);
+
+makgeneric(OBJ, gall    , _1, _2);
+makgeneric(OBJ, gany    , _1, _2);
 
 // -------------------------
 #include <cos/gen/message.h>

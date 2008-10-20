@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: logic.h,v 1.3 2008/10/20 14:41:29 ldeniau Exp $
  |
 */
 
@@ -47,6 +47,10 @@ defgeneric(OBJ, gand    , _1, _2);
 defgeneric(OBJ, gor     , _1, _2);
 defgeneric(OBJ, gxor    , _1, _2); // not (_1 equal _2)
 defgeneric(OBJ, gimplies, _1, _2); // (not _1) or _2
+
+// return True, False or Nil (= stop)
+defgeneric(OBJ, gall    , _1, _2);
+defgeneric(OBJ, gany    , _1, _2);
 
 // gequal() and gcompare() are provided by cos/gen/object.h
 
