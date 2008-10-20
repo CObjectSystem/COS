@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.15 2008/10/20 08:53:53 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.16 2008/10/20 21:25:56 ldeniau Exp $
  |
 */
 
@@ -71,7 +71,7 @@ STATIC_ASSERT(COS_AUTORELEASE_RATE_must_be_greater_than_3_div_2,
 STATIC_ASSERT(COS_AUTORELEASE_INIT_must_be_greater_than_100,
               COS_AUTORELEASE_INIT >= 100);
 STATIC_ASSERT(COS_AUTORELEASE_WARN_is_too_small,
-              COS_AUTORELEASE_WARN >= 1000);
+              COS_AUTORELEASE_WARN >= 10000);
 
 /* NOTE-INFO: AutoRelease and threads
  * This code assumes the creation of a new pool for each new thread
@@ -150,18 +150,21 @@ enlarge(struct AutoRelease* p)
   if (p->stk == p->_stk) {
     new_size = COS_AUTORELEASE_INIT;
     stk = malloc(sizeof *stk * new_size);
-    if (stk) memcpy(stk, p->stk, sizeof *stk * size);
+    if (stk) {
+	  *stk = 0;
+	  memcpy(stk+1, p->stk, sizeof *stk * size);
+    }
   } else {
     new_size = size * COS_AUTORELEASE_RATE;
-    stk = realloc(p->stk, sizeof *stk * new_size);
+    stk = realloc(p->stk-1, sizeof *stk * new_size);
     if (size >= COS_AUTORELEASE_WARN)
       cos_debug("pool at %p hold %u autoreleased objects", (void*)p, size);
   }
   
   if (!stk) THROW(ExBadAlloc);
 
-  p->stk = stk;
-  p->top = stk + size;
+  p->stk = stk + 1;
+  p->top = stk + 1 + size;
   p->end = stk + new_size;
 }
 
@@ -175,30 +178,28 @@ clear(struct AutoRelease *p)
     if (*p->top) grelease(*p->top);
 }
 
-static inline void
-push(struct AutoRelease* p, OBJ obj)
+static inline OBJ
+push(OBJ obj)
 {
-  if (p->top == p->end)
-    p->tmp = obj, enlarge(p), p->tmp = 0;
+  struct AutoRelease *pool = pool_get();
 
-  *p->top++ = obj;
+  if (pool->top == pool->end)
+    pool->tmp = obj, enlarge(pool), pool->tmp = 0;
+
+  return *pool->top++ = obj;
 }
 
-static inline void
-pop(struct AutoRelease* p, OBJ obj)
+static inline OBJ
+pop(struct Any *obj)
 {
-  OBJ *cur = p->top;
-  OBJ *end = cur-5 < p->stk ? p->stk : cur-5;
+  struct AutoRelease *pool = pool_get();
 
-  while(cur-- > end)
-    if (*cur == obj) {
-      *cur = 0;
-      while (!*(p->top-1) && p->top > p->stk)
-        --p->top;
-      return;
-    }
-    
-  gretain(obj);
+  if (*(pool->top-1) == (OBJ)obj)
+    --pool->top;
+  else
+    ++obj->rc;
+	
+  return (OBJ)obj;
 }
 
 // -----
@@ -228,7 +229,7 @@ defmethod(OBJ, gdeinit, AutoRelease)
 
   // free stack
   if (self->stk != self->_stk)
-    free(self->stk);
+    free(self->stk-1);
 
   retmethod(_1);
 endmethod
@@ -241,7 +242,7 @@ defmethod(void, ginitialize, pmAutoRelease)
     _pool0.Object.Any.id = cos_class_id(classref(AutoRelease));
     _pool0.Object.Any.rc = COS_RC_STATIC;
     _pool0.prv = &_pool0;
-		_pool_init();
+	_pool_init();
     ginit((void*)&_pool0);
   }
 endmethod
@@ -268,22 +269,51 @@ defmethod(OBJ, gautoRelease, AutoRelease)
   COS_UNUSED(RETVAL);
 endmethod
 
-// -----
+// ----- ownership
 
-defmethod(OBJ, gautoRelease, Any)
-  OBJ obj = _1;
+defmethod(OBJ, gretain, Any)
+  useclass(ExBadValue);
 
-  switch (self->rc) {
-  case COS_RC_STATIC: break;
-  case COS_RC_AUTO  : obj = gclone(obj);
-  default           : push(pool_get(), obj);
-  }
-  retmethod(obj);
+  if (self->rc >= COS_RC_UNIT && self->rc < COS_RC_LAST)
+    retmethod(pop(self));
+
+  if (self->rc == COS_RC_STATIC)
+    retmethod(_1);
+
+  if (self->rc == COS_RC_AUTO)
+    retmethod(gclone(_1));
+
+  // self->rc == COS_RC_LAST
+  THROW( gnewWithStr(ExBadValue, "COS_RC_LAST") );
 endmethod
 
-defmethod(OBJ, gautoRetain, Any)
-  pop(pool_get(), _1);
-  retmethod(_1);
+defmethod(OBJ, grelease, Any)
+  useclass(ExBadValue);
+
+  if (self->rc > COS_RC_UNIT && self->rc <= COS_RC_LAST)
+    retmethod(--self->rc, _1);
+
+  if (self->rc == COS_RC_STATIC)
+    retmethod(Nil);
+
+  if (self->rc == COS_RC_UNIT)
+    retmethod(gdealloc(gdeinit(_1)), Nil);
+
+  // self->rc == COS_RC_AUTO
+  THROW( gnewWithStr(ExBadValue, "COS_RC_AUTO") );
+endmethod
+
+defmethod(OBJ, gautoRelease, Any)
+
+  if (self->rc >= COS_RC_UNIT && self->rc <= COS_RC_LAST)
+	retmethod(push(_1));
+	
+  if (self->rc == COS_RC_STATIC)
+    retmethod(_1);
+ 
+  if (self->rc == COS_RC_AUTO)
+    retmethod(push(gclone(_1)));
+
 endmethod
 
 // -----

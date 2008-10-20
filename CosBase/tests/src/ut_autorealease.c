@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.5 2008/10/19 23:25:49 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.6 2008/10/20 21:25:56 ldeniau Exp $
  |
 */
 
@@ -85,10 +85,10 @@ ut_autorelease(void)
     a = gautoRelease(gnew(A));
     UTEST( gsize(ar) == 1 );
     UTEST( gretainCount(a) == 1  );
-    a = gautoRetain(a);
+    a = gretain(a);
     UTEST( gsize(ar) == 0 );
     UTEST( gretainCount(a) == 1  );
-    a = gautoRetain(a);
+    a = gretain(a);
     UTEST( gsize(ar) == 0 );
     UTEST( gretainCount(a) == 2  );
     grelease(ar);
@@ -101,11 +101,11 @@ ut_autorelease(void)
     a = gautoRelease(gnew(A));
     c = gautoRelease(gnew(A));
     UTEST( gsize(ar) == 2 );
-    a = gautoRetain(a);
+    a = gretain(a);
     UTEST( gsize(ar) == 2 );
-    UTEST( gretainCount(a) == 1  );
-    c = gautoRetain(c);
-    UTEST( gsize(ar) == 0 );
+    UTEST( gretainCount(a) == 2  );
+    c = gretain(c);
+    UTEST( gsize(ar) == 1 );
     UTEST( gretainCount(c) == 1  );
     grelease(ar);
     UTEST( grelease(a) == Nil    );
@@ -128,15 +128,15 @@ ut_autorelease(void)
     TRY
       ar1 = gnew(AutoRelease);
       for (i = 0; i < 100; i++)
-        arr[i] = gretain(gautoRelease(gnew(A)));
+        arr[i] = gautoRelease(gnew(A));
       TRY
         ar2 = gnew(AutoRelease);
         for (; i < 300; i++)
-          arr[i] = gretain(gautoRelease(gnew(A)));
+          arr[i] = gautoRelease(gnew(A));
         TRY
           ar3 = gnew(AutoRelease);
           for (; i < 600; i++)
-            arr[i] = gretain(gautoRelease(gnew(A)));
+            arr[i] = gautoRelease(gnew(A));
           THROW(Nil);
         FINALLY
           UTEST( gsize(ar3) == 300 ), ar3 = 0;
@@ -150,12 +150,6 @@ ut_autorelease(void)
     ENDTRY
     UTEST( gsize(ar) == 0 );
     grelease(ar); // destroy all chained pools
-    
-    while (i-- > 0)
-      if( gretainCount(arr[i]) != 1 || grelease(arr[i]) != Nil )
-        break;
-        
-    UTEST( ++i == 0 );
 
   UTEST_END
 }

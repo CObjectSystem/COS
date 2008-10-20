@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.7 2008/10/16 10:46:45 ldeniau Exp $
+ | $Id: Any.c,v 1.8 2008/10/20 21:25:56 ldeniau Exp $
  |
 */
 
@@ -51,28 +51,6 @@ defmethod(void, gdealloc, Any)
 endmethod
 
 // ----- ownership
-
-defmethod(OBJ, gretain, Any)
-  useclass(ExBadValue);
-
-  switch(self->rc) {
-  case COS_RC_LAST  : THROW( gnewWithStr(ExBadValue, "COS_RC_LAST") );
-  case COS_RC_STATIC: break;
-  case COS_RC_AUTO  : retmethod(gclone(_1));
-  default           : ++self->rc;
-  }
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, grelease, Any)
-  switch(self->rc) {
-  case COS_RC_STATIC: break;
-  case COS_RC_AUTO  : gdeinit(_1)          ; retmethod(Nil);
-  case COS_RC_UNIT  : gdealloc(gdeinit(_1)); retmethod(Nil);
-  default           : --self->rc;
-  }
-  retmethod(_1);
-endmethod
 
 defmethod(U32, gretainCount, Any)
   retmethod(self->rc);
