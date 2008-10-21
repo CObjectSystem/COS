@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Value.h,v 1.3 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -52,7 +52,6 @@
    <- Slice       (1-5 dim)
    <- Sequence    (1-5 dim)
 
-   <- Function    (FUNC)
    <- Pointer     (void*)
       <- AutoPointer
 

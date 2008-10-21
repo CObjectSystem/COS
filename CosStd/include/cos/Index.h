@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Index.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Index.h,v 1.2 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -76,7 +76,7 @@ index_abs(I32 index, U32 size) {
 
 // ----- automatic constructor
 
-#define aIndex(...)  ( (OBJ)atIndexN(__VA_ARGS__) )
+#define aIndex(...)  ( (OBJ)atIndex(__VA_ARGS__) )
 #define atIndex(...) atIndexN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
 
 #define atIndexN(N,...) ( &(struct COS_PP_CAT(Index,N)) { \

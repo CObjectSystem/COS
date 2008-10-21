@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Sequence.c,v 1.3 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -98,49 +98,49 @@ endmethod
 // ----- equality
 
 defmethod(OBJ, gequal, Sequence1, Sequence1)
-  BOOL res = flt_equal(self1->start , self2->start )
+  BOOL res = float_equal(self1->start , self2->start )
           &&           self1->size == self2->size
-          && flt_equal(self1->stride, self2->stride);
+          && float_equal(self1->stride, self2->stride);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Sequence2, Sequence2)
-  BOOL res = flt_equal(self1->start, self2->start);
+  BOOL res = float_equal(self1->start, self2->start);
 
   for (int i = 0; res && i < 2; i++)
     res = res &&           self1->size  [i] == self2->size  [i]
-              && flt_equal(self1->stride[i] ,  self2->stride[i]);
+              && float_equal(self1->stride[i] ,  self2->stride[i]);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Sequence3, Sequence3)
-  BOOL res = flt_equal(self1->start, self2->start);
+  BOOL res = float_equal(self1->start, self2->start);
 
   for (int i = 0; res && i < 3; i++)
     res = res &&           self1->size  [i] == self2->size  [i]
-              && flt_equal(self1->stride[i] ,  self2->stride[i]);
+              && float_equal(self1->stride[i] ,  self2->stride[i]);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Sequence4, Sequence4)
-  BOOL res = flt_equal(self1->start, self2->start);
+  BOOL res = float_equal(self1->start, self2->start);
 
   for (int i = 0; res && i < 4; i++)
     res = res &&           self1->size  [i] == self2->size  [i]
-              && flt_equal(self1->stride[i] ,  self2->stride[i]);
+              && float_equal(self1->stride[i] ,  self2->stride[i]);
 
   retmethod( res ? True : False );
 endmethod
 
 defmethod(OBJ, gequal, Sequence5, Sequence5)
-  BOOL res = flt_equal(self1->start, self2->start);
+  BOOL res = float_equal(self1->start, self2->start);
 
   for (int i = 0; res && i < 5; i++)
     res = res &&           self1->size  [i] == self2->size  [i]
-              && flt_equal(self1->stride[i] ,  self2->stride[i]);
+              && float_equal(self1->stride[i] ,  self2->stride[i]);
 
   retmethod( res ? True : False );
 endmethod

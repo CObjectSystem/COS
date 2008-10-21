@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Vector.c,v 1.3 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -53,18 +53,18 @@ endmethod
 // ----- constructors from a vector
 
 defmethod(OBJ, ginitWithIntPtr, mVector, (U32)n, (I32*)val)
-  retmethod( ginitWith(_1, aIntVecRef(n,val)) );
+  retmethod( ginitWith(_1, aIntVectorRef(n,val)) );
 endmethod
 
 defmethod(OBJ, ginitWithLngPtr, mVector, (U32)n, (I64*)val)
-  retmethod( ginitWith(_1, aLngVecRef(n,val)) );
+  retmethod( ginitWith(_1, aLngVectorRef(n,val)) );
 endmethod
 
 defmethod(OBJ, ginitWithFltPtr, mVector, (U32)n, (R64*)val)
-  retmethod( ginitWith(_1, aFltVecRef(n,val)) );
+  retmethod( ginitWith(_1, aFltVectorRef(n,val)) );
 endmethod
 
 defmethod(OBJ, ginitWithCpxPtr, mVector, (U32)n, (C64*)val)
-  retmethod( ginitWith(_1, aCpxVecRef(n,val)) );
+  retmethod( ginitWith(_1, aCpxVectorRef(n,val)) );
 endmethod
 

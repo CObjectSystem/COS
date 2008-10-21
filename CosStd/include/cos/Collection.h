@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Collection.h,v 1.1 2008/10/10 16:38:00 ldeniau Exp $
+ | $Id: Collection.h,v 1.2 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -45,7 +45,7 @@
 <- Collection
    <- Array
    <- List
-   <- Map
+   <- KeyMap
    <- OrdMap
    <- Queue
 */

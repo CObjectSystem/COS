@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.5 2008/10/21 14:32:30 ldeniau Exp $
+ | $Id: Array.c,v 1.6 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -205,7 +205,7 @@ defmethod(OBJ, ginitWith2, mArray, Array, IntVector)
 endmethod
 
 defmethod(OBJ, ginitWithObjPtr, mArray, (U32)n, (OBJ*)obj)
-  retmethod( ginitWith(_1, aArrRef(n,obj)) ); // clone
+  retmethod( ginitWith(_1, aArrayRef(n,obj)) ); // clone
 endmethod
 
 defmethod(OBJ, gdeinit, Array)
@@ -559,10 +559,10 @@ endmethod
 // ----- finding
 
 defmethod(OBJ, gfind, Array, Any, Functor)
-  U32 s = self->size;
+  // U32 s = self->size;
   // TODO
   
-  retmethod( obj );
+  retmethod( _1 );
 endmethod
 
 

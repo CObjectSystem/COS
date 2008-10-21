@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Number.h,v 1.3 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -74,77 +74,71 @@ endclass
 
 // ----- automatic constructors
 
-#define aChr(value)  ( (OBJ)atChr(value) )
-#define atChr(value) ( &(struct Char) {{ \
-        {{{{{ COS_CLS_NAME(Char).Behavior.id, COS_RC_AUTO }}}}}, \
-         (I8)(value) }} )
+#define aChar(C)  ( (OBJ)atChar(C) )
+#define atChar(C) ( &(struct Char) {{ \
+        {{{{{ COS_CLS_NAME(Char).Behavior.id, COS_RC_AUTO }}}}}, (I8)(C) }} )
 
-#define aSht(value)  ( (OBJ)atSht(value) )
-#define atSht(value) ( &(struct Short) {{ \
-        {{{{{ COS_CLS_NAME(Short).Behavior.id, COS_RC_AUTO }}}}}, \
-         (I16)(value) }} )
+#define aShort(S)  ( (OBJ)atShort(S) )
+#define atShort(S) ( &(struct Short) {{ \
+        {{{{{ COS_CLS_NAME(Short).Behavior.id, COS_RC_AUTO }}}}}, (I16)(S) }} )
 
-#define aInt(value)  ( (OBJ)atInt(value) )
-#define atInt(value) ( &(struct Int) { \
-        {{{{{ COS_CLS_NAME(Int).Behavior.id, COS_RC_AUTO }}}}}, \
-         (value) } )
+#define aInt(I)  ( (OBJ)atInt(I) )
+#define atInt(I) ( &(struct Int) { \
+        {{{{{ COS_CLS_NAME(Int).Behavior.id, COS_RC_AUTO }}}}}, (I) } )
 
-#define aLng(value)  ( (OBJ)atLng(value) )
-#define atLng(value) ( &(struct Long) { \
-        {{{{{ COS_CLS_NAME(Long).Behavior.id, COS_RC_AUTO }}}}}, \
-         (value) } )
+#define aLong(L)  ( (OBJ)atLong(L) )
+#define atLong(L) ( &(struct Long) { \
+        {{{{{ COS_CLS_NAME(Long).Behavior.id, COS_RC_AUTO }}}}}, (L) } )
 
-#define aFlt(value)  ( (OBJ)atFlt(value) )
-#define atFlt(value) ( &(struct Float) { \
-        {{{{{ COS_CLS_NAME(Float).Behavior.id, COS_RC_AUTO }}}}}, \
-         (value) } )
+#define aFloat(R)  ( (OBJ)atFloat(R) )
+#define atFloat(R) ( &(struct Float) { \
+        {{{{{ COS_CLS_NAME(Float).Behavior.id, COS_RC_AUTO }}}}}, (R) } )
 
-#define aCpx(...)  ( (OBJ)atCpx(__VA_ARGS__) )
-#define atCpx(...) COS_PP_CAT_NARG(atCpx,__VA_ARGS__)(__VA_ARGS__)
+#define aComplex(...)  ( (OBJ)atComplex(__VA_ARGS__) )
+#define atComplex(...) COS_PP_CAT_NARG(atComplex,__VA_ARGS__)(__VA_ARGS__)
 
-#define atCpx1(value) ( &(struct Complex) { \
+#define atComplex1(C) ( &(struct Complex) { \
+        {{{{{ COS_CLS_NAME(Complex).Behavior.id, COS_RC_AUTO }}}}}, (C) } )
+#define atComplex2(R,I) ( &(struct Complex) { \
         {{{{{ COS_CLS_NAME(Complex).Behavior.id, COS_RC_AUTO }}}}}, \
-         (value) } )
-#define atCpx2(real,imag) ( &(struct Complex) { \
-        {{{{{ COS_CLS_NAME(Complex).Behavior.id, COS_RC_AUTO }}}}}, \
-         *(FLOAT[]) {(real),(imag)} } )
+         *(FLOAT[]) {(R),(I)} } )
 
 // ---- inliners
 
 static inline BOOL
-flt_equal(FLOAT x, FLOAT y)
+float_equal(FLOAT x, FLOAT y)
 {
   return x <= y && x >= y;
-  COS_UNUSED(flt_equal);
+  COS_UNUSED(float_equal);
 }
 
 static inline COMPLEX
-cpx_make(FLOAT x, FLOAT y)
+complex_make(FLOAT x, FLOAT y)
 {
   return *(FLOAT[]){ x, y };
-  COS_UNUSED(cpx_make);
+  COS_UNUSED(complex_make);
 }
 
 static inline FLOAT
-cpx_real(COMPLEX x)
+complex_real(COMPLEX x)
 {
   return ((FLOAT*)&x)[0];
-  COS_UNUSED(cpx_real);
+  COS_UNUSED(complex_real);
 }
 
 static inline FLOAT
-cpx_imag(COMPLEX x)
+complex_imag(COMPLEX x)
 {
   return ((FLOAT*)&x)[1];
-  COS_UNUSED(cpx_imag);
+  COS_UNUSED(complex_imag);
 }
 
 static inline BOOL
-cpx_equal(COMPLEX x, COMPLEX y)
+complex_equal(COMPLEX x, COMPLEX y)
 {
-  return flt_equal(cpx_real(x), cpx_real(y)) &&
-         flt_equal(cpx_imag(x), cpx_imag(y));
-  COS_UNUSED(cpx_equal);
+  return float_equal(complex_real(x), complex_real(y)) &&
+         float_equal(complex_imag(x), complex_imag(y));
+  COS_UNUSED(complex_equal);
 }
 
 #endif // COS_NUMBER_H

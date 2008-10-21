@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.3 2008/10/17 18:12:21 ldeniau Exp $
+ | $Id: Array.h,v 1.4 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -82,24 +82,24 @@ defclass(ArrayN, Array) OBJ _object[]; endclass
 
 // ----- automatic constructors
 
-#define aArr(...)                 ( (OBJ)atArr   (__VA_ARGS__     ) )
-#define aArrRef(size,array)       ( (OBJ)atArrRef(size,array      ) )
-#define aSubArr(array,start,size) ( (OBJ)atSubArr(array,start,size) )
+#define aArray(...)                 ( (OBJ)atArray   (__VA_ARGS__     ) )
+#define aArrayRef(size,array)       ( (OBJ)atArrayRef(size,array      ) )
+#define aSubArray(array,start,size) ( (OBJ)atSubArray(array,start,size) )
 
-#define atArr(...) \
-        atArrN(COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),10)) \
-               (N,COS_PP_NARG(__VA_ARGS__)),__VA_ARGS__)
-#define atArrN(N,...) \
+#define atArray(...) \
+        atArrayN(COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),10)) \
+                 (N,COS_PP_NARG(__VA_ARGS__)),__VA_ARGS__)
+#define atArrayN(N,...) \
         ( (struct Array*)&(struct COS_PP_CAT(Array,N)) {{ \
           {{{{ COS_CLS_NAME(COS_PP_CAT(Array,N)).Behavior.id, COS_RC_AUTO }}}}, \
           (OBJ[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__) }} )
 
-#define atArrRef(size,array) \
+#define atArrayRef(size,array) \
         ( &(struct Array) { \
           {{{ COS_CLS_NAME(Array).Behavior.id, COS_RC_AUTO }}}, \
           (array), (size) } )
 
-#define atSubArr(array,start,size) \
+#define atSubArray(array,start,size) \
         ( SubArray_init(&(struct SubArray) {{ \
           {{{{ COS_CLS_NAME(SubArray).Behavior.id, COS_RC_AUTO }}}}, \
           (size), 0 }, (array) }, (start)) )
@@ -116,7 +116,7 @@ SubArray_init(struct SubArray *subarr, I32 substart)
   struct Array * arr = STATIC_CAST(struct Array*, subarr->array);
   U32 start;
 
-  // ensure that we have an Array excluding DynArray
+  // ensure that we have an Array, but excluding DynArray
   test_assert( arr_spr == Array );
   start = index_abs(substart, arr->size);
   test_assert( start + sarr->size <= arr->size );

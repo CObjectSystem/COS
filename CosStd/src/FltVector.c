@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.2 2008/10/17 18:12:21 ldeniau Exp $
+ | $Id: FltVector.c,v 1.3 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -256,7 +256,7 @@ defmethod(OBJ, gequal, FltVector, FltVector)
   BOOL res = self1->size == self2->size;
 
   for (U32 i = 0; res && i < self->size; i++)
-    res = flt_equal(self1->value[i], self2->value[i]);
+    res = float_equal(self1->value[i], self2->value[i]);
 
   retmethod( res ? True : False );
 endmethod
@@ -375,7 +375,7 @@ defmethod(R64, gfltAt, FltVector, Index1)
 endmethod
 
 defmethod(OBJ, ggetAt, FltVector, Index1)
-  retmethod( gautoRelease(aFlt(gfltAt(_1,_2))) );
+  retmethod( gautoRelease(aFloat(gfltAt(_1,_2))) );
 endmethod
 
 defmethod(OBJ, ggetAt, FltVector, Range1)
@@ -424,7 +424,7 @@ endmethod
 defmethod(OBJ, gpop, FltDynVector)
   struct FltVector *vec = &self->FltDynVectorN.FltVector;
   test_assert( vec->size > 0 );
-  retmethod( gautoRelease(aFlt(vec->value[--vec->size])) );
+  retmethod( gautoRelease(aFloat(vec->value[--vec->size])) );
 endmethod
 
 defmethod(OBJ, gadjust, FltDynVector)
@@ -442,7 +442,7 @@ endmethod
 // ----- map, fold, ...
 
 defmethod(void, gapply, FltVector, Functor)
-  struct Float *Flt = atFlt(0);
+  struct Float *Flt = atFloat(0);
   OBJ val = (OBJ)Flt;
   OBJ res;
 
@@ -456,7 +456,7 @@ endmethod
 
 defmethod(OBJ, gmap, FltVector, Functor)
   struct FltVector* vec = vector_alloc(self->size);
-  struct Float *Flt = atFlt(0);
+  struct Float *Flt = atFloat(0);
   OBJ val = (OBJ)Flt;
   OBJ res;
 

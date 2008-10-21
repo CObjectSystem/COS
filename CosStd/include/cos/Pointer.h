@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Pointer.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Pointer.h,v 1.2 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -56,8 +56,7 @@ endclass
 
 #define aPointer(ptr)  ( (OBJ)atPointer(ptr) )
 #define atPointer(ptr) ( &(struct Pointer) { \
-        {{ COS_CLS_NAME(Pointer).Behavior.id, COS_RC_AUTO }}, \
-         (ptr) } )
+        {{ COS_CLS_NAME(Pointer).Behavior.id, COS_RC_AUTO }}, (ptr) } )
 
 #define aAutoPointer(ptr, pfree)  ( (OBJ)atAutoPointer(ptr, pfree) )
 #define atAutoPointer(ptr, pfree) ( &(struct AutoPointer) {{ \
@@ -66,7 +65,6 @@ endclass
 
 #define aFunction(fct)  ( (OBJ)atFunction(fct) )
 #define atFunction(fct) ( &(struct Function) { \
-        {{ COS_CLS_NAME(Function).Behavior.id, COS_RC_AUTO }}, \
-         (fct) })
+        {{ COS_CLS_NAME(Function).Behavior.id, COS_RC_AUTO }}, (fct) })
 
 #endif // COS_POINTER_H

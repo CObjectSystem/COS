@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.2 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Number.c,v 1.3 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -97,7 +97,7 @@ defmethod(OBJ, ginitWith, Complex, Float)
 endmethod
 
 defmethod(OBJ, ginitWith2, Complex, Float, Float)
-  self1->value = cpx_make(self2->value, self3->value);
+  self1->value = complex_make(self2->value, self3->value);
   retmethod(_1);
 endmethod
 
@@ -602,47 +602,47 @@ useclass(Lesser,Equal,Greater);
 
 defmethod(OBJ, gcompare, Int, Int)
   retmethod(self1->value < self2->value ? Lesser :
-	    self1->value > self2->value ? Greater : Equal);
+            self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Int, Long)
   retmethod(self1->value < self2->value ? Lesser :
-	    self1->value > self2->value ? Greater : Equal);
+            self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Int, Float)
   retmethod(self1->value < self2->value ? Lesser :
-	    self1->value > self2->value ? Greater : Equal);
+            self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Long, Int)
   retmethod(self1->value < self2->value ? Lesser :
-	    self1->value > self2->value ? Greater : Equal);
+            self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Long, Long)
   retmethod(self1->value < self2->value ? Lesser :
-	    self1->value > self2->value ? Greater : Equal);
+            self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Long, Float)
   retmethod(self1->value < self2->value ? Lesser :
-	    self1->value > self2->value ? Greater : Equal);
+            self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Float, Int)
   retmethod(self1->value < self2->value ? Lesser :
-	    self1->value > self2->value ? Greater : Equal);
+            self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Float, Long)
   retmethod(self1->value < self2->value ? Lesser :
-	    self1->value > self2->value ? Greater : Equal);
+            self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Float, Float)
   retmethod(self1->value < self2->value ? Lesser :
-	    self1->value > self2->value ? Greater : Equal);
+            self1->value > self2->value ? Greater : Equal);
 endmethod
 
 // ----- bool
@@ -656,11 +656,11 @@ defmethod(OBJ, gbool, Long)
 endmethod
 
 defmethod(OBJ, gbool, Float)
-  retmethod(flt_equal(self->value,0) ? True : False);
+  retmethod(float_equal(self->value,0) ? True : False);
 endmethod
 
 defmethod(OBJ, gbool, Complex)
-  retmethod(cpx_equal(self->value,0) ? True : False);
+  retmethod(complex_equal(self->value,0) ? True : False);
 endmethod
 
 // ----- not
@@ -674,11 +674,11 @@ defmethod(OBJ, gnot, Long)
 endmethod
 
 defmethod(OBJ, gnot, Float)
-  retmethod(flt_equal(self->value,0) ? False : True);
+  retmethod(float_equal(self->value,0) ? False : True);
 endmethod
 
 defmethod(OBJ, gnot, Complex)
-  retmethod(cpx_equal(self->value,0) ? False : True);
+  retmethod(complex_equal(self->value,0) ? False : True);
 endmethod
 
 // ----- equal
@@ -692,11 +692,11 @@ defmethod(OBJ, gequal, Int, Long)
 endmethod
 
 defmethod(OBJ, gequal, Int, Float)
-  retmethod(flt_equal(self1->value,self2->value) ? True : False);
+  retmethod(float_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Int, Complex)
-  retmethod(cpx_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Long, Int)
@@ -708,42 +708,42 @@ defmethod(OBJ, gequal, Long, Long)
 endmethod
 
 defmethod(OBJ, gequal, Long, Float)
-  retmethod(flt_equal(self1->value,self1->value) ? True : False);
+  retmethod(float_equal(self1->value,self1->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Long, Complex)
-  retmethod(cpx_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Float, Int)
-  retmethod(flt_equal(self1->value,self2->value) ? True : False);
+  retmethod(float_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Float, Long)
-  retmethod(flt_equal(self1->value,self2->value) ? True : False);
+  retmethod(float_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Float, Float)
-  retmethod(flt_equal(self1->value,self2->value) ? True : False);
+  retmethod(float_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Float, Complex)
-  retmethod(cpx_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Complex, Int)
-  retmethod(cpx_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Complex, Long)
-  retmethod(cpx_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Complex, Float)
-  retmethod(cpx_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_equal(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gequal, Complex, Complex)
-  retmethod(cpx_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_equal(self1->value,self2->value) ? True : False);
 endmethod
 

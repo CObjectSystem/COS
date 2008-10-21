@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.4 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: Vector.h,v 1.5 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -134,13 +134,13 @@ defclass(IntVector8, IntVector) I32 _value[]; endclass
 defclass(IntVector9, IntVector) I32 _value[]; endclass
 defclass(IntVectorN, IntVector) I32 _value[]; endclass
 
-#define aIntVec(...)                   aVectorT   (Int,I32,__VA_ARGS__)
-#define aIntVecRef(size,array)         aVectorRefT(Int,size,array)
-#define aIntSubVec(vector,start,size)  aSubVectorT(Int,vector,start,size)
+#define aIntVector(...)                   aVectorT    (Int,I32,__VA_ARGS__)
+#define aIntVectorRef(size,array)         aVectorRefT (Int,size,array)
+#define aIntSubVector(vector,start,size)  aSubVectorT (Int,vector,start,size)
 
-#define atIntVec(...)                  atVectorT   (Int,I32,__VA_ARGS__)
-#define atIntVecRef(size,array)        atVectorRefT(Int,size,array)
-#define atIntSubVec(vector,start,size) atSubVectorT(Int,vector,start,size)
+#define atIntVector(...)                  atVectorT   (Int,I32,__VA_ARGS__)
+#define atIntVectorRef(size,array)        atVectorRefT(Int,size,array)
+#define atIntSubVector(vector,start,size) atSubVectorT(Int,vector,start,size)
 
 // ----- Vector of integer (I64)
 
@@ -156,13 +156,13 @@ defclass(LngVector8, LngVector) I64 _value[]; endclass
 defclass(LngVector9, LngVector) I64 _value[]; endclass
 defclass(LngVectorN, LngVector) I64 _value[]; endclass
 
-#define aLngVec(...)                   aVectorT   (Lng,I64,__VA_ARGS__)
-#define aLngVecRef(size,array)         aVectorRefT(Lng,size,array)
-#define aLngSubVec(vector,start,size)  aSubVectorT(Lng,vector,start,size)
+#define aLngVector(...)                   aVectorT    (Lng,I64,__VA_ARGS__)
+#define aLngVectorRef(size,array)         aVectorRefT (Lng,size,array)
+#define aLngSubVector(vector,start,size)  aSubVectorT (Lng,vector,start,size)
 
-#define atLngVec(...)                  atVectorT   (Lng,I64,__VA_ARGS__)
-#define atLngVecRef(size,array)        atVectorRefT(Lng,size,array)
-#define atLngSubVec(vector,start,size) atSubVectorT(Lng,vector,start,size)
+#define atLngVector(...)                  atVectorT   (Lng,I64,__VA_ARGS__)
+#define atLngVectorRef(size,array)        atVectorRefT(Lng,size,array)
+#define atLngSubVector(vector,start,size) atSubVectorT(Lng,vector,start,size)
 
 // ----- Vector of double
 
@@ -178,13 +178,13 @@ defclass(FltVector8, FltVector) R64 _value[]; endclass
 defclass(FltVector9, FltVector) R64 _value[]; endclass
 defclass(FltVectorN, FltVector) R64 _value[]; endclass
 
-#define aFltVec(...)                   aVectorT   (Flt,R64,__VA_ARGS__)
-#define aFltVecRef(size,array)         aVectorRefT(Flt,size,array)
-#define aFltSubVec(vector,start,size)  aSubVectorT(Flt,vector,start,size)
+#define aFltVector(...)                   aVectorT    (Flt,R64,__VA_ARGS__)
+#define aFltVectorRef(size,array)         aVectorRefT (Flt,size,array)
+#define aFltSubVector(vector,start,size)  aSubVectorT (Flt,vector,start,size)
 
-#define atFltVec(...)                  atVectorT   (Flt,R64,__VA_ARGS__)
-#define atFltVecRef(size,array)        atVectorRefT(Flt,size,array)
-#define atFltSubVec(vector,start,size) atSubVectorT(Flt,vector,start,size)
+#define atFltVector(...)                  atVectorT   (Flt,R64,__VA_ARGS__)
+#define atFltVectorRef(size,array)        atVectorRefT(Flt,size,array)
+#define atFltSubVector(vector,start,size) atSubVectorT(Flt,vector,start,size)
 
 // ----- Vector of complex
 
@@ -200,18 +200,17 @@ defclass(CpxVector8, CpxVector) C64 _value[]; endclass
 defclass(CpxVector9, CpxVector) C64 _value[]; endclass
 defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
 
-#define aCpxVec(...)                   aVectorT   (Cpx,C64,__VA_ARGS__)
-#define aCpxVecRef(size,array)         aVectorRefT(Cpx,size,array)
-#define aCpxSubVec(vector,start,size)  aSubVectorT(Cpx,vector,start,size)
+#define aCpxVector(...)                   aVectorT    (Cpx,C64,__VA_ARGS__)
+#define aCpxVectorRef(size,array)         aVectorRefT (Cpx,size,array)
+#define aCpxSubVector(vector,start,size)  aSubVectorT (Cpx,vector,start,size)
 
-#define atCpxVec(...)                  atVectorT   (Cpx,C64,__VA_ARGS__)
-#define atCpxVecRef(size,array)        atVectorRefT(Cpx,size,array)
-#define atCpxSubVec(vector,start,size) atSubVectorT(Cpx,vector,start,size)
+#define atCpxVector(...)                  atVectorT   (Cpx,C64,__VA_ARGS__)
+#define atCpxVectorRef(size,array)        atVectorRefT(Cpx,size,array)
+#define atCpxSubVector(vector,start,size) atSubVectorT(Cpx,vector,start,size)
 
 // ----- automatic constructors implementation
 
-#define aVectorT(P,T,...) \
-        ( (OBJ)atVectorT(P,T,__VA_ARGS__) )
+#define aVectorT(P,T,...) ( (OBJ)atVectorT(P,T,__VA_ARGS__) )
 #define atVectorT(P,T,...) \
         atVectorN(P,T,COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),10)) \
                   (N,COS_PP_NARG(__VA_ARGS__)),__VA_ARGS__)
@@ -220,8 +219,7 @@ defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
           {{{ COS_CLS_NAME(COS_PP_CAT3(P,Vector,N)).Behavior.id, COS_RC_AUTO }}}, \
           (T[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__) }} )
 
-#define aVectorRefT(P,size,array) \
-        ( (OBJ)atVectorRefT(P,size,array) )
+#define aVectorRefT(P,size,array) ( (OBJ)atVectorRefT(P,size,array) )
 #define atVectorRefT(P,size,array) \
         ( &(struct COS_PP_CAT(P,Vector)) { \
           {{{ COS_CLS_NAME(COS_PP_CAT(P,Vector)).Behavior.id, COS_RC_AUTO }}}, \
@@ -254,7 +252,7 @@ IntSubVector_init(struct IntSubVector *subvec, I32 substart)
   return subvec;
 }
 
-static inline struct LngSubVector*
+static inline struct LngVector*
 LngSubVector_init(struct LngSubVector *subvec, I32 substart)
 {
   useclass(LngVector);
@@ -269,10 +267,10 @@ LngSubVector_init(struct LngSubVector *subvec, I32 substart)
   test_assert( start + svec->size <= vec->size );
   svec->value = vec->value + start;
 
-  return subvec;
+  return svec;
 }
 
-static inline struct FltSubVector*
+static inline struct FltVector*
 FltSubVector_init(struct FltSubVector *subvec, I32 substart)
 {
   useclass(FltVector);
@@ -287,10 +285,10 @@ FltSubVector_init(struct FltSubVector *subvec, I32 substart)
   test_assert( start + svec->size <= vec->size );
   svec->value = vec->value + start;
 
-  return subvec;
+  return svec;
 }
 
-static inline struct CpxSubVector*
+static inline struct CpxVector*
 CpxSubVector_init(struct CpxSubVector *subvec, I32 substart)
 {
   useclass(CpxVector);
@@ -305,7 +303,7 @@ CpxSubVector_init(struct CpxSubVector *subvec, I32 substart)
   test_assert( start + svec->size <= vec->size );
   svec->value = vec->value + start;
 
-  return subvec;
+  return svec;
 }
 
 #endif // COS_VECTOR_H

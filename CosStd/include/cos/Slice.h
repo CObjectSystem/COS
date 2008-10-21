@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.3 2008/10/06 17:34:58 ldeniau Exp $
+ | $Id: Slice.h,v 1.4 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -279,38 +279,6 @@ Slice5_range(struct Slice5 *s, struct Range5 *r, U32 size[5]) {
   s->start = s0;
 
   return (OBJ)s;
-}
-
-// ----- merging
-
-static inline void
-Slice1_srange(struct Slice1 *sr, struct Range1 *r, struct Slice1 *s) {
-  // TODO
-  COS_UNUSED(sr, r, s);
-}
-
-static inline void
-Slice2_srange(struct Slice2 *sr, struct Range2 *r, struct Slice2 *s) {
-  // TODO
-  COS_UNUSED(sr, r, s);
-}
-
-static inline void
-Slice3_srange(struct Slice3 *sr, struct Range3 *r, struct Slice3 *s) {
-  // TODO
-  COS_UNUSED(sr, r, s);
-}
-
-static inline void
-Slice4_srange(struct Slice4 *sr, struct Range4 *r, struct Slice4 *s) {
-  // TODO
-  COS_UNUSED(sr, r, s);
-}
-
-static inline void
-Slice5_srange(struct Slice5 *sr, struct Range5 *r, struct Slice5 *s) {
-  // TODO
-  COS_UNUSED(sr, r, s);
 }
 
 // ----- automatic constructors

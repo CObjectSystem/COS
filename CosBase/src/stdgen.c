@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.17 2008/10/21 14:32:30 ldeniau Exp $
+ | $Id: stdgen.c,v 1.18 2008/10/21 15:43:42 ldeniau Exp $
  |
 */
 
@@ -230,7 +230,6 @@ makgeneric(void, gdeinitialize, _1);
 makgeneric(STR  , gstr , _1);
 makgeneric(U32  , gsize, _1);
 makgeneric(void*, gptr, _1);
-makgeneric(FUNC , gfct, _1);
 
 makgeneric(I8   , gchr, _1);
 makgeneric(I16  , gsht, _1);
