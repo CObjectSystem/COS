@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.16 2008/10/20 21:25:56 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.17 2008/10/21 14:32:30 ldeniau Exp $
  |
 */
 
@@ -194,11 +194,11 @@ pop(struct Any *obj)
 {
   struct AutoRelease *pool = pool_get();
 
-  if (*(pool->top-1) == (OBJ)obj)
-    --pool->top;
-  else
+  if (*--pool->top != (OBJ)obj) {
+    ++pool->top;
     ++obj->rc;
-	
+  }
+
   return (OBJ)obj;
 }
 
@@ -276,6 +276,7 @@ defmethod(OBJ, gretain, Any)
 
   if (self->rc >= COS_RC_UNIT && self->rc < COS_RC_LAST)
     retmethod(pop(self));
+//  retmethod(++self->rc, _1);
 
   if (self->rc == COS_RC_STATIC)
     retmethod(_1);
@@ -306,7 +307,7 @@ endmethod
 defmethod(OBJ, gautoRelease, Any)
 
   if (self->rc >= COS_RC_UNIT && self->rc <= COS_RC_LAST)
-	retmethod(push(_1));
+    retmethod(push(_1));
 	
   if (self->rc == COS_RC_STATIC)
     retmethod(_1);

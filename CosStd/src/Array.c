@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.4 2008/10/20 14:41:29 ldeniau Exp $
+ | $Id: Array.c,v 1.5 2008/10/21 14:32:30 ldeniau Exp $
  |
 */
 
@@ -501,7 +501,7 @@ defmethod(OBJ, gscan, Any, Array, Functor)
   retmethod( gadjust(gautoRelease((OBJ)arr)) );
 endmethod
 
-// ----- filter, fold (Nil -> stop iteration)
+// ----- filter, fold, unfold (Nil -> stop iteration)
 
 defmethod(OBJ, gfilter, Array, Functor)
   U32 s = self->size;
@@ -531,6 +531,21 @@ defmethod(OBJ, gfold, Any, Array, Functor)
   retmethod(obj);
 endmethod
 
+defmethod(OBJ, gunfold, Any, Functor)
+  struct Array* arr = dynarray_alloc(10);
+  OBJ obj = _1;
+
+  while (1) {
+    OBJ res = geval1(_2, obj);
+    if (res == Nil) break;
+    arr->object[arr->size++] = gclone(obj);
+    obj = res;
+  }
+  arr->object[arr->size++] = gclone(obj);
+
+  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+endmethod
+
 // ----- sorting
 
 defmethod(OBJ, gsort, Array, Functor)
@@ -539,6 +554,15 @@ defmethod(OBJ, gsort, Array, Functor)
   // TODO
   
   retmethod( gautoRelease((OBJ)arr) );
+endmethod
+
+// ----- finding
+
+defmethod(OBJ, gfind, Array, Any, Functor)
+  U32 s = self->size;
+  // TODO
+  
+  retmethod( obj );
 endmethod
 
 

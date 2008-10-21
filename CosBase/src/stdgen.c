@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.16 2008/10/20 21:25:56 ldeniau Exp $
+ | $Id: stdgen.c,v 1.17 2008/10/21 14:32:30 ldeniau Exp $
  |
 */
 
@@ -103,8 +103,10 @@ makgeneric(OBJ , gscan  , _1, _2, fun);
 
 makgeneric(OBJ , gfilter, _1, fun);
 makgeneric(OBJ , gfold  , _1, _2, fun);
+makgeneric(OBJ , gunfold, _1, fun);
 
 makgeneric(OBJ , gsort  , _1, fun);
+makgeneric(OBJ , gfind  , _1, obj, fun);
 
 // -------------------------
 #include <cos/gen/init.h>

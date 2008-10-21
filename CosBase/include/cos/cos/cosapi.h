@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.10 2008/10/17 18:12:20 ldeniau Exp $
+ | $Id: cosapi.h,v 1.11 2008/10/21 14:32:29 ldeniau Exp $
  |
 */
 
@@ -208,7 +208,7 @@ cos_method_cache2(void)
 {
   extern __thread struct cos_method_cache2 cos_method_cache2_;
   return &cos_method_cache2_;
-	COS_UNUSED(cos_method_cache2);
+  COS_UNUSED(cos_method_cache2);
 }
 
 static inline struct cos_method_cache3*
@@ -260,7 +260,8 @@ cos_method_cache1(void)
 {
   extern pthread_key_t cos_method_cache1_key;
   struct cos_method_cache1 *cache = pthread_getspecific(cos_method_cache1_key);
-	return cache ? cache : cos_method_cache1_init();
+  return cache ? cache : cos_method_cache1_init();
+  COS_UNUSED(cos_method_cache1);
 }
 
 static inline struct cos_method_cache2*
@@ -268,7 +269,8 @@ cos_method_cache2(void)
 {
   extern pthread_key_t cos_method_cache2_key;
   struct cos_method_cache2 *cache = pthread_getspecific(cos_method_cache2_key);
-	return cache ? cache : cos_method_cache2_init();
+  return cache ? cache : cos_method_cache2_init();
+  COS_UNUSED(cos_method_cache2);
 }
 
 static inline struct cos_method_cache3*
@@ -276,7 +278,8 @@ cos_method_cache3(void)
 {
   extern pthread_key_t cos_method_cache3_key;
   struct cos_method_cache3 *cache = pthread_getspecific(cos_method_cache3_key);
-	return cache ? cache : cos_method_cache3_init();
+  return cache ? cache : cos_method_cache3_init();
+  COS_UNUSED(cos_method_cache3);
 }
 
 static inline struct cos_method_cache4*
@@ -284,7 +287,8 @@ cos_method_cache4(void)
 {
   extern pthread_key_t cos_method_cache4_key;
   struct cos_method_cache4 *cache = pthread_getspecific(cos_method_cache4_key);
-	return cache ? cache : cos_method_cache4_init();
+  return cache ? cache : cos_method_cache4_init();
+  COS_UNUSED(cos_method_cache4);
 }
 
 static inline struct cos_method_cache5*
@@ -292,7 +296,8 @@ cos_method_cache5(void)
 {
   extern pthread_key_t cos_method_cache5_key;
   struct cos_method_cache5 *cache = pthread_getspecific(cos_method_cache5_key);
-	return cache ? cache : cos_method_cache5_init();
+  return cache ? cache : cos_method_cache5_init();
+  COS_UNUSED(cos_method_cache5);
 }
 
 #endif // ------------------------------------------------
