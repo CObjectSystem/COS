@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS generics for functional expressions
+ | COS generics for functors
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.6 2008/10/24 14:17:15 ldeniau Exp $
+ | $Id: functor.h,v 1.7 2008/10/24 16:11:00 ldeniau Exp $
  |
 */
 
@@ -46,27 +46,6 @@ defgeneric(OBJ, geval2, fun, (OBJ)arg1,(OBJ)arg2);
 defgeneric(OBJ, geval3, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 defgeneric(OBJ, geval4, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 defgeneric(OBJ, geval5, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
-
-// in place (value returned is discarded)
-defgeneric(void, gapply, fun, _1);
-
-// catamorphisms discarding Nil result
-defgeneric(OBJ, gmap   , fun, _1);
-defgeneric(OBJ, gmap2  , fun, _1, _2);
-defgeneric(OBJ, gmap3  , fun, _1, _2, _3);
-defgeneric(OBJ, gmap4  , fun, _1, _2, _3, _4);
-defgeneric(OBJ, gscan  , fun, acc, _1);
-
-// catamorphisms stopping on Nil result
-defgeneric(OBJ, gfilter, fun, _1);
-defgeneric(OBJ, gfold  , fun, acc, _1);
-defgeneric(OBJ, gfind  , fun, obj, _1);
-
-// anamorphisms stopping on Nil result
-defgeneric(OBJ, gunfold, fun, seed);
-
-// sorting (fun must return an Ordered)
-defgeneric(OBJ, gsort  , fun, _1);
 
 #endif // COS_GEN_FUNCTOR_H
 

@@ -1,10 +1,10 @@
-#ifndef COS_GEN_ACCESS_H
-#define COS_GEN_ACCESS_H
+#ifndef COS_GEN_CONTAINER_H
+#define COS_GEN_CONTAINER_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS generics accessor
+ | COS generics for containers
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: access.h,v 1.3 2008/10/10 16:37:43 ldeniau Exp $
+ | $Id: container.h,v 1.1 2008/10/24 16:11:00 ldeniau Exp $
  |
 */
 
@@ -40,29 +40,35 @@
 #error "COS: missing #include <cos/Object.h>"
 #endif 
 
+// empty collection
+defgeneric(OBJ, gclear, _1);
+
 // generic accessors
-defgeneric(OBJ, gput     , to, what);
-defgeneric(OBJ, gget     , from);
-defgeneric(OBJ, gdrop    , from);
-defgeneric(OBJ, gupdate  , to, what);
+defgeneric(OBJ, gput   , to, obj);
+defgeneric(OBJ, gget   , from);
+defgeneric(OBJ, gdrop  , from);
+defgeneric(OBJ, gupdate, to, obj);
 
 // generic accessors with location
-defgeneric(OBJ, gputAt   , to, what, at);
+defgeneric(OBJ, gputAt   , to, obj, at);
 defgeneric(OBJ, ggetAt   , from, at);
 defgeneric(OBJ, gdropAt  , from, at);
-defgeneric(OBJ, gupdateAt, to, what, at);
+defgeneric(OBJ, gupdateAt, to, obj, at);
 
-// stack-like or queue-like accessors
-defgeneric(OBJ, gpush    , to, what); // alias for gput
-defgeneric(OBJ, gtop     , from);     // alias for gget
-defgeneric(OBJ, gpop     , from);     // alias for gdrop
+// stack-like accessors
+defgeneric(OBJ, gpush, to, obj);     // alias for gput
+defgeneric(OBJ, gtop , from);        // alias for gget
+defgeneric(OBJ, gpop , from);        // alias for gdrop
 
-// string-like accessors
-defgeneric(OBJ, gconcat  , to, what); // alias for gpush
-defgeneric(OBJ, glast    , from);     // alias for gtop
+// seq-like accessor
+defgeneric(OBJ, gappend, to  , obj);
+defgeneric(OBJ, ginsert, to  , obj);
+defgeneric(OBJ, gremove, from, obj);
+defgeneric(OBJ, gconcat, to  , obj);
+defgeneric(OBJ, glast  , from);
 
-// plain array accessors
+// raw data (copy) accessors
 defgeneric(void, ggetValue  , from, what);
 defgeneric(void, ggetValueAt, from, what, at);
 
-#endif // COS_GEN_ACCESS_H
+#endif // COS_GEN_CONTAINER_H
