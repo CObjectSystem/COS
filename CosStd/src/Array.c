@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.8 2008/10/24 16:20:09 ldeniau Exp $
+ | $Id: Array.c,v 1.9 2008/10/24 16:41:29 ldeniau Exp $
  |
 */
 
@@ -41,11 +41,12 @@
 #include <cos/Slice.h>
 #include <cos/Vector.h>
 #include <cos/Functor.h>
-#include <cos/gen/init.h>
-#include <cos/gen/collect.h>
-#include <cos/gen/object.h>
+#include <cos/gen/algorithm.h>
+#include <cos/gen/container.h>
 #include <cos/gen/functor.h>
+#include <cos/gen/object.h>
 #include <cos/gen/value.h>
+#include <cos/gen/init.h>
 
 #include <stdlib.h>
 
@@ -67,74 +68,9 @@ makclass(SubArray , Array);
 makclass(DynArrayN, Array);
 makclass(DynArray , DynArrayN);
 
-// ----- local allocators
+// ----- private implementation
 
-static inline struct Array*
-array_alloc(U32 size)
-{
-  enum { N = 10 };
-  static struct Class* cls[N] = {
-    classref(Array0,Array1,Array2,Array3,Array4),
-    classref(Array5,Array6,Array7,Array8,Array9) }; 
-
-  useclass(ArrayN);
-
-  OBJ _cls = size >= N ? ArrayN : (OBJ)cls[size];
-  OBJ _arr = gallocWithSize(_cls, size * sizeof(OBJ));
-  struct ArrayN *narr = STATIC_CAST(struct ArrayN*, _arr);
-  struct Array  * arr = &narr->Array;
-
-  arr->size   = size;
-  arr->object = narr->_object;
-
-  return arr;
-}
-
-static inline struct Array*
-subarray_alloc(struct Array *ref, U32 start, U32 size)
-{
-  useclass(SubArray);
-
-  OBJ _arr = gallocWithSize(SubArray, 0);
-  struct SubArray *sarr = STATIC_CAST(struct SubArray*, _arr);
-  struct Array    * arr = &sarr->Array;
-
-  arr->size   = size;
-  arr->object = ref->object + start;
-  sarr->array = (OBJ)ref;
-
-  return arr;
-}
-
-static inline struct Array*
-dynarray_alloc(U32 size)
-{
-  useclass(DynArray, ExBadAlloc);
-
-  OBJ _arr = gallocWithSize(DynArray, 0);
-  struct DynArray *darr = STATIC_CAST(struct DynArray*, _arr);
-  struct Array    * arr = &darr->DynArrayN.Array;
-
-  arr->object = malloc(size * sizeof *arr->object);
-  if (!arr->object) { gdealloc(_arr); THROW(ExBadAlloc); }
-  darr->capacity = size;
-
-  return arr;
-}
-
-static void
-dynarray_resizeBy(struct DynArray *darr, double factor)
-{
-  useclass(ExBadAlloc);
-
-  struct Array *arr = &darr->DynArrayN.Array;
-  U32  size = darr->capacity * factor;
-  OBJ *object = realloc(arr->object, size * sizeof *arr->object);
-
-  if (!object) THROW(ExBadAlloc);
-  arr->object = object;
-  darr->capacity = size;
-}
+#include "./Array_p.h"
 
 // ----- ctor/dtor of a (dynamic) array
 
@@ -330,6 +266,7 @@ endmethod
 
 // ----- accessors and adjustment
 
+defalias (OBJ, (gput)gappend, DynArray, Any);
 defalias (OBJ, (gput)gconcat, DynArray, Any);
 defalias (OBJ, (gput)gpush  , DynArray, Any);
 defmethod(OBJ,  gput        , DynArray, Any)
@@ -367,7 +304,7 @@ endmethod
 
 // ----- concat
 
-defmethod(OBJ, gconcat, DynArray, Array)
+defmethod(OBJ,  gconcat, DynArray, Array)
   struct Array *arr = &self->DynArrayN.Array;
 
   if (self->capacity - arr->size < self2->size) {
@@ -401,8 +338,11 @@ endmethod
 // ----- apply
 
 defmethod(void, gapply, Array, Functor)
-  for (U32 i = 0; i < self->size; i++)
-     geval1(_2, self->object[i]);
+  for (U32 i = 0; i < self->size; i++) {
+    OBJ obj = self->object[i];
+    OBJ res = geval1(_2, obj);
+    if (res != obj) gdiscard(res);
+  }
 endmethod
 
 // ----- map, map2, map3, scan (Nil -> discard result)
@@ -503,6 +443,8 @@ defmethod(OBJ, gfold, Any, Array, Functor)
   retmethod(obj);
 endmethod
 
+
+// TODO: REVIEW
 defmethod(OBJ, gunfold, Any, Functor)
   struct Array* arr = dynarray_alloc(10);
   OBJ _arr = (OBJ)arr; PRT(_arr);

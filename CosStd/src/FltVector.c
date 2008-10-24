@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.3 2008/10/21 15:43:42 ldeniau Exp $
+ | $Id: FltVector.c,v 1.4 2008/10/24 16:41:29 ldeniau Exp $
  |
 */
 
@@ -43,10 +43,11 @@
 #include <cos/Point.h>
 #include <cos/Functor.h>
 #include <cos/Sequence.h>
-#include <cos/gen/value.h>
-#include <cos/gen/access.h>
-#include <cos/gen/object.h>
+
+#include <cos/gen/container.h>
 #include <cos/gen/functor.h>
+#include <cos/gen/object.h>
+#include <cos/gen/value.h>
 
 #include <stdlib.h>
 
@@ -441,6 +442,7 @@ endmethod
 
 // ----- map, fold, ...
 
+/*
 defmethod(void, gapply, FltVector, Functor)
   struct Float *Flt = atFloat(0);
   OBJ val = (OBJ)Flt;
@@ -470,7 +472,6 @@ defmethod(OBJ, gmap, FltVector, Functor)
   retmethod((OBJ)vec);
 endmethod
 
-/*
 defmethod(OBJ, gmap, Array, Functor)
   struct Array *arr = array_alloc(self->size); PRT(arr);
 
