@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utest.c,v 1.2 2008/10/16 10:46:45 ldeniau Exp $
+ | $Id: utest.c,v 1.3 2008/10/24 21:44:22 ldeniau Exp $
  |
 */
 
@@ -100,6 +100,8 @@ utest_fini(struct utest_info *uti)
   double t = (t1 - uti->test_t0) / CLOCKS_PER_SEC;
   int i;
   
+  if (!utest_out) utest_out = stdout;
+
   fprintf(utest_out, "(%.2f s) - %3d/%3d : %s\n",
           t,
           uti->test_cnt - uti->fail_cnt,
@@ -123,6 +125,8 @@ stest_fini (struct stest_info *sti)
   double t1 = clock();
   double t = (t1 - sti->t0) / CLOCKS_PER_SEC;
   
+  if (!utest_out) utest_out = stdout;
+
   fprintf(utest_out, "(%.2f s) - %7.0f Kitr/s\n",
           t, sti->itr / t / 1000);
 
@@ -151,6 +155,8 @@ stest_clear(void)
 void
 utest_stat(void)
 {
+  if (!utest_out) utest_out = stdout;
+
   fprintf(utest_out, " = %5d total, %5d passed, %5d failed"
                      "            (%.2f s)             %s\n",
                      total_pass+total_fail,
@@ -164,6 +170,8 @@ utest_stat(void)
 void
 stest_stat(void)
 {
+  if (!utest_out) utest_out = stdout;
+
   fprintf(utest_out, " = %5d total                        "
                      "                (%.2f s)\n",
                      total_pass,
