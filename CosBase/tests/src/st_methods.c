@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.c,v 1.7 2008/10/24 14:17:15 ldeniau Exp $
+ | $Id: st_methods.c,v 1.8 2008/10/24 16:20:09 ldeniau Exp $
  |
 */
 
@@ -177,8 +177,11 @@ st_memory(void)
   size_t i;
   int lvl;
 
+  // warm-up memory allocation
   memset(arr, 0, P * sizeof *arr);
-
+  for (i=0; i<P; i++) arr[i] = gnew(Counter);
+  for (i=P; i>0; i--) grelease(arr[i-1]);
+  
   i = 0;
   STEST( "new (galloc+ginit)", P, P, arr[i++] = gnew(Counter) );
 

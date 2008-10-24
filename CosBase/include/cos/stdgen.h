@@ -32,17 +32,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.h,v 1.3 2008/10/08 16:26:20 ldeniau Exp $
+ | $Id: stdgen.h,v 1.4 2008/10/24 16:20:09 ldeniau Exp $
  |
 */
 
-#include <cos/gen/access.h>
-#include <cos/gen/calc.h>
+#include <cos/gen/algorithm.h>
+#include <cos/gen/container.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/init.h>
 #include <cos/gen/logic.h>
 #include <cos/gen/message.h>
 #include <cos/gen/object.h>
+#include <cos/gen/operator.h>
 #include <cos/gen/value.h>
 
 #endif // COS_STDGEN_H
