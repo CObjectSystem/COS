@@ -29,13 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_forwardmessage.c,v 1.1 2008/06/27 16:17:24 ldeniau Exp $
+ | $Id: ut_forwardmessage.c,v 1.2 2008/10/24 21:08:39 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
-#include <cos/gen/logic.h>
 #include <cos/gen/value.h>
 
 #include "utest.h"
@@ -61,6 +60,12 @@ check_fwd(OBJ cls, OBJ (*func)(OBJ), STR res)
   return ret;
 }
 
+static OBJ
+gobool(OBJ obj)
+{
+  return gbool(obj) ? True : False;
+}
+
 void
 ut_forwardmessage(void)
 {
@@ -68,25 +73,21 @@ ut_forwardmessage(void)
 
   UTEST_START("forwarding message")
 
-    UTEST( check_fwd(A, gbool,  "A does not understand gbool") );
-    UTEST( check_fwd(A, gnot,   "A does not understand gnot")  );
+    UTEST( check_fwd(A, gobool, "A does not understand gbool") );
     UTEST( check_fwd(A, gclass, "A")  );
 
-    UTEST( check_fwd(B, gbool,  "B does not understand gbool") );
-    UTEST( check_fwd(B, gnot,   "B does not understand gnot")  );
+    UTEST( check_fwd(B, gobool, "B does not understand gbool") );
     UTEST( check_fwd(B, gclass, "B")  );
 
-    UTEST( check_fwd(C, gbool,  "C does not understand gbool") );
-    UTEST( check_fwd(C, gnot,   "C does not understand gnot")  );
+    UTEST( check_fwd(C, gobool, "C does not understand gbool") );
     UTEST( check_fwd(C, gclass, "C")  );
 
-    UTEST( check_fwd(D, gbool,  "D does not understand gbool") );
-    UTEST( check_fwd(D, gnot,   "D does not understand gnot")  );
+    UTEST( check_fwd(D, gobool, "D does not understand gbool") );
     UTEST( check_fwd(D, gclass, "D")  );
 
-    UTEST( check_fwd(E, gbool,  "E does not understand gbool") );
-    UTEST( check_fwd(E, gnot,   "E does not understand gnot")  );
+    UTEST( check_fwd(E, gobool, "E does not understand gbool") );
     UTEST( check_fwd(E, gclass, "E")  );
 
   UTEST_END
 }
+

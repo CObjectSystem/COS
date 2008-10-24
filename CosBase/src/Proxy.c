@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.5 2008/09/28 19:51:51 ldeniau Exp $
+ | $Id: Proxy.c,v 1.6 2008/10/24 21:08:39 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,10 @@
 #include <cos/gen/message.h>
 
 #include <stdlib.h>
-#include "object.h"
+
+// ----- shared private implementation
+
+#include "./Object_p.h"
 
 // -----
 

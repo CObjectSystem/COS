@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.7 2008/09/29 09:21:21 ldeniau Exp $
+ | $Id: Object.c,v 1.8 2008/10/24 21:08:39 ldeniau Exp $
  |
 */
 
@@ -37,7 +37,10 @@
 #include <cos/gen/object.h>
 
 #include <stdlib.h>
-#include "object.h"
+
+// ----- shared private implementation
+
+#include "./Object_p.h"
 
 // -----
 

@@ -32,13 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.h,v 1.5 2008/09/28 20:25:10 ldeniau Exp $
+ | $Id: tests.h,v 1.6 2008/10/24 21:08:39 ldeniau Exp $
  |
 */
 
 void ut_methods(void);
 void ut_classes(void);
-void ut_predlogic(void);
+//void ut_predlogic(void);
 void ut_nextmethod(void);
 void ut_unrecognized(void);
 void ut_forwardmessage(void);

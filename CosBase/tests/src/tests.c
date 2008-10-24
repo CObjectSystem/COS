@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.9 2008/10/16 12:50:11 ldeniau Exp $
+ | $Id: tests.c,v 1.10 2008/10/24 21:08:39 ldeniau Exp $
  |
 */
 
@@ -79,7 +79,6 @@ int main(int argc, char *argv[])
   fprintf(stdout, "\n** C Object System Testsuite (%d bits) **\n", bits);
   ut_methods();
   ut_classes();
-  ut_predlogic();
   ut_nextmethod();
   ut_unrecognized();
   ut_forwardmessage();

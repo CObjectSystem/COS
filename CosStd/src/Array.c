@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.9 2008/10/24 16:41:29 ldeniau Exp $
+ | $Id: Array.c,v 1.10 2008/10/24 21:08:39 ldeniau Exp $
  |
 */
 
@@ -68,7 +68,7 @@ makclass(SubArray , Array);
 makclass(DynArrayN, Array);
 makclass(DynArray , DynArrayN);
 
-// ----- private implementation
+// ----- shared private implementation
 
 #include "./Array_p.h"
 
