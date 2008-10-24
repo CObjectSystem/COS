@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.6 2008/10/20 21:25:56 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.7 2008/10/24 14:17:15 ldeniau Exp $
  |
 */
 
@@ -51,7 +51,7 @@ ut_autorelease(void)
   OBJ a, c;
   OBJ ar;
   volatile size_t i;
-  volatile OBJ ar1, ar2, ar3;
+  volatile OBJ ar1, ar2, ar3, ar4;
   static OBJ arr[1000];
   
   UTEST_START("reference counting & autorelease")
@@ -124,7 +124,7 @@ ut_autorelease(void)
 
     // ----
     ar = gnew(AutoRelease);
-    ar1 = ar2 = ar3 = 0;
+    ar1 = ar2 = ar3 = ar4 = 0;
     TRY
       ar1 = gnew(AutoRelease);
       for (i = 0; i < 100; i++)
@@ -137,7 +137,14 @@ ut_autorelease(void)
           ar3 = gnew(AutoRelease);
           for (; i < 600; i++)
             arr[i] = gautoRelease(gnew(A));
-          THROW(Nil);
+          TRY
+             ar4 = gnew(AutoRelease);
+             for (; i < 700; i++)
+               gdiscard(gautoRelease(gnew(A)));
+             THROW(Nil);
+          FINALLY
+            UTEST( gsize(ar4) == 0 ), ar4 = 0;
+          ENDTRY
         FINALLY
           UTEST( gsize(ar3) == 300 ), ar3 = 0;
         ENDTRY // rethrow Nil

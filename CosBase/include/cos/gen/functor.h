@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.5 2008/10/21 14:32:30 ldeniau Exp $
+ | $Id: functor.h,v 1.6 2008/10/24 14:17:15 ldeniau Exp $
  |
 */
 
@@ -40,32 +40,33 @@
 #error "COS: missing #include <cos/Object.h>"
 #endif 
 
-defgeneric(OBJ, geval , _1);
-defgeneric(OBJ, geval1, _1, (OBJ)arg1);
-defgeneric(OBJ, geval2, _1, (OBJ)arg1,(OBJ)arg2);
-defgeneric(OBJ, geval3, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
-defgeneric(OBJ, geval4, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
-defgeneric(OBJ, geval5, _1, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
+defgeneric(OBJ, geval , fun);
+defgeneric(OBJ, geval1, fun, (OBJ)arg1);
+defgeneric(OBJ, geval2, fun, (OBJ)arg1,(OBJ)arg2);
+defgeneric(OBJ, geval3, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
+defgeneric(OBJ, geval4, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
+defgeneric(OBJ, geval5, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 
-// in place
-defgeneric(void, gapply , _1, fun);
+// in place (value returned is discarded)
+defgeneric(void, gapply, fun, _1);
 
-// map and scan discard on Nil
-defgeneric(OBJ , gmap   , _1, fun);
-defgeneric(OBJ , gmap2  , _1, _2, fun);
-defgeneric(OBJ , gmap3  , _1, _2, _3, fun);
-defgeneric(OBJ , gscan  , _1, _2, fun);
+// catamorphisms discarding Nil result
+defgeneric(OBJ, gmap   , fun, _1);
+defgeneric(OBJ, gmap2  , fun, _1, _2);
+defgeneric(OBJ, gmap3  , fun, _1, _2, _3);
+defgeneric(OBJ, gmap4  , fun, _1, _2, _3, _4);
+defgeneric(OBJ, gscan  , fun, acc, _1);
 
-// filter, fold and unfold stop on Nil
-defgeneric(OBJ , gfilter, _1, fun);
-defgeneric(OBJ , gfold  , _1, _2, fun);
-defgeneric(OBJ , gunfold, _1, fun);
+// catamorphisms stopping on Nil result
+defgeneric(OBJ, gfilter, fun, _1);
+defgeneric(OBJ, gfold  , fun, acc, _1);
+defgeneric(OBJ, gfind  , fun, obj, _1);
 
-// sorting
-defgeneric(OBJ , gsort  , _1, fun);
+// anamorphisms stopping on Nil result
+defgeneric(OBJ, gunfold, fun, seed);
 
-// finding
-defgeneric(OBJ , gfind  , _1, obj, fun);
+// sorting (fun must return an Ordered)
+defgeneric(OBJ, gsort  , fun, _1);
 
 #endif // COS_GEN_FUNCTOR_H
 

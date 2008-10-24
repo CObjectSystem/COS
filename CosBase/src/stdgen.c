@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.18 2008/10/21 15:43:42 ldeniau Exp $
+ | $Id: stdgen.c,v 1.19 2008/10/24 14:17:15 ldeniau Exp $
  |
 */
 
@@ -194,6 +194,7 @@ makgeneric(OBJ , gdeinit       , _1);
 // ownership
 makgeneric(OBJ , gretain       , _1);
 makgeneric(OBJ , grelease      , _1);
+makgeneric(OBJ , gdiscard      , _1);
 makgeneric(OBJ , gautoRelease  , _1);
 makgeneric(U32 , gretainCount  , _1);
 

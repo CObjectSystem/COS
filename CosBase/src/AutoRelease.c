@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.17 2008/10/21 14:32:30 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.18 2008/10/24 14:17:15 ldeniau Exp $
  |
 */
 
@@ -190,14 +190,23 @@ push(OBJ obj)
 }
 
 static inline OBJ
-pop(struct Any *obj)
+pop_or_retain(struct Any *obj)
 {
   struct AutoRelease *pool = pool_get();
 
-  if (*--pool->top != (OBJ)obj) {
-    ++pool->top;
-    ++obj->rc;
-  }
+  if (*--pool->top != (OBJ)obj)
+    ++pool->top, ++obj->rc;
+
+  return (OBJ)obj;
+}
+
+static inline OBJ
+pop_and_release(struct Any *obj)
+{
+  struct AutoRelease *pool = pool_get();
+
+  if (*(pool->top-1) == (OBJ)obj)
+    return gdealloc(gdeinit(*--pool->top)), Nil;
 
   return (OBJ)obj;
 }
@@ -275,14 +284,13 @@ defmethod(OBJ, gretain, Any)
   useclass(ExBadValue);
 
   if (self->rc >= COS_RC_UNIT && self->rc < COS_RC_LAST)
-    retmethod(pop(self));
-//  retmethod(++self->rc, _1);
-
-  if (self->rc == COS_RC_STATIC)
-    retmethod(_1);
+    retmethod(pop_or_retain(self));
 
   if (self->rc == COS_RC_AUTO)
     retmethod(gclone(_1));
+
+  if (self->rc == COS_RC_STATIC)
+    retmethod(_1);
 
   // self->rc == COS_RC_LAST
   THROW( gnewWithStr(ExBadValue, "COS_RC_LAST") );
@@ -294,14 +302,22 @@ defmethod(OBJ, grelease, Any)
   if (self->rc > COS_RC_UNIT && self->rc <= COS_RC_LAST)
     retmethod(--self->rc, _1);
 
-  if (self->rc == COS_RC_STATIC)
-    retmethod(Nil);
-
   if (self->rc == COS_RC_UNIT)
     retmethod(gdealloc(gdeinit(_1)), Nil);
 
+  if (self->rc == COS_RC_STATIC)
+    retmethod(_1);
+
   // self->rc == COS_RC_AUTO
   THROW( gnewWithStr(ExBadValue, "COS_RC_AUTO") );
+endmethod
+
+defmethod(OBJ, gdiscard, Any)
+  if (self->rc == COS_RC_UNIT)
+    retmethod(pop_and_release(self));
+
+  // self->rc == (COS_RC_AUTO | COS_RC_STATIC | ..COS_RC_LAST)
+  retmethod(_1);
 endmethod
 
 defmethod(OBJ, gautoRelease, Any)
@@ -309,12 +325,11 @@ defmethod(OBJ, gautoRelease, Any)
   if (self->rc >= COS_RC_UNIT && self->rc <= COS_RC_LAST)
     retmethod(push(_1));
 	
-  if (self->rc == COS_RC_STATIC)
-    retmethod(_1);
- 
   if (self->rc == COS_RC_AUTO)
     retmethod(push(gclone(_1)));
 
+  // self->rc == COS_RC_STATIC
+  retmethod(_1);
 endmethod
 
 // -----

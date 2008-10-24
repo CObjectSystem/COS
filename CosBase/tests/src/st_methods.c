@@ -29,13 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.c,v 1.6 2008/10/16 10:46:45 ldeniau Exp $
+ | $Id: st_methods.c,v 1.7 2008/10/24 14:17:15 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
+
+#include <string.h>
 
 #include "utest.h"
 #include "tests.h"
@@ -175,6 +177,8 @@ st_memory(void)
   size_t i;
   int lvl;
 
+  memset(arr, 0, P * sizeof *arr);
+
   i = 0;
   STEST( "new (galloc+ginit)", P, P, arr[i++] = gnew(Counter) );
 
@@ -182,13 +186,17 @@ st_memory(void)
   STEST( "retain", P, P, gretain(arr[i++]) );
 
   i = 0;
-  STEST( "release", P, P, grelease(arr[i++]) );
-
-  i = 0;
   lvl = cos_logmsg_set(COS_LOGMSG_WARN);
   STEST( "autoRelease", P, P, gautoRelease(arr[i++]) );
   cos_logmsg_set(lvl);
 
+  i = 0;
+  STEST( "discard", P, P, gdiscard(arr[i++]) ); // does nothing since refcnt == 2
+
+  i = 0;
+  STEST( "release", P, P, grelease(arr[i++]) );
+
+  i = 0;
   STEST( "release (gdeinit+dealloc)", P, 1, grelease(ar) );
 
   i = 0;

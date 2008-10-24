@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.6 2008/10/21 15:43:42 ldeniau Exp $
+ | $Id: Array.c,v 1.7 2008/10/24 14:17:15 ldeniau Exp $
  |
 */
 
@@ -116,7 +116,7 @@ dynarray_alloc(U32 size)
   struct Array    * arr = &darr->DynArrayN.Array;
 
   arr->object = malloc(size * sizeof *arr->object);
-  if (!arr->object) THROW(ExBadAlloc);
+  if (!arr->object) { gdealloc(_arr); THROW(ExBadAlloc); }
   darr->capacity = size;
 
   return arr;
@@ -154,39 +154,39 @@ defmethod(OBJ, ginitWith, mArray, Array) // clone
   retmethod( ginitWith((OBJ)array_alloc(self2->size),_2) );
 endmethod
 
-defmethod(OBJ, ginitWith, Array, Array) // copy
-  test_assert(self->size == self2->size);
+defmethod(OBJ, ginitWith, Array, Array)
+  test_assert(self->size <= self2->size);
 
   for (U32 i = 0; i < self->size; i++)
-    self->object[i] = gclone(self2->object[i]);
+    self->object[i] = gretain(self2->object[i]);
   
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith2, mArray, Any, Size1)
+defmethod(OBJ, ginitWith2, mArray, Any, Size1)  // generator
   struct Array* arr = array_alloc(self3->size);
-
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+  
   for (U32 i = 0; i < arr->size; i++)
     arr->object[i] = gclone(_2);
 
-  retmethod((OBJ)arr);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, ginitWith2, mArray, Array, Range1)
   struct Slice1 slice[1];
   OBJ s = Slice1_range(slice, self3, self2->size);
-
   retmethod( ginitWith2(_1,_2,s) );  
 endmethod
 
 defmethod(OBJ, ginitWith2, mArray, Array, Slice1)
-  struct Array* arr = array_alloc(self3->size);
-
   test_assert( self3->start < self2->size && Slice1_last(self3) < self2->size );
+  struct Array* arr = array_alloc(self3->size);
 
   for (U32 i = 0; i < arr->size; i++) {
     OBJ obj = self2->object[ Slice1_eval(self3,i) ];
-    arr->object[i] = gclone(obj);
+    arr->object[i] = gretain(obj);
   }
   
   retmethod((OBJ)arr);
@@ -194,14 +194,16 @@ endmethod
 
 defmethod(OBJ, ginitWith2, mArray, Array, IntVector)
   struct Array* arr = array_alloc(self3->size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < arr->size; i++) {
     U32 j = index_abs(self3->value[i], self2->size);
     test_assert( j < self2->size );
-    arr->object[i] = gclone(self2->object[j]);
+    arr->object[i] = gretain(self2->object[j]);
   }
 
-  retmethod((OBJ)arr);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, ginitWithObjPtr, mArray, (U32)n, (OBJ*)obj)
@@ -211,7 +213,7 @@ endmethod
 defmethod(OBJ, gdeinit, Array)
   for (U32 i = 0; i < self->size; i++) {
     OBJ obj = self->object[i];
-    if (obj) grelease(obj);
+    if (obj) grelease(obj); // check obj because of PRT
   }
 
   retmethod(_1);
@@ -220,7 +222,6 @@ endmethod
 defmethod(OBJ, gdeinit, DynArrayN)
   next_method(self);
   free(self->Array.object);
-  
   retmethod(_1);
 endmethod
 
@@ -229,14 +230,14 @@ endmethod
 defmethod(OBJ, ginitWith2, mSubArray, Array, Range1)
   struct Slice1 slice[1];
   OBJ s = Slice1_range(slice, self3, self2->size);
-
   retmethod( ginitWith2(_1,_2,s) );
 endmethod
 
 defmethod(OBJ, ginitWith2, mSubArray, Array, Slice1)
   struct Array *arr = STATIC_CAST(struct Array*, gretain(_2));
-
-  test_assert( cos_any_id((OBJ)arr) != cos_class_id(classref(DynArray)) );
+  BOOL is_not_a_DynArray = cos_any_id((OBJ)arr) != cos_class_id(classref(DynArray));
+  
+  test_assert( is_not_a_DynArray );
   test_assert( Slice1_iscontiguous(self3) && Slice1_last(self3) < self2->size );
 
   retmethod( (OBJ)subarray_alloc(arr, self3->start, self3->size) );
@@ -250,27 +251,15 @@ endmethod
 // ----- equality
 
 defmethod(OBJ, gequal, Array, Array)
-  BOOL res = self->size == self2->size;
+  OBJ res = self->size == self2->size ? True : False;
 
-  for (U32 i = 0; res && i < self->size; i++)
-    res = gequal(self->object[i], self2->object[i]) == True;
+  for (U32 i = 0; res == True && i < self->size; i++)
+    res = gequal(self->object[i], self2->object[i]);
 
-  retmethod( res ? True : False );
+  retmethod(res);
 endmethod
 
 // ----- setters
-
-defmethod(OBJ, gput, Array, Array)
-  test_assert(self->size == self2->size);
-
-  for (U32 i = 0; i < self->size; i++) {
-    OBJ old = self->object[i];
-    self->object[i] = gretain(self2->object[i]);
-    if (old) grelease(old);
-  }
-
-  retmethod(_1);
-endmethod
 
 defmethod(OBJ, gputAt, Array, Any, Index1)
   U32 i = index_abs(self3->index, self->size);
@@ -278,21 +267,7 @@ defmethod(OBJ, gputAt, Array, Any, Index1)
   test_assert( i < self->size );
   OBJ old = self->object[i];
   self->object[i] = gretain(_2);
-  if (old) grelease(old);
-  
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gputAt, Array, Array, Index1)
-  U32 i = index_abs(self3->index, self->size);
-
-  test_assert( i+self2->size <= self->size );
-
-  for (U32 j = 0; j < self2->size; i++, j++) {
-    OBJ old = self->object[i];
-    self->object[i] = gretain(self2->object[j]);
-    if (old) grelease(old);
-  }
+  grelease(old);
   
   retmethod(_1);
 endmethod
@@ -307,29 +282,29 @@ endmethod
 defmethod(OBJ, gputAt, Array, Array, Slice1)
   test_assert( self3->start < self->size && Slice1_last(self3) < self->size );
 
-  for (U32 j = 0; j < self3->size; j++) {
+  for (U32 j = 0; j < self3->size; j++) { // TODO, filling policy
     U32 i = Slice1_eval(self3,j);
     OBJ old = self->object[i];
     self->object[i] = gretain(self2->object[j]);
-    if (old) grelease(old);
+    grelease(old);
   }
 
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gputAt, Array, Array, IntVector)
-  for (U32 j = 0; j < self3->size; j++) {
+  for (U32 j = 0; j < self3->size; j++) { // TODO, filling policy
     U32 i = index_abs(self3->value[j], self->size);
     test_assert( i < self->size );
     OBJ old = self->object[i];
     self->object[i] = gretain(self2->object[j]);
-    if (old) grelease(old);
+    grelease(old);
   }
 
   retmethod(_1);  
 endmethod
 
-// ----- getter
+// ----- getters
 
 defmethod(U32, gsize, Array)
   retmethod(self->size);
@@ -342,21 +317,18 @@ defmethod(OBJ, ggetAt, Array, Index1)
 endmethod
 
 defmethod(OBJ, ggetAt, Array, Range1)
-  struct Slice1 slice[1];
-  OBJ s = Slice1_range(slice, self2, self->size);
-
-  retmethod( ggetAt(_1,s) );
+  retmethod( gautoRelease(ginitWith2(Array,_1,_2)) );
 endmethod
 
 defmethod(OBJ, ggetAt, Array, Slice1)
-  retmethod( gautoRelease( gputAt((OBJ)array_alloc(self2->size),_1,_2) ) );
+  retmethod( gautoRelease(ginitWith2(Array,_1,_2)) );
 endmethod
 
 defmethod(OBJ, ggetAt, Array, IntVector)
-  retmethod( gautoRelease( gputAt((OBJ)array_alloc(self2->size),_1,_2) ) );
+  retmethod( gautoRelease(ginitWith2(Array,_1,_2)) );
 endmethod
 
-// ----- stack-like accessors and adjustment
+// ----- accessors and adjustment
 
 defalias (OBJ, (gput)gconcat, DynArray, Any);
 defalias (OBJ, (gput)gpush  , DynArray, Any);
@@ -364,7 +336,7 @@ defmethod(OBJ,  gput        , DynArray, Any)
   struct Array *arr = &self->DynArrayN.Array;
 
   if (arr->size == self->capacity)
-    dynarray_resizeBy(self, 1.75);
+    dynarray_resizeBy(self, 1.8);
     
   arr->object[arr->size++] = gretain(_2);
 
@@ -375,30 +347,20 @@ defalias (OBJ, (gget)glast, DynArray);
 defalias (OBJ, (gget)gtop , DynArray);
 defmethod(OBJ,  gget      , DynArray)
   struct Array *arr = &self->DynArrayN.Array;
-
-  if (!arr->size) retmethod(Nil);
-
-  retmethod( arr->object[arr->size-1] );
+  retmethod( arr->size ? arr->object[arr->size-1] : Nil );
 endmethod
 
 defalias (OBJ, (gdrop)gpop, DynArray);
 defmethod(OBJ,  gdrop     , DynArray)
   struct Array *arr = &self->DynArrayN.Array;
-
-  if (!arr->size) retmethod(False);
-
-  grelease(arr->object[--arr->size]);
-
-  retmethod(True);
+  retmethod(arr->size ? grelease(arr->object[--arr->size]) : Nil);
 endmethod
 
 defmethod(OBJ, gadjust, DynArray)
-  struct Class *cls = &COS_CLS_NAME(DynArrayN);
-
   if (self->DynArrayN.Array.size < self->capacity)
     dynarray_resizeBy(self, 1.0);
 
-  test_assert( cos_any_changeClass(_1, cls) );
+  test_assert( cos_any_changeClass(_1, classref(DynArrayN)) );
 
   retmethod(_1);
 endmethod
@@ -411,7 +373,7 @@ defmethod(OBJ, gconcat, DynArray, Array)
   if (self->capacity - arr->size < self2->size) {
     double size = arr->size;
 
-    do size *= 1.75;
+    do size *= 1.8;
     while (self->capacity - size < self2->size);
 
     dynarray_resizeBy(self, size);
@@ -448,6 +410,7 @@ endmethod
 defmethod(OBJ, gmap, Array, Functor)
   U32 s = self->size;
   struct Array* arr = dynarray_alloc(s);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < s; i++) {
     OBJ res = geval1(_2, self->object[i]);
@@ -455,12 +418,14 @@ defmethod(OBJ, gmap, Array, Functor)
     arr->object[arr->size++] = gretain(res);
   }
 
-  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+  UNPRT(_arr);
+  retmethod( gadjust(gautoRelease(_arr)) );
 endmethod
 
 defmethod(OBJ, gmap2, Array, Array, Functor)
   U32 s = self1->size < self2->size ? self1->size : self2->size;
   struct Array* arr = dynarray_alloc(s);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < s; i++) {
     OBJ res = geval2(_3, self1->object[i], self2->object[i]);
@@ -468,13 +433,15 @@ defmethod(OBJ, gmap2, Array, Array, Functor)
     arr->object[arr->size++] = gretain(res);
   }
 
-  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+  UNPRT(_arr);
+  retmethod( gadjust(gautoRelease(_arr)) );
 endmethod
 
 defmethod(OBJ, gmap3, Array, Array, Array, Functor)
   U32 s = self1->size < self2->size ? (self1->size < self3->size ? self1->size : self3->size)
                                     : (self2->size < self3->size ? self2->size : self3->size);
   struct Array* arr = dynarray_alloc(s);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < s; i++) {
     OBJ res = geval3(_3, self1->object[i], self2->object[i], self3->object[i]);
@@ -482,12 +449,14 @@ defmethod(OBJ, gmap3, Array, Array, Array, Functor)
     arr->object[arr->size++] = gretain(res);
   }
 
-  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+  UNPRT(_arr);
+  retmethod( gadjust(gautoRelease(_arr)) );
 endmethod
 
 defmethod(OBJ, gscan, Any, Array, Functor)
   U32 s = self2->size;
   struct Array* arr = dynarray_alloc(s+1);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ obj = _1;
 
   for (U32 i = 0; i < s; i++) {
@@ -498,7 +467,8 @@ defmethod(OBJ, gscan, Any, Array, Functor)
   }
   arr->object[arr->size++] = gclone(obj);
 
-  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+  UNPRT(_arr);
+  retmethod( gadjust(gautoRelease(_arr)) );
 endmethod
 
 // ----- filter, fold, unfold (Nil -> stop iteration)
@@ -506,6 +476,7 @@ endmethod
 defmethod(OBJ, gfilter, Array, Functor)
   U32 s = self->size;
   struct Array* arr = dynarray_alloc(s);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < s; i++) {
     OBJ obj = self->object[i];
@@ -515,7 +486,8 @@ defmethod(OBJ, gfilter, Array, Functor)
     arr->object[arr->size++] = gretain(obj);
   }
 
-  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+  UNPRT(_arr);
+  retmethod( gadjust(gautoRelease(_arr)) );
 endmethod
 
 defmethod(OBJ, gfold, Any, Array, Functor)
@@ -533,6 +505,7 @@ endmethod
 
 defmethod(OBJ, gunfold, Any, Functor)
   struct Array* arr = dynarray_alloc(10);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ obj = _1;
 
   while (1) {
@@ -543,7 +516,8 @@ defmethod(OBJ, gunfold, Any, Functor)
   }
   arr->object[arr->size++] = gclone(obj);
 
-  retmethod( gadjust(gautoRelease((OBJ)arr)) );
+  UNPRT(_arr);
+  retmethod( gadjust(gautoRelease(_arr)) );
 endmethod
 
 // ----- sorting

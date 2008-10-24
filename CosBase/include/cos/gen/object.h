@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.9 2008/10/20 21:25:56 ldeniau Exp $
+ | $Id: object.h,v 1.10 2008/10/24 14:17:15 ldeniau Exp $
  |
 */
 
@@ -58,6 +58,7 @@ defgeneric(OBJ , gdeinit       , _1);
 // ownership
 defgeneric(OBJ , gretain       , _1);
 defgeneric(OBJ , grelease      , _1);
+defgeneric(OBJ , gdiscard      , _1);
 defgeneric(OBJ , gautoRelease  , _1);
 defgeneric(U32 , gretainCount  , _1);
 
@@ -130,12 +131,6 @@ gnewWithStr(OBJ _1, STR str) {
 static inline OBJ
 gclone(OBJ _1) {
   return ginitWith(galloc(gclass(_1)),_1);  COS_UNUSED(gclone);
-}
-
-// inliner gcopy
-static inline OBJ
-gcopy(OBJ _1, OBJ _2) {
-  return _1 != _2 ? ginitWith(gdeinit(_1),_2) : _1;  COS_UNUSED(gcopy);
 }
 
 #endif // COS_GEN_OBJECT_H

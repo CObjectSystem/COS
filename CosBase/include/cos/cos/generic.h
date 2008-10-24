@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.7 2008/10/08 16:26:20 ldeniau Exp $
+ | $Id: generic.h,v 1.8 2008/10/24 14:17:14 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,7 @@
 /* NOTE-USER: generic declaration, definition and instantiation
 
    generic-reference:
-     genericref( generic-name )
+     genericref( generic-name-list )
 
    generic-declaration:
      usegeneric( generic-decl-list );
@@ -115,7 +115,7 @@
 #endif
 
 #ifndef COS_DISABLE_genericref
-#define genericref(G) COS_GEN_REF(G)
+#define genericref(...) COS_GEN_REF(__VA_ARGS__)
 #endif
 
 #ifndef COS_DISABLE_usegeneric
@@ -154,8 +154,11 @@
 
 /* generic reference
  */
-#define COS_GEN_REF(NAME) \
-        ((OBJ)(void*)&COS_GEN_NAME(NAME))
+#define COS_GEN_REF(...) \
+        COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_GEN_REF_1))
+
+#define COS_GEN_REF_1(NAME) \
+        (&COS_GEN_NAME(NAME))
 
 /* generic declaration
  */
@@ -167,7 +170,7 @@
 
 #define COS_GEN_USE_1(GNAME,LNAME) \
         extern struct Generic COS_GEN_NAME(GNAME); \
-        static OBJ const LNAME = COS_GEN_REF(GNAME)
+        static OBJ const LNAME = (void*)COS_GEN_REF_1(GNAME)
 
 /* generic definition
  */
