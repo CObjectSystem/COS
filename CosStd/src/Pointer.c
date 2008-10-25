@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Pointer.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Pointer.c,v 1.2 2008/10/25 19:56:05 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,7 @@
 
 makclass(Pointer,Value);
 makclass(AutoPointer,Pointer);
-makclass(Function,Value);
+// makclass(Function,Value);
 
 // -----
 
