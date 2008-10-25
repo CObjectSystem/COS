@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.10 2008/10/24 21:08:39 ldeniau Exp $
+ | $Id: Array.c,v 1.11 2008/10/25 13:12:59 ldeniau Exp $
  |
 */
 
@@ -184,17 +184,6 @@ defmethod(OBJ, gdeinit, SubArray)
   retmethod(_1);
 endmethod
  
-// ----- equality
-
-defmethod(OBJ, gequal, Array, Array)
-  OBJ res = self->size == self2->size ? True : False;
-
-  for (U32 i = 0; res == True && i < self->size; i++)
-    res = gequal(self->object[i], self2->object[i]);
-
-  retmethod(res);
-endmethod
-
 // ----- setters
 
 defmethod(OBJ, gputAt, Array, Any, Index1)
