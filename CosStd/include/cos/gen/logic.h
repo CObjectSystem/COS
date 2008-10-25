@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.1 2008/10/24 22:03:30 ldeniau Exp $
+ | $Id: logic.h,v 1.2 2008/10/25 16:32:36 ldeniau Exp $
  |
 */
 
@@ -94,20 +94,6 @@ gGE(OBJ _1, OBJ _2) {
   useclass(Lesser);
   OBJ res = gcompare(_1,_2);
   return res == Lesser ? False : True; COS_UNUSED(gGE);
-}
-
-static inline OBJ
-gmin(OBJ _1, OBJ _2) {
-  useclass(Greater);
-  OBJ res = gcompare(_1,_2);
-  return res == Greater ? _2 : _1; COS_UNUSED(gmin);
-}
-
-static inline OBJ
-gmax(OBJ _1, OBJ _2) {
-  useclass(Lesser);
-  OBJ res = gcompare(_1,_2);
-  return res == Lesser ? _2 : _1; COS_UNUSED(gmax);
 }
 
 #endif // COS_GEN_LOGIC_H
