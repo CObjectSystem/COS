@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.4 2008/10/25 19:56:05 ldeniau Exp $
+ | $Id: Functor.h,v 1.5 2008/10/27 08:26:06 ldeniau Exp $
  |
 */
 
@@ -120,7 +120,7 @@ endclass
 #define aComposeN(N,...) \
         (&(struct Compose) { \
         {{{{ COS_CLS_NAME(Compose).Behavior.id, COS_RC_AUTO }}}}, \
-         N, (OBJ[]){ __VA_ARGS__ } })
+         N, (OBJ[]){ COS_PP_SEQ(COS_PP_REV(__VA_ARGS__)) } })
 
 #define aMultiFunctorN(N,...) \
         (&(struct COS_PP_CAT(MultiFunctor,N)) { \
