@@ -29,11 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.5 2008/10/27 08:26:06 ldeniau Exp $
+ | $Id: Functor.c,v 1.6 2008/10/27 08:40:11 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
+#include <cos/Array.h>
 #include <cos/Functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
@@ -167,16 +168,26 @@ defmethod(OBJ, galloc, mCompose)
   retmethod(_1); // lazy alloc
 endmethod
 
-defmethod(OBJ, ginitWith, mCompose, Compose) // clone
+static inline struct Compose*
+compose_alloc(U32 size)
+{
   useclass(Compose);
 
-  OBJ _cmp = gallocWithSize(Compose, self2->size * sizeof *self2->functor);
+  OBJ _cmp = gallocWithSize(Compose, size * sizeof(OBJ));
   struct Compose *cmp = STATIC_CAST(struct Compose*, _cmp);
 
-  cmp->size = self2->size;
+  cmp->size = size;
   cmp->functor = cmp->_functor;
+  
+  return cmp;
+}
 
-  retmethod( ginitWith(_cmp,_2) );
+defmethod(OBJ, ginitWith, mCompose, Compose) // clone
+  retmethod( ginitWith((OBJ)compose_alloc(self2->size),_2) );
+endmethod
+
+defmethod(OBJ, ginitWith, mCompose, Array)
+  retmethod( ginitWith((OBJ)compose_alloc(self2->size),_2) );
 endmethod
 
 defmethod(OBJ, ginitWith, Compose, Compose)
@@ -184,6 +195,15 @@ defmethod(OBJ, ginitWith, Compose, Compose)
 
   for (U32 i = 0; i < self->size; i++)
     self->functor[i] = gretain(self2->functor[i]);
+  
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWith, Compose, Array)
+  test_assert(self->size <= self2->size);
+
+  for (U32 i = 0; i < self->size; i++)
+    self->functor[i] = gretain(self2->object[i]);
   
   retmethod(_1);
 endmethod
