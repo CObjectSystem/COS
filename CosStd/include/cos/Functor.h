@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.5 2008/10/27 08:26:06 ldeniau Exp $
+ | $Id: Functor.h,v 1.6 2008/10/27 08:31:45 ldeniau Exp $
  |
 */
 
@@ -42,8 +42,7 @@
 
 // ----- definitions
 
-defclass(Functor)
-endclass
+defclass(Functor) endclass
 
 defclass(Functor1,Functor)
   OBJFCT1 fct;
