@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.h,v 1.2 2008/07/15 08:00:46 ldeniau Exp $
+ | $Id: Exception.h,v 1.3 2008/10/27 16:24:31 ldeniau Exp $
  |
 */
 
@@ -43,5 +43,31 @@
 defclass(Exception)
   STR str;
 endclass
+
+defclass(ExErrno,Exception)
+  int err;
+endclass
+
+defclass(ExSignal,Exception)
+  int sig;
+endclass
+
+defclass(ExBadAlloc      ,Exception) endclass
+defclass(ExBadArity      ,Exception) endclass
+defclass(ExBadAssert     ,Exception) endclass
+defclass(ExBadCast       ,Exception) endclass
+defclass(ExBadDomain     ,Exception) endclass
+defclass(ExBadFormat     ,Exception) endclass
+defclass(ExBadMessage    ,Exception) endclass
+defclass(ExBadRange      ,Exception) endclass
+defclass(ExBadPredicate  ,Exception) endclass
+defclass(ExBadSize       ,Exception) endclass
+defclass(ExBadType       ,Exception) endclass
+defclass(ExBadValue      ,Exception) endclass
+defclass(ExNotFound      ,Exception) endclass
+defclass(ExNotImplemented,Exception) endclass
+defclass(ExNotSupported  ,Exception) endclass
+defclass(ExOverflow      ,Exception) endclass
+defclass(ExUnderflow     ,Exception) endclass
 
 #endif // COS_EXCEPTION_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.2 2008/10/24 21:08:39 ldeniau Exp $
+ | $Id: Exception.c,v 1.3 2008/10/27 16:24:32 ldeniau Exp $
  |
 */
 
@@ -56,6 +56,7 @@ makclass(ExBadCast       ,Exception);
 makclass(ExBadDomain     ,Exception);
 makclass(ExBadFormat     ,Exception);
 makclass(ExBadMessage    ,Exception);
+makclass(ExBadPredicate  ,Exception);
 makclass(ExBadRange      ,Exception);
 makclass(ExBadSize       ,Exception);
 makclass(ExBadType       ,Exception);
@@ -66,7 +67,7 @@ makclass(ExNotSupported  ,Exception);
 makclass(ExOverflow      ,Exception);
 makclass(ExUnderflow     ,Exception);
 
-// ----- assert
+// ----- exception
 
 defmethod(OBJ, ginit, Exception)
   self->str = 0;

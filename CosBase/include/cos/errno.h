@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: errno.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: errno.h,v 1.2 2008/10/27 16:24:31 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@
    - use gint(err) from cos/gen/value.h to retrieve errno value
    - use gstr(err) from cos/gen/value.h to retrieve errno string
 */
-#define TestErrno() \
+#define test_errno() \
         ((void)(errno && \
          (cos_exception_errnoLoc(errno,__FILE__,__LINE__),0)))
 
