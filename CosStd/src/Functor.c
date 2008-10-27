@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.6 2008/10/27 08:40:11 ldeniau Exp $
+ | $Id: Functor.c,v 1.7 2008/10/27 08:49:19 ldeniau Exp $
  |
 */
 
@@ -191,19 +191,21 @@ defmethod(OBJ, ginitWith, mCompose, Array)
 endmethod
 
 defmethod(OBJ, ginitWith, Compose, Compose)
-  test_assert(self->size <= self2->size);
+  test_assert(self->size == self2->size);
 
   for (U32 i = 0; i < self->size; i++)
     self->functor[i] = gretain(self2->functor[i]);
-  
+
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Compose, Array)
-  test_assert(self->size <= self2->size);
+  U32 size = self->size;
 
-  for (U32 i = 0; i < self->size; i++)
-    self->functor[i] = gretain(self2->object[i]);
+  test_assert(self->size == self2->size);
+
+  for (U32 i = 0; i < size; i++)
+    self->functor[size-i-1] = gretain(self2->object[i]);
   
   retmethod(_1);
 endmethod
