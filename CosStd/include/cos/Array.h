@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.4 2008/10/21 15:43:42 ldeniau Exp $
+ | $Id: Array.h,v 1.5 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -91,7 +91,7 @@ defclass(ArrayN, Array) OBJ _object[]; endclass
                  (N,COS_PP_NARG(__VA_ARGS__)),__VA_ARGS__)
 #define atArrayN(N,...) \
         ( (struct Array*)&(struct COS_PP_CAT(Array,N)) {{ \
-          {{{{ COS_CLS_NAME(COS_PP_CAT(Array,N)).Behavior.id, COS_RC_AUTO }}}}, \
+          {{{ COS_CLS_NAME(COS_PP_CAT(Array,N)).Behavior.id, COS_RC_AUTO }}}, \
           (OBJ[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__) }} )
 
 #define atArrayRef(size,array) \

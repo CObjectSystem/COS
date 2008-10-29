@@ -1,10 +1,7 @@
-#ifndef COS_COS_DEBUG_H
-#define COS_COS_DEBUG_H
-
 /*
  o---------------------------------------------------------------------o
  |
- | COS debug
+ | COS debug feature
  |
  o---------------------------------------------------------------------o
  |
@@ -32,36 +29,42 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: debug.h,v 1.2 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: cos_debug.c,v 1.1 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
-/* low-level debug API
- */
+#include <cos/Object.h>
+#include <cos/cos/debug.h>
+
+int cos_enable_stack_trace = 1;
+
+
+#ifdef __GLIBC__
+
 #include <stdio.h>
+#include <unistd.h>
+#include <execinfo.h>
 
-extern int cos_enable_stack_trace;
+void cos_showCallStack(FILE *out)
+{
+  enum { nmax = 1000 };
+  void *buf[nmax];
+  int n;
 
-// in cos/cos_debug.c
-void cos_showCallStack(FILE*);
+  if (!cos_enable_stack_trace) return;
+  if (!out) out = stderr;
+  
+  n = backtrace(buf, nmax);
+  backtrace_symbols_fd(buf, n, fileno(out));
+}
+     
+#else
 
-// in cos/cos_symbol.c
-void cos_symbol_showSummary (FILE*);
-void cos_symbol_showClasses (FILE*);
-void cos_symbol_showGenerics(FILE*);
-void cos_symbol_showMethods (FILE*);
+void cos_showCallStack(FILE *out)
+{
+  if (cos_enable_stack_trace)
+    cos_debug("stack trace not available");  
+}
 
-// in cos/cos_dispatch{1..5}.c
-void cos_method_showCache1(FILE*);
-void cos_method_showCache2(FILE*);
-void cos_method_showCache3(FILE*);
-void cos_method_showCache4(FILE*);
-void cos_method_showCache5(FILE*);
+#endif
 
-// in cos/cos_exception.c
-void cos_exception_showStack(FILE*);
-
-// in cos/AutoRelease.c
-void cos_autorelease_showStack(FILE*);
-
-#endif // COS_COS_DEBUG_H

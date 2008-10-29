@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Linux,v 1.7 2008/10/02 21:09:55 ldeniau Exp $
+# | $Id: config.Linux,v 1.8 2008/10/29 15:43:10 ldeniau Exp $
 # |
 #
 
@@ -65,8 +65,8 @@ CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3 --param large-function-growt
 LDFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
 
 DEBUG_CPP   =
-DEBUG_CC    = -g
-DEBUG_LD    = -g
+DEBUG_CC    = -g -rdynamic
+DEBUG_LD    = -g -rdynamic
 
 PROFILE_CPP =
 PROFILE_CC  = -pg

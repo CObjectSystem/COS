@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.11 2008/10/17 18:12:21 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.12 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -150,13 +150,13 @@ gen_strcmp(const void *str, const void *_gen)
 static inline BOOL
 cls_isMeta(struct Class *cls)
 {
-  return cos_any_id((OBJ)cls) == cos_class_id(classref(MetaClass));
+  return cos_any_isa((OBJ)cls, classref(MetaClass));
 }
 
 static inline BOOL
 cls_isProp(struct Class *cls)
 {
-  return cos_any_id((OBJ)cls) == cos_class_id(classref(PropMetaClass));
+  return cos_any_isa((OBJ)cls, classref(PropMetaClass));
 }
 
 static inline void
@@ -554,8 +554,8 @@ cos_generic_get(U32 id)
   struct Generic *gen = STATIC_CAST(struct Generic*, sym.bhv[id & sym.msk]);
 
   if (!gen
-    || cos_generic_id(gen) != id
-    || cos_any_id((OBJ)gen) != cos_class_id(classref(Generic)))
+   ||  cos_generic_id(gen) != id
+   || !cos_any_isa((OBJ)gen, classref(Generic)))
     cos_abort("invalid generic id %d", id);
 
   return gen;
@@ -578,9 +578,12 @@ cos_class_get(U32 id)
 {
   struct Class *cls = STATIC_CAST(struct Class*, sym.bhv[id & sym.msk]);
 
+  if (!COS_ID_TAG(id))
+    cos_abort("automatic or static objects used _before_ initialization");
+
   if (!cls
     || cos_class_id(cls) != id
-    || cos_any_id((OBJ)cls) == cos_class_id(classref(Generic)))
+    || cos_any_isa((OBJ)cls, classref(Generic)))
     cos_abort("invalid class id %d", id);
 
   return cls;

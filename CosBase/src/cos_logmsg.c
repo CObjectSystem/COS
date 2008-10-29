@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.4 2008/10/16 10:46:45 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.5 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -40,11 +40,17 @@
 #include <string.h>
 #include <errno.h>
 
+#if COS_POSIX
+#include <unistd.h>
+#include <pthread.h>
+#endif
+
 STATIC_ASSERT(COS_LOGMSG_must_be_within_trace_and_abort,
               COS_LOGMSG >= COS_LOGMSG_TRACE && COS_LOGMSG <= COS_LOGMSG_ABORT);
 
 FILE *cos_logmsg_out = 0;
 int   cos_logmsg_level_ = COS_LOGMSG;
+BOOL  cos_logmsg_disp_pth = 0;
 
 int
 cos_logmsg_set(int lvl)
@@ -73,11 +79,20 @@ cos_logmsg_(int lvl, STR file, int line, STR fmt, ...)
     if (cos_logmsg_out == stderr) fflush(stdout);
    
     va_start(va,fmt);
-    fprintf(cos_logmsg_out,"COS-%s:(%-16s,%04d): ",tag[lvl],file ? file : "-",line);
+#if COS_POSIX
+    if (cos_logmsg_disp_pth)
+      fprintf(cos_logmsg_out,"COS-%s[%u:%04x]:(%-18s,%04d): ",
+              tag[lvl], (U32)getpid(), (U32)pthread_self(), file ? file : "-",line);
+    else
+      fprintf(cos_logmsg_out,"COS-%s[%u]:(%-18s,%04d): ",
+              tag[lvl], (U32)getpid(), file ? file : "-",line);
+#else
+    fprintf(cos_logmsg_out,"COS-%s:(%-18s,%04d): ",tag[lvl],file ? file : "-",line);
+#endif
     vfprintf(cos_logmsg_out,fmt,va);
     if (fmt[0] != '\0' && fmt[strlen(fmt)-1] == ':')
       fprintf(cos_logmsg_out," %s",strerror(errno));
-    putc('\n',stderr);
+    putc('\n',cos_logmsg_out);
     va_end(va);
 
     if (lvl >= COS_LOGMSG_ABORT)

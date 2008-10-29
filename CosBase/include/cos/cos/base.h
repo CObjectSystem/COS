@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.4 2008/10/16 10:46:44 ldeniau Exp $
+ | $Id: base.h,v 1.5 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -110,6 +110,11 @@
 #define COS_LNK_NAME(NAME,C)  COS_PP_CAT(cos_l_  ,COS_SUB_NAME(NAME,C))
 #define COS_MTH_NAME(NAME,CS) COS_PP_CAT(cos_m_  ,COS_SYM_NAME(NAME,CS))
 #define COS_FCT_NAME(NAME,CS) COS_PP_CAT(cos_f_  ,COS_SYM_NAME(NAME,CS))
+
+// symbol for method specialization predicates
+#define COS_CLS_MSPE(NAME)    COS_PP_CAT(cos_s_  ,NAME)
+#define COS_MCL_MSPE(NAME)    COS_PP_CAT(cos_s_m ,NAME)
+#define COS_PCL_MSPE(NAME)    COS_PP_CAT(cos_s_pm,NAME)
 
 // symbols infos
 #define COS_CLS_RANK(NAME)    COS_PP_CAT(cos_k_  ,NAME)
@@ -214,16 +219,18 @@
 #define COS_TOK_ISVALIST(a) \
         COS_PP_IF(COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_VALIST_,a))) \
           (COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_VALISTF_,a)()),0)
+#define COS_TOK_ISNIL(a) \
+        COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_NIL_,a))
+#define COS_TOK_ISGUM(a) \
+        COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_GUM_,a))
 
+#define COS_TOK_NIL_Nil           ()
 #define COS_TOK_OBJ_OBJ           ()
 #define COS_TOK_OBJF_OBJ()        ()
 #define COS_TOK_VOID_void         ()
 #define COS_TOK_VOIDF_void()      ()
 #define COS_TOK_VALIST_va_list    ()
 #define COS_TOK_VALISTF_va_list() ()
-
-#define COS_TOK_ISGUM(a) \
-        COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_GUM_,a))
 
 #define COS_TOK_GUM_gunrecognizedMessage1 ()
 #define COS_TOK_GUM_gunrecognizedMessage2 ()

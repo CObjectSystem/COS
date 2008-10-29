@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.6 2008/10/27 08:31:45 ldeniau Exp $
+ | $Id: Functor.h,v 1.7 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -113,7 +113,7 @@ endclass
 
 #define aFunctorN(N,F,...) \
         COS_PP_CAT3(Functor,N,_init)(&(struct COS_PP_CAT(Functor,N)) { \
-        {{{{ COS_CLS_NAME(COS_PP_CAT(Functor,N)).Behavior.id, COS_RC_AUTO }}}}, \
+        {{{ COS_CLS_NAME(COS_PP_CAT(Functor,N)).Behavior.id, COS_RC_AUTO }}}, \
          F, -1, COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
 
 #define aComposeN(N,...) \

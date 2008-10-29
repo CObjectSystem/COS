@@ -29,18 +29,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.3 2008/10/27 16:24:32 ldeniau Exp $
+ | $Id: Exception.c,v 1.4 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Exception.h>
-#include <cos/stdex.h>
 #include <cos/errno.h>
 #include <cos/signal.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 #include <cos/gen/init.h>
+#include <cos/cos/debug.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -133,7 +133,19 @@ ex_signal(int sig)
 
   // reload handler
   if (cos_signal(sig) == SIG_ERR)
-    TestErrno();
+    test_errno();
+
+  switch(sig) {
+  case SIGABRT:
+#if SIGBUS
+  case SIGBUS:
+#elif SIG_BUS 
+  case SIG_BUS:
+#endif
+  case SIGFPE:
+  case SIGILL:
+  case SIGSEGV: cos_showCallStack(stderr);
+  }
 
   THROW(ginitWithInt(galloc(ExSignal), sig));
 }
@@ -143,7 +155,7 @@ void (*cos_signal(int sig))(int)
   void (*hdlr)(int);
 
   if ((hdlr = signal(sig, ex_signal)) == SIG_ERR)
-    TestErrno();
+    test_errno();
 
   return hdlr;
 }

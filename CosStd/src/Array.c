@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.11 2008/10/25 13:12:59 ldeniau Exp $
+ | $Id: Array.c,v 1.12 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -90,7 +90,7 @@ defmethod(OBJ, ginitWith, mArray, Array) // clone
   retmethod( ginitWith((OBJ)array_alloc(self2->size),_2) );
 endmethod
 
-defmethod(OBJ, ginitWith, Array, Array)
+defmethod(OBJ, ginitWith, Array, Array) // copy
   test_assert(self->size <= self2->size);
 
   for (U32 i = 0; i < self->size; i++)
@@ -99,14 +99,13 @@ defmethod(OBJ, ginitWith, Array, Array)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith2, mArray, Any, Size1)  // generator
+defmethod(OBJ, ginitWith2, mArray, Any, Size1) // generator
   struct Array* arr = array_alloc(self3->size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  OBJ _arr = (OBJ)arr;
   
   for (U32 i = 0; i < arr->size; i++)
-    arr->object[i] = gclone(_2);
+    arr->object[i] = gretain(_2);
 
-  UNPRT(_arr);
   retmethod(_arr);
 endmethod
 
@@ -171,9 +170,9 @@ endmethod
 
 defmethod(OBJ, ginitWith2, mSubArray, Array, Slice1)
   struct Array *arr = STATIC_CAST(struct Array*, gretain(_2));
-  BOOL is_not_a_DynArray = cos_any_id((OBJ)arr) != cos_class_id(classref(DynArray));
-  
-  test_assert( is_not_a_DynArray );
+  OBJ _arr = (OBJ)arr; 
+ 
+  test_assert( cos_any_isa(_arr, classref(DynArray)) );
   test_assert( Slice1_iscontiguous(self3) && Slice1_last(self3) < self2->size );
 
   retmethod( (OBJ)subarray_alloc(arr, self3->start, self3->size) );
@@ -207,7 +206,7 @@ endmethod
 defmethod(OBJ, gputAt, Array, Array, Slice1)
   test_assert( self3->start < self->size && Slice1_last(self3) < self->size );
 
-  for (U32 j = 0; j < self3->size; j++) { // TODO, filling policy
+  for (U32 j = 0; j < self3->size; j++) {
     U32 i = Slice1_eval(self3,j);
     OBJ old = self->object[i];
     self->object[i] = gretain(self2->object[j]);
@@ -218,7 +217,7 @@ defmethod(OBJ, gputAt, Array, Array, Slice1)
 endmethod
 
 defmethod(OBJ, gputAt, Array, Array, IntVector)
-  for (U32 j = 0; j < self3->size; j++) { // TODO, filling policy
+  for (U32 j = 0; j < self3->size; j++) {
     U32 i = index_abs(self3->value[j], self->size);
     test_assert( i < self->size );
     OBJ old = self->object[i];
@@ -326,105 +325,167 @@ endmethod
 
 // ----- apply
 
-defmethod(void, gapply, Array, Functor)
-  for (U32 i = 0; i < self->size; i++) {
-    OBJ obj = self->object[i];
-    OBJ res = geval1(_2, obj);
+defmethod(void, gapply, Functor, Array)
+  for (U32 i = 0; i < self2->size; i++) {
+    OBJ obj = self2->object[i];
+    OBJ res = geval1(_1, obj);
+    if (res != obj) gdiscard(res);
+  }
+endmethod
+
+defmethod(void, gapply, Function1, Array)
+  OBJFCT1 fct = self->fct;
+  
+  for (U32 i = 0; i < self2->size; i++) {
+    OBJ obj = self2->object[i];
+    OBJ res = fct(obj);
     if (res != obj) gdiscard(res);
   }
 endmethod
 
 // ----- map, map2, map3, scan (Nil -> discard result)
 
-defmethod(OBJ, gmap, Array, Functor)
-  U32 s = self->size;
+defmethod(OBJ, gmap, Functor, Array)
+  struct Array* arr = dynarray_alloc(self2->size);
+  OBJ _arr = gautoRelease((OBJ)arr);
+
+  for (U32 i = 0; i < self2->size; i++) {
+    OBJ res = geval1(_1, self2->object[i]);
+    if (res == Nil) continue;
+    arr->object[arr->size++] = gretain(res);
+  }
+  
+  retmethod(gadjust(_arr));
+endmethod
+
+defmethod(OBJ, gmap, Function1, Array)
+  struct Array* arr = dynarray_alloc(self2->size);
+  OBJ _arr = gautoRelease((OBJ)arr);
+  OBJFCT1 fct = self->fct;
+
+  for (U32 i = 0; i < self2->size; i++) {
+    OBJ res = fct(self2->object[i]);
+    if (res == Nil) continue;
+    arr->object[arr->size++] = gretain(res);
+  }
+  
+  retmethod(gadjust(_arr));
+endmethod
+
+defmethod(OBJ, gmap2, Functor, Array, Array)
+  U32 s = self2->size < self3->size ? self2->size : self3->size;
   struct Array* arr = dynarray_alloc(s);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  OBJ _arr = gautoRelease((OBJ)arr);
 
   for (U32 i = 0; i < s; i++) {
-    OBJ res = geval1(_2, self->object[i]);
+    OBJ res = geval2(_1, self2->object[i], self3->object[i]);
     if (res == Nil) continue;
     arr->object[arr->size++] = gretain(res);
   }
 
-  UNPRT(_arr);
-  retmethod( gadjust(gautoRelease(_arr)) );
+  retmethod(gadjust(_arr));
 endmethod
 
-defmethod(OBJ, gmap2, Array, Array, Functor)
-  U32 s = self1->size < self2->size ? self1->size : self2->size;
+defmethod(OBJ, gmap2, Function2, Array, Array)
+  U32 s = self2->size < self3->size ? self2->size : self3->size;
   struct Array* arr = dynarray_alloc(s);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  OBJ _arr = gautoRelease((OBJ)arr);
+  OBJFCT2 fct = self->fct;
 
   for (U32 i = 0; i < s; i++) {
-    OBJ res = geval2(_3, self1->object[i], self2->object[i]);
+    OBJ res = fct(self2->object[i], self3->object[i]);
     if (res == Nil) continue;
     arr->object[arr->size++] = gretain(res);
   }
 
-  UNPRT(_arr);
-  retmethod( gadjust(gautoRelease(_arr)) );
+  retmethod(gadjust(_arr));
 endmethod
 
-defmethod(OBJ, gmap3, Array, Array, Array, Functor)
-  U32 s = self1->size < self2->size ? (self1->size < self3->size ? self1->size : self3->size)
-                                    : (self2->size < self3->size ? self2->size : self3->size);
+defmethod(OBJ, gmap3, Functor, Array, Array, Array)
+  U32 s = self2->size < self3->size ? self2->size : self3->size;
+  if (s > self4->size) s = self4->size;
   struct Array* arr = dynarray_alloc(s);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  OBJ _arr = gautoRelease((OBJ)arr);
 
   for (U32 i = 0; i < s; i++) {
-    OBJ res = geval3(_3, self1->object[i], self2->object[i], self3->object[i]);
+    OBJ res = geval3(_1, self2->object[i], self3->object[i], self4->object[i]);
     if (res == Nil) continue;
     arr->object[arr->size++] = gretain(res);
   }
 
-  UNPRT(_arr);
-  retmethod( gadjust(gautoRelease(_arr)) );
+  retmethod(gadjust(_arr));
 endmethod
 
-defmethod(OBJ, gscan, Any, Array, Functor)
-  U32 s = self2->size;
-  struct Array* arr = dynarray_alloc(s+1);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ obj = _1;
+defmethod(OBJ, gmap3, Function3, Array, Array, Array)
+  U32 s = self2->size < self3->size ? self2->size : self3->size;
+  if (s > self4->size) s = self4->size;
+  struct Array* arr = dynarray_alloc(s);
+  OBJ _arr = gautoRelease((OBJ)arr);
+  OBJFCT3 fct = self->fct;
 
   for (U32 i = 0; i < s; i++) {
-    OBJ res = geval2(_3, obj, self2->object[i]);
+    OBJ res = fct(self2->object[i], self3->object[i], self4->object[i]);
     if (res == Nil) continue;
-    arr->object[arr->size++] = gclone(obj);
+    arr->object[arr->size++] = gretain(res);
+  }
+
+  retmethod(gadjust(_arr));
+endmethod
+
+defmethod(OBJ, gscan, Functor, Any, Array)
+  struct Array* arr = dynarray_alloc(self3->size+1);
+  OBJ _arr = gautoRelease((OBJ)arr);
+  OBJ obj = _2;
+
+  for (U32 i = 0; i < self3->size; i++) {
+    OBJ res = geval2(_1, obj, self3->object[i]);
+    if (res == Nil) continue;
+    arr->object[arr->size++] = gretain(obj);
     obj = res;
   }
-  arr->object[arr->size++] = gclone(obj);
+  arr->object[arr->size++] = gretain(obj);
 
-  UNPRT(_arr);
-  retmethod( gadjust(gautoRelease(_arr)) );
+  retmethod(gadjust(_arr));
 endmethod
 
 // ----- filter, fold, unfold (Nil -> stop iteration)
 
-defmethod(OBJ, gfilter, Array, Functor)
-  U32 s = self->size;
-  struct Array* arr = dynarray_alloc(s);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+defmethod(OBJ, gfilter, Functor, Array)
+  struct Array* arr = dynarray_alloc(self2->size);
+  OBJ _arr = gautoRelease((OBJ)arr);
 
-  for (U32 i = 0; i < s; i++) {
-    OBJ obj = self->object[i];
-    OBJ res = geval1(_2, obj);
+  for (U32 i = 0; i < self2->size; i++) {
+    OBJ obj = self2->object[i];
+    OBJ res = geval1(_1, obj);
     if (res == Nil ) break;
     if (res != True) continue;
     arr->object[arr->size++] = gretain(obj);
   }
 
-  UNPRT(_arr);
-  retmethod( gadjust(gautoRelease(_arr)) );
+  retmethod(gadjust(_arr));
 endmethod
 
-defmethod(OBJ, gfold, Any, Array, Functor)
-  U32 s = self2->size;
-  OBJ obj = _1;
+defmethod(OBJ, gfilter, Function1, Array)
+  struct Array* arr = dynarray_alloc(self2->size);
+  OBJ _arr = gautoRelease((OBJ)arr);
+  OBJFCT1 fct = self->fct;
 
-  for (U32 i = 0; i < s; i++) {
-    OBJ res = geval2(_3, obj, self2->object[i]);
+  for (U32 i = 0; i < self2->size; i++) {
+    OBJ obj = self2->object[i];
+    OBJ res = fct(obj);
+    if (res == Nil ) break;
+    if (res != True) continue;
+    arr->object[arr->size++] = gretain(obj);
+  }
+
+  retmethod(gadjust(_arr));
+endmethod
+
+defmethod(OBJ, gfold, Functor, Any, Array)
+  OBJ obj = _2;
+
+  for (U32 i = 0; i < self3->size; i++) {
+    OBJ res = geval2(_1, obj, self3->object[i]);
     if (res == Nil) break;
     obj = res;
   }
@@ -432,42 +493,131 @@ defmethod(OBJ, gfold, Any, Array, Functor)
   retmethod(obj);
 endmethod
 
+defmethod(OBJ, gfold, Function2, Any, Array)
+  OBJFCT2 fct = self->fct;
+  OBJ obj = _2;
 
-// TODO: REVIEW
-defmethod(OBJ, gunfold, Any, Functor)
-  struct Array* arr = dynarray_alloc(10);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ obj = _1;
-
-  while (1) {
-    OBJ res = geval1(_2, obj);
+  for (U32 i = 0; i < self3->size; i++) {
+    OBJ res = fct(obj, self3->object[i]);
     if (res == Nil) break;
-    arr->object[arr->size++] = gclone(obj);
     obj = res;
   }
-  arr->object[arr->size++] = gclone(obj);
 
-  UNPRT(_arr);
-  retmethod( gadjust(gautoRelease(_arr)) );
+  retmethod(obj);
+endmethod
+
+defmethod(OBJ, gunfold, Functor, Any)
+  struct Array* arr = dynarray_alloc(10);
+  OBJ _arr = gautoRelease((OBJ)arr);
+  OBJ obj = _2;
+
+  while (1) {
+    OBJ res = geval1(_1, obj);
+    if (res == Nil) break;
+    arr->object[arr->size++] = gretain(obj);
+    obj = res;
+  }
+  arr->object[arr->size++] = gretain(obj);
+
+  retmethod(gadjust(_arr));
 endmethod
 
 // ----- sorting
 
-defmethod(OBJ, gsort, Array, Functor)
-  U32 s = self->size;
-  struct Array* arr = array_alloc(s);
+defmethod(OBJ, gsort, Functor, Array)
+  struct Array* arr = array_alloc(self2->size);
+  OBJ _arr = gautoRelease((OBJ)arr);
   // TODO
   
-  retmethod( gautoRelease((OBJ)arr) );
+  retmethod(_arr);
 endmethod
 
 // ----- finding
 
-defmethod(OBJ, gfind, Array, Any, Functor)
-  // U32 s = self->size;
-  // TODO
+defmethod(OBJ, gfind, Functor, Any, Array)
+  useclass(Lesser, Equal, Greater, ExBadPredicate);
+
+  if (self3->size == 0)
+    retmethod(Nil);
+
+  OBJ res = geval2(_1, _2, self3->object[0]);
+
+  if (res == True || res == Equal) // found
+    retmethod(self3->object[0]);
+
+  if (res == False) { // linear search
+    for (U32 i = 1; i < self3->size; i++) {
+      res = geval2(_1, _2, self3->object[i]);
+
+      if (res == True)
+        retmethod(self3->object[i]); // found
+    }
+    retmethod(Nil);
+  }
+
+  if (res == Lesser || res == Greater) { // binary search
+    U32 low = 1, high = self3->size-1;
+    
+    while(low <= high) {
+      U32 i = low + (high-low) / 2;
+      res = geval2(_1, _2, self3->object[i]);
+
+      if (res == Equal)
+        retmethod(self3->object[i]); // found
+
+      if (res == Lesser)
+        high = i-1;
+      else
+        low = i+1;
+    }
+    retmethod(Nil);  
+  }
   
-  retmethod( _1 );
+  THROW( gnewWithStr(ExBadPredicate,
+           "gfind expect True/False or Lesser/Equal/Greater predicates") );
 endmethod
 
+defmethod(OBJ, gfind, Function2, Any, Array)
+  useclass(Lesser, Equal, Greater, ExBadPredicate);
+  OBJFCT2 fct = self->fct;
+
+  if (self3->size == 0)
+    retmethod(Nil);
+
+  OBJ res = geval2(_1, _2, self3->object[0]);
+
+  if (res == True || res == Equal) // found
+    retmethod(self3->object[0]);
+
+  if (res == False) { // linear search
+    for (U32 i = 1; i < self3->size; i++) {
+      res = fct(_2, self3->object[i]);
+
+      if (res == True)
+        retmethod(self3->object[i]); // found
+    }
+    retmethod(Nil);
+  }
+
+  if (res == Lesser || res == Greater) { // binary search
+    U32 low = 1, high = self3->size-1;
+    
+    while(low <= high) {
+      U32 i = low + (high-low) / 2;
+      res = fct(_2, self3->object[i]);
+
+      if (res == Equal)
+        retmethod(self3->object[i]); // found
+
+      if (res == Lesser)
+        high = i-1;
+      else
+        low = i+1;
+    }
+    retmethod(Nil);  
+  }
+  
+  THROW( gnewWithStr(ExBadPredicate,
+           "gfind expect True/False or Lesser/Equal/Greater predicates") );
+endmethod
 

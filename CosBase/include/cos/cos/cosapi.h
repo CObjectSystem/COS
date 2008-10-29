@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.11 2008/10/21 14:32:29 ldeniau Exp $
+ | $Id: cosapi.h,v 1.12 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -130,7 +130,7 @@ cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
         cos_logmsg(COS_LOGMSG_ABORT,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_logmsg(lvl,file,line,...) \
-((void)(cos_logmsg_level_ >= (lvl) && (cos_logmsg_(lvl,file,line,__VA_ARGS__),0)))
+((void)(cos_logmsg_level_ <= (lvl) && (cos_logmsg_(lvl,file,line,__VA_ARGS__),0)))
 
 void cos_logmsg_(int lvl, STR file, int line, STR fmt, ...)
                   __attribute__((__format__(__printf__,4,5)));
@@ -167,7 +167,9 @@ BOOL cos_method_understand4_(struct cos_method_slot4**,SEL,U32,U32,U32,U32);
 BOOL cos_method_understand5_(struct cos_method_slot5**,SEL,U32,U32,U32,U32,U32);
 
 // logger message level (not thread safe)
-extern int cos_logmsg_level_;
+extern int  cos_logmsg_level_;
+// logger message display thread id (not thread safe)
+extern BOOL cos_logmsg_disp_pth;
 
 // components tags
 enum {
@@ -328,6 +330,13 @@ cos_generic_id(SEL sel)
 {
   return sel->Behavior.id;
   COS_UNUSED(cos_generic_id);
+}
+
+static inline BOOL
+cos_any_isa(OBJ obj, const struct Class *cls)
+{
+  return cos_any_id(obj) == cos_class_id(cls);
+  COS_UNUSED(cos_any_isa);
 }
 
 static inline struct cos_exception_protect

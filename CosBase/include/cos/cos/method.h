@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.7 2008/10/16 12:50:11 ldeniau Exp $
+ | $Id: method.h,v 1.8 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -195,6 +195,7 @@
           COS_PP_NOT(COS_TOK_ISVOID(RET)) )
 
 #define COS_MTH_DEF_1(RET,NAME,PS,CS,AS,C,A,R) \
+COS_MTH_MSPECHK(    NAME,   CS         ) \
 COS_MTH_RANKCHK(    NAME,   CS,   C    ) \
 COS_MTH_TYPECHK(RET,NAME,PS,CS         ) \
 COS_MTH_COMPMAK(    NAME,   CS,   C    ) \
@@ -222,6 +223,13 @@ static struct Class* const _cos_mth_nxt_cls[] = { COS_PP_SEQ(COS_PP_MAP(CS,COS_M
 /*
  * Low-level implementation
  */
+
+// specialization check
+#define COS_MTH_MSPECHK(NAME,CS) \
+  COS_STATIC_ASSERT( \
+    COS_PP_CAT(COS_SYM_NAME(NAME,CS), \
+      __method_cannot_be_specialized_for_class_predicate_INSTANCE), \
+    COS_PP_SEPWITH(COS_PP_MAP(CS,COS_CLS_MSPE),&&));
 
 // rank check
 #define COS_MTH_RANKCHK(NAME,CS,C) \

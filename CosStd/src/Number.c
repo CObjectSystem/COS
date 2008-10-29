@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.4 2008/10/24 22:03:30 ldeniau Exp $
+ | $Id: Number.c,v 1.5 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -148,43 +148,43 @@ defmethod(I16, gsht, Short)
   retmethod(self->Int.value);
 endmethod
 
-defmethod(INT, gint, Int)
+defmethod(I32, gint, Int)
   retmethod(self->value);
 endmethod
 
-defmethod(LONG, glng, Int)
+defmethod(I64, glng, Int)
   retmethod(self->value);
 endmethod
 
-defmethod(LONG, glng, Long)
+defmethod(I64, glng, Long)
   retmethod(self->value);
 endmethod
 
-defmethod(FLOAT, gflt, Int)
+defmethod(R64, gflt, Int)
   retmethod(self->value);
 endmethod
 
-defmethod(FLOAT, gflt, Long)
+defmethod(R64, gflt, Long)
   retmethod(self->value);
 endmethod
 
-defmethod(FLOAT, gflt, Float)
+defmethod(R64, gflt, Float)
   retmethod(self->value);
 endmethod
 
-defmethod(COMPLEX, gcpx, Int)
+defmethod(C64, gcpx, Int)
   retmethod(self->value);
 endmethod
 
-defmethod(COMPLEX, gcpx, Long)
+defmethod(C64, gcpx, Long)
   retmethod(self->value);
 endmethod
 
-defmethod(COMPLEX, gcpx, Float)
+defmethod(C64, gcpx, Float)
   retmethod(self->value);
 endmethod
 
-defmethod(COMPLEX, gcpx, Complex)
+defmethod(C64, gcpx, Complex)
   retmethod(self->value);
 endmethod
 

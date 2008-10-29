@@ -128,7 +128,7 @@ enlarge_slot(struct cos_method_slot5 **slot)
 
   for (i = 0; i < n+1; i++) {
     (*slot)[i].nxt = *slot+i+1; // Ok: see C99 6.5.6-8
-    (*slot)[i].fct = 0;
+    (*slot)[i].fct = init;
     (*slot)[i].idg = 0;
     (*slot)[i].id1 = 0;
     (*slot)[i].id2 = 0;

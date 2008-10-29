@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.10 2008/10/24 21:08:39 ldeniau Exp $
+ | $Id: tests.c,v 1.11 2008/10/29 15:43:10 ldeniau Exp $
  |
 */
 
@@ -45,7 +45,7 @@
 static void
 on_exit(void)
 {
-  fprintf(stdout, "** COS deinit duration: %.3f s\n", cos_deinitDuration());
+  fprintf(stdout, "\n** COS deinit duration: %.3f s\n", cos_deinitDuration());
 }
 
 int main(int argc, char *argv[])
