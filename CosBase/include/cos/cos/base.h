@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.5 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: base.h,v 1.6 2008/10/30 08:18:07 ldeniau Exp $
  |
 */
 
@@ -100,6 +100,10 @@
 #define COS_FIELD_COMPATIBILITY(S1,S2,F) \
         (offsetof(struct S1,F) == offsetof(struct S2,F) && \
          sizeof(((struct S1*)0)->F) == sizeof(((struct S2*)0)->F))
+
+// array size
+#define COS_ARRLEN(a) \
+        (sizeof (a) / sizeof *(a))
 
 // symbols names
 #define COS_CLS_NAME(NAME)    COS_PP_CAT(cos_c_  ,NAME)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.6 2008/09/29 09:15:12 ldeniau Exp $
+ | $Id: cos.h,v 1.7 2008/10/30 08:18:07 ldeniau Exp $
  |
 */
 
@@ -85,10 +85,6 @@ extern "C" {
 #include <cos/cos/cosdef.h>
 #include <cos/cos/coscls.h>
 #include <cos/cos/cosapi.h>
-
-/* NOTE-USER: COS utilities headers
- */
-#include <cos/cos/utils.h>
 
 /* NOTE-USER: COS inlined dispatch
  */

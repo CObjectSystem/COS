@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.8 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: method.h,v 1.9 2008/10/30 08:18:07 ldeniau Exp $
  |
 */
 
@@ -269,18 +269,19 @@ static void COS_FCT_NAME(NAME,CS) \
   /* trace variables (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)( \
   static const struct Method* const _cos_mth_ref = (struct Method*)&COS_MTH_NAME(NAME,CS); \
+  OBJ _cos_mth_objs[C]; \
   int _cos_mth_line;,/* no trace */) \
   /* arguments variables initialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_MTH_ARG)),/* no arg */) \
   /* trace entering the method (if requested) */ \
-  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(1,C,__LINE__),/* no trace */) \
+  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(1,C),/* no trace */) \
   goto _cos_mth_body; \
   /* exit point */ \
   _cos_mth_fini: \
   /* arguments variables deinitialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_MTH_DEARG)),/* no arg */) \
   /* trace exiting the method (if requested) */ \
-  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(0,C,_cos_mth_line),/* no trace */) \
+  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(0,C),/* no trace */) \
   return; \
   /* avoid compiler warning for unused identifiers */ \
   COS_PP_IF(R)(/* ret */,COS_UNUSED(_ret);) \
@@ -398,10 +399,16 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 #define COS_METHOD_TRACE
 #endif
 
-#define COS_MTH_TRC(E,C,L) \
+#define COS_MTH_TRC(E,C) \
   ((void)(cos_logmsg_level_ < COS_LOGMSG_DEBUG && ( \
-   cos_method_trace(__FILE__, L, E, _cos_mth_ref, \
-   (OBJ[]){ COS_PP_SEQ(COS_PP_TAKE(C,(_1,_2,_3,_4,_5))) }),0)));
+   cos_method_trace(__FILE__, \
+   COS_PP_IF(E)(__LINE__,_cos_mth_line), E, _cos_mth_ref, (\
+   COS_PP_IF(E)(COS_PP_TAKE(C,(_cos_mth_objs[0]=_1, \
+                               _cos_mth_objs[1]=_2, \
+                               _cos_mth_objs[2]=_3, \
+                               _cos_mth_objs[3]=_4, \
+                               _cos_mth_objs[4]=_5)),(void)0), \
+   _cos_mth_objs)),0)));
    
 #define COS_MTH_TRC_LOC \
     if (COS_CONTRACT < COS_CONTRACT_POST || _cos_ctr_st != cos_contract_post_st) \
