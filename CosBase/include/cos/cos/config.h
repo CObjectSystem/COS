@@ -32,12 +32,19 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.10 2008/10/16 10:46:44 ldeniau Exp $
+ | $Id: config.h,v 1.11 2008/10/30 10:19:40 ldeniau Exp $
  |
 */
 
 #ifndef COS_COS_COS_H
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/config.h>"
+#endif
+
+/* NOTE-CONF: C89 compliance
+*/
+#ifdef COS_C89
+#undef  __STDC_VERSION__
+#define __STDC_VERSION__ 199409L
 #endif
 
 /* NOTE-CONF: constants for *default* configuration
@@ -61,12 +68,32 @@
 /* NOTE-CONF: C99 dialect
    define missing C99 keywords here or with 'configure'
 */
-// #define inline        // __inline__
-// #define restrict      // __restrict__
-// #define va_copy(d,s)  // __va_copy(d,s) // ((d) = (s))
-// #define _Bool         // __bool__
-// #define _Complex      // __complex__
-// #define _LongLong     // __long_long__
+#if __STDC_VERSION__ < 199901L
+#ifndef inline
+#define inline // __inline__
+#endif
+
+#ifndef restrict
+#define restrict // __restrict__
+#endif
+
+#ifndef va_copy
+#define va_copy(d,s) ((d) = (s)) // __va_copy(d,s)
+#endif
+
+#ifndef _Bool
+#define _Bool unsigned char
+#endif
+
+#ifndef _LongLong
+#define _LongLong  struct {          long _[2]; } //          __long_long__
+#define _ULongLong struct { unsigned long _[2]; } // unsigned __long_long__
+#endif
+
+#ifndef _ComplexDouble
+#define _ComplexDouble  struct { double _[2]; }
+#endif
+#endif
 
 /* NOTE-CONF: POSIX and Thread Local Storage
    define system flags here or with SYSFLAGS in the config.xxx makefile

@@ -32,17 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.7 2008/10/30 08:18:07 ldeniau Exp $
+ | $Id: cos.h,v 1.8 2008/10/30 10:19:40 ldeniau Exp $
  |
 */
 
 /* NOTE-USER: ISO C89/C99 Compliance
    The preprocessor *must* be C99 compliant (see config.h).
    The compiler     *must* be C89 compliant (see config.h).
-   The compiler     *must* support compound litteral for automatic constructors
  */
 #if !__STDC__ || __STDC_VERSION__ < 199901L
-#error "COS: COS requires an ISO C99 compiler to work properly"
+#error "COS: COS requires an ISO C99 preprocessor to work properly"
 #endif
 
 #ifdef __cplusplus

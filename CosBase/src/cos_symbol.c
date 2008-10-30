@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.12 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.13 2008/10/30 10:19:40 ldeniau Exp $
  |
 */
 
@@ -798,6 +798,62 @@ cos_method_get5(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
   return 0;
 }
 
+/*
+ * ----------------------------------------------------------------------------
+ *  Threaded functions
+ * ----------------------------------------------------------------------------
+ */
+
+#if COS_POSIX
+
+#include <pthread.h>
+
+static pthread_mutex_t nxt_lock = PTHREAD_MUTEX_INITIALIZER;
+
+void
+cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
+{
+  pthread_mutex_lock(&nxt_lock);
+  if (*fct == (FUNC)YES) nxt_init(fct,gen,rnk,cls);
+  pthread_mutex_unlock(&nxt_lock);
+}
+
+void
+cos_method_nextClear(void)
+{
+  pthread_mutex_lock(&nxt_lock);
+  nxt_clear();
+  pthread_mutex_unlock(&nxt_lock);
+}
+
+#else
+
+void
+cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
+{
+  if (*fct == (FUNC)YES) nxt_init(fct,gen,rnk,cls);
+}
+
+void
+cos_method_nextClear(void)
+{
+  nxt_clear();
+}
+
+#endif
+
+/*
+ * ----------------------------------------------------------------------------
+ *  Debug functions
+ * ----------------------------------------------------------------------------
+ */
+
+#include <cos/cos/debug.h>
+
+#if __STDC__VERSION < 199901L
+int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
 char*
 cos_method_name(const struct Method *mth, char *str, U32 sz)
 {
@@ -871,58 +927,6 @@ cos_method_callName(const struct Method *mth, OBJ obj[], char *str, U32 sz)
   
   return str;
 }
-
-/*
- * ----------------------------------------------------------------------------
- *  Threaded functions
- * ----------------------------------------------------------------------------
- */
-
-#if COS_POSIX
-
-#include <pthread.h>
-
-static pthread_mutex_t nxt_lock = PTHREAD_MUTEX_INITIALIZER;
-
-void
-cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
-{
-  pthread_mutex_lock(&nxt_lock);
-  if (*fct == (FUNC)YES) nxt_init(fct,gen,rnk,cls);
-  pthread_mutex_unlock(&nxt_lock);
-}
-
-void
-cos_method_nextClear(void)
-{
-  pthread_mutex_lock(&nxt_lock);
-  nxt_clear();
-  pthread_mutex_unlock(&nxt_lock);
-}
-
-#else
-
-void
-cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
-{
-  if (*fct == (FUNC)YES) nxt_init(fct,gen,rnk,cls);
-}
-
-void
-cos_method_nextClear(void)
-{
-  nxt_clear();
-}
-
-#endif
-
-/*
- * ----------------------------------------------------------------------------
- *  Debug functions
- * ----------------------------------------------------------------------------
- */
-
-#include <cos/cos/debug.h>
 
 static void
 mth_trace(STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)

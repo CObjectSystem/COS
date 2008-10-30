@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_debug.c,v 1.1 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: cos_debug.c,v 1.2 2008/10/30 10:19:40 ldeniau Exp $
  |
 */
 
@@ -47,6 +47,7 @@ int cos_enable_stack_trace = 1;
 
 void cos_showCallStack(FILE *out)
 {
+  extern int fileno(FILE*);
   enum { nmax = 1000 };
   void *buf[nmax];
   int n;

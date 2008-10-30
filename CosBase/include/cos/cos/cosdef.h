@@ -32,13 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.8 2008/10/27 08:42:54 ldeniau Exp $
+ | $Id: cosdef.h,v 1.9 2008/10/30 10:19:40 ldeniau Exp $
  |
 */
 
 #ifndef COS_COS_COS_H
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/cosdef.h>"
 #endif
+
+typedef _Bool                   BOOL;
 
 typedef signed   char      I8 , BYTE;
 typedef unsigned char      U8 , UBYTE;
@@ -61,15 +63,21 @@ typedef unsigned long      U64, ULONG;
 typedef signed   long long I64, LONG;
 typedef unsigned long long U64, ULONG;
 #elif defined(_LongLong)
-typedef signed   _LongLong I64, LONG;
-typedef unsigned _LongLong U64, ULONG;
+typedef _LongLong          I64, LONG;
+typedef _ULongLong         U64, ULONG;
 #else
 #error "COS: 64 bits integers not supported"
 #endif
 
-typedef _Bool                   BOOL;
-typedef          double    R64, FLOAT;
+typedef double             R64, FLOAT;
+
+#if __STDC_VERSION__ >= 199901L
 typedef _Complex double    C64, COMPLEX;
+#elif defined(_ComplexDouble)
+typedef _ComplexDouble     C64, COMPLEX;
+#else
+#error "COS: complex not supported"
+#endif
 
 typedef ptrdiff_t               INDEX;
 typedef size_t                  SIZE;

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.12 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: Array.c,v 1.13 2008/10/30 10:19:40 ldeniau Exp $
  |
 */
 
@@ -326,50 +326,52 @@ endmethod
 // ----- apply
 
 defmethod(void, gapply, Functor, Array)
-  for (U32 i = 0; i < self2->size; i++) {
-    OBJ obj = self2->object[i];
-    OBJ res = geval1(_1, obj);
-    if (res != obj) gdiscard(res);
-  }
+  OBJ *obj = self2->object;
+  OBJ *end = self2->object+self2->size;
+
+  while(obj < end) geval1(_1, *obj++);
 endmethod
 
 defmethod(void, gapply, Function1, Array)
+  OBJ *obj = self2->object;
+  OBJ *end = self2->object+self2->size;
   OBJFCT1 fct = self->fct;
-  
-  for (U32 i = 0; i < self2->size; i++) {
-    OBJ obj = self2->object[i];
-    OBJ res = fct(obj);
-    if (res != obj) gdiscard(res);
-  }
+
+  while(obj < end) fct(*obj++);
 endmethod
 
 // ----- map, map2, map3, scan (Nil -> discard result)
 
 defmethod(OBJ, gmap, Functor, Array)
-  struct Array* arr = dynarray_alloc(self2->size);
-  OBJ _arr = gautoRelease((OBJ)arr);
+  U32 size = self2->size;
+  OBJ *obj = self2->object;
+  OBJ *end = self2->object+self2->size;
 
-  for (U32 i = 0; i < self2->size; i++) {
-    OBJ res = geval1(_1, self2->object[i]);
-    if (res == Nil) continue;
-    arr->object[arr->size++] = gretain(res);
-  }
-  
-  retmethod(gadjust(_arr));
+  struct Array* arr = array_alloc(size);
+  OBJ _arr = gautoRelease((OBJ)arr);
+  OBJ *res = arr->object;
+
+  while(obj < end)
+    *res++ = gretain( geval1(_1, *obj++) );
+
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmap, Function1, Array)
-  struct Array* arr = dynarray_alloc(self2->size);
+  U32 size = self2->size;
+  OBJ *obj = self2->object;
+  OBJ *end = self2->object+self2->size;
+
+  struct Array* arr = array_alloc(size);
   OBJ _arr = gautoRelease((OBJ)arr);
+  OBJ *res = arr->object;
+  
   OBJFCT1 fct = self->fct;
 
-  for (U32 i = 0; i < self2->size; i++) {
-    OBJ res = fct(self2->object[i]);
-    if (res == Nil) continue;
-    arr->object[arr->size++] = gretain(res);
-  }
-  
-  retmethod(gadjust(_arr));
+  while(obj < end)
+    *res++ = gretain( fct(*obj++) );
+
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmap2, Functor, Array, Array)
