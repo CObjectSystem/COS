@@ -12,11 +12,12 @@ CosStd and other modules require a C99 compiler or a compiler which supports at 
   - some C99 library function (e.g. snprintf)
 
 Example of CosBase compilation with gcc:
-  cpp -std=c99 -Wall -W -pedantic -ICosBase/include -DCOS_C89 -E -o src/file.i src/file.c
-  gcc -std=c89 -Wall -W -pedantic -O3                         -c -o obj/file.o src/file.i
+  cpp -std=c99 -pedantic -W -Wall -ICosBase/include -DCOS_C89 -E -o src/file.i src/file.c
+  gcc -std=c89 -pedantic -W -Wall -O3                         -c -o obj/file.o src/file.i
 
-  the preprocessing step may generate warnings about the undefinition of __STDC_VERSION__
-  but usually, standalone preprocessors allow to undef __STDC_VERSION__
+  - the preprocessing step may generate warnings about the undefinition of __STDC_VERSION__
+    but usually, standalone preprocessors allow to undef __STDC_VERSION__
+  - these steps can be achieved for CosBase using the compile89.sh script
 
 Standalone C99 preprocessor:
   http://code.google.com/p/ucpp/
