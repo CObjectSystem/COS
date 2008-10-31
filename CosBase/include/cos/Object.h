@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.h,v 1.1 2008/06/27 16:17:14 ldeniau Exp $
+ | $Id: Object.h,v 1.2 2008/10/31 16:05:38 ldeniau Exp $
  |
 */
 
@@ -48,7 +48,10 @@
  * --------------------------------------
  */
 
-// <cos/Object.h> is a prefered alternative to <cos/cos/cos.h>
+/* NOTE-USER: cos/Object.h
+   <cos/Object.h> is a prefered alternative to <cos/cos/cos.h>
+ */
+
 #ifndef COS_COS_COS_H
 #include <cos/cos/cos.h>
 #endif

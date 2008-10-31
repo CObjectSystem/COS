@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.9 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: Any.c,v 1.10 2008/10/31 16:05:38 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,8 @@ makclass(Any,_);
 
 defmethod(void, gdealloc, Any)
   test_assert( self->rc == COS_RC_UNIT,
-               "invalid reference counting, should be " COS_PP_STR(COS_RC_UNIT) );
+               "invalid reference counting, should be "
+               COS_PP_STR(COS_RC_UNIT) );
   free(_1);
 endmethod
 
@@ -75,14 +76,6 @@ endmethod
 defmethod(STR, gclassName, Any)
   retmethod( cos_class_get(self->id)->name );
 endmethod
-
-/*
-defmethod(U32, ghash, Any)
-  STATIC_ASSERT(sizeof_OBJ_greater_than_sizeof_SIZE,
-                sizeof(OBJ) <= sizeof(SIZE));
-  retmethod( ((SIZE)_1 >> 2) * 2621124293u + 1 );
-endmethod
-*/
 
 // ----- understanding
 

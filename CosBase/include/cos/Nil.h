@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Nil.h,v 1.1 2008/06/27 16:17:14 ldeniau Exp $
+ | $Id: Nil.h,v 1.2 2008/10/31 16:05:38 ldeniau Exp $
  |
 */
 
@@ -47,11 +47,11 @@
    Nil can also be used as class-predicate to select specific behaviors.
    This 'absorbant' behavior is inherited by other class-predicates.
 
-   Use Nil instead of NIL to set an object reference to a no-object
-   state. This will save your application from crash and trace the
-   actions performed on Nil. But this may also delay the rise of bugs.
+   Use Nil instead to set an object reference to a no-object state.
+   This will save your application from crash and trace the actions
+   performed on Nil. But this may also delay the rise of hidden bugs.
 
-   Remember, message cannot be sent to NIL, but it can to Nil.
+   Remember, message cannot be sent to (OBJ)0, but it can to Nil.
 */
 
 defclass(Nil,Any)

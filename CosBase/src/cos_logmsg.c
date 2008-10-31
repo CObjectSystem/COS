@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.6 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.7 2008/10/31 16:05:38 ldeniau Exp $
  |
 */
 
@@ -55,12 +55,12 @@ int   cos_logmsg_dispThreadId = 0;
 int
 cos_logmsg_set(int lvl)
 {
-  int old;
+  int old = cos_logmsg_level_;
   
-  if (lvl < COS_LOGMSG_TRACE || lvl > COS_LOGMSG_ABORT)
-    return cos_logmsg_level_;
+  if (lvl >= COS_LOGMSG_TRACE && lvl <= COS_LOGMSG_ABORT)
+    cos_logmsg_level_ = lvl;
 
-  return old=cos_logmsg_level_, cos_logmsg_level_=lvl, old;
+  return old;
 }
 
 void

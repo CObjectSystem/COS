@@ -32,13 +32,17 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.h,v 1.3 2008/10/27 16:24:31 ldeniau Exp $
+ | $Id: Exception.h,v 1.4 2008/10/31 16:05:38 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
 #error "COS: missing #include <cos/Object.h>"
 #endif 
+
+/* NOTE-USER: exception
+   - use gstr(ex) from cos/gen/value.h to retrieve the reason
+*/
 
 defclass(Exception)
   STR str;

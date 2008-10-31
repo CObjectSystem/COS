@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.21 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.22 2008/10/31 16:05:38 ldeniau Exp $
  |
 */
 
@@ -267,13 +267,13 @@ endmethod
 
 defmethod(OBJ, gretain, AutoRelease)
   useclass(ExBadMessage);
-  THROW( gnewWithStr(ExBadMessage, "invalid message gretain(AutoRelease)") );
+  THROW( gnewWithStr(ExBadMessage, "AutoRelease pool cannot be retained") );
   COS_UNUSED(RETVAL);
 endmethod
 
 defmethod(OBJ, gautoRelease, AutoRelease)
   useclass(ExBadMessage);
-  THROW( gnewWithStr(ExBadMessage, "invalid message gautoRelease(AutoRelease)") );
+  THROW( gnewWithStr(ExBadMessage, "AutoRelease pool cannot be autoreleased") );
   COS_UNUSED(RETVAL);
 endmethod
 

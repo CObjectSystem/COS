@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.9 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.10 2008/10/31 16:05:38 ldeniau Exp $
  |
 */
 
@@ -105,10 +105,11 @@ verbose_terminate(OBJ ex, STR func, STR file, int line)
 {
   if (cos_exception_uncaught() == YES)
     cos_abort("exception %s thrown (%s:%d:%s) during stack unwinding "
-              "leading to an undefined behavior", gclassName(ex), file, line, func);
+              "leading to an undefined behavior",
+              gclassName(ex), file, line, func);
   else
-    cos_info("exiting with uncaught exception %s thrown (%s:%d:%s)",
-             gclassName(ex), file, line, func);
+    cos_info ("exiting with uncaught exception %s thrown (%s:%d:%s)",
+              gclassName(ex), file, line, func);
 }
 
 static cos_exception_handler handler = verbose_terminate;
