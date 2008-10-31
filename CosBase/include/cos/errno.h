@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: errno.h,v 1.2 2008/10/27 16:24:31 ldeniau Exp $
+ | $Id: errno.h,v 1.3 2008/10/31 15:19:43 ldeniau Exp $
  |
 */
 
@@ -45,10 +45,9 @@
 /* NOTE-USER: errno handler
    - throw ExErrno if errno != 0
    - use gint(err) from cos/gen/value.h to retrieve errno value
-   - use gstr(err) from cos/gen/value.h to retrieve errno string
 */
 #define test_errno() \
         ((void)(errno && \
-         (cos_exception_errnoLoc(errno,__FILE__,__LINE__),0)))
+         (cos_exception_errno(errno,__FUNC__,__FILE__,__LINE__),0)))
 
 #endif // COS_ERRNO_H

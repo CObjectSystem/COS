@@ -29,16 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.13 2008/10/30 10:19:40 ldeniau Exp $
+ | $Id: Array.c,v 1.14 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Array.h>
-#include <cos/Size.h>
-#include <cos/Index.h>
-#include <cos/Range.h>
-#include <cos/Slice.h>
+#include <cos/Value.h>
 #include <cos/Vector.h>
 #include <cos/Functor.h>
 #include <cos/gen/algorithm.h>

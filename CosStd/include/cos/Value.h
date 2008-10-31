@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.3 2008/10/21 15:43:42 ldeniau Exp $
+ | $Id: Value.h,v 1.4 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -52,9 +52,6 @@
    <- Slice       (1-5 dim)
    <- Sequence    (1-5 dim)
 
-   <- Pointer     (void*)
-      <- AutoPointer
-
    <- Number
       <- Integral
          <- Int
@@ -70,3 +67,17 @@ defclass(Value)
 endclass
 
 #endif // COS_VALUE_H
+
+// include common subclasses
+
+#ifndef ONLY__COS_VALUE_H
+#include <cos/Size.h>
+#include <cos/Index.h>
+#include <cos/Range.h>
+#include <cos/Slice.h>
+#include <cos/Point.h>
+#include <cos/Sequence.h>
+#else
+#undef  ONLY__COS_VALUE_H
+#endif
+

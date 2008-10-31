@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.9 2008/10/30 08:18:07 ldeniau Exp $
+ | $Id: method.h,v 1.10 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -280,6 +280,8 @@ static void COS_FCT_NAME(NAME,CS) \
   _cos_mth_fini: \
   /* arguments variables deinitialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_MTH_DEARG)),/* no arg */) \
+  /* test invariants (if requested) */ \
+  COS_MTH_INV(C); \
   /* trace exiting the method (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(0,C),/* no trace */) \
   return; \
@@ -393,6 +395,13 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
   /* method invocation */ \
   (_sel,__VA_ARGS__,_arg,_ret) )
 
+/* invariant
+*/
+#define COS_MTH_INV(C) \
+  ((void)(COS_CONTRACT >= COS_CONTRACT_ALL && \
+   (COS_PP_CAT(cos_contract_invariant,C)(COS_PP_SEQ(COS_SEL_NAME(C)), \
+   __FUNC__,__FILE__,__LINE__),0)))
+
 /* method trace
 */
 #if COS_LOGMSG <= COS_LOGMSG_DEBUG
@@ -401,7 +410,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 
 #define COS_MTH_TRC(E,C) \
   ((void)(cos_logmsg_level_ < COS_LOGMSG_DEBUG && ( \
-   cos_method_trace(__FILE__, \
+   cos_method_trace(__FUNC__,__FILE__, \
    COS_PP_IF(E)(__LINE__,_cos_mth_line), E, _cos_mth_ref, (\
    COS_PP_IF(E)(COS_PP_TAKE(C,(_cos_mth_objs[0]=_1, \
                                _cos_mth_objs[1]=_2, \
@@ -411,7 +420,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
    _cos_mth_objs)),0)));
    
 #define COS_MTH_TRC_LOC \
-    if (COS_CONTRACT < COS_CONTRACT_POST || _cos_ctr_st != cos_contract_post_st) \
+    if (COS_CONTRACT < COS_CONTRACT_POST || _cos_ctr_st != cos_tag_post) \
       _cos_mth_line = __LINE__;
 
 /* method info encoding and decoding

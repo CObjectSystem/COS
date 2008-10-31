@@ -32,10 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.3 2008/10/21 15:43:42 ldeniau Exp $
+ | $Id: Number.h,v 1.4 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
+#define ONLY__COS_VALUE_H
 #include <cos/Value.h>
 
 // ----- number
@@ -59,8 +60,11 @@ defclass(Long, Integral)
   LONG value;
 endclass
 
-defclass(Char , Int) endclass
-defclass(Short, Int) endclass
+defclass(Char, Int)
+endclass
+
+defclass(Short, Int)
+endclass
 
 // ----- floating
 

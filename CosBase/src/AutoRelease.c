@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.20 2008/10/24 21:08:39 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.21 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -343,7 +343,7 @@ endmethod
  * ----------------------------------------------------------------------------
  */
 
-#include <cos/cos/debug.h>
+#include <cos/debug.h>
 
 void
 cos_autorelease_showStack(FILE *fp)

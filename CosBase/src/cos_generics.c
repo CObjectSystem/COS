@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_generics.c,v 1.1 2008/10/27 08:42:54 ldeniau Exp $
+ | $Id: cos_generics.c,v 1.2 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -101,7 +101,7 @@ makgeneric(OBJ , ginitWith     , _1, _2);
 makgeneric(OBJ , ginitWith2    , _1, _2, _3);
 makgeneric(OBJ , ginitWith3    , _1, _2, _3, _4);
 makgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
-makgeneric(OBJ , ginitWithLoc  , _1, _2, (STR)file, (int)line);
+makgeneric(OBJ , ginitWithLoc  , _1, _2, (STR)func, (STR)file, (int)line);
 makgeneric(OBJ , ginitWithStr  , _1, (STR)str);
 makgeneric(OBJ , gdeinit       , _1);
 
@@ -130,10 +130,10 @@ makgeneric(U32 , ghash         , _1);
 makgeneric(OBJ , gadjust       , _1);
 
 // exception
-makgeneric(void, gthrow        , _1, (STR)file, (int)line);
+makgeneric(void, gthrow        , _1, (STR)func, (STR)file, (int)line);
 
 // contract
-makgeneric(void, ginvariant    , _1, (STR)file, (int)line);
+makgeneric(void, ginvariant    , _1, (STR)func, (STR)file, (int)line);
 
 // initialization
 makgeneric(void, ginitialize  , _1);

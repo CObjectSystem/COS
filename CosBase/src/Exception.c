@@ -29,18 +29,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.4 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: Exception.c,v 1.5 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Exception.h>
+#include <cos/debug.h>
 #include <cos/errno.h>
 #include <cos/signal.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 #include <cos/gen/init.h>
-#include <cos/cos/debug.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -70,17 +70,17 @@ makclass(ExUnderflow     ,Exception);
 // ----- exception
 
 defmethod(OBJ, ginit, Exception)
-  self->str = 0;
+  self->str = "";
   retmethod(_1);
 endmethod
-
+ 
 defmethod(OBJ, ginitWithStr, Exception, (STR)str)
-  self->str = str;
+  self->str = str ? str : "";
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gdeinit, Exception)
-  self->str = 0;
+  self->str = "";
   retmethod(_1);
 endmethod
 
@@ -90,24 +90,24 @@ endmethod
 
 // ----- assert
 
-void cos_exception_assertLoc(STR cond, STR file, int line)
+void cos_exception_assert(STR reason, STR func, STR file, int line)
 {
   useclass(ExBadAssert);
-  THROW(ginitWithStr(galloc(ExBadAssert),cond),file,line);
+  THROW(gnewWithStr(ExBadAssert,reason),func,file,line);
 }
 
 // ----- errno
 
-void cos_exception_errnoLoc(int err, STR file, int line)
+void cos_exception_errno(int err, STR func, STR file, int line)
 {
   useclass(ExErrno);
-  THROW(ginitWithInt(galloc(ExErrno),err),file,line);
+  THROW(gnewWithInt(ExErrno,err),func,file,line);
 }
 
 defmethod(OBJ, ginitWithInt, ExErrno, (int)val)
   defnext(OBJ, ginitWithStr, ExErrno, (STR)str);
-  self->err = val;
   next_method(self, strerror(val));
+  self->err = val;
 endmethod
 
 defmethod(int, gint, ExErrno)
@@ -116,11 +116,19 @@ endmethod
 
 // ----- signal
 
+#ifdef __GLIBC__
+extern char* strsignal(int);
+
 defmethod(OBJ, ginitWithInt, ExSignal, (int)val)
-  defnext(OBJ, ginit, ExSignal);
+  defnext(OBJ, ginitWithStr, ExSignal, (STR)str);
+  next_method(self, strsignal(val));
   self->sig = val;
-  next_method(self);
 endmethod
+#else
+defmethod(OBJ, ginitWithInt, ExSignal, (int)val)
+  self->sig = val;
+endmethod
+#endif
 
 defmethod(int, gint, ExSignal)
   retmethod(self->sig);
@@ -147,7 +155,7 @@ ex_signal(int sig)
   case SIGSEGV: cos_showCallStack(stderr);
   }
 
-  THROW(ginitWithInt(galloc(ExSignal), sig));
+  THROW(gnewWithInt(ExSignal, sig));
 }
 
 void (*cos_signal(int sig))(int)

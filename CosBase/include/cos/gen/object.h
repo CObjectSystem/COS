@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.10 2008/10/24 14:17:15 ldeniau Exp $
+ | $Id: object.h,v 1.11 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -51,7 +51,7 @@ defgeneric(OBJ , ginitWith     , _1, _2); // includes copy ctor ginitWith(T,T)
 defgeneric(OBJ , ginitWith2    , _1, _2, _3);
 defgeneric(OBJ , ginitWith3    , _1, _2, _3, _4);
 defgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
-defgeneric(OBJ , ginitWithLoc  , _1, _2, (STR)file, (int)line);
+defgeneric(OBJ , ginitWithLoc  , _1, _2, (STR)func, (STR)file, (int)line);
 defgeneric(OBJ , ginitWithStr  , _1, (STR)str);
 defgeneric(OBJ , gdeinit       , _1);
 
@@ -80,10 +80,10 @@ defgeneric(U32 , ghash         , _1);
 defgeneric(OBJ , gadjust       , _1);
 
 // contract
-defgeneric(void, ginvariant    , _1, (STR)file, (int)line);
+defgeneric(void, ginvariant    , _1, (STR)func, (STR)file, (int)line);
 
 // exception
-defgeneric(void, gthrow        , _1, (STR)file, (int)line);
+defgeneric(void, gthrow        , _1, (STR)func, (STR)file, (int)line);
 
 // initialization
 defgeneric(void, ginitialize   , _1);
@@ -118,8 +118,8 @@ gnewWith4(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5) {
 }
 
 static inline OBJ
-gnewWithLoc(OBJ _1, OBJ _2, STR file, int line) {
-  return ginitWithLoc(galloc(_1),_2,file,line);  COS_UNUSED(gnewWithLoc);
+gnewWithLoc(OBJ _1, OBJ _2, STR func, STR file, int line) {
+  return ginitWithLoc(galloc(_1),_2,func,file,line);  COS_UNUSED(gnewWithLoc);
 }
 
 static inline OBJ

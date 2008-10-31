@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Pointer.c,v 1.2 2008/10/25 19:56:05 ldeniau Exp $
+ | $Id: Pointer.c,v 1.3 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -37,9 +37,8 @@
 #include <cos/Pointer.h>
 #include <cos/gen/object.h>
 
-makclass(Pointer,Value);
+makclass(Pointer);
 makclass(AutoPointer,Pointer);
-// makclass(Function,Value);
 
 // -----
 

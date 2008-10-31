@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_contract.c,v 1.2 2008/10/02 08:44:43 ldeniau Exp $
+ | $Id: ut_contract.c,v 1.3 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -70,11 +70,11 @@ ut_contract(void)
   
   UTEST_START("contract")
 
-    UTEST( check_ctr(A,1,"A-PRE-BODY-INV-POST") );
-    UTEST( check_ctr(B,1,"B-PRE-BODY-INV")      );
+    UTEST( check_ctr(A,1,"A-PRE-BODY-POST-INV") );
+    UTEST( check_ctr(B,1,"B-PRE-BODY")          );
     UTEST( check_ctr(C,1,"C-PRE")               );
-    UTEST( check_ctr(D,1,"D-PRE-BODY-INV")      );
-    UTEST( check_ctr(E,1,"E-PRE-BODY-INV-POST") );
+    UTEST( check_ctr(D,1,"D-PRE-BODY")          );
+    UTEST( check_ctr(E,1,"E-PRE-BODY-POST-INV") );
     
   UTEST_END
 }

@@ -29,14 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_debug.c,v 1.2 2008/10/30 10:19:40 ldeniau Exp $
+ | $Id: cos_debug.c,v 1.3 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <cos/cos/debug.h>
+#include <cos/debug.h>
 
-int cos_enable_stack_trace = 1;
+int cos_stack_trace = YES;
 
 
 #ifdef __GLIBC__
@@ -52,7 +52,7 @@ void cos_showCallStack(FILE *out)
   void *buf[nmax];
   int n;
 
-  if (!cos_enable_stack_trace) return;
+  if (!cos_stack_trace) return;
   if (!out) out = stderr;
   
   n = backtrace(buf, nmax);
@@ -63,7 +63,7 @@ void cos_showCallStack(FILE *out)
 
 void cos_showCallStack(FILE *out)
 {
-  if (cos_enable_stack_trace)
+  if (cos_stack_trace)
     cos_debug("stack trace not available");  
 }
 

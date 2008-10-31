@@ -32,10 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Point.h,v 1.2 2008/10/06 17:34:58 ldeniau Exp $
+ | $Id: Point.h,v 1.3 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
+#define ONLY__COS_VALUE_H
 #include <cos/Value.h>
 
 // ----- definitions

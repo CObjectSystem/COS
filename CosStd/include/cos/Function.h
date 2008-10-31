@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Function.h,v 1.1 2008/10/27 08:26:06 ldeniau Exp $
+ | $Id: Function.h,v 1.2 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -42,8 +42,9 @@
 
 // ----- definitions
 
-defclass(Function)
-endclass
+defclass(Function) endclass
+
+defclass(GenFunction ,Function) FUNC    fct; endclass
 
 defclass(IntFunction1,Function) I32FCT1 fct; endclass
 defclass(IntFunction2,Function) I32FCT2 fct; endclass
@@ -71,6 +72,7 @@ defclass(CpxFunction5,Function) C64FCT5 fct; endclass
 
 // ----- automatic constructors
 
+#define aGenFunction(F)     aFunctionT(Gen,F,                        )
 #define aIntFunction(F,...) aFunctionT(Int,F,COS_PP_NARG(__VA_ARGS__))
 #define aLngFunction(F,...) aFunctionT(Lng,F,COS_PP_NARG(__VA_ARGS__))
 #define aFltFunction(F,...) aFunctionT(Flt,F,COS_PP_NARG(__VA_ARGS__))
@@ -78,6 +80,6 @@ defclass(CpxFunction5,Function) C64FCT5 fct; endclass
 
 #define aFunctionT(T,F,N) \
   ((OBJ)&(struct COS_PP_CAT3(T,Function,N)) { \
-   {{{{ COS_CLS_NAME(COS_PP_CAT3(T,Function,N)).Behavior.id, COS_RC_AUTO }}}}, F })
+   {{{ COS_CLS_NAME(COS_PP_CAT3(T,Function,N)).Behavior.id, COS_RC_AUTO }}}, F })
 
 #endif // COS_FUNCTION_H

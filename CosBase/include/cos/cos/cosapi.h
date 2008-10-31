@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.12 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: cosapi.h,v 1.13 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -84,7 +84,7 @@ BOOL   cos_method_understand5(SEL,U32,U32,U32,U32,U32);
 char*  cos_method_name(const struct Method*,char*,U32);
 char*  cos_method_call(SEL,OBJ*,char*,U32);
 char*  cos_method_callName(const struct Method*,OBJ*,char*,U32);
-void (*cos_method_trace)(STR,int,BOOL,const struct Method*,OBJ*);
+void (*cos_method_trace)(STR,STR,int,BOOL,const struct Method*,OBJ*);
 void   cos_method_clearCache1(void);
 void   cos_method_clearCache2(void);
 void   cos_method_clearCache3(void);
@@ -92,12 +92,16 @@ void   cos_method_clearCache4(void);
 void   cos_method_clearCache5(void);
 void   cos_method_clearCaches(void);
 
-void   cos_contract_invariantLoc(OBJ _1, STR file, int line);
+void   cos_contract_invariant1(OBJ,STR,STR,int);
+void   cos_contract_invariant2(OBJ,OBJ,STR,STR,int);
+void   cos_contract_invariant3(OBJ,OBJ,OBJ,STR,STR,int);
+void   cos_contract_invariant4(OBJ,OBJ,OBJ,OBJ,STR,STR,int);
+void   cos_contract_invariant5(OBJ,OBJ,OBJ,OBJ,OBJ,STR,STR,int);
 
-void   cos_exception_assertLoc(STR as, STR file, int line);
-void   cos_exception_errnoLoc(int err, STR file, int line);
-void   cos_exception_throwLoc(OBJ ex, STR file, int line);
-BOOL   cos_exception_catch(OBJ ex, OBJ cls);
+void   cos_exception_assert(STR,STR,STR,int);
+void   cos_exception_errno(int,STR,STR,int);
+void   cos_exception_throw(OBJ,STR,STR,int);
+BOOL   cos_exception_catch(OBJ,OBJ);
 BOOL   cos_exception_uncaught(void);
 void   cos_exception_initContext(struct cos_exception_context*);
 void   cos_exception_deinitContext(struct cos_exception_context*);
@@ -106,35 +110,33 @@ cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
 
 /* NOTE-INFO: loggers
    - prototype: void cos_xxx(STR fmt, ...);
-   - if fmt is ending by ':', the errno string is added
    - a '\n' is automatically added to the end
-   - they can be turned on/off with setLevel.
-   - all these handlers display on cos_logmsg_file_ [default=stderr]
+   - they can be turned on/off with cos_logmsg_set.
+   - all these handlers display on cos_logmsg_out [default=stderr]
+   - to access to cos_logmsg_out, you must include cos/cos/debug.h
 */
 #define cos_trace(...) \
-        cos_logmsg(COS_LOGMSG_TRACE,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_TRACE,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_debug(...) \
-        cos_logmsg(COS_LOGMSG_DEBUG,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_DEBUG,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_info(...) \
-        cos_logmsg(COS_LOGMSG_INFO,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_INFO ,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_warn( ...) \
-        cos_logmsg(COS_LOGMSG_WARN,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_WARN ,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_error(...) \
-        cos_logmsg(COS_LOGMSG_ERROR,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_ERROR,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_abort(...) \
-        cos_logmsg(COS_LOGMSG_ABORT,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_ABORT,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
 
-#define cos_logmsg(lvl,file,line,...) \
-((void)(cos_logmsg_level_ <= (lvl) && (cos_logmsg_(lvl,file,line,__VA_ARGS__),0)))
+#define cos_logmsg(lvl,func,file,line,...) \
+((void)(cos_logmsg_level_ <= (lvl) && (cos_logmsg_(lvl,func,file,line,__VA_ARGS__),0)))
 
-void cos_logmsg_(int lvl, STR file, int line, STR fmt, ...)
-                  __attribute__((__format__(__printf__,4,5)));
-
+void cos_logmsg_(int,STR,STR,int,STR,...) __attribute__((__format__(__printf__,5,6)));
 int  cos_logmsg_set(int lvl); // return previous level
 
 /***********************************************************
@@ -168,28 +170,6 @@ BOOL cos_method_understand5_(struct cos_method_slot5**,SEL,U32,U32,U32,U32,U32);
 
 // logger message level (not thread safe)
 extern int  cos_logmsg_level_;
-// logger message display thread id (not thread safe)
-extern BOOL cos_logmsg_disp_pth;
-
-// components tags
-enum {
-  cos_tag_invalid = 0,
-  cos_tag_class,
-  cos_tag_mclass,
-  cos_tag_pclass,
-  cos_tag_generic,
-  cos_tag_method,
-  cos_tag_alias,
-  cos_tag_last
-};
-
-// try-endtry tags
-enum {
-  cos_tag_try     = 0,
-  cos_tag_throw   = 1,
-  cos_tag_catch   = 2,
-	cos_tag_finally = 4
-};
 
 /***********************************************************
  * Inlined functions

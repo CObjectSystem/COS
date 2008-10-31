@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.13 2008/10/30 10:19:40 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.14 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -848,7 +848,7 @@ cos_method_nextClear(void)
  * ----------------------------------------------------------------------------
  */
 
-#include <cos/cos/debug.h>
+#include <cos/debug.h>
 
 #if __STDC__VERSION < 199901L
 int snprintf(char *str, size_t size, const char *format, ...);
@@ -929,17 +929,17 @@ cos_method_callName(const struct Method *mth, OBJ obj[], char *str, U32 sz)
 }
 
 static void
-mth_trace(STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)
+mth_trace(STR func, STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)
 {
   char buf[128];
     
   if (enter)
-    cos_logmsg(COS_LOGMSG_TRACE,file,line,"-> %s",cos_method_callName(mth,obj,buf,sizeof buf));
+    cos_logmsg(COS_LOGMSG_TRACE,func,file,line,"-> %s",cos_method_callName(mth,obj,buf,sizeof buf));
   else
-    cos_logmsg(COS_LOGMSG_TRACE,file,line,"<- %s",cos_method_name    (mth,    buf,sizeof buf));
+    cos_logmsg(COS_LOGMSG_TRACE,func,file,line,"<- %s",cos_method_name    (mth,    buf,sizeof buf));
 }
 
-void (*cos_method_trace)(STR,int,BOOL,const struct Method*,OBJ*) = mth_trace;
+void (*cos_method_trace)(STR,STR,int,BOOL,const struct Method*,OBJ*) = mth_trace;
 
 void
 cos_symbol_showSummary(FILE *fp)

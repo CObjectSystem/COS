@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.4 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: exception.h,v 1.5 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -66,7 +66,7 @@
 
   throw-statement:
     THROW( object-expr );
-    THROW( object-expr , file , line );
+    THROW( object-expr , func, file , line );
 
   exception-name:
     identifier                                     // C99 6.4.2.1
@@ -76,18 +76,23 @@
 
     TRY
       code which may throw an exception
+      
     CATCH(String [,ex])
       code optionally using local ex, ex_file and ex_line where ex is an
       *instance* of a subclass of String.
 			e.g. raised by THROW(gnewWithStr(String, "message"));
+
     CATCH(mExBadAlloc [,ex])
       code optionally using local ex, ex_file and ex_line where ex is a
       *subclass* of the class ExBadAlloc.
 			e.g. raised by THROW(ExBadAlloc)
+
     CATCH_ANY([ex])
       almost equivalent to CATCH(Any [,ex]).
+
     FINALLY
       cleanup code (always executed)
+
     ENDTRY
 
   where:
@@ -104,8 +109,9 @@
   - If an uncaught exception reaches the end of the program, ex_terminate()
     will be called.
   - THROW() can specify its location (automatic by default) after the
-    exception argument (i.e. THROW(ex,file,line)). If the thrown exception is
-    NIL, it will be automatically converted into Nil.
+    exception argument (i.e. THROW(ex,file,line)) as well as the reason which
+    must be a literal string (i.e. THROW(ex,"out of range")). If the thrown
+    exception is NIL, it will be automatically converted into Nil.
 */
 
 /* NOTE-USER: exception protection
@@ -248,6 +254,7 @@
 // exception local binding
 #define COS_EX_MAK(E) \
   OBJ E = _cos_ex_lcxt.ex; \
+  STR COS_PP_CAT(E,_func) = (COS_UNUSED(COS_PP_CAT(E,_func)), _cos_ex_lcxt.func); \
   STR COS_PP_CAT(E,_file) = (COS_UNUSED(COS_PP_CAT(E,_file)), _cos_ex_lcxt.file); \
   int COS_PP_CAT(E,_line) = (COS_UNUSED(COS_PP_CAT(E,_line)), _cos_ex_lcxt.line)
 
@@ -256,13 +263,13 @@
         COS_PP_CAT_NARG(COS_EX_THROW_,__VA_ARGS__)(__VA_ARGS__)
 
 #define COS_EX_THROW_1(E) \
-        COS_EX_THROW_3(E,__FILE__,__LINE__)
+        COS_EX_THROW_4(E,__FUNC__,__FILE__,__LINE__)
 
-#define COS_EX_THROW_3(E,F,L) \
-        cos_exception_throwLoc(E,F,L)
+#define COS_EX_THROW_4(E,M,F,L) \
+        cos_exception_throw(E,M,F,L)
 
 #define COS_EX_RETHROW() \
-        COS_EX_THROW(_cos_ex_lcxt.ex,_cos_ex_lcxt.file,_cos_ex_lcxt.line)
+        COS_EX_THROW(_cos_ex_lcxt.ex,_cos_ex_lcxt.func,_cos_ex_lcxt.file,_cos_ex_lcxt.line)
 
 // pointer protection
 #define COS_EX_PRT(...) \

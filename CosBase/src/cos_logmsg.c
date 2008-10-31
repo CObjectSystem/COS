@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.5 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.6 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -45,12 +45,12 @@
 #include <pthread.h>
 #endif
 
-STATIC_ASSERT(COS_LOGMSG_must_be_within_trace_and_abort,
+STATIC_ASSERT(COS_LOGMSG_value_must_be_within_trace_and_abort,
               COS_LOGMSG >= COS_LOGMSG_TRACE && COS_LOGMSG <= COS_LOGMSG_ABORT);
 
-FILE *cos_logmsg_out = 0;
-int   cos_logmsg_level_ = COS_LOGMSG;
-BOOL  cos_logmsg_disp_pth = 0;
+FILE *cos_logmsg_out          = 0;
+int   cos_logmsg_level_       = COS_LOGMSG;
+int   cos_logmsg_dispThreadId = 0;
 
 int
 cos_logmsg_set(int lvl)
@@ -64,10 +64,11 @@ cos_logmsg_set(int lvl)
 }
 
 void
-cos_logmsg_(int lvl, STR file, int line, STR fmt, ...)
+cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
 {
   if (lvl < COS_LOGMSG_TRACE || lvl > COS_LOGMSG_ABORT) {
-    cos_logmsg_(COS_LOGMSG_WARN, file, line, "cos_logmsg discarding level %d out of range", lvl);
+    cos_logmsg_(COS_LOGMSG_WARN, func, file, line,
+                "cos_logmsg discarding level %d out of range", lvl);
     return;
   }
 
@@ -80,18 +81,20 @@ cos_logmsg_(int lvl, STR file, int line, STR fmt, ...)
    
     va_start(va,fmt);
 #if COS_POSIX
-    if (cos_logmsg_disp_pth)
-      fprintf(cos_logmsg_out,"COS-%s[%u:%04x]:(%-18s,%04d): ",
-              tag[lvl], (U32)getpid(), (U32)pthread_self(), file ? file : "-",line);
+    if (cos_logmsg_dispThreadId)
+      fprintf(cos_logmsg_out,"COS-%s[%u:%x]:(%s,%s,%d): ",
+              tag[lvl], (U32)getpid(), (U32)pthread_self(),
+              func ? func : "", file ? file : "", line);
     else
-      fprintf(cos_logmsg_out,"COS-%s[%u]:(%-18s,%04d): ",
-              tag[lvl], (U32)getpid(), file ? file : "-",line);
+      fprintf(cos_logmsg_out,"COS-%s[%u]:(%s,%s,%d): ",
+              tag[lvl], (U32)getpid(),
+              func ? func : "", file ? file : "", line);
 #else
-    fprintf(cos_logmsg_out,"COS-%s:(%-18s,%04d): ",tag[lvl],file ? file : "-",line);
+      fprintf(cos_logmsg_out,"COS-%s:(%s,%s,%d): ",
+              tag[lvl],
+              func ? func : "", file ? file : "", line);
 #endif
     vfprintf(cos_logmsg_out,fmt,va);
-    if (fmt[0] != '\0' && fmt[strlen(fmt)-1] == ':')
-      fprintf(cos_logmsg_out," %s",strerror(errno));
     putc('\n',cos_logmsg_out);
     va_end(va);
 

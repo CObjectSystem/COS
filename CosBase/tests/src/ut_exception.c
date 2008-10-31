@@ -29,11 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_exception.c,v 1.4 2008/10/10 13:48:53 ldeniau Exp $
+ | $Id: ut_exception.c,v 1.5 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
+#include <cos/debug.h>
 #include <cos/signal.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
@@ -136,7 +137,7 @@ useclass(ExSignal);
   ENDTRY
 
   // -----
-  cos_signal_std();
+  cos_stack_trace = NO;
   
   for (i = 0; i < n_sig; i++)
     TRY
@@ -144,6 +145,8 @@ useclass(ExSignal);
     CATCH(ExSignal, ex)
       UTEST( gint(ex) == sig[i] );
     ENDTRY
+
+  cos_stack_trace = YES;
 
   UTEST_END
 }

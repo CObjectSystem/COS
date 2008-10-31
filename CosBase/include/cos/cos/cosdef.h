@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.9 2008/10/30 10:19:40 ldeniau Exp $
+ | $Id: cosdef.h,v 1.10 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -124,13 +124,40 @@ typedef I64  (*I64FCT5)(I64,I64,I64,I64,I64);
 typedef R64  (*R64FCT5)(R64,R64,R64,R64,R64);
 typedef C64  (*C64FCT5)(C64,C64,C64,C64,C64);
 
-typedef void (*cos_exception_handler)(OBJ,STR,int);
+typedef void (*cos_exception_handler)(OBJ,STR,STR,int);
 
 /***********************************************************
  * Implementation
  */
 
-// selector compile-time checks
+// components tags
+enum {
+  cos_tag_invalid = 0,
+  cos_tag_class,
+  cos_tag_mclass,
+  cos_tag_pclass,
+  cos_tag_generic,
+  cos_tag_method,
+  cos_tag_alias,
+  cos_tag_last
+};
+
+// try-endtry tags
+enum {
+  cos_tag_try     = 0,
+  cos_tag_throw   = 1,
+  cos_tag_catch   = 2,
+	cos_tag_finally = 4
+};
+
+// contract-tags
+enum {
+  cos_tag_pre  = 0,
+  cos_tag_redo = 1,
+  cos_tag_post = 2
+};
+
+// selector types for compile-time checks
 typedef struct OBJ_as_SEL* OBJ_as_SEL; // ADT, never defined
 
 // exception context
@@ -139,6 +166,7 @@ struct cos_exception_context {
   struct cos_exception_protect *stk;
   BOOL unstk;
   volatile OBJ ex;
+  volatile STR func;
   volatile STR file;
   volatile int line;
   volatile int tag;

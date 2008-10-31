@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch.c,v 1.2 2008/10/02 08:44:43 ldeniau Exp $
+ | $Id: cos_dispatch.c,v 1.3 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,7 @@ void cos_method_clearCaches(void)
  * ----------------------------------------------------------------------------
  */
 
-#include <cos/cos/debug.h>
+#include <cos/debug.h>
 
 void
 cos_method_showCache1(FILE *fp)

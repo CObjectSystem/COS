@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.8 2008/10/20 21:25:56 ldeniau Exp $
+ | $Id: Any.c,v 1.9 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -46,8 +46,9 @@ makclass(Any,_);
 // ----- deallocator
 
 defmethod(void, gdealloc, Any)
-  PRE  test_assert( self->rc == COS_RC_UNIT );
-  BODY free(_1);
+  test_assert( self->rc == COS_RC_UNIT,
+               "invalid reference counting, should be " COS_PP_STR(COS_RC_UNIT) );
+  free(_1);
 endmethod
 
 // ----- ownership

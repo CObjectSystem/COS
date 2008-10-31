@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.11 2008/10/30 10:19:40 ldeniau Exp $
+ | $Id: config.h,v 1.12 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -91,8 +91,19 @@
 #endif
 
 #ifndef _ComplexDouble
-#define _ComplexDouble  struct { double _[2]; }
+#define _ComplexDouble  struct { double _[2]; } // __complex__
 #endif
+
+#ifndef __FUNC__
+#define __FUNC__ ""
+#endif
+
+#else // C99
+
+#ifndef __FUNC__
+#define __FUNC__ __func__
+#endif
+
 #endif
 
 /* NOTE-CONF: POSIX and Thread Local Storage
@@ -109,7 +120,7 @@
    Automatic
 */
 #ifndef __GNUC__
-#undef  __attribute__    // not a macro but safer
+#undef  __attribute__    // not a macro so far but safer
 #define __attribute__(a) // disable GCC __attribute__
 #endif
 

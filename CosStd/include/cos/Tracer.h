@@ -32,13 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Tracer.h,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Tracer.h,v 1.2 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
 #include <cos/Proxy.h>
 
 defclass(Tracer,Proxy)
+  STR func;
   STR file;
   int line;
 endclass

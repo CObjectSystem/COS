@@ -29,12 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.11 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: tests.c,v 1.12 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <cos/cos/debug.h>
+#include <cos/debug.h>
+#include <cos/signal.h>
 #include <cos/gen/object.h>
 #include "utest.h"
 #include "tests.h"
@@ -70,11 +71,13 @@ int main(int argc, char *argv[])
   if (init_time) {
     // must be loaded before first message is sent
     atexit(on_exit);
-    // first message initialize COS
-    gclass(Nil);
+    cos_init(); // explicit initialization for measurement
     fprintf(stdout, "** COS init duration: %.3f s\n", cos_initDuration());
   }
     
+  // convert signal to exception
+  cos_signal_std();
+
   // testsuites
   fprintf(stdout, "\n** C Object System Testsuite (%d bits) **\n", bits);
   ut_methods();

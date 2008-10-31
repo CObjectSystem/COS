@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.3 2008/08/21 15:45:07 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.4 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -110,28 +110,28 @@ endmethod
 
 // ---- invariant
 
-defmethod(void, ginvariant, A, (STR)file, (int)line)
-  test_assert(self->str[0] == 'A', file, line);
+defmethod(void, ginvariant, A, (STR)func, (STR)file, (int)line)
+  test_assert(self->str[0] == 'A', func, file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
-defmethod(void, ginvariant, B, (STR)file, (int)line)
-  test_assert(self->A.str[0] == 'B', file, line);
+defmethod(void, ginvariant, B, (STR)func, (STR)file, (int)line)
+  test_assert(self->A.str[0] == 'B', func, file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
-defmethod(void, ginvariant, C, (STR)file, (int)line)
-  test_assert(self->A.str[0] == 'C', file, line);
+defmethod(void, ginvariant, C, (STR)func, (STR)file, (int)line)
+  test_assert(self->A.str[0] == 'C', func, file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
-defmethod(void, ginvariant, D, (STR)file, (int)line)
-  test_assert(self->C.A.str[0] == 'D', file, line);
+defmethod(void, ginvariant, D, (STR)func, (STR)file, (int)line)
+  test_assert(self->C.A.str[0] == 'D', func, file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
-defmethod(void, ginvariant, E, (STR)file, (int)line)
-  test_assert(self->D.C.A.str[0] == 'E', file, line);
+defmethod(void, ginvariant, E, (STR)func, (STR)file, (int)line)
+  test_assert(self->D.C.A.str[0] == 'E', func, file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
@@ -199,48 +199,34 @@ enum { COS_CONTRACT_SAVE = COS_CONTRACT };
 defmethod(void, gdoC, A, (int)val)
   PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
   POST test_assert(val == 1), gcatStr(_1,"-POST");
-  BODY {
-    test_assert(val == 1), gcatStr(_1,"-BODY");
-    test_invariant(_1);
-  }
+  BODY test_assert(val == 1), gcatStr(_1,"-BODY");
 endmethod
 
 defmethod(void, gdoC, B, (int)val)
   PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
   POST test_assert(val == 0), gcatStr(_1,"-POST");
-  BODY {
-    test_assert(val == 1), gcatStr(_1,"-BODY");
-    test_invariant(_1);
-  }
+  BODY test_assert(val == 1), gcatStr(_1,"-BODY");
 endmethod
 
 defmethod(void, gdoC, C, (int)val)
   PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
   POST test_assert(val == 0), gcatStr(_1,"-POST");
-  BODY {
-    test_assert(val == 0), gcatStr(_1,"-BODY");
-    test_invariant(_1);
-  }
+  BODY test_assert(val == 0), gcatStr(_1,"-BODY");
 endmethod
 
 defmethod(void, gdoC, D, (int)val)
   PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
   POST test_assert(val == 1), gcatStr(_1,"-POST");
-  BODY {
-    test_assert(val == 1), gcatStr(_1,"-BODY");
-    test_invariant(_1);
-    test_assert(val == 0);
-  }
+  BODY test_assert(val == 1), gcatStr(_1,"-BODY");
+       test_assert(val == 0);
+
 endmethod
 
 defmethod(void, gdoC, E, (int)val)
   PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
   POST test_assert(val == 1), gcatStr(_1,"-POST");
-  BODY {
-    test_assert(val == 1), gcatStr(_1,"-BODY");
-    test_invariant(_1);
-    retmethod();
-  }
+  BODY test_assert(val == 1), gcatStr(_1,"-BODY");
+       retmethod();
 endmethod
 
 // restore contract level

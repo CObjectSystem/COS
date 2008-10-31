@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.8 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.9 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -101,14 +101,14 @@ unwind_stack(struct cos_exception_context *cxt)
 }
 
 static void
-verbose_terminate(OBJ ex, STR file, int line)
+verbose_terminate(OBJ ex, STR func, STR file, int line)
 {
   if (cos_exception_uncaught() == YES)
-    cos_abort("exception %s thrown at (%s:%d) during stack unwinding "
-              "leading to an undefined behavior", gclassName(ex), file, line);
+    cos_abort("exception %s thrown (%s:%d:%s) during stack unwinding "
+              "leading to an undefined behavior", gclassName(ex), file, line, func);
   else
-    cos_info("exiting with uncaught exception %s thrown at (%s:%d)",
-             gclassName(ex), file, line);
+    cos_info("exiting with uncaught exception %s thrown (%s:%d:%s)",
+             gclassName(ex), file, line, func);
 }
 
 static cos_exception_handler handler = verbose_terminate;
@@ -118,7 +118,7 @@ terminate(void)
 {
   if (handler) {
     struct cos_exception_context *cxt = cos_exception_context();
-    handler(cxt->ex, cxt->file, cxt->line);
+    handler(cxt->ex, cxt->func, cxt->file, cxt->line);
   }
 	
   exit(EXIT_FAILURE);
@@ -133,9 +133,12 @@ cos_exception_catch(OBJ ex, OBJ cls)
 }
 
 void
-cos_exception_throwLoc(OBJ ex, STR file, int line)
+cos_exception_throw(OBJ ex, STR func, STR file, int line)
 {
-  gthrow(ex,file,line);
+  if (!ex) ex = Nil;
+  
+  gthrow(ex, func, file, line);
+
   terminate(); // safer if an overridden gthrow returns.
 }
 
@@ -161,7 +164,7 @@ cos_exception_deinitContext(struct cos_exception_context *cxt)
 	cxt_set(cxt->prv);
 
 	if ( (cxt->tag & cos_tag_throw) )
-		cos_exception_throwLoc(cxt->ex,cxt->file,cxt->line); // rethrow
+		cos_exception_throw(cxt->ex,cxt->func,cxt->file,cxt->line); // rethrow
 
 	if (cxt->ex) grelease(cxt->ex);
 }
@@ -178,7 +181,7 @@ cos_exception_setTerminate(cos_exception_handler new)
 
 // ----- methods
 
-defmethod(void, gthrow, Any, (STR)file, (int)line)
+defmethod(void, gthrow, Any, (STR)func, (STR)file, (int)line)
 
   struct cos_exception_context *cxt = cos_exception_context();
 
@@ -186,7 +189,8 @@ defmethod(void, gthrow, Any, (STR)file, (int)line)
 	  if (cxt->ex) grelease(cxt->ex);
 
     cxt->ex   = self->rc == COS_RC_AUTO ? gclone(_1) : _1;
-    cxt->file = file;
+    cxt->func = func ? func : "";
+    cxt->file = file ? file : "";
     cxt->line = line;
   }
 	
@@ -214,7 +218,7 @@ endmethod
  * ----------------------------------------------------------------------------
  */
 
-#include <cos/cos/debug.h>
+#include <cos/debug.h>
 
 void
 cos_exception_showStack(FILE *fp)

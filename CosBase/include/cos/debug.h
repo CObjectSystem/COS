@@ -1,5 +1,5 @@
-#ifndef COS_COS_DEBUG_H
-#define COS_COS_DEBUG_H
+#ifndef COS_DEBUG_H
+#define COS_DEBUG_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: debug.h,v 1.2 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: debug.h,v 1.1 2008/10/31 15:19:43 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,9 @@
  */
 #include <stdio.h>
 
-extern int cos_enable_stack_trace;
+extern FILE *cos_logmsg_out;
+extern int   cos_logmsg_dispThreadId;
+extern int   cos_stack_trace;
 
 // in cos/cos_debug.c
 void cos_showCallStack(FILE*);
@@ -64,4 +66,4 @@ void cos_exception_showStack(FILE*);
 // in cos/AutoRelease.c
 void cos_autorelease_showStack(FILE*);
 
-#endif // COS_COS_DEBUG_H
+#endif // COS_DEBUG_H

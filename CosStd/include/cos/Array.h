@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.5 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: Array.h,v 1.6 2008/10/31 15:19:44 ldeniau Exp $
  |
 */
 
@@ -114,12 +114,10 @@ SubArray_init(struct SubArray *subarr, I32 substart)
   OBJ arr_spr = (OBJ)cos_class_get(cos_any_id(subarr->array))->spr;
   struct Array *sarr = &subarr->Array;
   struct Array * arr = STATIC_CAST(struct Array*, subarr->array);
-  U32 start;
 
-  // ensure that we have an Array, but excluding DynArray
-  test_assert( arr_spr == Array );
-  start = index_abs(substart, arr->size);
-  test_assert( start + sarr->size <= arr->size );
+  test_assert( arr_spr == Array, "SubArray work only on fixed size Array" );
+  U32 start = index_abs(substart, arr->size);
+  test_assert( start + sarr->size <= arr->size, "SubArray index is out of range" );
   sarr->object = arr->object + start;
 
   return sarr;
