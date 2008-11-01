@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.15 2008/11/01 23:18:50 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.16 2008/11/01 23:20:03 ldeniau Exp $
  |
 */
 
@@ -616,7 +616,7 @@ cos_class_getWithStr(STR str)
     break;
 
   default:
-    test_assert( !cls_isMeta(cls) && !cls_isProp(cls) );
+    test_assert( !cls_isMeta(cls) && !cls_isProp(cls),
                  "class not starting by 'm' or 'pm' should be a instance of Class" );
   }
 
