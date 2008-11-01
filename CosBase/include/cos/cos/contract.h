@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.5 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: contract.h,v 1.6 2008/11/01 23:08:27 ldeniau Exp $
  |
 */
 
@@ -224,9 +224,8 @@
 
 // contract body
 #define COS_CTR_BODY \
-    } \
-    if (_cos_ctr_st == cos_tag_post) \
-      goto _cos_ctr_end;
+      if (_cos_ctr_st == cos_tag_post) goto _cos_ctr_end; \
+    }
 
 // test assert
 #define COS_CTR_ASS(...) \

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.8 2008/10/24 14:17:14 ldeniau Exp $
+ | $Id: generic.h,v 1.9 2008/11/01 23:08:27 ldeniau Exp $
  |
 */
 
@@ -265,6 +265,7 @@ COS_GEN_COMPMAK(RET,NAME,PS,       C,   COS_YES)
 // type definition
 #define COS_GEN_TYPEDEF(RET,NAME,PS,AS,C,A) \
 typedef RET  (*COS_GEN_TYPE(NAME)) COS_PP_MAP(PS,COS_SIG_GEN); \
+typedef RET COS_RET_TYPE(NAME); \
 typedef COS_PP_IF(A)( \
   struct { COS_PP_SEPWITH(COS_PP_MAP(AS,COS_PRM_DECL),;); }, \
   void ) COS_ARG_TYPE(NAME);

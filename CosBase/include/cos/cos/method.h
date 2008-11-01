@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.10 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: method.h,v 1.11 2008/11/01 23:08:27 ldeniau Exp $
  |
 */
 
@@ -218,7 +218,8 @@ COS_CTR_BEGCTR
 /* next_method definition */ \
 COS_MTH_NEXTDEF(RET,NAME,PS,CS,COS_PP_LEN(CS)) \
 /* next_method classes */ \
-static struct Class* const _cos_mth_nxt_cls[] = { COS_PP_SEQ(COS_PP_MAP(CS,COS_MTH_CLS))}
+static struct Class* const _cos_mth_nxt_cls[] = \
+  { COS_PP_SEQ(COS_PP_MAP(CS,COS_MTH_CLS))}
 
 /*
  * Low-level implementation
@@ -254,21 +255,22 @@ static void COS_FCT_NAME(NAME,CS) \
 (SEL const _sel, COS_PP_SEQ(COS_SEL_DECL(C)), \
    void* const _arg, void* const _ret) \
 { \
-  /* return type */ \
-  typedef RET* const _cos_mth_ret; \
-  /* arguments type */ \
-  typedef COS_ARG_TYPE(NAME)* const _cos_mth_arg; \
+  /* return and arguments type */ \
+  typedef COS_RET_TYPE(NAME)* const restrict _cos_mth_ret; \
+  typedef COS_ARG_TYPE(NAME)* const restrict _cos_mth_arg; \
   /* selfs types (i.e. _cos_mth_slfn) */ \
   COS_PP_SEP(COS_PP_MAP2(CS,COS_SLF_TYPE(C),COS_MTH_SLF)) \
   /* next_method definition */ \
   COS_MTH_NEXTDEF(RET,NAME,PS,CS,C) \
   /* next_method classes */ \
-  static struct Class* const* const _cos_mth_nxt_cls = COS_MTH_NAME(NAME,CS).cls; \
+  static struct Class* const* const restrict _cos_mth_nxt_cls = \
+    COS_MTH_NAME(NAME,CS).cls; \
   /* selfs variables */ \
   _cos_mth_slf1 self = (_cos_mth_slf1)_1; COS_PP_SEP(COS_SLF_DECL(C)) \
   /* trace variables (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)( \
-  static const struct Method* const _cos_mth_ref = (struct Method*)&COS_MTH_NAME(NAME,CS); \
+  static const struct Method* const restrict _cos_mth_ref = \
+    (struct Method*)&COS_MTH_NAME(NAME,CS); \
   OBJ _cos_mth_objs[C]; \
   int _cos_mth_line;,/* no trace */) \
   /* arguments variables initialization (if any) */ \
@@ -288,7 +290,8 @@ static void COS_FCT_NAME(NAME,CS) \
   /* avoid compiler warning for unused identifiers */ \
   COS_PP_IF(R)(/* ret */,COS_UNUSED(_ret);) \
   COS_UNUSED(next_method,self); \
-  COS_UNUSED(_sel,_arg,_cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_cls,_cos_mth_nxt_p); \
+  COS_UNUSED(_sel,_arg,_cos_mth_nxt_sel,_cos_mth_nxt_rnk,\
+             _cos_mth_nxt_cls,_cos_mth_nxt_p); \
   _cos_mth_body:
 
 // component intantiation (see cos/cos/coscls.h)
@@ -333,7 +336,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 
 // self type
 #define COS_MTH_SLF(C,T) \
-  typedef struct C* const T;
+  typedef struct C* const restrict T;
 
 // argument initialization
 #define COS_MTH_ARG(a) \
