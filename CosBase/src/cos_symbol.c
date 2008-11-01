@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.14 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.15 2008/11/01 23:18:50 ldeniau Exp $
  |
 */
 
@@ -605,16 +605,19 @@ cos_class_getWithStr(STR str)
   switch(p-str) {
   case 1:
     cls = cos_class_get(cls->Behavior.id)->spr;
-    test_assert( cls_isMeta(cls) );
+    test_assert( cls_isMeta(cls),
+                 "class starting by 'm' should be a instance of MetaClass" );
     break;
 
   case 2:
     cls = cos_class_get(cls->Behavior.id);
-    test_assert( cls_isProp(cls) );
+    test_assert( cls_isProp(cls),
+                 "class starting by 'pm' should be a instance of PropMetaClass" );
     break;
 
   default:
     test_assert( !cls_isMeta(cls) && !cls_isProp(cls) );
+                 "class not starting by 'm' or 'pm' should be a instance of Class" );
   }
 
   return cls;

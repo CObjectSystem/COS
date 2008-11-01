@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.22 2008/10/31 16:05:38 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.23 2008/11/01 23:18:50 ldeniau Exp $
  |
 */
 
@@ -292,7 +292,8 @@ defmethod(OBJ, gretain, Any)
     retmethod(_1);
 
   // self->rc == COS_RC_LAST
-  THROW( gnewWithStr(ExBadValue, "COS_RC_LAST") );
+  THROW( gnewWithStr(ExBadValue,
+                     "maximum retain count reached (COS_RC_LAST)") );
 endmethod
 
 defmethod(OBJ, grelease, Any)
@@ -308,7 +309,8 @@ defmethod(OBJ, grelease, Any)
     retmethod(_1);
 
   // self->rc == COS_RC_AUTO
-  THROW( gnewWithStr(ExBadValue, "COS_RC_AUTO") );
+  THROW( gnewWithStr(ExBadValue,
+                     "automatic objects (COS_RC_AUTO) cannot be released") );
 endmethod
 
 defmethod(OBJ, gdiscard, Any)
