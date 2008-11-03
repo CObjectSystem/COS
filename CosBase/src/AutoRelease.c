@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.23 2008/11/01 23:18:50 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.24 2008/11/03 09:32:52 ldeniau Exp $
  |
 */
 
@@ -282,35 +282,33 @@ endmethod
 defmethod(OBJ, gretain, Any)
   useclass(ExBadValue);
 
-  if (self->rc >= COS_RC_UNIT && self->rc < COS_RC_LAST)
+  if (self->rc >= COS_RC_UNIT)
     retmethod(pop_or_retain(self));
-
-  if (self->rc == COS_RC_AUTO)
-    retmethod(gclone(_1));
 
   if (self->rc == COS_RC_STATIC)
     retmethod(_1);
 
-  // self->rc == COS_RC_LAST
-  THROW( gnewWithStr(ExBadValue,
-                     "maximum retain count reached (COS_RC_LAST)") );
+  if (self->rc == COS_RC_AUTO)
+    retmethod(gclone(_1));
+
+  // self->rc < COS_RC_STATIC
+  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
 defmethod(OBJ, grelease, Any)
   useclass(ExBadValue);
 
-  if (self->rc > COS_RC_UNIT && self->rc <= COS_RC_LAST)
+  if (self->rc > COS_RC_UNIT)
     retmethod(--self->rc, _1);
-
-  if (self->rc == COS_RC_UNIT)
-    retmethod(gdealloc(gdeinit(_1)), Nil);
 
   if (self->rc == COS_RC_STATIC)
     retmethod(_1);
 
-  // self->rc == COS_RC_AUTO
-  THROW( gnewWithStr(ExBadValue,
-                     "automatic objects (COS_RC_AUTO) cannot be released") );
+  if (self->rc == COS_RC_UNIT)
+    retmethod(gdealloc(gdeinit(_1)), Nil);
+
+  // self->rc == COS_RC_AUTO || self->rc < COS_RC_STATIC
+  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
 defmethod(OBJ, gdiscard, Any)
@@ -322,15 +320,19 @@ defmethod(OBJ, gdiscard, Any)
 endmethod
 
 defmethod(OBJ, gautoRelease, Any)
+  useclass(ExBadValue);
 
-  if (self->rc >= COS_RC_UNIT && self->rc <= COS_RC_LAST)
+  if (self->rc >= COS_RC_UNIT)
     retmethod(push(_1));
 	
+  if (self->rc == COS_RC_STATIC)
+    retmethod(_1);
+
   if (self->rc == COS_RC_AUTO)
     retmethod(push(gclone(_1)));
 
-  // self->rc == COS_RC_STATIC
-  retmethod(_1);
+  // self->rc < COS_RC_STATIC
+  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
 // -----

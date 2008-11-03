@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.1 2008/06/27 16:17:15 ldeniau Exp $
+ | $Id: coscls.h,v 1.2 2008/11/03 09:32:52 ldeniau Exp $
  |
 */
 
@@ -126,7 +126,7 @@
 
 COS_CLS_DEF(Any,_)
   U32 id;
-  U32 rc;
+  I32 rc;
 COS_CLS_END
 
 COS_CLS_DEF(Object,Any)

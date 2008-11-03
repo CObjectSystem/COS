@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.7 2008/11/01 23:08:27 ldeniau Exp $
+ | $Id: base.h,v 1.8 2008/11/03 09:32:52 ldeniau Exp $
  |
 */
 
@@ -144,10 +144,9 @@
 #define COS_ID_RNKSHT   27                // 32 - 5
 
 // reference counting
-#define COS_RC_AUTO     ((U32) 0)
-#define COS_RC_UNIT     ((U32) 1)
-#define COS_RC_LAST     ((U32)-2)
-#define COS_RC_STATIC   ((U32)-1)
+#define COS_RC_STATIC   ((I32)-1)
+#define COS_RC_AUTO     ((I32) 0)
+#define COS_RC_UNIT     ((I32) 1)
 
 // mangled names: <sym-name>_<cls1-name>[_..._<cls5-name>]
 #define COS_SYM_NAME(NAME,CS) \
