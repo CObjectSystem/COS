@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.11 2008/11/01 23:08:27 ldeniau Exp $
+ | $Id: method.h,v 1.12 2008/11/04 19:38:34 ldeniau Exp $
  |
 */
 
@@ -259,14 +259,15 @@ static void COS_FCT_NAME(NAME,CS) \
   typedef COS_RET_TYPE(NAME)* const restrict _cos_mth_ret; \
   typedef COS_ARG_TYPE(NAME)* const restrict _cos_mth_arg; \
   /* selfs types (i.e. _cos_mth_slfn) */ \
-  COS_PP_SEP(COS_PP_MAP2(CS,COS_SLF_TYPE(C),COS_MTH_SLF)) \
+  COS_PP_SEP(COS_PP_MAP2(CS,COS_MTH_SLFT(C),COS_MTH_SLF_TYP)) \
   /* next_method definition */ \
   COS_MTH_NEXTDEF(RET,NAME,PS,CS,C) \
   /* next_method classes */ \
   static struct Class* const* const restrict _cos_mth_nxt_cls = \
     COS_MTH_NAME(NAME,CS).cls; \
   /* selfs variables */ \
-  _cos_mth_slf1 self = (_cos_mth_slf1)_1; COS_PP_SEP(COS_SLF_DECL(C)) \
+  _cos_mth_slf1* const restrict self = (_cos_mth_slf1*)_1; \
+  COS_PP_SEP(COS_MTH_SLF(C)) \
   /* trace variables (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)( \
   static const struct Method* const restrict _cos_mth_ref = \
@@ -334,9 +335,19 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
   void (*const next_method) (COS_PP_SEQ(COS_PP_MAP(PS,COS_SIG_NXT)), \
                              SEL, RET*, _cos_mth_nxt_t) = COS_NXT_NAME(NAME);
 
-// self type
-#define COS_MTH_SLF(C,T) \
-  typedef struct C* const restrict T;
+// selfs
+#define COS_MTH_SLF_TYP(C,T) \
+  typedef struct C T;
+
+#define COS_MTH_SLFT(N) COS_PP_TAKE(N, \
+  (_cos_mth_slf1, _cos_mth_slf2, _cos_mth_slf3, _cos_mth_slf4, _cos_mth_slf5) )
+
+#define COS_MTH_SLF(N) COS_PP_TAKE(N, \
+(_cos_mth_slf1* const restrict self1 = (COS_UNUSED(self1),(_cos_mth_slf1*)_1);, \
+ _cos_mth_slf2* const restrict self2 = (COS_UNUSED(self2),(_cos_mth_slf2*)_2);, \
+ _cos_mth_slf3* const restrict self3 = (COS_UNUSED(self3),(_cos_mth_slf3*)_3);, \
+ _cos_mth_slf4* const restrict self4 = (COS_UNUSED(self4),(_cos_mth_slf4*)_4);, \
+ _cos_mth_slf5* const restrict self5 = (COS_UNUSED(self5),(_cos_mth_slf5*)_5);) )
 
 // argument initialization
 #define COS_MTH_ARG(a) \

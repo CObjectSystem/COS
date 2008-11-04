@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.24 2008/11/03 09:32:52 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.25 2008/11/04 19:38:34 ldeniau Exp $
  |
 */
 
@@ -250,7 +250,7 @@ defmethod(void, ginitialize, pmAutoRelease)
     _pool0.Object.Any.id = cos_class_id(classref(AutoRelease));
     _pool0.Object.Any.rc = COS_RC_STATIC;
     _pool0.prv = &_pool0;
-	_pool_init();
+	  _pool_init();
     ginit((void*)&_pool0);
   }
 endmethod
@@ -315,7 +315,6 @@ defmethod(OBJ, gdiscard, Any)
   if (self->rc == COS_RC_UNIT)
     retmethod(pop_and_release(self));
 
-  // self->rc == (COS_RC_AUTO | COS_RC_STATIC | ..COS_RC_LAST)
   retmethod(_1);
 endmethod
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.8 2008/11/03 09:32:52 ldeniau Exp $
+ | $Id: base.h,v 1.9 2008/11/04 19:38:34 ldeniau Exp $
  |
 */
 
@@ -196,7 +196,7 @@
 
 // selector-list generators
 #define COS_SEL_DECL(N) /* */ COS_PP_TAKE(N, \
-        (OBJ const _1, OBJ const _2, OBJ const _3, OBJ const _4, OBJ const _5) )
+        (OBJ const _1, OBJ const _2, OBJ const _3, OBJ const _4, OBJ const _5))
 #define COS_SEL_TYPE(N) /* */ COS_PP_TAKE(N, \
         (OBJ, OBJ, OBJ, OBJ, OBJ) )
 #define COS_SEL_NAME(N) /* */ COS_PP_TAKE(N, \
@@ -204,14 +204,6 @@
 #define COS_SEL_ID(N)   /* */ COS_PP_TAKE(N, \
         (cos_any_id(_1), cos_any_id(_2), cos_any_id(_3), cos_any_id(_4), \
          cos_any_id(_5)) )
-#define COS_SLF_TYPE(N) /* */ COS_PP_TAKE(N, \
-        (_cos_mth_slf1, _cos_mth_slf2, _cos_mth_slf3, _cos_mth_slf4, _cos_mth_slf5) )
-#define COS_SLF_DECL(N) /* */ COS_PP_TAKE(N, \
-        (_cos_mth_slf1 self1 = (COS_UNUSED(self1),(_cos_mth_slf1)_1);, \
-         _cos_mth_slf2 self2 = (COS_UNUSED(self2),(_cos_mth_slf2)_2);, \
-         _cos_mth_slf3 self3 = (COS_UNUSED(self3),(_cos_mth_slf3)_3);, \
-         _cos_mth_slf4 self4 = (COS_UNUSED(self4),(_cos_mth_slf4)_4);, \
-         _cos_mth_slf5 self5 = (COS_UNUSED(self5),(_cos_mth_slf5)_5);) )
 
 // token identification: OBJ, void, va_list and gunrecognizedMessage{1..5}
 #define COS_TOK_ISOBJ(a) \
