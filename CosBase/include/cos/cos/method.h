@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.12 2008/11/04 19:38:34 ldeniau Exp $
+ | $Id: method.h,v 1.13 2008/11/06 13:53:53 ldeniau Exp $
  |
 */
 
@@ -88,11 +88,9 @@
    - defmethod can be traced both when entering and exiting using
      #define COS_METHOD_TRACE // enable  trace
      #undef  COS_METHOD_TRACE // disable trace
+     if the method was compiled with COS_LOGMSG_LEVEL <= COS_LOGMSG_DEBUG
    - the function pointer cos_method_trace (see cos/cos/cosapi.h) will be
-     called each time if the cos_logmsg_level <= COS_LOGMSG_DEBUG but by
-     default cos_method_trace calls cos_trace(), which displays traces only
-     if cos_logmsg_level <= COS_LOGMSG_TRACE. Hence, in debug mode it traces
-     nothing but code is still called.
+     called only if the cos_logmsg_level == COS_LOGMSG_TRACE at runtime.
    - COS_METHOD_TRACE is automatically defined if
      COS_LOGMSG_LEVEL <= COS_LOGMSG_DEBUG
 */
@@ -259,7 +257,7 @@ static void COS_FCT_NAME(NAME,CS) \
   typedef COS_RET_TYPE(NAME)* const restrict _cos_mth_ret; \
   typedef COS_ARG_TYPE(NAME)* const restrict _cos_mth_arg; \
   /* selfs types (i.e. _cos_mth_slfn) */ \
-  COS_PP_SEP(COS_PP_MAP2(CS,COS_MTH_SLFT(C),COS_MTH_SLF_TYP)) \
+  COS_PP_SEP(COS_PP_MAP2(CS,COS_MTH_SLF_TYP(C),COS_MTH_SLF_DEF)) \
   /* next_method definition */ \
   COS_MTH_NEXTDEF(RET,NAME,PS,CS,C) \
   /* next_method classes */ \
@@ -267,7 +265,7 @@ static void COS_FCT_NAME(NAME,CS) \
     COS_MTH_NAME(NAME,CS).cls; \
   /* selfs variables */ \
   _cos_mth_slf1* const restrict self = (_cos_mth_slf1*)_1; \
-  COS_PP_SEP(COS_MTH_SLF(C)) \
+  COS_PP_SEP(COS_MTH_SLF_INI(C)) \
   /* trace variables (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)( \
   static const struct Method* const restrict _cos_mth_ref = \
@@ -289,10 +287,10 @@ static void COS_FCT_NAME(NAME,CS) \
   COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(0,C),/* no trace */) \
   return; \
   /* avoid compiler warning for unused identifiers */ \
-  COS_PP_IF(R)(/* ret */,COS_UNUSED(_ret);) \
-  COS_UNUSED(next_method,self); \
-  COS_UNUSED(_sel,_arg,_cos_mth_nxt_sel,_cos_mth_nxt_rnk,\
-             _cos_mth_nxt_cls,_cos_mth_nxt_p); \
+  COS_PP_IF(R)(/* use ret */,COS_UNUSED(_ret);) \
+  COS_UNUSED(_sel,_arg,self,next_method, \
+    _cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_cls,_cos_mth_nxt_p); \
+  /* method user code */ \
   _cos_mth_body:
 
 // component intantiation (see cos/cos/coscls.h)
@@ -336,18 +334,8 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
                              SEL, RET*, _cos_mth_nxt_t) = COS_NXT_NAME(NAME);
 
 // selfs
-#define COS_MTH_SLF_TYP(C,T) \
+#define COS_MTH_SLF_DEF(C,T) \
   typedef struct C T;
-
-#define COS_MTH_SLFT(N) COS_PP_TAKE(N, \
-  (_cos_mth_slf1, _cos_mth_slf2, _cos_mth_slf3, _cos_mth_slf4, _cos_mth_slf5) )
-
-#define COS_MTH_SLF(N) COS_PP_TAKE(N, \
-(_cos_mth_slf1* const restrict self1 = (COS_UNUSED(self1),(_cos_mth_slf1*)_1);, \
- _cos_mth_slf2* const restrict self2 = (COS_UNUSED(self2),(_cos_mth_slf2*)_2);, \
- _cos_mth_slf3* const restrict self3 = (COS_UNUSED(self3),(_cos_mth_slf3*)_3);, \
- _cos_mth_slf4* const restrict self4 = (COS_UNUSED(self4),(_cos_mth_slf4*)_4);, \
- _cos_mth_slf5* const restrict self5 = (COS_UNUSED(self5),(_cos_mth_slf5*)_5);) )
 
 // argument initialization
 #define COS_MTH_ARG(a) \
@@ -401,13 +389,21 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 
 /* forward_message
 */
-#define COS_MTH_FWD(...) ( \
-  /* method lookup */ \
-  COS_PP_CAT_NARG(cos_method_fastLookup,__VA_ARGS__) \
-  /* lookup selectors */ \
-  (_sel,COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),cos_any_id))) \
-  /* method invocation */ \
-  (_sel,__VA_ARGS__,_arg,_ret) )
+#define COS_MTH_FWD(...) \
+   COS_MTH_FWDN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
+
+#define COS_MTH_FWDN(N,...) \
+  do { \
+    /* local copy */ \
+    COS_PP_SEPWITH( \
+      COS_PP_MAP2(COS_MTH_FWD_INI(N),(__VA_ARGS__),COS_PP_PAIR),;); \
+    /* method lookup */ \
+    COS_PP_CAT(cos_method_fastLookup,N) \
+    /* lookup selectors */ \
+    (_sel,COS_PP_SEQ(COS_PP_MAP(COS_MTH_FWD_USE(N),cos_any_id))) \
+    /* method invocation */ \
+    (_sel,COS_PP_SEQ(COS_MTH_FWD_USE(N)),_arg,_ret); \
+  } while (0)
 
 /* invariant
 */
@@ -426,11 +422,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
   ((void)(cos_logmsg_level_ < COS_LOGMSG_DEBUG && ( \
    cos_method_trace(__FUNC__,__FILE__, \
    COS_PP_IF(E)(__LINE__,_cos_mth_line), E, _cos_mth_ref, (\
-   COS_PP_IF(E)(COS_PP_TAKE(C,(_cos_mth_objs[0]=_1, \
-                               _cos_mth_objs[1]=_2, \
-                               _cos_mth_objs[2]=_3, \
-                               _cos_mth_objs[3]=_4, \
-                               _cos_mth_objs[4]=_5)),(void)0), \
+   COS_PP_IF(E)(COS_MTH_OBJ_INI(C),(void)0), \
    _cos_mth_objs)),0)));
    
 #define COS_MTH_TRC_LOC \
@@ -456,5 +448,42 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 #define COS_MTH_RK3(mth) ((mth)->info >> 10 & 0x1F)
 #define COS_MTH_RK4(mth) ((mth)->info >>  5 & 0x1F)
 #define COS_MTH_RK5(mth) ((mth)->info       & 0x1F)
+
+// some constant tuples
+#define COS_MTH_SLF_TYP(N) \
+  COS_PP_TAKE(N, (_cos_mth_slf1, \
+                  _cos_mth_slf2, \
+                  _cos_mth_slf3, \
+                  _cos_mth_slf4, \
+                  _cos_mth_slf5) )
+
+#define COS_MTH_SLF_INI(N) \
+  COS_PP_TAKE(N, \
+(_cos_mth_slf1* const restrict self1 = (COS_UNUSED(self1),(_cos_mth_slf1*)_1);, \
+ _cos_mth_slf2* const restrict self2 = (COS_UNUSED(self2),(_cos_mth_slf2*)_2);, \
+ _cos_mth_slf3* const restrict self3 = (COS_UNUSED(self3),(_cos_mth_slf3*)_3);, \
+ _cos_mth_slf4* const restrict self4 = (COS_UNUSED(self4),(_cos_mth_slf4*)_4);, \
+ _cos_mth_slf5* const restrict self5 = (COS_UNUSED(self5),(_cos_mth_slf5*)_5);) )
+
+#define COS_MTH_FWD_INI(N) \
+  COS_PP_TAKE(N, (OBJ _cos_mth_fwd_1 =, \
+                  OBJ _cos_mth_fwd_2 =, \
+                  OBJ _cos_mth_fwd_3 =, \
+                  OBJ _cos_mth_fwd_4 =, \
+                  OBJ _cos_mth_fwd_5 =) )
+
+#define COS_MTH_FWD_USE(N) \
+  COS_PP_TAKE(N, (_cos_mth_fwd_1, \
+                  _cos_mth_fwd_2, \
+                  _cos_mth_fwd_3, \
+                  _cos_mth_fwd_4, \
+                  _cos_mth_fwd_5) )
+
+#define COS_MTH_OBJ_INI(N) \
+  COS_PP_TAKE(N, (_cos_mth_objs[0]=_1, \
+                  _cos_mth_objs[1]=_2, \
+                  _cos_mth_objs[2]=_3, \
+                  _cos_mth_objs[3]=_4, \
+                  _cos_mth_objs[4]=_5) )
 
 #endif // COS_COS_METHOD_H
