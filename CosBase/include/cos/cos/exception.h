@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.5 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: exception.h,v 1.6 2008/11/06 17:39:31 ldeniau Exp $
  |
 */
 
@@ -280,7 +280,7 @@
           cos_exception_protect(&COS_PP_CAT3(_cos_ex_prt_,O,_), &O)
 
 #define COS_EX_UNPRT(O) \
-        (cos_exception_context()->stk = COS_PP_CAT3(_cos_ex_prt_,O,_).prv)
+        ((void)(cos_exception_context()->stk = COS_PP_CAT3(_cos_ex_prt_,O,_).prv))
 
 // context saving
 #ifdef sigsetjmp
