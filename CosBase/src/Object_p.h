@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object_p.h,v 1.1 2008/10/27 08:42:54 ldeniau Exp $
+ | $Id: Object_p.h,v 1.2 2008/11/07 14:12:07 ldeniau Exp $
  |
 */
 
@@ -45,7 +45,7 @@ object_alloc(OBJ _cls, SIZE extra)
 
   if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
 
-  obj->Any.id = cls->Behavior.id;
+  obj->Any.id = cos_class_id(cls);
   obj->Any.rc = COS_RC_UNIT;
 
   return obj;

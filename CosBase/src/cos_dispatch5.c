@@ -170,7 +170,7 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5, BOOL load)
   fct = cos_method_get5(_sel, id1, id2, id3, id4, id5);
   if (!fct) {
     if (!load) return 0;
-    fct = cos_method_get5(&COS_GEN_NAME(gunrecognizedMessage5),
+    fct = cos_method_get5(genericref(gunrecognizedMessage5),
                           id1, id2, id3, id4, id5);
     if (!fct)
       cos_abort("method5_lookup: %s not found for classes (%s,%s,%s,%s,%s)",

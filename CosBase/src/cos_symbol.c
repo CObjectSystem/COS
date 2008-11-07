@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.16 2008/11/01 23:20:03 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.17 2008/11/07 14:12:07 ldeniau Exp $
  |
 */
 
@@ -354,9 +354,9 @@ sym_init(void)
       case cos_tag_class: {
         struct Class *cls = STATIC_CAST(struct Class*, tbl[t][s]);
         const struct Class *pcl = STATIC_CAST(const struct Class*, cls->name);
-        sym.cls[sym.n_cls++] = cls;                            // hack: meta-link
-        cls->name = pcl->name+2; // hack: name is shared
-        cls->Behavior.Object.Any.id = pcl->Behavior.id;
+        sym.cls[sym.n_cls++] = cls; // hack: meta-link
+        cls->name = pcl->name+2;    // hack: name is shared
+        cls->Behavior.Object.Any.id = cos_class_id(pcl);
         cls->Behavior.Object.Any.rc = COS_RC_STATIC;
       } break;
 
@@ -639,7 +639,7 @@ cos_class_isSubclassOf(const struct Class *cls, const struct Class *ref)
 BOOL
 cos_any_isKindOf(OBJ _1, const struct Class *ref)
 {
-  return cos_class_isSubclassOf(cos_class_get(cos_any_id(_1)),ref);
+  return cos_class_isSubclassOf(cos_any_class(_1),ref);
 }
 
 BOOL
@@ -834,7 +834,8 @@ cos_method_nextClear(void)
 void
 cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
 {
-  if (*fct == (FUNC)YES) nxt_init(fct,gen,rnk,cls);
+  if (*fct == (FUNC)YES)
+    nxt_init(fct,gen,rnk,cls);
 }
 
 void

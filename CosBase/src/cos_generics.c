@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_generics.c,v 1.2 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: cos_generics.c,v 1.3 2008/11/07 14:12:07 ldeniau Exp $
  |
 */
 
@@ -95,7 +95,7 @@ makgeneric(OBJ , galloc        , _1);
 makgeneric(OBJ , gallocWithSize, _1, (SIZE)extra);
 makgeneric(void, gdealloc      , _1);
 
-// constructors, destructor
+// constructors, destructo, clearing
 makgeneric(OBJ , ginit         , _1);
 makgeneric(OBJ , ginitWith     , _1, _2);
 makgeneric(OBJ , ginitWith2    , _1, _2, _3);
@@ -104,6 +104,7 @@ makgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
 makgeneric(OBJ , ginitWithLoc  , _1, _2, (STR)func, (STR)file, (int)line);
 makgeneric(OBJ , ginitWithStr  , _1, (STR)str);
 makgeneric(OBJ , gdeinit       , _1);
+makgeneric(OBJ , gclear        , _1);
 
 // ownership
 makgeneric(OBJ , gretain       , _1);

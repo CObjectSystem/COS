@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch3.c,v 1.5 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: cos_dispatch3.c,v 1.6 2008/11/07 14:12:07 ldeniau Exp $
  |
 */
 
@@ -168,7 +168,7 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, BOOL load)
   fct = cos_method_get3(_sel, id1, id2, id3);
   if (!fct) {
     if (!load) return 0;
-    fct = cos_method_get3(&COS_GEN_NAME(gunrecognizedMessage3), id1, id2, id3);
+    fct = cos_method_get3(genericref(gunrecognizedMessage3), id1, id2, id3);
     if (!fct)
       cos_abort("method3_lookup: %s not found for classes (%s,%s,%s)",
                 "gunrecognizedMessage3",

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.11 2008/11/06 14:03:13 ldeniau Exp $
+ | $Id: cosdef.h,v 1.12 2008/11/07 14:12:07 ldeniau Exp $
  |
 */
 
@@ -153,6 +153,13 @@ struct cos_exception_context {
 struct cos_exception_protect {
   struct cos_exception_protect *prv;
   OBJ const *obj;
+};
+
+struct cos_exception_extendedProtect {
+  struct cos_exception_protect *prv;
+  OBJ const *obj;
+  OBJ const *alt;
+  OBJFCT1    fct;
 };
 
 // dispatch caches

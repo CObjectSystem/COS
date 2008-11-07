@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.13 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: cosapi.h,v 1.14 2008/11/07 14:12:07 ldeniau Exp $
  |
 */
 
@@ -291,10 +291,24 @@ cos_any_id(OBJ obj)
   COS_UNUSED(cos_any_id);
 }
 
+static inline const struct Class*
+cos_any_class(OBJ obj)
+{
+  return cos_class_get(cos_any_id(obj));
+  COS_UNUSED(cos_any_class);
+}
+
+static inline const struct Class*
+cos_any_superClass(OBJ obj)
+{
+  return cos_any_class(obj)->spr;
+  COS_UNUSED(cos_any_superClass);
+}
+
 static inline STR
 cos_any_className(OBJ obj)
 {
-  return cos_class_get(cos_any_id(obj))->name;
+  return cos_any_class(obj)->name;
   COS_UNUSED(cos_any_className);
 }
 
@@ -330,6 +344,22 @@ cos_exception_protect(struct cos_exception_protect *ptr, OBJ const *obj)
 
   return *ptr;
   COS_UNUSED(cos_exception_protect);
+}
+
+static inline struct cos_exception_extendedProtect
+cos_exception_extendedProtect(struct cos_exception_extendedProtect *ptr,
+                              OBJ const *obj, OBJFCT1 fct)
+{
+  struct cos_exception_context *cxt = cos_exception_context();
+
+  ptr->prv = cxt->stk;
+  ptr->obj = (OBJ*)YES;
+  ptr->alt = obj;
+  ptr->fct = fct;
+  cxt->stk = (void*)ptr;
+
+  return *ptr;
+  COS_UNUSED(cos_exception_extendedProtect);
 }
 
 #endif // COS_COS_COSAPI_H
