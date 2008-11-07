@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.6 2008/11/01 23:08:27 ldeniau Exp $
+ | $Id: contract.h,v 1.7 2008/11/07 23:39:35 ldeniau Exp $
  |
 */
 
@@ -181,6 +181,7 @@
       _cos_ctr_exit: \
       return COS_PP_IF(COS_TOK_ISVOID(RET))(,_ret); \
     } \
+    COS_CTR_DCL \
     COS_CTR_BEGCTR
 
 // contract end
@@ -189,21 +190,24 @@
     goto _cos_ctr_exit; \
   }
 
+// decl contract
+#define COS_CTR_DCL \
+  int _cos_ctr_st;
+  
 // begin contract
 #define COS_CTR_BEGCTR \
-  { int _cos_ctr_st = cos_tag_pre; \
-    _cos_ctr_beg: {
+  _cos_ctr_st = cos_tag_pre; \
+  _cos_ctr_beg: {
 
 // end contract
 #define COS_CTR_ENDCTR \
-    } \
-    goto _cos_ctr_end; \
-    _cos_ctr_end: \
-    if (COS_CONTRACT >= COS_CONTRACT_POST && _cos_ctr_st == cos_tag_redo) {\
-      _cos_ctr_st = cos_tag_post; \
-      goto _cos_ctr_beg; \
-    } \
-  }
+  } \
+  goto _cos_ctr_end; \
+  _cos_ctr_end: \
+  if (COS_CONTRACT >= COS_CONTRACT_POST && _cos_ctr_st == cos_tag_redo) {\
+    _cos_ctr_st = cos_tag_post; \
+    goto _cos_ctr_beg; \
+  } \
 
 // contract return
 #define COS_CTR_RET(...) \
@@ -214,13 +218,19 @@
 
 // contract pre
 #define COS_CTR_PRE \
-    if (COS_CONTRACT >= COS_CONTRACT_PRE  && _cos_ctr_st == cos_tag_pre) {
+    if (COS_CONTRACT >= COS_CONTRACT_PRE && _cos_ctr_st == cos_tag_pre) {
 
 // contract post
 #define COS_CTR_POST \
     } \
     if (COS_CONTRACT >= COS_CONTRACT_POST && (_cos_ctr_st == cos_tag_post \
         || (_cos_ctr_st = cos_tag_redo,0))) {
+
+// contract invariant
+#define COS_CTR_INVARIANT(C) \
+    if (COS_CONTRACT >= COS_CONTRACT_ALL && _cos_ctr_st == cos_tag_post) \
+      COS_PP_CAT(cos_contract_invariant,C)(COS_PP_SEQ(COS_SEL_NAME(C)), \
+                                           __FUNC__,__FILE__,__LINE__);
 
 // contract body
 #define COS_CTR_BODY \

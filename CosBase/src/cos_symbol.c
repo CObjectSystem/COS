@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.17 2008/11/07 14:12:07 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.18 2008/11/07 23:39:35 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,6 @@
 #include <cos/Method.h>
 #include <cos/gen/object.h>
 
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
@@ -418,7 +417,7 @@ sym_deinit(void)
 static void
 cls_init(void)
 {
-  struct Generic *gen = &COS_GEN_NAME(ginitialize);
+  struct Generic *gen = genericref(ginitialize);
   struct Method1 **ini = STATIC_CAST(struct Method1**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
   U32 i;
@@ -442,7 +441,7 @@ cls_init(void)
 static void
 cls_deinit(void)
 {
-  struct Generic *gen = &COS_GEN_NAME(gdeinitialize);
+  struct Generic *gen = genericref(gdeinitialize);
   struct Method1 **dei = STATIC_CAST(struct Method1**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
   U32 i;
@@ -933,17 +932,17 @@ cos_method_callName(const struct Method *mth, OBJ obj[], char *str, U32 sz)
 }
 
 static void
-mth_trace(STR func, STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)
+mth_trace(STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)
 {
   char buf[128];
-    
+
   if (enter)
-    cos_logmsg(COS_LOGMSG_TRACE,func,file,line,"-> %s",cos_method_callName(mth,obj,buf,sizeof buf));
+    cos_logmsg(COS_LOGMSG_TRACE,0,file,line,"-> %s",cos_method_callName(mth,obj,buf,sizeof buf));
   else
-    cos_logmsg(COS_LOGMSG_TRACE,func,file,line,"<- %s",cos_method_name    (mth,    buf,sizeof buf));
+    cos_logmsg(COS_LOGMSG_TRACE,0,file,line,"<- %s",cos_method_name    (mth,    buf,sizeof buf));
 }
 
-void (*cos_method_trace)(STR,STR,int,BOOL,const struct Method*,OBJ*) = mth_trace;
+void (*cos_method_trace)(STR,int,BOOL,const struct Method*,OBJ*) = mth_trace;
 
 void
 cos_symbol_showSummary(FILE *fp)

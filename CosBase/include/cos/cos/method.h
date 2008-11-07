@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.13 2008/11/06 13:53:53 ldeniau Exp $
+ | $Id: method.h,v 1.14 2008/11/07 23:39:35 ldeniau Exp $
  |
 */
 
@@ -157,7 +157,7 @@
 /* method reference
  */
 #define COS_MTH_REF(NAME,...) \
-        ((OBJ)(void*)&COS_MTH_NAME(NAME,(__VA_ARGS__)))
+        (&COS_MTH_NAME(NAME,(__VA_ARGS__)))
 
 /* method declaration
  */
@@ -217,7 +217,7 @@ COS_CTR_BEGCTR
 COS_MTH_NEXTDEF(RET,NAME,PS,CS,COS_PP_LEN(CS)) \
 /* next_method classes */ \
 static struct Class* const _cos_mth_nxt_cls[] = \
-  { COS_PP_SEQ(COS_PP_MAP(CS,COS_MTH_CLS))}
+  { COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_REF_1))}
 
 /*
  * Low-level implementation
@@ -266,6 +266,8 @@ static void COS_FCT_NAME(NAME,CS) \
   /* selfs variables */ \
   _cos_mth_slf1* const restrict self = (_cos_mth_slf1*)_1; \
   COS_PP_SEP(COS_MTH_SLF_INI(C)) \
+  /* contract variable */ \
+  COS_CTR_DCL \
   /* trace variables (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)( \
   static const struct Method* const restrict _cos_mth_ref = \
@@ -281,8 +283,8 @@ static void COS_FCT_NAME(NAME,CS) \
   _cos_mth_fini: \
   /* arguments variables deinitialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_MTH_DEARG)),/* no arg */) \
-  /* test invariants (if requested) */ \
-  COS_MTH_INV(C); \
+  /* check invariant (if requested) */ \
+  COS_CTR_INVARIANT(C) \
   /* trace exiting the method (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(0,C),/* no trace */) \
   return; \
@@ -308,7 +310,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
    /* reference to function */ \
    COS_FCT_NAME(NAME,CS), \
    /* references to classes of specialization */ \
-   { COS_PP_SEQ(COS_PP_MAP(CS,COS_MTH_CLS)) } \
+   { COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_REF_1)) } \
 };
 
 // next_method definition
@@ -351,12 +353,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
   COS_PP_IF(COS_TOK_ISVALIST(COS_PRM_TYPE(a)))( \
     va_end(COS_PRM_NAME(a));, /* not va_list */) )
 
-// class reference
-#define COS_MTH_CLS(NAME) \
-  (&COS_CLS_NAME(NAME))
-
-/* retmethod
- */
+// retmethod
 #define COS_MTH_RET(...) \
   do { \
     COS_PP_IF(COS_PP_NOARG(__VA_ARGS__))(,COS_MTH_RETVAL = (__VA_ARGS__);) \
@@ -366,8 +363,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 
 #define COS_MTH_RETVAL (*(_cos_mth_ret)_ret)
 
-/* next_method
- */
+// next_method
 #define COS_MTH_NXT(...) \
   /* compile-time check: next_method arguments */ \
   (0 ? ((_cos_mth_nxt)next_method)(__VA_ARGS__) : \
@@ -387,8 +383,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
    cos_method_nextInit((FUNC*)(void*)&_cos_mth_nxt_p, \
                        _cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_cls))
 
-/* forward_message
-*/
+// forward_message
 #define COS_MTH_FWD(...) \
    COS_MTH_FWDN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
 
@@ -405,32 +400,23 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
     (_sel,COS_PP_SEQ(COS_MTH_FWD_USE(N)),_arg,_ret); \
   } while (0)
 
-/* invariant
-*/
-#define COS_MTH_INV(C) \
-  ((void)(COS_CONTRACT >= COS_CONTRACT_ALL && \
-   (COS_PP_CAT(cos_contract_invariant,C)(COS_PP_SEQ(COS_SEL_NAME(C)), \
-   __FUNC__,__FILE__,__LINE__),0)))
-
-/* method trace
-*/
+// method trace
 #if COS_LOGMSG <= COS_LOGMSG_DEBUG
 #define COS_METHOD_TRACE
 #endif
 
 #define COS_MTH_TRC(E,C) \
-  ((void)(cos_logmsg_level_ < COS_LOGMSG_DEBUG && ( \
-   cos_method_trace(__FUNC__,__FILE__, \
-   COS_PP_IF(E)(__LINE__,_cos_mth_line), E, _cos_mth_ref, (\
-   COS_PP_IF(E)(COS_MTH_OBJ_INI(C),(void)0), \
-   _cos_mth_objs)),0)));
-   
+  if (cos_logmsg_level_ == COS_LOGMSG_TRACE) { \
+    COS_PP_IF(E)(COS_MTH_OBJ_INI(C);,) \
+    cos_method_trace(__FILE__, COS_PP_IF(E)(__LINE__,_cos_mth_line), \
+                     E, _cos_mth_ref, _cos_mth_objs); \
+  }
+
 #define COS_MTH_TRC_LOC \
     if (COS_CONTRACT < COS_CONTRACT_POST || _cos_ctr_st != cos_tag_post) \
       _cos_mth_line = __LINE__;
 
-/* method info encoding and decoding
- */
+// method info encoding and decoding
 #define COS_MTH_INFO(...) \
   COS_MTH_INFO_0(__VA_ARGS__)
 

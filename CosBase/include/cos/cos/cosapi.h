@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.14 2008/11/07 14:12:07 ldeniau Exp $
+ | $Id: cosapi.h,v 1.15 2008/11/07 23:39:35 ldeniau Exp $
  |
 */
 
@@ -84,7 +84,7 @@ BOOL   cos_method_understand5(SEL,U32,U32,U32,U32,U32);
 char*  cos_method_name(const struct Method*,char*,U32);
 char*  cos_method_call(SEL,OBJ*,char*,U32);
 char*  cos_method_callName(const struct Method*,OBJ*,char*,U32);
-void (*cos_method_trace)(STR,STR,int,BOOL,const struct Method*,OBJ*);
+void (*cos_method_trace)(STR,int,BOOL,const struct Method*,OBJ*);
 void   cos_method_clearCache1(void);
 void   cos_method_clearCache2(void);
 void   cos_method_clearCache3(void);
@@ -353,7 +353,7 @@ cos_exception_extendedProtect(struct cos_exception_extendedProtect *ptr,
   struct cos_exception_context *cxt = cos_exception_context();
 
   ptr->prv = cxt->stk;
-  ptr->obj = (OBJ*)YES;
+  ptr->obj = (OBJ*)COS_YES;
   ptr->alt = obj;
   ptr->fct = fct;
   cxt->stk = (void*)ptr;
