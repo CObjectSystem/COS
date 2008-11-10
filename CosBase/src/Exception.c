@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.5 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: Exception.c,v 1.6 2008/11/10 08:41:47 ldeniau Exp $
  |
 */
 
@@ -124,11 +124,30 @@ defmethod(OBJ, ginitWithInt, ExSignal, (int)val)
   next_method(self, strsignal(val));
   self->sig = val;
 endmethod
+
 #else
+
 defmethod(OBJ, ginitWithInt, ExSignal, (int)val)
+  STR str;
+
+  switch(val) {
+  case SIGABRT: str = "Aborted"                 ; break;
+  case SIGALRM: str = "Alarm clock"             ; break;
+  case SIGBUS : str = "Bus error"               ; break;
+  case SIGFPE : str = "Floating point exception"; break;
+  case SIGILL : str = "Illegal instruction"     ; break;
+  case SIGINT : str = "Interrupt"               ; break;
+  case SIGQUIT: str = "Quit"                    ; break;
+  case SIGSEGV: str = "Segmentation fault"      ; break;
+  case SIGTERM: str = "Terminated"              ; break;
+  default     : str = ""                        ; break;
+  }
+
+  next_method(self, str);
   self->sig = val;
 endmethod
-#endif
+
+#endif // __GLIBC__
 
 defmethod(int, gint, ExSignal)
   retmethod(self->sig);
@@ -145,13 +164,9 @@ ex_signal(int sig)
 
   switch(sig) {
   case SIGABRT:
-#if SIGBUS
-  case SIGBUS:
-#elif SIG_BUS 
-  case SIG_BUS:
-#endif
-  case SIGFPE:
-  case SIGILL:
+  case SIGBUS :
+  case SIGFPE :
+  case SIGILL :
   case SIGSEGV: cos_showCallStack(stderr);
   }
 
@@ -172,14 +187,10 @@ void cos_signal_std(void)
 {
   cos_signal(SIGABRT);
   cos_signal(SIGALRM);
-#if SIGBUS
-  cos_signal(SIGBUS);
-#elif SIG_BUS 
-  cos_signal(SIG_BUS);
-#endif
-  cos_signal(SIGFPE);
-  cos_signal(SIGILL);
-  cos_signal(SIGINT);
+  cos_signal(SIGBUS );
+  cos_signal(SIGFPE );
+  cos_signal(SIGILL );
+  cos_signal(SIGINT );
   cos_signal(SIGQUIT);
   cos_signal(SIGSEGV);
   cos_signal(SIGTERM);

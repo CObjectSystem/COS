@@ -29,13 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.11 2008/11/07 14:12:07 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.12 2008/11/10 08:41:47 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Exception.h>
 #include <cos/gen/object.h>
+#include <cos/gen/message.h>
+#include <cos/gen/value.h>
 
 #include <stdlib.h>
 
@@ -111,18 +113,20 @@ unwind_stack(struct cos_exception_context *cxt)
 }
 
 static void
-verbose_terminate(OBJ ex, STR func, STR file, int line)
+terminate_default(OBJ ex, STR func, STR file, int line)
 {
+  STR reason = cos_any_isKindOf(ex, classref(Exception)) ? gstr(ex) : ".";
+
   if (cos_exception_uncaught() == YES)
-    cos_abort("exception %s thrown (%s:%d:%s) during stack unwinding "
+    cos_abort("exception %s (%s) thrown at (%s:%d:%s) during stack unwinding "
               "leading to an undefined behavior",
-              cos_any_className(ex), file, line, func);
+              cos_any_className(ex), reason, file, line, func);
   else
-    cos_info ("exiting with uncaught exception %s thrown (%s:%d:%s)",
-              cos_any_className(ex), file, line, func);
+    cos_info ("exiting with uncaught exception %s (%s) thrown at (%s:%d:%s)",
+              cos_any_className(ex), reason, file, line, func);
 }
 
-static cos_exception_handler handler = verbose_terminate;
+static cos_exception_handler handler = terminate_default;
 
 static void
 terminate(void)
