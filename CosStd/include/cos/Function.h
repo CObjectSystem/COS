@@ -32,13 +32,40 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Function.h,v 1.2 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: Function.h,v 1.3 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
 #error "COS: missing #include <cos/Object.h>"
 #endif 
+
+// ----- aliases
+
+typedef I32 (*I32FCT1)(I32);
+typedef I64 (*I64FCT1)(I64);
+typedef R64 (*R64FCT1)(R64);
+typedef C64 (*C64FCT1)(C64);
+
+typedef I32 (*I32FCT2)(I32,I32);
+typedef I64 (*I64FCT2)(I64,I64);
+typedef R64 (*R64FCT2)(R64,R64);
+typedef C64 (*C64FCT2)(C64,C64);
+
+typedef I32 (*I32FCT3)(I32,I32,I32);
+typedef I64 (*I64FCT3)(I64,I64,I64);
+typedef R64 (*R64FCT3)(R64,R64,R64);
+typedef C64 (*C64FCT3)(C64,C64,C64);
+
+typedef I32 (*I32FCT4)(I32,I32,I32,I32);
+typedef I64 (*I64FCT4)(I64,I64,I64,I64);
+typedef R64 (*R64FCT4)(R64,R64,R64,R64);
+typedef C64 (*C64FCT4)(C64,C64,C64,C64);
+
+typedef I32 (*I32FCT5)(I32,I32,I32,I32,I32);
+typedef I64 (*I64FCT5)(I64,I64,I64,I64,I64);
+typedef R64 (*R64FCT5)(R64,R64,R64,R64,R64);
+typedef C64 (*C64FCT5)(C64,C64,C64,C64,C64);
 
 // ----- definitions
 
@@ -80,6 +107,6 @@ defclass(CpxFunction5,Function) C64FCT5 fct; endclass
 
 #define aFunctionT(T,F,N) \
   ((OBJ)&(struct COS_PP_CAT3(T,Function,N)) { \
-   {{{ COS_CLS_NAME(COS_PP_CAT3(T,Function,N)).Behavior.id, COS_RC_AUTO }}}, F })
+   {{{ COS_CLS_NAME(COS_PP_CAT3(T,Function,N)).Behavior.id, COS_RC_AUTO }}}, (F) })
 
 #endif // COS_FUNCTION_H

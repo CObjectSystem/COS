@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.4 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: Value.h,v 1.5 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
@@ -43,15 +43,6 @@
 /* Values subclasses:
 
 <- Value
-   <- Size        (1-5 dim)
-
-   <- Index       (1-5 dim)
-   <- Point       (1-5 dim)
-
-   <- Range       (1-5 dim)
-   <- Slice       (1-5 dim)
-   <- Sequence    (1-5 dim)
-
    <- Number
       <- Integral
          <- Int
@@ -61,23 +52,24 @@
       <- Floating
          <- Float
          <- Complex
+
+   <- Range       (1-5 dim)
+   <- Slice       (1-5 dim)
+   <- Sequence    (1-5 dim)
 */
 
 defclass(Value)
 endclass
 
+/* NOTE-USER: indexing policy
+   indexing starts at zero
+   negative indexes mean starting from the end
+   e.g. 0 is the first element, -1 is the last element
+ */
+static inline U32
+index_abs(I32 index, U32 size) {
+  return index + (index < 0) * size;
+}
+
 #endif // COS_VALUE_H
-
-// include common subclasses
-
-#ifndef ONLY__COS_VALUE_H
-#include <cos/Size.h>
-#include <cos/Index.h>
-#include <cos/Range.h>
-#include <cos/Slice.h>
-#include <cos/Point.h>
-#include <cos/Sequence.h>
-#else
-#undef  ONLY__COS_VALUE_H
-#endif
 

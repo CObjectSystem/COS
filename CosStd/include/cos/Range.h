@@ -32,14 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.2 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: Range.h,v 1.3 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
-#define ONLY__COS_VALUE_H
 #include <cos/Value.h>
-
-// ----- definitions
 
 /* NOTE-USER: indexing policy
    indexing starts at zero
@@ -95,10 +92,47 @@ endclass
         atRangeN(COS_PP_IF(COS_PP_ISTUPLE(starts))(COS_PP_LEN(starts),1), \
                  starts,ends,strides)
 
-#define atRangeN(N,starts,ends,strides) ( &(struct COS_PP_CAT(Range,N)) { \
+#define atRangeN(N,starts,ends,strides) \
+        ( COS_PP_CAT3(Range,N,_init)(&(struct COS_PP_CAT(Range,N)) { \
         {{{{ COS_CLS_NAME(COS_PP_CAT(Range,N)).Behavior.id, COS_RC_AUTO }}}}, \
          COS_PP_IF(COS_PP_ISONE(N))(starts , { COS_PP_SEQ(starts ) }), \
          COS_PP_IF(COS_PP_ISONE(N))(ends   , { COS_PP_SEQ(ends   ) }), \
-         COS_PP_IF(COS_PP_ISONE(N))(strides, { COS_PP_SEQ(strides) }) } )
+         COS_PP_IF(COS_PP_ISONE(N))(strides, { COS_PP_SEQ(strides) }) }) )
+
+static inline struct Range1*
+Range1_init(struct Range1 *r) {
+  test_assert( r->stride,
+               "stride must be non-zero" );
+  return r;
+}
+
+static inline struct Range2*
+Range2_init(struct Range2 *r) {
+  test_assert( r->stride[0] && r->stride[1],
+               "strides must be non-zero" );
+  return r;
+}
+
+static inline struct Range3*
+Range3_init(struct Range3 *r) {
+  test_assert( r->stride[0] && r->stride[1] && r->stride[2],
+               "strides must be non-zero" );
+  return r;
+}
+
+static inline struct Range4*
+Range4_init(struct Range4 *r) {
+  test_assert( r->stride[0] && r->stride[1] && r->stride[2] && r->stride[3],
+               "strides must be non-zero" );
+  return r;
+}
+
+static inline struct Range5*
+Range5_init(struct Range5 *r) {
+  test_assert( r->stride[0] && r->stride[1] && r->stride[2] &&
+               r->stride[3] && r->stride[4],
+               "strides must be non-zero" );
+  return r;
+}
 
 #endif // COS_RANGE_H

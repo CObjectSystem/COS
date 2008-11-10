@@ -32,11 +32,9 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.5 2008/10/21 15:43:42 ldeniau Exp $
+ | $Id: Vector.h,v 1.6 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
-
-#include <cos/Index.h>
 
 /* Vector subclasses:
 <- Vector
@@ -233,6 +231,10 @@ defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
           (subsize), 0 }, (vector) }, (substart)) )
 
 // ----- automatic sub-vectors init/checker
+
+#ifndef COS_VALUE_H
+#include <cos/Value.h>
+#endif
 
 static inline struct IntSubVector*
 IntSubVector_init(struct IntSubVector *subvec, I32 substart)

@@ -32,16 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.1 2008/10/24 22:03:30 ldeniau Exp $
+ | $Id: container.h,v 1.2 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
 #error "COS: missing #include <cos/Object.h>"
 #endif 
-
-// empty collection
-defgeneric(OBJ, gclear, _1);
 
 // generic accessors
 defgeneric(OBJ, gput   , to, obj);

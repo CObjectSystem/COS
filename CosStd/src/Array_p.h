@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_p.h,v 1.1 2008/10/24 16:41:29 ldeniau Exp $
+ | $Id: Array_p.h,v 1.2 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
@@ -41,8 +41,8 @@ array_alloc(U32 size)
 {
   enum { N = 10 };
   static struct Class* cls[N] = {
-    classref(Array0,Array1,Array2,Array3,Array4),
-    classref(Array5,Array6,Array7,Array8,Array9) }; 
+    classref(Array0,Array1,Array2,Array3,Array4,
+             Array5,Array6,Array7,Array8,Array9) }; 
 
   useclass(ArrayN);
 
@@ -83,22 +83,28 @@ dynarray_alloc(U32 size)
   struct Array    * arr = &darr->DynArrayN.Array;
 
   arr->object = malloc(size * sizeof *arr->object);
-  if (!arr->object) { gdealloc(_arr); THROW(ExBadAlloc); }
+  
+  if (!arr->object) {
+    gdealloc(_arr);
+    THROW(ExBadAlloc);
+  }
+
   darr->capacity = size;
 
   return arr;
 }
 
 static void
-dynarray_resizeBy(struct DynArray *darr, double factor)
+dynarray_resizeBy(struct DynArray *darr, R64 factor)
 {
   useclass(ExBadAlloc);
 
   struct Array *arr = &darr->DynArrayN.Array;
   U32  size = darr->capacity * factor;
-  OBJ *object = realloc(arr->object, size * sizeof *arr->object);
+  OBJ *object = realloc(arr->object, size * sizeof(OBJ));
 
   if (!object) THROW(ExBadAlloc);
+  
   arr->object = object;
   darr->capacity = size;
 }

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stdgen.c,v 1.1 2008/10/24 22:03:30 ldeniau Exp $
+ | $Id: stdgen.c,v 1.2 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
@@ -39,32 +39,40 @@
 // -------------------------
 #include <cos/gen/algorithm.h>
 
-// in place (value returned is discarded)
-makgeneric(void, gapply, fun, _1);
+// in place (returned value is discarded if any)
+makgeneric(OBJ, gapply  , fun, _1);
+makgeneric(OBJ, greverse, _1);
 
-// map-reduce discarding Nil result
+// map
 makgeneric(OBJ, gmap   , fun, _1);
 makgeneric(OBJ, gmap2  , fun, _1, _2);
 makgeneric(OBJ, gmap3  , fun, _1, _2, _3);
 makgeneric(OBJ, gmap4  , fun, _1, _2, _3, _4);
-makgeneric(OBJ, gscan  , fun, acc, _1);
 
-// map-reduce stopping on Nil result
-makgeneric(OBJ, gfilter, fun, _1);
-makgeneric(OBJ, gfold  , fun, acc, _1);
+// filter, reduce
+makgeneric(OBJ, gfilter    , fun, _1);
+makgeneric(OBJ, greduce    , fun, res, _1);
+makgeneric(OBJ, gaccumulate, fun, acc, _1);
 
-// generator stopping on Nil result
-makgeneric(OBJ, gunfold, fun, seed);
+// zip
+makgeneric(OBJ, gzip , _1, _2);
+makgeneric(OBJ, gzip3, _1, _2, _3);
+makgeneric(OBJ, gzip4, _1, _2, _3, _4);
+makgeneric(OBJ, gzip5, _1, _2, _3, _4, _5);
+makgeneric(OBJ, gzipn, _1);
 
-// sorting (fun must return Ordered)
-makgeneric(OBJ, gsort  , fun, _1);
+// all, any, min, max
+makgeneric(OBJ, gall, fun, _1);
+makgeneric(OBJ, gany, fun, _1);
+makgeneric(OBJ, gmin, _1);
+makgeneric(OBJ, gmax, _1);
+
+// sorting (in place, fun must return Ordered)
+makgeneric(OBJ, gsort, fun, _1);
 
 // linear      find if fun returns TrueFalse
 // logarithmic find if fun returns Ordered
-makgeneric(OBJ, gfind  , fun, obj, _1);
-
-// seq-like algorithms
-makgeneric(OBJ, greverse, _1);
+makgeneric(OBJ, gfind, fun, obj, _1);
 
 // bag-like algorithms
 makgeneric(OBJ, gunique, _1);
@@ -78,9 +86,6 @@ makgeneric(OBJ, gintersect, _1, _2);
 
 // -------------------------
 #include <cos/gen/container.h>
-
-// empty collection
-makgeneric(OBJ, gclear, _1);
 
 // generic accessors
 makgeneric(OBJ, gput   , to, obj);
@@ -129,10 +134,6 @@ makgeneric(OBJ, gand    , _1, _2);
 makgeneric(OBJ, gor     , _1, _2);
 makgeneric(OBJ, gxor    , _1, _2);
 makgeneric(OBJ, gimplies, _1, _2);
-
-// return TrueFalse or Nil (= stop)
-makgeneric(OBJ, gall    , _1, _2);
-makgeneric(OBJ, gany    , _1, _2);
 
 // -------------------------
 #include <cos/gen/operator.h>

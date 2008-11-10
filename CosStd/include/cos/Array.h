@@ -32,12 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.6 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: Array.h,v 1.7 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
 #include <cos/Collection.h>
-#include <cos/Index.h>
 
 /* Array subclasses:
 <- Collection
@@ -106,18 +105,23 @@ defclass(ArrayN, Array) OBJ _object[]; endclass
 
 // ----- automatic sub-vectors init/checker
 
+#ifndef COS_VALUE_H
+#include <cos/Value.h>
+#endif
+
 static inline struct Array*
 SubArray_init(struct SubArray *subarr, I32 substart)
 {
-  useclass(Array);
+  test_assert( cos_any_superClass(subarr->array) == classref(Array),
+               "subarray accepts only fixed size array" );
 
-  OBJ arr_spr = (OBJ)cos_class_get(cos_any_id(subarr->array))->spr;
   struct Array *sarr = &subarr->Array;
   struct Array * arr = STATIC_CAST(struct Array*, subarr->array);
 
-  test_assert( arr_spr == Array, "SubArray work only on fixed size Array" );
   U32 start = index_abs(substart, arr->size);
-  test_assert( start + sarr->size <= arr->size, "SubArray index is out of range" );
+  test_assert( start + sarr->size <= arr->size,
+               "subarray out of range" );
+
   sarr->object = arr->object + start;
 
   return sarr;

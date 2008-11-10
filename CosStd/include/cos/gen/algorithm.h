@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.1 2008/10/24 22:03:30 ldeniau Exp $
+ | $Id: algorithm.h,v 1.2 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
@@ -40,32 +40,40 @@
 #error "COS: missing #include <cos/Object.h>"
 #endif 
 
-// in place (value returned is discarded)
-defgeneric(void, gapply, fun, _1);
+// in place (returned value is discarded if any)
+defgeneric(OBJ, gapply  , fun, _1);
+defgeneric(OBJ, greverse, _1);
 
-// map-reduce discarding Nil result
+// map
 defgeneric(OBJ, gmap   , fun, _1);
 defgeneric(OBJ, gmap2  , fun, _1, _2);
 defgeneric(OBJ, gmap3  , fun, _1, _2, _3);
 defgeneric(OBJ, gmap4  , fun, _1, _2, _3, _4);
-defgeneric(OBJ, gscan  , fun, acc, _1);
 
-// map-reduce stopping on Nil result
-defgeneric(OBJ, gfilter, fun, _1);
-defgeneric(OBJ, gfold  , fun, acc, _1);
+// filter, reduce
+defgeneric(OBJ, gfilter    , fun, _1);
+defgeneric(OBJ, greduce    , fun, res, _1);
+defgeneric(OBJ, gaccumulate, fun, acc, _1);
 
-// generator stopping on Nil result
-defgeneric(OBJ, gunfold, fun, seed);
+// zip
+defgeneric(OBJ, gzip , _1, _2);
+defgeneric(OBJ, gzip3, _1, _2, _3);
+defgeneric(OBJ, gzip4, _1, _2, _3, _4);
+defgeneric(OBJ, gzip5, _1, _2, _3, _4, _5);
+defgeneric(OBJ, gzipn, _1);
 
-// sorting (fun must return Ordered)
-defgeneric(OBJ, gsort  , fun, _1);
+// all, any, min, max
+defgeneric(OBJ, gall, fun, _1);
+defgeneric(OBJ, gany, fun, _1);
+defgeneric(OBJ, gmin, _1);
+defgeneric(OBJ, gmax, _1);
+
+// sorting (in place, fun must return Ordered)
+defgeneric(OBJ, gsort, fun, _1);
 
 // linear      find if fun returns TrueFalse
 // logarithmic find if fun returns Ordered
-defgeneric(OBJ, gfind  , fun, obj, _1);
-
-// seq-like algorithms
-defgeneric(OBJ, greverse, _1);
+defgeneric(OBJ, gfind, fun, obj, _1);
 
 // bag-like algorithms
 defgeneric(OBJ, gunique, _1);

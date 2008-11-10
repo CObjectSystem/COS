@@ -32,11 +32,10 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.4 2008/10/21 15:43:42 ldeniau Exp $
+ | $Id: Slice.h,v 1.5 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
-#include <cos/Index.h>
 #include <cos/Range.h>
 
 // ----- definitions
@@ -284,7 +283,7 @@ Slice5_range(struct Slice5 *s, struct Range5 *r, U32 size[5]) {
 // ----- automatic constructors
 
 #define aSlice(...)  ( (OBJ)atSlice(__VA_ARGS__) )
-#define atSlice(...) COS_PP_CAT_NARG(aSlice_, __VA_ARGS__)(__VA_ARGS__)
+#define atSlice(...) COS_PP_CAT_NARG(atSlice_, __VA_ARGS__)(__VA_ARGS__)
 
 #define atSlice_2(start,sizes) \
         atSlice_3(start,sizes, \
@@ -296,10 +295,46 @@ Slice5_range(struct Slice5 *s, struct Range5 *r, U32 size[5]) {
                  start,sizes,strides)
 
 #define atSliceN(N,start,sizes,strides) \
-        ( &(struct COS_PP_CAT(Slice,N)) { \
-          {{{{ COS_CLS_NAME(COS_PP_CAT(Slice,N)).Behavior.id, COS_RC_AUTO }}}}, \
-           start, \
-           COS_PP_IF(COS_PP_ISONE(N))(sizes  , { COS_PP_SEQ(sizes  ) }), \
-           COS_PP_IF(COS_PP_ISONE(N))(strides, { COS_PP_SEQ(strides) }) } )
+        COS_PP_CAT3(Slice,N,_init)(&(struct COS_PP_CAT(Slice,N)) { \
+        {{{{ COS_CLS_NAME(COS_PP_CAT(Slice,N)).Behavior.id, COS_RC_AUTO }}}}, \
+         start, \
+         COS_PP_IF(COS_PP_ISONE(N))(sizes  , { COS_PP_SEQ(sizes  ) }), \
+         COS_PP_IF(COS_PP_ISONE(N))(strides, { COS_PP_SEQ(strides) }) } )
+
+static inline struct Slice1*
+Slice1_init(struct Slice1 *s) {
+  test_assert( s->stride,
+               "stride must be non-zero" );
+  return s;
+}
+
+static inline struct Slice2*
+Slice2_init(struct Slice2 *s) {
+  test_assert( s->stride[0] && s->stride[1],
+               "strides must be non-zero" );
+  return s;
+}
+
+static inline struct Slice3*
+Slice3_init(struct Slice3 *s) {
+  test_assert( s->stride[0] && s->stride[1] && s->stride[2],
+               "strides must be non-zero" );
+  return s;
+}
+
+static inline struct Slice4*
+Slice4_init(struct Slice4 *s) {
+  test_assert( s->stride[0] && s->stride[1] && s->stride[2] && s->stride[3],
+               "strides must be non-zero" );
+  return s;
+}
+
+static inline struct Slice5*
+Slice5_init(struct Slice5 *s) {
+  test_assert( s->stride[0] && s->stride[1] && s->stride[2] &&
+               s->stride[3] && s->stride[4],
+               "strides must be non-zero" );
+  return s;
+}
 
 #endif // COS_SLICE_H

@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS library
+# | COS Standard Library
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,14 +29,14 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.3 2008/10/06 17:34:57 ldeniau Exp $
+# | $Id: Makefile,v 1.4 2008/11/10 08:00:42 ldeniau Exp $
 # |
 #
 
 include ../build/prologue
 
 library = CosStd
-version = $(COS_VERSION)
+version = 0.1
 targets = debug profile release
 moddeps = ../CosBase
 

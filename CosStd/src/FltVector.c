@@ -29,21 +29,17 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.4 2008/10/24 16:41:29 ldeniau Exp $
+ | $Id: FltVector.c,v 1.5 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Vector.h>
-#include <cos/Number.h>
-#include <cos/Size.h>
-#include <cos/Index.h>
-#include <cos/Range.h>
+#include <cos/Value.h>
 #include <cos/Slice.h>
-#include <cos/Point.h>
-#include <cos/Functor.h>
+#include <cos/Number.h>
 #include <cos/Sequence.h>
-
+#include <cos/Functor.h>
 #include <cos/gen/container.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
@@ -140,8 +136,9 @@ dynvector_resizeBy(struct FltDynVector *dvec, FLOAT factor)
 
 // ----- ctor/dtor of a vector
 
-defmethod(OBJ, ginitWith, mFltVector, Size1)
-  struct FltVector* vec = vector_alloc(self2->size);
+defmethod(OBJ, ginitWith, mFltVector, Int)
+  test_assert(self2->value >= 0,"negative size");
+  struct FltVector* vec = vector_alloc(self2->value);
 
   for (U32 i = 0; i < vec->size; i++)
     vec->value[i] = 0;
@@ -158,8 +155,9 @@ defmethod(OBJ, ginitWith, mFltVector, FltVector)
   retmethod((OBJ)vec);
 endmethod
 
-defmethod(OBJ, ginitWith2, mFltVector, Value, Size1)
-  struct FltVector* vec = vector_alloc(self3->size);
+defmethod(OBJ, ginitWith2, mFltVector, Value, Int)
+  test_assert(self3->value >= 0,"negative size");
+  struct FltVector* vec = vector_alloc(self3->value);
   R64 value = gflt(_2);
 
   for (U32 i = 0; i < vec->size; i++)
@@ -192,7 +190,7 @@ defmethod(OBJ, ginitWith2, mFltVector, FltVector, IntVector)
 
   for (U32 i = 0; i < vec->size; i++) {
     U32 j = index_abs(self3->value[i], self2->size);
-    test_assert( j < self2->size );
+    test_assert( j < self2->size, "index out of range" );
     vec->value[i] = self2->value[j];
   }
 
@@ -205,8 +203,9 @@ defmethod(OBJ, ginit, mFltDynVector)
   retmethod( (OBJ)dynvector_alloc(10) );
 endmethod
 
-defmethod(OBJ, ginitWith, mFltDynVector, Size1)
-  retmethod( (OBJ)dynvector_alloc(self2->size) );
+defmethod(OBJ, ginitWith, mFltDynVector, Int)
+  test_assert(self2->value >= 0,"negative size");
+  retmethod( (OBJ)dynvector_alloc(self2->value) );
 endmethod
 
 defmethod(OBJ, gdeinit, FltDynVectorN)
@@ -284,10 +283,10 @@ defmethod(OBJ, gput, FltVector, FltVector)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, FltVector, Value, Index1)
-  U32 i = index_abs(self3->index, self->size);
+defmethod(OBJ, gputAt, FltVector, Value, Int)
+  U32 i = index_abs(self3->value, self->size);
 
-  test_assert( i < self->size );
+  test_assert( i < self->size, "index out of range" );
   self1->value[i] = gflt(_2);
 
   retmethod(_1);
@@ -316,17 +315,17 @@ defmethod(OBJ, gputAt, FltVector, Value, IntVector)
 
   for (U32 i = 0; i < self3->size; i++) {
     U32 j = index_abs(self3->value[i], self->size);
-    test_assert( j < self->size );
+    test_assert( j < self->size, "index out of range" );
     self1->value[j] = value;
   }
 
   retmethod(_1);  
 endmethod
 
-defmethod(OBJ, gputAt, FltVector, FltVector, Index1)
-  U32 start = index_abs(self3->index, self->size);
+defmethod(OBJ, gputAt, FltVector, FltVector, Int)
+  U32 start = index_abs(self3->value, self->size);
 
-  test_assert( start+self2->size < self->size );
+  test_assert( start+self2->size < self->size, "index out of range" );
 
   for (U32 i = 0; i < self2->size; i++)
     self1->value[start+i] = self2->value[i];
@@ -359,7 +358,7 @@ defmethod(OBJ, gputAt, FltVector, FltVector, IntVector)
 
   for (i = j = 0; i < self3->size; i++, j++) {
     U32 k = index_abs(self3->value[i], self->size);
-    test_assert( k < self->size );
+    test_assert( k < self->size, "index out of range" );
     if (j > self2->size) j = 0;
     self1->value[k] = self2->value[j];
   }
@@ -369,13 +368,13 @@ endmethod
 
 // ----- getter
 
-defmethod(R64, gfltAt, FltVector, Index1)
-  U32 i = index_abs(self2->index, self->size);
-  test_assert( i < self->size );
+defmethod(R64, gfltAt, FltVector, Int)
+  U32 i = index_abs(self2->value, self->size);
+  test_assert( i < self->size, "index out of range" );
   retmethod( self->value[i] );
 endmethod
 
-defmethod(OBJ, ggetAt, FltVector, Index1)
+defmethod(OBJ, ggetAt, FltVector, Int)
   retmethod( gautoRelease(aFloat(gfltAt(_1,_2))) );
 endmethod
 
@@ -515,43 +514,4 @@ defmethod(OBJ, gput, FltVector, Sequence1)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, mFltVector, Point1)
-  struct FltVector* vec = vector_alloc(1);
-  vec->value[0] = self2->coord;
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mFltVector, Point2)
-  struct FltVector* vec = vector_alloc(2);
-  vec->value[0] = self2->coord[0];
-  vec->value[1] = self2->coord[1];
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mFltVector, Point3)
-  struct FltVector* vec = vector_alloc(3);
-  vec->value[0] = self2->coord[0];
-  vec->value[1] = self2->coord[1];
-  vec->value[2] = self2->coord[2];
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mFltVector, Point4)
-  struct FltVector* vec = vector_alloc(4);
-  vec->value[0] = self2->coord[0];
-  vec->value[1] = self2->coord[1];
-  vec->value[2] = self2->coord[2];
-  vec->value[3] = self2->coord[3];
-  retmethod((OBJ)vec);
-endmethod
-
-defmethod(OBJ, ginitWith, mFltVector, Point5)
-  struct FltVector* vec = vector_alloc(5);
-  vec->value[0] = self2->coord[0];
-  vec->value[1] = self2->coord[1];
-  vec->value[2] = self2->coord[2];
-  vec->value[3] = self2->coord[3];
-  vec->value[4] = self2->coord[4];
-  retmethod((OBJ)vec);
-endmethod
 

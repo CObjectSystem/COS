@@ -32,11 +32,10 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.2 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: Sequence.h,v 1.3 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
-#define ONLY__COS_VALUE_H
 #include <cos/Value.h>
 
 // ----- definitions

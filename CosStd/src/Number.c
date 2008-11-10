@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.5 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: Number.c,v 1.6 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
@@ -542,47 +542,47 @@ endmethod
 useclass(Lesser,Equal,Greater);
 
 defmethod(OBJ, gcompare, Int, Int)
-  retmethod(self1->value < self2->value ? Lesser :
+  retmethod(self1->value < self2->value ? Lesser  :
             self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Int, Long)
-  retmethod(self1->value < self2->value ? Lesser :
+  retmethod(self1->value < self2->value ? Lesser  :
             self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Int, Float)
-  retmethod(self1->value < self2->value ? Lesser :
+  retmethod(self1->value < self2->value ? Lesser  :
             self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Long, Int)
-  retmethod(self1->value < self2->value ? Lesser :
+  retmethod(self1->value < self2->value ? Lesser  :
             self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Long, Long)
-  retmethod(self1->value < self2->value ? Lesser :
+  retmethod(self1->value < self2->value ? Lesser  :
             self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Long, Float)
-  retmethod(self1->value < self2->value ? Lesser :
+  retmethod(self1->value < self2->value ? Lesser  :
             self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Float, Int)
-  retmethod(self1->value < self2->value ? Lesser :
+  retmethod(self1->value < self2->value ? Lesser  :
             self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Float, Long)
-  retmethod(self1->value < self2->value ? Lesser :
+  retmethod(self1->value < self2->value ? Lesser  :
             self1->value > self2->value ? Greater : Equal);
 endmethod
 
 defmethod(OBJ, gcompare, Float, Float)
-  retmethod(self1->value < self2->value ? Lesser :
+  retmethod(self1->value < self2->value ? Lesser  :
             self1->value > self2->value ? Greater : Equal);
 endmethod
 

@@ -29,23 +29,24 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.7 2008/10/27 08:49:19 ldeniau Exp $
+ | $Id: Functor.c,v 1.8 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Array.h>
 #include <cos/Functor.h>
+#include <cos/gen/value.h>
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
 
-makclass(Functor , Object );
+makclass(Functor);
 
-makclass(Functor1, Functor);
-makclass(Functor2, Functor);
-makclass(Functor3, Functor);
-makclass(Functor4, Functor);
-makclass(Functor5, Functor);
+makclass(Functor1 , Functor);
+makclass(Functor2 , Functor);
+makclass(Functor3 , Functor);
+makclass(Functor4 , Functor);
+makclass(Functor5 , Functor);
 
 makclass(Function1, Functor);
 makclass(Function2, Functor);
@@ -85,6 +86,7 @@ defmethod(OBJ, ginitWith, Functor1, Functor1)
   self->fct   = self2->fct;
   self->arity = self2->arity;
   self->arg   = self2->arg ? gretain(self2->arg) : 0;
+  
   retmethod(_1);
 endmethod
 
@@ -93,6 +95,7 @@ defmethod(OBJ, ginitWith, Functor2, Functor2)
   self->arity  = self2->arity;
   self->arg[0] = self2->arg[0] ? gretain(self2->arg[0]) : 0;
   self->arg[1] = self2->arg[1] ? gretain(self2->arg[1]) : 0;
+  
   retmethod(_1);
 endmethod
 
@@ -128,32 +131,38 @@ endmethod
 
 defmethod(OBJ, ginitWith, Function1, Function1)
   self->fct = self2->fct;
+  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Function2, Function2)
   self->fct = self2->fct;
+  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Function3, Function3)
   self->fct = self2->fct;
+  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Function4, Function4)
   self->fct = self2->fct;
+  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Function5, Function5)
   self->fct = self2->fct;
+  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, MultiFunctor2, MultiFunctor2)
   self->functor[0] = gretain(self2->functor[0]);
   self->functor[1] = gretain(self2->functor[1]);
+  
   retmethod(_1);
 endmethod
 
@@ -161,6 +170,7 @@ defmethod(OBJ, ginitWith, MultiFunctor3, MultiFunctor3)
   self->functor[0] = gretain(self2->functor[0]);
   self->functor[1] = gretain(self2->functor[1]);
   self->functor[2] = gretain(self2->functor[2]);
+  
   retmethod(_1);
 endmethod
 
@@ -186,26 +196,32 @@ defmethod(OBJ, ginitWith, mCompose, Compose) // clone
   retmethod( ginitWith((OBJ)compose_alloc(self2->size),_2) );
 endmethod
 
-defmethod(OBJ, ginitWith, mCompose, Array)
+defmethod(OBJ, ginitWith, mCompose, Array) // clone
   retmethod( ginitWith((OBJ)compose_alloc(self2->size),_2) );
 endmethod
 
-defmethod(OBJ, ginitWith, Compose, Compose)
-  test_assert(self->size == self2->size);
+defmethod(OBJ, ginitWith, Compose, Compose) // copy
+  test_assert(self->size == self2->size, "incompatible composition size");
 
-  for (U32 i = 0; i < self->size; i++)
-    self->functor[i] = gretain(self2->functor[i]);
+  OBJ *src = self2->functor;
+  OBJ *fun = self1->functor;
+  OBJ *end = self1->functor+self1->size;
+
+  while(fun < end)
+    *fun++ = gretain(*src++);
 
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Compose, Array)
-  U32 size = self->size;
+  test_assert(self->size == self2->size, "incompatible composition size");
 
-  test_assert(self->size == self2->size);
+  OBJ *obj = self2->object;
+  OBJ *fun = self1->functor+self1->size;
+  OBJ *end = self1->functor;
 
-  for (U32 i = 0; i < size; i++)
-    self->functor[size-i-1] = gretain(self2->object[i]);
+  while(fun-- > end) // reverse references
+    *fun = gretain(*obj++);
   
   retmethod(_1);
 endmethod
@@ -218,12 +234,14 @@ endmethod
 
 defmethod(OBJ, gdeinit, Functor1)
   if (self->arg) grelease(self->arg);
+  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gdeinit, Functor2)
   if (self->arg[0]) grelease(self->arg[0]);
   if (self->arg[1]) grelease(self->arg[1]);
+
   retmethod(_1);
 endmethod
 
@@ -251,6 +269,7 @@ endmethod
 defmethod(OBJ, gdeinit, MultiFunctor2)
   grelease(self->functor[0]);
   grelease(self->functor[1]);
+  
   retmethod(_1);
 endmethod
 
@@ -258,6 +277,7 @@ defmethod(OBJ, gdeinit, MultiFunctor3)
   grelease(self->functor[0]);
   grelease(self->functor[1]);
   grelease(self->functor[2]);
+  
   retmethod(_1);
 endmethod
 
@@ -266,6 +286,71 @@ defmethod(OBJ, gdeinit, Compose)
     grelease(self->functor[i]);
 
   retmethod(_1);
+endmethod
+
+// ----- Size (argc)
+
+static const U8 argc[32] = {
+//  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
+    0,  1,  1,  2,  1,  2,  2,  3,  1,  2,
+// 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+    2,  3,  2,  3,  3,  4,  1,  2,  2,  3,
+// 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    2,  3,  3,  4,  2,  3,  3,  4,  3,  4,
+// 30, 31
+    4,  5
+};
+
+defmethod(U32, gsize, Functor1)
+  retmethod(0);
+endmethod
+
+defmethod(U32, gsize, Functor2)
+  retmethod(2-argc[self->arity]);
+endmethod
+
+defmethod(U32, gsize, Functor3)
+  retmethod(3-argc[self->arity]);
+endmethod
+
+defmethod(U32, gsize, Functor4)
+  retmethod(4-argc[self->arity]);
+endmethod
+
+defmethod(U32, gsize, Functor5)
+  retmethod(5-argc[self->arity]);
+endmethod
+
+defmethod(U32, gsize, Function1)
+  retmethod(1);
+endmethod
+
+defmethod(U32, gsize, Function2)
+  retmethod(2);
+endmethod
+
+defmethod(U32, gsize, Function3)
+  retmethod(3);
+endmethod
+
+defmethod(U32, gsize, Function4)
+  retmethod(4);
+endmethod
+
+defmethod(U32, gsize, Function5)
+  retmethod(5);
+endmethod
+
+defmethod(U32, gsize, Compose)
+  retmethod(gsize(self->functor[0]));
+endmethod
+
+defmethod(U32, gsize, MultiFunctor2)
+  retmethod(gsize(self->functor[0]));
+endmethod
+
+defmethod(U32, gsize, MultiFunctor3)
+  retmethod(gsize(self->functor[0]));
 endmethod
 
 // ----- Eval
@@ -517,42 +602,57 @@ endmethod
 // ----- Compose
 
 defmethod(OBJ, geval1, Compose, (OBJ))
-  forward_message(self->functor[0]);
+  OBJ *fun = self->functor;
+  OBJ *end = self->functor+self->size;
 
-  for (U32 i = 1; i < self->size; i++)
-    RETVAL = geval1(self->functor[i], RETVAL);
+  forward_message(*fun++);
+
+  while (fun < end)
+    RETVAL = geval1(*fun++, RETVAL);
 
 endmethod
 
 defmethod(OBJ, geval2, Compose, (OBJ), (OBJ))
-  forward_message(self->functor[0]);
+  OBJ *fun = self->functor;
+  OBJ *end = self->functor+self->size;
+  
+  forward_message(*fun++);
 
-  for (U32 i = 1; i < self->size; i++)
-    RETVAL = geval1(self->functor[i], RETVAL);
+  while (fun < end)
+    RETVAL = geval1(*fun++, RETVAL);
 
 endmethod
 
 defmethod(OBJ, geval3, Compose, (OBJ), (OBJ), (OBJ))
-  forward_message(self->functor[0]);
+  OBJ *fun = self->functor;
+  OBJ *end = self->functor+self->size;
+  
+  forward_message(*fun++);
 
-  for (U32 i = 1; i < self->size; i++)
-    RETVAL = geval1(self->functor[i], RETVAL);
+  while (fun < end)
+    RETVAL = geval1(*fun++, RETVAL);
 
 endmethod
 
 defmethod(OBJ, geval4, Compose, (OBJ), (OBJ), (OBJ), (OBJ))
-  forward_message(self->functor[0]);
+  OBJ *fun = self->functor;
+  OBJ *end = self->functor+self->size;
+  
+  forward_message(*fun++);
 
-  for (U32 i = 1; i < self->size; i++)
-    RETVAL = geval1(self->functor[i], RETVAL);
+  while (fun < end)
+    RETVAL = geval1(*fun++, RETVAL);
 
 endmethod
 
 defmethod(OBJ, geval5, Compose, (OBJ), (OBJ), (OBJ), (OBJ), (OBJ))
-  forward_message(self->functor[0]);
+  OBJ *fun = self->functor;
+  OBJ *end = self->functor+self->size;
+  
+  forward_message(*fun++);
 
-  for (U32 i = 1; i < self->size; i++)
-    RETVAL = geval1(self->functor[i], RETVAL);
+  while (fun < end)
+    RETVAL = geval1(*fun++, RETVAL);
 
 endmethod
 

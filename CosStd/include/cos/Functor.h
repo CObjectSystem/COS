@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.7 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: Functor.h,v 1.8 2008/11/10 08:00:42 ldeniau Exp $
  |
 */
 
@@ -76,11 +76,25 @@ endclass
 
 // ----- Functor with zero arity
 
-defclass(Function1,Functor) OBJFCT1 fct; endclass
-defclass(Function2,Functor) OBJFCT2 fct; endclass
-defclass(Function3,Functor) OBJFCT3 fct; endclass
-defclass(Function4,Functor) OBJFCT4 fct; endclass
-defclass(Function5,Functor) OBJFCT5 fct; endclass
+defclass(Function1, Functor)
+  OBJFCT1 fct;
+endclass
+
+defclass(Function2, Functor)
+  OBJFCT2 fct;
+endclass
+
+defclass(Function3, Functor)
+  OBJFCT3 fct;
+endclass
+
+defclass(Function4, Functor)
+  OBJFCT4 fct;
+endclass
+
+defclass(Function5, Functor)
+  OBJFCT5 fct;
+endclass
 
 // ----- Sequence of functors (composition)
 
