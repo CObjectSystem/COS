@@ -226,8 +226,8 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5, BOOL load)
 
 #define CACHE_GET_SLOT() \
   U32 key = cos_method_hkey5(_sel->Behavior.id,id1,id2,id3,id4,id5); \
-	struct cos_method_cache5 *cache = cos_method_cache5(); \
-  struct cos_method_slot5 **slot = cache->slot + (key & cache->msk);
+	struct cos_method_cache5 *restrict cache = cos_method_cache5(); \
+  struct cos_method_slot5 *restrict*restrict slot = cache->slot + (key & cache->msk);
 
 
 #define CACHE_MTH_LOAD(load) \
@@ -267,7 +267,8 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5, BOOL load)
   }
 
 IMP5
-cos_method_lookup5(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
+cos_method_lookup5(SEL restrict _sel,
+                   U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
   CACHE_GET_SLOT();
   CACHE_TST_LEVEL1();
@@ -280,7 +281,8 @@ cos_method_lookup5(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 }
 
 IMP5
-cos_method_fastLookup5_(struct cos_method_slot5 **slot, SEL _sel,
+cos_method_fastLookup5_(struct cos_method_slot5 *restrict*restrict slot,
+                        SEL restrict _sel,
 			                  U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
   CACHE_TST_LEVEL2();
@@ -292,7 +294,8 @@ cos_method_fastLookup5_(struct cos_method_slot5 **slot, SEL _sel,
 }
 
 BOOL
-cos_method_understand5_(struct cos_method_slot5 **slot, SEL _sel,
+cos_method_understand5_(struct cos_method_slot5 *restrict*restrict slot,
+                        SEL restrict _sel,
 			                  U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
   CACHE_TST_LEVEL2();

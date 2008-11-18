@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.14 2008/11/07 23:39:35 ldeniau Exp $
+ | $Id: method.h,v 1.15 2008/11/18 08:34:25 ldeniau Exp $
  |
 */
 
@@ -250,8 +250,8 @@ extern RET (* \
 // method definition
 #define COS_MTH_FUNCDEF(RET,NAME,PS,CS,AS,C,A,R) \
 static void COS_FCT_NAME(NAME,CS) \
-(SEL const _sel, COS_PP_SEQ(COS_SEL_DECL(C)), \
-   void* const _arg, void* const _ret) \
+(SEL const restrict _sel, COS_PP_SEQ(COS_SEL_DECL(C)), \
+   void* const restrict _arg, void* const restrict _ret) \
 { \
   /* return and arguments type */ \
   typedef COS_RET_TYPE(NAME)* const restrict _cos_mth_ret; \
@@ -270,7 +270,7 @@ static void COS_FCT_NAME(NAME,CS) \
   COS_CTR_DCL \
   /* trace variables (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)( \
-  static const struct Method* const restrict _cos_mth_ref = \
+  static const struct Method* const restrict _mth = \
     (struct Method*)&COS_MTH_NAME(NAME,CS); \
   OBJ _cos_mth_objs[C]; \
   int _cos_mth_line;,/* no trace */) \
@@ -409,7 +409,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
   if (cos_logmsg_level_ == COS_LOGMSG_TRACE) { \
     COS_PP_IF(E)(COS_MTH_OBJ_INI(C);,) \
     cos_method_trace(__FILE__, COS_PP_IF(E)(__LINE__,_cos_mth_line), \
-                     E, _cos_mth_ref, _cos_mth_objs); \
+                     E, _mth, _cos_mth_objs); \
   }
 
 #define COS_MTH_TRC_LOC \

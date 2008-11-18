@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch4.c,v 1.6 2008/11/07 14:12:07 ldeniau Exp $
+ | $Id: cos_dispatch4.c,v 1.7 2008/11/18 08:34:25 ldeniau Exp $
  |
 */
 
@@ -222,8 +222,8 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, BOOL load)
 
 #define CACHE_GET_SLOT() \
   U32 key = cos_method_hkey4(_sel->Behavior.id,id1,id2,id3,id4); \
-	struct cos_method_cache4 *cache = cos_method_cache4(); \
-  struct cos_method_slot4 **slot = cache->slot + (key & cache->msk);
+	struct cos_method_cache4 *restrict cache = cos_method_cache4(); \
+  struct cos_method_slot4 *restrict*restrict slot = cache->slot + (key & cache->msk);
 
 #define CACHE_MTH_LOAD(load) \
   slot = load_method(_sel,id1,id2,id3,id4,load);
@@ -259,7 +259,8 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, BOOL load)
   }
 
 IMP4
-cos_method_lookup4(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4)
+cos_method_lookup4(SEL restrict _sel,
+                   U32 id1, U32 id2, U32 id3, U32 id4)
 {
   CACHE_GET_SLOT();
   CACHE_TST_LEVEL1();
@@ -272,7 +273,8 @@ cos_method_lookup4(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4)
 }
 
 IMP4
-cos_method_fastLookup4_(struct cos_method_slot4 **slot, SEL _sel,
+cos_method_fastLookup4_(struct cos_method_slot4 *restrict*restrict slot,
+                        SEL restrict _sel,
 			                  U32 id1, U32 id2, U32 id3, U32 id4)
 {
   CACHE_TST_LEVEL2();
@@ -284,7 +286,8 @@ cos_method_fastLookup4_(struct cos_method_slot4 **slot, SEL _sel,
 }
 
 BOOL
-cos_method_understand4_(struct cos_method_slot4 **slot, SEL _sel,
+cos_method_understand4_(struct cos_method_slot4 *restrict*restrict slot,
+                        SEL restrict _sel,
 			                  U32 id1, U32 id2, U32 id3, U32 id4)
 {
   CACHE_TST_LEVEL2();

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.15 2008/11/07 23:39:35 ldeniau Exp $
+ | $Id: cosapi.h,v 1.16 2008/11/18 08:34:25 ldeniau Exp $
  |
 */
 
@@ -156,17 +156,17 @@ void cos_method_nextClear(void);
 void cos_method_nextInit(FUNC*,SEL,U32,struct Class* const*);
 
 // 2nd and 3rd levels dispatch
-IMP1 cos_method_fastLookup1_(struct cos_method_slot1**,SEL,U32);
-IMP2 cos_method_fastLookup2_(struct cos_method_slot2**,SEL,U32,U32);
-IMP3 cos_method_fastLookup3_(struct cos_method_slot3**,SEL,U32,U32,U32);
-IMP4 cos_method_fastLookup4_(struct cos_method_slot4**,SEL,U32,U32,U32,U32);
-IMP5 cos_method_fastLookup5_(struct cos_method_slot5**,SEL,U32,U32,U32,U32,U32);
+IMP1 cos_method_fastLookup1_(struct cos_method_slot1*restrict*restrict,SEL,U32);
+IMP2 cos_method_fastLookup2_(struct cos_method_slot2*restrict*restrict,SEL,U32,U32);
+IMP3 cos_method_fastLookup3_(struct cos_method_slot3*restrict*restrict,SEL,U32,U32,U32);
+IMP4 cos_method_fastLookup4_(struct cos_method_slot4*restrict*restrict,SEL,U32,U32,U32,U32);
+IMP5 cos_method_fastLookup5_(struct cos_method_slot5*restrict*restrict,SEL,U32,U32,U32,U32,U32);
 
-BOOL cos_method_understand1_(struct cos_method_slot1**,SEL,U32);
-BOOL cos_method_understand2_(struct cos_method_slot2**,SEL,U32,U32);
-BOOL cos_method_understand3_(struct cos_method_slot3**,SEL,U32,U32,U32);
-BOOL cos_method_understand4_(struct cos_method_slot4**,SEL,U32,U32,U32,U32);
-BOOL cos_method_understand5_(struct cos_method_slot5**,SEL,U32,U32,U32,U32,U32);
+BOOL cos_method_understand1_(struct cos_method_slot1*restrict*restrict,SEL,U32);
+BOOL cos_method_understand2_(struct cos_method_slot2*restrict*restrict,SEL,U32,U32);
+BOOL cos_method_understand3_(struct cos_method_slot3*restrict*restrict,SEL,U32,U32,U32);
+BOOL cos_method_understand4_(struct cos_method_slot4*restrict*restrict,SEL,U32,U32,U32,U32);
+BOOL cos_method_understand5_(struct cos_method_slot5*restrict*restrict,SEL,U32,U32,U32,U32,U32);
 
 // logger message level (not thread safe)
 extern int  cos_logmsg_level_;
