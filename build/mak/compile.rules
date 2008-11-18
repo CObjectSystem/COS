@@ -1,0 +1,118 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- compilation rules
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: compile.rules,v 1.1 2008/11/18 19:08:05 ldeniau Exp $
+# |
+#
+
+.PRECIOUS: $(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d
+
+#
+# rules for generics
+#
+$(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSGEN).c: $(GENERIC)
+ifneq ($(SHOW),yes)
+	@$(EXEDIR)/$(COSGEN) --out=$@ $^
+else
+	 $(EXEDIR)/$(COSGEN) --out=$@ $^
+endif
+
+$(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSSYM).c:
+ifneq ($(SHOW),yes)
+	@$(EXEDIR)/$(COSSYM) --out=$@
+else
+	 $(EXEDIR)/$(COSSYM) --out=$@
+endif
+
+#
+# rules for compilation
+#
+$(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.o: \
+  $(BASEDIR)/$(SRCDIR)/%.c \
+  $(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d
+ifneq ($(SHOW),yes)
+	@echo "*** Compiling" $< "->" $@
+	@$(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+else
+	 $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+endif
+
+$(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSGEN).o: \
+  $(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSGEN).c \
+  $(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSGEN).d
+ifneq ($(SHOW),yes)
+	@echo "*** Compiling generics"
+	@$(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+else
+	 $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+endif
+
+$(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSSYM).o: \
+  $(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSSYM).c \
+  $(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSSYM).d
+ifneq ($(SHOW),yes)
+	@echo "*** Compiling symbols"
+	@$(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+else
+	 $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+endif
+
+#
+# rules for dependencies
+#
+$(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d: \
+  $(BASEDIR)/$(SRCDIR)/%.c
+ifneq ($(SHOW),yes)
+	@$(MKDIR) $(@D)
+	@$(DEP) $(INCLUDE) $(CPPFLAGS) $< -o $@
+else
+	@$(MKDIR) $(@D)
+	 $(DEP) $(INCLUDE) $(CPPFLAGS) $< -o $@
+endif
+
+$(BUILDDIR)/$(OBJDIR)/$(TARGET)/_%.d: \
+  $(BUILDDIR)/$(OBJDIR)/$(TARGET)/_%.c
+ifneq ($(SHOW),yes)
+	@$(MKDIR) $(@D)
+	@$(DEP) $(INCLUDE) $(CPPFLAGS) $< -o $@
+else
+	@$(MKDIR) $(@D)
+	 $(DEP) $(INCLUDE) $(CPPFLAGS) $< -o $@
+endif
+
+#
+# include dependencies if required
+#
+ifneq ($(filter-out $(TARGET).clean,$(USERTARGETS)),)
+-include $(addprefix $(BUILDDIR)/$(OBJDIR)/$(TARGET)/,$(addsuffix .d,$(objects)))
+endif
+
+# end of makefile

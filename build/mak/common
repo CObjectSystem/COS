@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.6 2008/10/16 10:46:45 ldeniau Exp $
+# | $Id: common,v 1.7 2008/11/18 19:08:05 ldeniau Exp $
 # |
 #
 
@@ -41,10 +41,13 @@ BINDIR := bin
 LIBDIR := lib
 OBJDIR := obj
 
-INCLUDE = -I$(PREFIX)/include/cos -I$(BASEDIR)/$(INCDIR) \
+GENERIC = $(wildcard $(BASEDIR)/$(INCDIR)/cos/gen/*.h)
+
+INCLUDE = -I$(PREFIX)/$(INCDIR)/cos -I$(BASEDIR)/$(INCDIR) \
           $(foreach d,$(moddeps),-I$(d)/$(INCDIR)) \
-	  $(foreach d,$(incdeps),-I$(d))
-LIBRARY = -L$(PREFIX)/lib/ -L$(BUILDDIR)/$(LIBDIR) \
+	        $(foreach d,$(incdeps),-I$(d))
+
+LIBRARY = -L$(PREFIX)/$(LIBDIR)/ -L$(BUILDDIR)/$(LIBDIR) \
           $(patsubst -L%,-L$(BUILDDIR)/%, \
           $(filter-out -L/%, \
             $(foreach d,$(moddeps),-L$(d)/$(LIBDIR)) \
@@ -52,6 +55,7 @@ LIBRARY = -L$(PREFIX)/lib/ -L$(BUILDDIR)/$(LIBDIR) \
           $(filter -L/%, \
             $(foreach d,$(moddeps),-L$(d)/$(LIBDIR)) \
             $(foreach d,$(dir $(libdeps)),-L$(d)))
+
 LIBS    = $(foreach l,$(notdir $(moddeps)),-l$(l)$(TARGETEXT)) \
           $(foreach l,$(notdir $(libdeps)),-l$(l))
 

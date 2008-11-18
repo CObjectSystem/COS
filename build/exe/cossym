@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cossym,v 1.4 2008/10/30 11:11:21 ldeniau Exp $
+# | $Id: cossym,v 1.5 2008/11/18 19:08:05 ldeniau Exp $
 # |
 #
 
@@ -271,6 +271,8 @@ fi
 
 ##### Start of _cossym.c #####
 
+mkdir -p `dirname $out`
+
 cat > $out <<END-OF-TEXT
 /*
  * -----------------------------
@@ -307,6 +309,7 @@ ${funqual}void cos_symbol_init(void)${funattr};
 ${funqual}void cos_symbol_init(void)
 {
    cos_symbol_register(symtbl);
+   (void)cos_symbol_init;
 }
 
 END-OF-TEXT

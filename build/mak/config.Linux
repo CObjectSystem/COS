@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: config.Linux,v 1.8 2008/10/29 15:43:10 ldeniau Exp $
+# | $Id: config.Linux,v 1.9 2008/11/18 19:08:05 ldeniau Exp $
 # |
 #
 
@@ -61,7 +61,7 @@ TAR        := tar czf
 # compiler and linker flags
 #
 CPPFLAGS   := -std=c99 -W -Wall -pedantic -pipe
-CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3 --param large-function-growth=200
+CCFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
 LDFLAGS    := -std=c99 -W -Wall -pedantic -pipe -O3
 
 DEBUG_CPP   =
@@ -96,14 +96,13 @@ SYSLIBS    := -lpthread -ldl
 SYSLIBPATH := LD_LIBRARY_PATH
 
 #
-# development specific settings (linux+gcc are the reference)
+# compiler specific settings (linux+gcc are the reference)
 #
-ifneq ($(WARN),no)
 CCFLAGS    += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
               -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
               -Wpointer-arith -Wbad-function-cast -Wcast-align -Wcast-qual \
               -Wfloat-equal -Wconversion -Wno-conversion \
-              -Winline
-endif
+              -Winline \
+              --param large-function-growth=500 --param inline-unit-growth=200
 
 # end of makefile

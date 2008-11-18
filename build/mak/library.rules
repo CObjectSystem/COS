@@ -29,12 +29,11 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library.rules,v 1.6 2008/10/02 08:45:09 ldeniau Exp $
+# | $Id: library.rules,v 1.7 2008/11/18 19:08:05 ldeniau Exp $
 # |
 #
 
 .PHONY: $(TARGET) $(TARGET).clean $(TARGET).ar $(TARGET).sh
-.PRECIOUS: $(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d
 
 #
 # target context
@@ -44,7 +43,7 @@ $(TARGET).%: TARGETEXT := $(TARGET_EXT)
 #
 # target rules
 #
-$(TARGET): $(TARGET).ar $(TARGET).sh
+$(TARGET): $(TARGET).sh $(TARGET).ar
 
 $(TARGET).clean:
 	$(RM)  $(BUILDDIR)/$(LIBDIR)/$(LIBPREFIX)$(library)$(TARGETEXT).*
@@ -61,7 +60,7 @@ endif
 
 $(BUILDDIR)/$(LIBDIR)/$(LIBPREFIX)$(library)$(TARGET_EXT)$(AREXT): \
   $(foreach o,$(objects),$(BUILDDIR)/$(OBJDIR)/$(TARGET)/$(o).o)
-	@echo "*** Building" $@
+	@echo "*** Building " $@
 	@$(MKDIR) $(@D)
 ifneq ($(SHOW),yes)
 	@$(AR) $@ $^
@@ -79,51 +78,23 @@ $(TARGET).sh:
 endif
 
 $(BUILDDIR)/$(LIBDIR)/$(LIBPREFIX)$(library)$(TARGET_EXT)$(SHEXT): \
-  $(foreach o,$(objects),$(BUILDDIR)/$(OBJDIR)/$(TARGET)/$(o).o)
-	@echo "*** Building" $@
+  $(foreach o,$(objects) _$(COSSYM),$(BUILDDIR)/$(OBJDIR)/$(TARGET)/$(o).o)
+	@echo "*** Building " $@
 	@$(MKDIR) $(@D)
-	@$(EXEDIR)/$(COSSYM) --auto --out=$(<D)/_$(COSSYM).c
-	@$(CC) $(INCLUDE) $(CCFLAGS)   -c $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
-	@$(LD) $(LIBRARY) $(LDFLAGS)   $^ $(<D)/_$(COSSYM).o -o $@.$(version) $(LIBS) $(SYSLIBS)
+ifneq ($(SHOW),yes)
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(version) $(LIBS) $(SYSLIBS)
 	@$(EXEDIR)/$(COSSYM) --auto --out=$(<D)/_$(COSSYM).c    $@.$(version)
 	@$(CC) $(INCLUDE) $(CCFLAGS)   -c $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
-ifneq ($(SHOW),yes)
-	@$(LD) $(LIBRARY) $(LDFLAGS)   $^ $(<D)/_$(COSSYM).o -o $@.$(version) $(LIBS) $(SYSLIBS)
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(version) $(LIBS) $(SYSLIBS)
 	@$(LN) $(@F).$(version) $@
-#ifeq ($(TARGET),release)
-#	@$(STRIP) $@
-#endif
 else
-	 $(LD) $(LIBRARY) $(LDFLAGS)   $^ $(<D)/_$(COSSYM).o -o $@.$(version) $(LIBS) $(SYSLIBS)
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(version) $(LIBS) $(SYSLIBS)
+	 $(EXEDIR)/$(COSSYM) --auto --out=$(<D)/_$(COSSYM).c    $@.$(version)
+	 $(CC) $(INCLUDE) $(CCFLAGS)   -c $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(version) $(LIBS) $(SYSLIBS)
 	 $(LN) $(@F).$(version) $@
-#ifeq ($(TARGET),release)
-#	 $(STRIP) $@
-#endif
 endif
 
-#
-# rules for compilation
-#
-$(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.o: \
-  $(BASEDIR)/$(SRCDIR)/%.c $(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d
-ifneq ($(SHOW),yes)
-	@echo "*** Compiling" $< "->" $@
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-else
-	 $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-endif
-
-#
-# rules for dependencies
-#
-$(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d: $(BASEDIR)/$(SRCDIR)/%.c
-	@$(MKDIR) $(@D) ; $(DEP) $(INCLUDE) $(CPPFLAGS) $< -o $@
-
-#
-# include dependencies if required
-#
-ifneq ($(filter-out $(TARGET).clean,$(USERTARGETS)),)
--include $(addprefix $(BUILDDIR)/$(OBJDIR)/$(TARGET)/,$(addsuffix .d,$(objects)))
-endif
+include $(MAKDIR)/compile.rules
 
 # end of makefile

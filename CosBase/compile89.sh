@@ -30,12 +30,16 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile89.sh,v 1.2 2008/10/30 11:11:21 ldeniau Exp $
+# | $Id: compile89.sh,v 1.3 2008/11/18 19:08:58 ldeniau Exp $
 # |
 #
 
-# linux options
-OPTIONS="-DCOS_C89 -DCOS_POSIX=1 -DCOS_TLS=1 -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE"
+# defines
+DEFINE="-DCOS_C89 -DCOS_POSIX=1 -DCOS_TLS=1 -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE"
+
+# compiler (C99 is only used for preprocessing)
+C99="cc -std=c99 -pedantic -W -Wall -Iinclude -O3 $DEFINE -w"  # -w can be removed
+C89="cc -std=c89 -pedantic -W -Wall -Iinclude -O3 $DEFINE"
 
 # location
 PWD=`basename \`pwd\``
@@ -45,21 +49,28 @@ if [ "$PWD" != "CosBase" ] ; then
   exit;
 fi
 
-# compile .c to .o
+rm -f src/_cosgen.c src/_cossym.c
+
+# collect generics (optional)
+../build/exe/cosgen --out=src/_cosgen.c include/cos/gen/*.h
+
+# compile source files (2 steps)
 for f in src/*.c; do
   f=src/`basename $f .c`
   echo "compiling $f.c"
-  cpp -std=c99 -pedantic -w -Iinclude $OPTIONS -E -o $f.i $f.c;
-  cc  -std=c89 -pedantic -W -Wall -O3          -c -o $f.o $f.i;
+  $C99 -E -o $f.i $f.c; # step 1: preprocessing
+  $C89 -c -o $f.o $f.i; # step 2: compilation
   rm  $f.i
 done
 
-# archive
-echo "building  src/libCosBase89.a"
-ar -cr src/libCosBase89.a src/*.o
+# collect symbols
+../build/exe/cossym --out=src/_cossym.c src/*.o
 
-# build program:
-# cd path/to/program
-# cossym libCosBase89.a src/*.o
-# cc _cossym.c libCosBase89.a src/*.o -o program
+# build program
+# $C89 src/_cossym.c src/*.o -o program
+
+# build program from archive (include previous collect & build)
+# ar -cr src/libCosBase89.a src/*.o
+# cossym --out=src/_cossym.c libCosBase89.a
+# $C89 libCosBase89.a src/_cossym.c -o program
 

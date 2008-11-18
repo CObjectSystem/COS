@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.3 2008/10/08 16:17:22 ldeniau Exp $
+# | $Id: default,v 1.4 2008/11/18 19:08:05 ldeniau Exp $
 # |
 #
 
@@ -63,8 +63,8 @@ ifeq ($(STRIP),)
 STRIP = echo 1>&/dev/null
 endif
 
-# remove cossym file
-objects := $(filter-out _$(COSSYM),$(objects))
+# remove cossym file and add cosgen file
+objects := $(filter-out _$(COSSYM),$(objects) _$(COSGEN))
 
 ifeq ($(objects),)
 $(error unable to find .c source files)

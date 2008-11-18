@@ -29,12 +29,11 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.6 2008/10/02 08:45:09 ldeniau Exp $
+# | $Id: program.rules,v 1.7 2008/11/18 19:08:05 ldeniau Exp $
 # |
 #
 
 .PHONY: $(TARGET) $(TARGET).run $(TARGET).clean $(TARGET).exe
-.PRECIOUS: $(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d
 
 #
 # target context
@@ -66,49 +65,21 @@ $(TARGET).clean:
 $(TARGET).exe: $(BUILDDIR)/$(BINDIR)/$(program)$(TARGET_EXT)
 
 $(BUILDDIR)/$(BINDIR)/$(program)$(TARGET_EXT): \
-  $(foreach o,$(objects),$(BUILDDIR)/$(OBJDIR)/$(TARGET)/$(o).o)
+  $(foreach o,$(objects) _$(COSSYM),$(BUILDDIR)/$(OBJDIR)/$(TARGET)/$(o).o)
 	@echo "*** Building" $@
 	@$(MKDIR) $(@D)
-	@$(EXEDIR)/$(COSSYM)      --out=$(<D)/_$(COSSYM).c
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
-	@$(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/_$(COSSYM).o -o $@ $(LIBS) $(SYSLIBS)
+ifneq ($(SHOW),yes)
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
 	@$(EXEDIR)/$(COSSYM)      --out=$(<D)/_$(COSSYM).c    $@
 	@$(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
-ifneq ($(SHOW),yes)
-	@$(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/_$(COSSYM).o -o $@ $(LIBS) $(SYSLIBS)
-#ifeq ($(TARGET),release)
-#	@$(STRIP) $@
-#endif
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
 else
-	 $(LD) $(LIBRARY) $(LDFLAGS) $^ $(<D)/_$(COSSYM).o -o $@ $(LIBS) $(SYSLIBS)
-#ifeq ($(TARGET),release)
-#	 $(STRIP) $@
-#endif
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	 $(EXEDIR)/$(COSSYM)      --out=$(<D)/_$(COSSYM).c    $@
+	 $(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
 endif
 
-#
-# rules for compilation
-#
-$(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.o: \
-  $(BASEDIR)/$(SRCDIR)/%.c $(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d
-ifneq ($(SHOW),yes)
-	@echo "*** Compiling" $< "->" $@
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-else
-	 $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-endif
-
-#
-# rules for dependencies
-#
-$(BUILDDIR)/$(OBJDIR)/$(TARGET)/%.d: $(BASEDIR)/$(SRCDIR)/%.c
-	@$(MKDIR) $(@D) ; $(DEP) $(INCLUDE) $(CPPFLAGS) $< -o $@
-
-#
-# include dependencies if required
-#
-ifneq ($(filter-out $(TARGET).clean,$(USERTARGETS)),)
--include $(addprefix $(BUILDDIR)/$(OBJDIR)/$(TARGET)/,$(addsuffix .d,$(objects)))
-endif
+include $(MAKDIR)/compile.rules
 
 # end of makefile
