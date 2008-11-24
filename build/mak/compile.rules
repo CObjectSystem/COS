@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile.rules,v 1.1 2008/11/18 19:08:05 ldeniau Exp $
+# | $Id: compile.rules,v 1.2 2008/11/24 18:40:42 ldeniau Exp $
 # |
 #
 
@@ -40,9 +40,17 @@
 #
 $(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSGEN).c: $(GENERIC)
 ifneq ($(SHOW),yes)
-	@$(EXEDIR)/$(COSGEN) --out=$@ $^
+	@if [ "$^" != "" ] ; then \
+    $(CPP) $(INCLUDE) $(CPPFLAGS) -DCOS_NO_COS $^ | $(EXEDIR)/$(COSGEN) --out=$@ $^ ; \
+  else \
+    echo | $(EXEDIR)/$(COSGEN) --out=$@ ; \
+  fi
 else
-	 $(EXEDIR)/$(COSGEN) --out=$@ $^
+	if [ "$^" != "" ] ; then \
+    $(CPP) $(INCLUDE) $(CPPFLAGS) -DCOS_NO_COS $^ | $(EXEDIR)/$(COSGEN) --out=$@ $^ ; \
+  else \
+    echo | $(EXEDIR)/$(COSGEN) --out=$@ ; \
+  fi
 endif
 
 $(BUILDDIR)/$(OBJDIR)/$(TARGET)/_$(COSSYM).c:

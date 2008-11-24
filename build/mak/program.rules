@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.7 2008/11/18 19:08:05 ldeniau Exp $
+# | $Id: program.rules,v 1.8 2008/11/24 18:40:42 ldeniau Exp $
 # |
 #
 
@@ -48,10 +48,12 @@ $(TARGET): $(TARGET).exe
 $(TARGET).run: $(TARGET).exe
 	@echo "*** Running" $(BUILDDIR)/$(BINDIR)/$(program)$(TARGETEXT)
 ifneq ($(SHOW),yes)
-	@export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | sed 's/ :/:/g'` ; \
+	@export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
+	sed 's/ :/:/g'` ; \
 	$(BUILDDIR)/$(BINDIR)/$(program)$(TARGETEXT) $(ARGS)
 else
-	export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | sed 's/ :/:/g'` ; \
+	export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
+	sed 's/ :/:/g'` ; \
 	$(BUILDDIR)/$(BINDIR)/$(program)$(TARGETEXT) $(ARGS)
 endif
 

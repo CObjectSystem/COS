@@ -2,7 +2,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS generics
+# | COS generics (filter)
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -30,12 +30,13 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosgen,v 1.1 2008/11/18 19:08:05 ldeniau Exp $
+# | $Id: cosgen,v 1.2 2008/11/24 18:40:41 ldeniau Exp $
 # |
 #
 
 # default settings
 progname=`basename $0`
+exedir=`dirname $0`
 filelist=
 out="_cosgen.c"
 datestr=`date`
@@ -45,18 +46,18 @@ usage() {
 
 cat <<END-OF-TEXT
 
-  $progname extracts COS defgeneric from header/source files
-  and outputs a C file which must be compiled/linked with your project.
+  $progname extracts COS defgeneric from standard input and
+  outputs a C file which must be compiled/linked with your project.
 
   Usage:
-    $progname <options> files
+    $progname <options> files_to_include
 
   Options:
     --help
       This help.
 
     --in=<file_name>
-      Use the content of file_name to specify list of files
+      Use the content of file_name to specify list of files to include
       Multiple files can be provided with multiple --in
 
     --out=<file_name>
@@ -85,7 +86,7 @@ while [ "$1" != "" ] ; do
 
 	if [ "$1" = "--help" -o \
 	     "$1" =  "-help" ] ; then
-		usage
+    usage
 	fi
 
 	val=`expr $1 : '--\(.*\)'`
@@ -96,17 +97,16 @@ while [ "$1" != "" ] ; do
 
 	filelist="$filelist $1"
 	shift
-	
+
 done
 
 # retrieve generics
-if [ "$filelist" != "" ] ; then
-    gen=`sed -n -e '/\/\*/,/\*\//d'            \
-                -e 's/\/\/.*$//g'              \
-                -e 's/defgeneric/makgeneric/g' \
-                -e '/makgeneric/p'             \
-                $filelist`
-fi
+gen=`cat - \
+   | tr '\n' ' ' \
+   | sed  -e 's/[ \t][ \t]*defgeneric[ \t]*(\([^;]*\);/\ndefgeneric(\1;\n/g' \
+   | grep -E -e '^defgeneric\([^;]*;$' \
+   | sed  -e 's/[ \t][ \t]*/ /g' -e 's/ \([,)\*]\)/\1/g' -e 's/( /(/g' \
+   | sort -u -t ',' -k 2`
 
 ##### Start of _cosgen.c #####
 
@@ -129,12 +129,13 @@ END-OF-TEXT
 
 # includes
 for f in $filelist; do
-    echo "#include <$f>" | sed -e 's+<include/+<+g' >> $out
+    f=`echo $f | sed -e 's:^.*include/::g'`
+    echo "#include <$f>"                           >> $out
 done
-echo >> $out
+echo                                               >> $out
 
-# generics
-echo "$gen" | sed -n -e '/makgeneric/p' >> $out
+# makgenerics
+echo "$gen" | sed -e 's/defgeneric(/makgeneric(/g' >> $out
 
 ##### Enf of _cosgen.c #####
 

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.7 2008/11/18 19:08:05 ldeniau Exp $
+# | $Id: common,v 1.8 2008/11/24 18:40:42 ldeniau Exp $
 # |
 #
 
@@ -41,9 +41,9 @@ BINDIR := bin
 LIBDIR := lib
 OBJDIR := obj
 
-GENERIC = $(wildcard $(BASEDIR)/$(INCDIR)/cos/gen/*.h)
+GENERIC = $(generics)
 
-INCLUDE = -I$(PREFIX)/$(INCDIR)/cos -I$(BASEDIR)/$(INCDIR) \
+INCLUDE = -I$(PREFIX)/$(INCDIR)/cos -I$(BASEDIR)/$(INCDIR) -I$(BASEDIR)/$(SRCDIR) \
           $(foreach d,$(moddeps),-I$(d)/$(INCDIR)) \
 	        $(foreach d,$(incdeps),-I$(d))
 

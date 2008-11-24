@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.4 2008/11/18 19:08:05 ldeniau Exp $
+# | $Id: default,v 1.5 2008/11/24 18:40:42 ldeniau Exp $
 # |
 #
 
@@ -59,12 +59,18 @@ ifeq ($(objects),)
 objects := $(basename $(notdir $(wildcard $(BASEDIR)/$(SRCDIR)/*.c)))
 endif
 
+ifeq ($(generics),)
+generics := $(wildcard $(BASEDIR)/$(INCDIR)/cos/gen/*.h)
+else ifeq ($(generics),no)
+generics :=
+endif
+
 ifeq ($(STRIP),)
 STRIP = echo 1>&/dev/null
 endif
 
 # remove cossym file and add cosgen file
-objects := $(filter-out _$(COSSYM),$(objects) _$(COSGEN))
+objects := $(filter-out _$(COSSYM),$(objects)) _$(COSGEN)
 
 ifeq ($(objects),)
 $(error unable to find .c source files)

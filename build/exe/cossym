@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cossym,v 1.5 2008/11/18 19:08:05 ldeniau Exp $
+# | $Id: cossym,v 1.6 2008/11/24 18:40:41 ldeniau Exp $
 # |
 #
 
@@ -153,17 +153,17 @@ token='[A-Za-z_][A-Za-z0-9_]*'
 
 # retrieve symbols
 if [ "$filelist" != "" ] ; then
-    sym=`nm   -g -P $filelist                |
-      	 grep -E -e "^_?cos_[cgm]_$token D " |
-   	     cut  -d ' ' -f 1                    |
-				 sed  -e 's/^_cos/cos/g'             |
-       	 sort -u`
+    sym=`nm   -g -P $filelist \
+       | grep -E -e "^_?cos_[cgm]_$token D " \
+   	   | cut  -d ' ' -f 1 \
+			 | sed  -e 's/^_cos/cos/g' \
+       | sort -u`
     if [ "$rmcls" != "" ] ; then
-		lnk=`nm   -g -P $filelist            |
-       	 grep -E -e "^_?cos_l_$token B " |
-       	 cut  -d ' ' -f 1                |
-				 sed  -e 's/^_cos/cos/g'         |
-         sort -u`
+		lnk=`nm   -g -P $filelist \
+       | grep -E -e "^_?cos_l_$token B " \
+       | cut  -d ' ' -f 1 \
+			 | sed  -e 's/^_cos/cos/g' \
+       | sort -u`
     fi
 fi
 
@@ -172,17 +172,17 @@ if [ "$rmgen" != "" ] ; then
     for pat in $rmgen; do
 #       extract generics
         if [ "$rmtrc" = "Y" ] ; then
-            gen=`echo $sym                   |
-                 tr   ' ' '\n'               |
-                 grep -E -e "^cos_g_($pat)$" |
-                 sed  -e 's/^cos_g_//g'`
+            gen=`echo $sym \
+               | tr ' ' '\n' \
+               | grep -E -e "^cos_g_($pat)$" \
+               | sed  -e 's/^cos_g_//g'`
             rmlst="$rmlst $gen"
         fi
 #       remove generic pattern
-        sym=`echo $sym                      |
-             tr   ' ' '\n'                  |
-             grep -E -v -e "^cos_g_($pat)$" |
-             grep -E -v -e "^cos_m_($pat)_"`
+        sym=`echo $sym \
+           | tr ' ' '\n' \
+           | grep -E -v -e "^cos_g_($pat)$" \
+           | grep -E -v -e "^cos_m_($pat)_"`
     done
 
 #   display removed generics
@@ -199,28 +199,28 @@ if [ "$rmcls" != "" ] ; then
     for pat in $rmcls; do
 #       extract classes
         if [ "$rmtrc" = "Y" ] ; then
-            cls=`echo $sym                   |
-                 tr   ' ' '\n'               |
-                 grep -E -e "^cos_c_($pat)$" |
-                 sed  -e 's/^cos_c_//g'`
+            cls=`echo $sym \
+               | tr ' ' '\n' \
+               | grep -E -e "^cos_c_($pat)$" \
+               | sed  -e 's/^cos_c_//g'`
             rmlst="$rmlst $cls"
         fi
 #       extract subclasses
-        sub=`echo $lnk                               |
-             tr   ' ' '\n'                           |
-             grep -E -e "^cos_l_($pat)__isSuperOf__" |
-             sed  -e "s/^cos_l_${token}__isSuperOf__//g"`
+        sub=`echo $lnk \
+           | tr ' ' '\n' \
+           | grep -E -e "^cos_l_($pat)__isSuperOf__" \
+           | sed  -e "s/^cos_l_${token}__isSuperOf__//g"`
         sublst="$sublst $sub"
 # DEBUG echo "sublst:" `echo $sublst` >&2
 #       remove link pattern
-        lnk=`echo $lnk     |
-             tr   ' ' '\n' |
-             grep -E -v -e "^cos_l_($pat)__isSuperOf__"`
+        lnk=`echo $lnk \
+           | tr ' ' '\n' \
+           | grep -E -v -e "^cos_l_($pat)__isSuperOf__"`
 #       remove class pattern
-        sym=`echo $sym                             |
-             tr   ' ' '\n'                         |
-             grep -E -v -e "^cos_c_(|m|pm)($pat)$" |
-             grep -E -v -e "^cos_m_($token)_(|m|pm)($pat)(_|$)"`
+        sym=`echo $sym \
+           | tr ' ' '\n' \
+           | grep -E -v -e "^cos_c_(|m|pm)($pat)$" \
+           | grep -E -v -e "^cos_m_($token)_(|m|pm)($pat)(_|$)"`
     done
 
 #   display removed classes
@@ -239,25 +239,25 @@ if [ "$rmcls" != "" ] ; then
             rmlst="$rmlst $sublst"
         fi
 #       build subclass pattern
-        pat=`echo $sublst |
-             sed  -e 's/ /\|/g'`
+        pat=`echo $sublst \
+           | sed -e 's/ /\|/g'`
 # DEBUG echo "pat: $pat" >&2
 #       extract subclasses
-        sub=`echo $lnk                               |
-             tr   ' ' '\n'                           |
-             grep -E -e "^cos_l_($pat)__isSuperOf__" |
-             sed  -e "s/^cos_l_${token}__isSuperOf__//g"`
+        sub=`echo $lnk \
+           | tr ' ' '\n' \
+           | grep -E -e "^cos_l_($pat)__isSuperOf__" \
+           | sed  -e "s/^cos_l_${token}__isSuperOf__//g"`
         sublst="$sub"
 # DEBUG echo "sublst:" `echo $sublst` >&2
 #       remove link pattern
-        lnk=`echo $lnk     |
-             tr   ' ' '\n' |
-             grep -E -v -e "^cos_l_($pat)__isSuperOf__"`
+        lnk=`echo $lnk \
+           | tr ' ' '\n' \
+           | grep -E -v -e "^cos_l_($pat)__isSuperOf__"`
 #       remove subclass pattern
-        sym=`echo $sym                             |
-             tr   ' ' '\n'                         |
-             grep -E -v -e "^cos_c_(|m|pm)($pat)$" |
-             grep -E -v -e "^cos_m_($token)_(|m|pm)($pat)(_|$)"`
+        sym=`echo $sym \
+           | tr ' ' '\n' \
+           | grep -E -v -e "^cos_c_(|m|pm)($pat)$" \
+           | grep -E -v -e "^cos_m_($token)_(|m|pm)($pat)(_|$)"`
     done
 
 #   display removed subclasses
