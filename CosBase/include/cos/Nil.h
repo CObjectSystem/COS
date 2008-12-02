@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Nil.h,v 1.2 2008/10/31 16:05:38 ldeniau Exp $
+ | $Id: Nil.h,v 1.3 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
+#include <cos/Object.h>
 #endif
 
 /* NOTE-USER: Nil behavior

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.7 2008/11/07 14:12:07 ldeniau Exp $
+ | $Id: exception.h,v 1.8 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -181,6 +181,7 @@
 #define COS_DISABLE_THROW
 #define COS_DISABLE_RETHROW
 #define COS_DISABLE_PRT
+#define COS_DISABLE_EPRT
 #define COS_DISABLE_UNPRT
 #endif
 

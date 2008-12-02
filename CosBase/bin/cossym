@@ -30,22 +30,20 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cossym,v 1.1 2008/11/25 15:20:27 ldeniau Exp $
+# | $Id: cossym,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
 # |
 #
 
 # default settings
 progname=`basename $0`
 filelist=
+modlist=
+modname=
 rmgen=
 rmcls=
 rmtrc=
-funattr=
-funqual=
 out="_cossym.c"
 datestr=`date`
-static='static '
-ctor=' __attribute__((constructor))'
 
 # helper
 usage() {
@@ -62,9 +60,6 @@ cat <<END-OF-TEXT
     --help
       This help.
 
-    --auto
-      The symbols registration will be automatically done on load (shared lib)
-
     --in=<file_name>
       Use the content of file_name to specify list of files
       Multiple files can be provided with multiple --in
@@ -72,6 +67,15 @@ cat <<END-OF-TEXT
     --out=<file_name>
       Put the result in file_name
       Default is: $out
+
+    --mod=<module_name>
+      Specify the name of this COS module (shared library) to
+      be used for future symbols dependencies (--dep)
+
+    --dep=<module_name>
+      The COS modules (shared library) on which your library or
+      program depends on for registration of table of symbols.
+      Multiple modules can be provided with multiple --dep
 
     --rmgen=<generic-list>
       Remove all generic in the list
@@ -110,6 +114,18 @@ while [ "$1" != "" ] ; do
 		shift; continue;
 	fi
 
+	val=`expr $1 : '--mod=\(.*\)'`
+	if [ "$val" != "" ] ; then
+		modname="$val";
+		shift; continue;
+	fi
+
+	val=`expr $1 : '--dep=\(.*\)'`
+	if [ "$val" != "" ] ; then
+		modlist="$modlist $val";
+		shift; continue;
+	fi
+
 	val=`expr $1 : '--rmgen=\(.*\)'`
 	if [ "$val" != "" ] ; then
 		rmgen="$rmgen $val";
@@ -119,12 +135,6 @@ while [ "$1" != "" ] ; do
 	val=`expr $1 : '--rmcls=\(.*\)'`
 	if [ "$val" != "" ] ; then
 		rmcls="$rmcls $val";
-		shift; continue;
-	fi
-
-	if [ "$1" = "--auto" ] ; then
-		funqual="$static"
-		funattr="$ctor"
 		shift; continue;
 	fi
 
@@ -305,13 +315,31 @@ cat >> $out <<END-OF-TEXT
 
 void cos_symbol_register(struct Object**);
 
-${funqual}void cos_symbol_init(void)${funattr};
-${funqual}void cos_symbol_init(void)
-{
-   cos_symbol_register(symtbl);
-   (void)cos_symbol_init;
-}
+END-OF-TEXT
 
+for m in $modlist; do
+  echo "void cos_symbol_init$m(void);"    >> $out
+done
+
+cat >> $out <<END-OF-TEXT
+
+void cos_symbol_init$modname(void);
+void cos_symbol_init$modname(void)
+{
+   static int done = 0;
+   
+   if (!done) {
+     done = 1;
+END-OF-TEXT
+
+for m in $modlist; do
+  echo "     cos_symbol_init$m();"        >> $out
+done
+
+cat >> $out <<END-OF-TEXT
+     cos_symbol_register(symtbl);
+   }
+}
 END-OF-TEXT
 
 ##### Enf of _cossym.c #####

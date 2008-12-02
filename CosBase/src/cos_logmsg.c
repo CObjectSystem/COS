@@ -29,13 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.7 2008/10/31 16:05:38 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.8 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
+#include <cos/debug.h>
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>

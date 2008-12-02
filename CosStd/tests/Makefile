@@ -29,17 +29,21 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.2 2008/10/24 22:03:30 ldeniau Exp $
+# | $Id: Makefile,v 1.3 2008/12/02 17:32:21 ldeniau Exp $
 # |
 #
 
-include ../../build/prologue
+# detect location (bootstrap, normally $(cos) = cos)
+pwd := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
+cos := $(pwd)/../../CosBase/include/cos
 
-program = testCosStd
-version = $(COS_VERSION)
-targets = debug profile release
-moddeps = ../../CosBase ../../CosStd
+# standard COS makefile
 
-include $(MAKDIR)/epilogue
+include $(cos)/prologue
+
+program := testCosStd
+moddeps := CosStd CosBase
+
+include $(cos)/epilogue
 
 # end of makefile

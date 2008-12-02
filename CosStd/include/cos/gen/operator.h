@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: operator.h,v 1.1 2008/10/24 22:03:30 ldeniau Exp $
+ | $Id: operator.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -45,13 +45,15 @@
    new autoReleased object resulting from the promotion/coercion of _1
    and _2 which follows the rules of C99 for primitive types.
 */
-defgeneric(OBJ, gneg, _1);     // return -_1    
-defgeneric(OBJ, ginv, _1);     // return 1/_1   
-defgeneric(OBJ, gadd, _1, _2); // return _1 + _2
-defgeneric(OBJ, gsub, _1, _2); // return _1 - _2
-defgeneric(OBJ, gmul, _1, _2); // return _1 * _2
-defgeneric(OBJ, gdiv, _1, _2); // return _1 / _2
-defgeneric(OBJ, gmod, _1, _2); // return _1 % _2
+defgeneric(OBJ, gneg , _1);     // return -_1    
+defgeneric(OBJ, ginv , _1);     // return 1/_1   
+defgeneric(OBJ, gconj, _1);     // return _1^*   
+defgeneric(OBJ, gadd , _1, _2); // return _1 + _2
+defgeneric(OBJ, gsub , _1, _2); // return _1 - _2
+defgeneric(OBJ, gmul , _1, _2); // return _1 * _2
+defgeneric(OBJ, gdiv , _1, _2); // return _1 / _2
+defgeneric(OBJ, gpow , _1, _2); // return _1 ** _2
+defgeneric(OBJ, gmod , _1, _2); // return _1 % _2
 
 /* NOTE-USER: operators policy
    The policy of these methods it to perform the operation 'in place'
@@ -59,12 +61,14 @@ defgeneric(OBJ, gmod, _1, _2); // return _1 % _2
    the types of _1 and _2 differ, some operations may not be available
    if they may induce a loss of information (e.g. gaddTo(Int,Long)).
 */
-defgeneric(OBJ, gnegate, _1);     // return _1 = -_1 
-defgeneric(OBJ, ginvert, _1);     // return _1 = 1/_1
-defgeneric(OBJ, gaddTo , _1, _2); // return _1 += _2 
-defgeneric(OBJ, gsubTo , _1, _2); // return _1 -= _2 
-defgeneric(OBJ, gmulBy , _1, _2); // return _1 *= _2 
-defgeneric(OBJ, gdivBy , _1, _2); // return _1 /= _2 
-defgeneric(OBJ, gmodulo, _1, _2); // return _1 %= _2 
+defgeneric(OBJ, gnegate   , _1);     // return _1 = -_1 
+defgeneric(OBJ, ginvert   , _1);     // return _1 = 1/_1
+defgeneric(OBJ, gconjugate, _1);     // return _1 = _1^*
+defgeneric(OBJ, gaddTo    , _1, _2); // return _1 += _2 
+defgeneric(OBJ, gsubTo    , _1, _2); // return _1 -= _2 
+defgeneric(OBJ, gmulBy    , _1, _2); // return _1 *= _2 
+defgeneric(OBJ, gdivBy    , _1, _2); // return _1 /= _2 
+defgeneric(OBJ, gpower    , _1, _2); // return _1 = _1 ** _2
+defgeneric(OBJ, gmodulo   , _1, _2); // return _1 %= _2 
 
 #endif // COS_GEN_OPERATOR_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.8 2008/10/30 10:19:40 ldeniau Exp $
+ | $Id: cos.h,v 1.9 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,6 @@ extern "C" {
 
 /* NOTE-USER: COS config header
  */
-#include <cos/cos/local.h>
 #include <cos/cos/config.h>
 
 /* NOTE-USER: C headers
@@ -59,6 +58,9 @@ extern "C" {
 #include <stdarg.h>
 #include <limits.h>
 #include <setjmp.h>
+
+// disable COS language
+#ifndef COS_NOCOS
 
 /* NOTE-USER: COS preprocessor headers
  */
@@ -88,6 +90,9 @@ extern "C" {
 /* NOTE-USER: COS inlined dispatch
  */
 #include <cos/cos/dispatch.h>
+
+
+#endif // COS_NOCOS
 
 #ifdef __cplusplus
 }

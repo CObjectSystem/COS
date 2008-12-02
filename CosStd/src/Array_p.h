@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array (private implementation)
+ | COS Array (private shared implementation)
  |
  o---------------------------------------------------------------------o
  |
@@ -32,9 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_p.h,v 1.2 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Array_p.h,v 1.3 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
+
+static inline BOOL
+array_isa(OBJ _1)
+{
+  return cos_any_superClass(_1) == classref(   Array) ||
+         cos_any_isa(       _1  ,  classref(DynArray));
+}
 
 static inline struct Array*
 array_alloc(U32 size)

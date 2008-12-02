@@ -29,16 +29,38 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.7 2008/11/06 13:53:53 ldeniau Exp $
+# | $Id: Makefile,v 1.8 2008/12/02 17:32:21 ldeniau Exp $
 # |
 #
 
-include ../build/prologue
+# detect location (bootstrap, normally $(cos) = cos)
+pwd := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
+cos := $(pwd)/include/cos
 
-library = CosBase
-version = $(COS_VERSION)
-targets = debug profile release
+# standard COS makefile
 
-include $(MAKDIR)/epilogue
+include $(cos)/prologue
 
-# end of makefile
+library := CosBase
+version := 0.7
+release := 200801
+package := $(library)-$(version)_$(release)
+
+# variables hereafter could be omitted
+
+targets := # default (debug profile release static shared)
+defgens := # default ($(wildcard $(BASEDIR)/include/cos/gen/*.h))
+
+# only names (as with -lname)
+moddeps := # none
+libdeps := # none
+
+# only directories
+moddirs := # default (. ..)
+libdirs := # none
+incdirs := # none
+
+include $(cos)/epilogue
+
+# end of COS makefile
+

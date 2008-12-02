@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.25 2008/11/04 19:38:34 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.26 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -150,8 +150,8 @@ enlarge(struct AutoRelease* p)
     new_size = COS_AUTORELEASE_INIT;
     stk = malloc(sizeof *stk * new_size);
     if (stk) {
-	  *stk = 0;
-	  memcpy(stk+1, p->stk, sizeof *stk * size);
+      *stk = 0;
+      memcpy(stk+1, p->stk, sizeof *stk * size);
     }
   } else {
     new_size = size * COS_AUTORELEASE_RATE;
@@ -282,7 +282,10 @@ endmethod
 defmethod(OBJ, gretain, Any)
   useclass(ExBadValue);
 
-  if (self->rc >= COS_RC_UNIT)
+  if (self->rc > COS_RC_UNIT)
+    retmethod(++self->rc, _1);
+
+  if (self->rc == COS_RC_UNIT)
     retmethod(pop_or_retain(self));
 
   if (self->rc == COS_RC_STATIC)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.2 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: algorithm.h,v 1.3 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -59,8 +59,13 @@ defgeneric(OBJ, gaccumulate, fun, acc, _1);
 defgeneric(OBJ, gzip , _1, _2);
 defgeneric(OBJ, gzip3, _1, _2, _3);
 defgeneric(OBJ, gzip4, _1, _2, _3, _4);
-defgeneric(OBJ, gzip5, _1, _2, _3, _4, _5);
 defgeneric(OBJ, gzipn, _1);
+
+// cat
+defgeneric(OBJ, gcat , _1, _2);
+defgeneric(OBJ, gcat3, _1, _2, _3);
+defgeneric(OBJ, gcat4, _1, _2, _3, _4);
+defgeneric(OBJ, gcatn, _1);
 
 // all, any, min, max
 defgeneric(OBJ, gall, fun, _1);
@@ -69,18 +74,19 @@ defgeneric(OBJ, gmin, _1);
 defgeneric(OBJ, gmax, _1);
 
 // sorting (in place, fun must return Ordered)
-defgeneric(OBJ, gsort, fun, _1);
+defgeneric(OBJ, gsort  , _1);
+defgeneric(OBJ, gsortBy, _1, fun);
 
 // linear      find if fun returns TrueFalse
 // logarithmic find if fun returns Ordered
 defgeneric(OBJ, gfind, fun, obj, _1);
 
-// bag-like algorithms
+// bag-like algorithms - TODO
 defgeneric(OBJ, gunique, _1);
 defgeneric(OBJ, group  , _1);
 defgeneric(OBJ, gsplit , _1);
 
-// set-like algorithms
+// set-like algorithms - TODO
 defgeneric(OBJ, gdiff     , _1, _2);
 defgeneric(OBJ, gunion    , _1, _2);
 defgeneric(OBJ, gintersect, _1, _2);

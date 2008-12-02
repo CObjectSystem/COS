@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.7 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Array.h,v 1.8 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -103,7 +103,7 @@ defclass(ArrayN, Array) OBJ _object[]; endclass
           {{{{ COS_CLS_NAME(SubArray).Behavior.id, COS_RC_AUTO }}}}, \
           (size), 0 }, (array) }, (start)) )
 
-// ----- automatic sub-vectors init/checker
+// ----- automatic sub-arrays init/checker
 
 #ifndef COS_VALUE_H
 #include <cos/Value.h>
@@ -119,8 +119,7 @@ SubArray_init(struct SubArray *subarr, I32 substart)
   struct Array * arr = STATIC_CAST(struct Array*, subarr->array);
 
   U32 start = index_abs(substart, arr->size);
-  test_assert( start + sarr->size <= arr->size,
-               "subarray out of range" );
+  test_assert( start + sarr->size <= arr->size, "subarray out of range" );
 
   sarr->object = arr->object + start;
 

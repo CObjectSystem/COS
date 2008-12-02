@@ -32,13 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.6 2008/10/15 19:18:06 ldeniau Exp $
+ | $Id: init.h,v 1.7 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
-#ifndef COS_GEN_OBJECT_H
+#include <cos/Object.h>
 #include <cos/gen/object.h>
-#endif
 
 // constructors
 defgeneric(OBJ , ginitWithObj  , _1, (OBJ)_2);

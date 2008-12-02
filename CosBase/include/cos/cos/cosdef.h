@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.12 2008/11/07 14:12:07 ldeniau Exp $
+ | $Id: cosdef.h,v 1.13 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -79,9 +79,8 @@ typedef _ComplexDouble     C64, COMPLEX;
 #error "COS: complex not supported"
 #endif
 
-typedef ptrdiff_t               INDEX;
 typedef size_t                  SIZE;
-
+typedef ptrdiff_t               IDX;
 typedef const char*             STR; // string literal
 typedef struct OBJ*             OBJ; // object ADT, never defined
 typedef const struct Generic*   SEL; // message selector

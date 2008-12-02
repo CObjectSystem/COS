@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.9 2008/10/24 21:08:39 ldeniau Exp $
+ | $Id: value.h,v 1.10 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
-#endif
+#include <cos/Object.h>
 
 defgeneric(STR  , gstr , _1);
 defgeneric(U32  , gsize, _1);

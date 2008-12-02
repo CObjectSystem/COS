@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.18 2008/11/07 23:39:35 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.19 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -210,9 +210,9 @@ gen_setMth(void)
     n += COS_GEN_NMTH(gen);
   }
 
-  // if missing generics, methods might have been loaded before generics
+  // missing generics
   if (n != sym.n_mth)
-    cos_abort("some methods have been loaded before their generics (?)");
+    cos_abort("incomplete or missing symbols table");
 }
 
 static inline void
@@ -533,16 +533,17 @@ cos_symbol_register(struct Object* sym[])
 {
   U32 i;
 
-  if (!sym) cos_abort("null symbol table");
+  if (!sym)
+    cos_abort("null symbol table");
 
-  for (i=0; i < MAX_TBL && tbl[i]; i++)
+  for (i = 0; i < MAX_TBL && tbl[i]; i++)
     if (tbl[i] == sym)
       return;
 
   if (i == MAX_TBL)
-    cos_abort("too many COS symbols tables registered");
+    cos_abort("too many COS symbols tables registered (%u tables)", i);
 
-  tbl[i++] = sym;
+  tbl[i] = sym;
 }
 
 // ----- generic

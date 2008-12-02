@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.3 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: logic.h,v 1.4 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
-#endif
+#include <cos/gen/object.h>
 
 // return True, False or TrueFalse (= uncertain, undetermined)
 defgeneric(OBJ, gnot    , _1);     

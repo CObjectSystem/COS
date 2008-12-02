@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.12 2008/11/07 14:12:07 ldeniau Exp $
+ | $Id: object.h,v 1.13 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
-#endif
+#include <cos/Object.h>
 
 // allocator, deallocator
 defgeneric(OBJ , galloc        , _1);

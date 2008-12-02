@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.h,v 1.4 2008/10/31 16:05:38 ldeniau Exp $
+ | $Id: Exception.h,v 1.5 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
+#include <cos/Object.h>
 #endif 
 
 /* NOTE-USER: exception

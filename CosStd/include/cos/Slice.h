@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.5 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Slice.h,v 1.6 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -138,22 +138,49 @@ Slice1_last(struct Slice1 *s) {
 
 static inline U32
 Slice2_last(struct Slice2 *s) {
-  return Slice2_eval(s, s->size[0]-1, s->size[1]-1);
+  return Slice2_eval(s, s->size[0]-1, s->size[1]);
 }
 
 static inline U32
 Slice3_last(struct Slice3 *s) {
-  return Slice3_eval(s, s->size[0]-1, s->size[1]-1, s->size[2]-1);
+  return Slice3_eval(s, s->size[0]-1, s->size[1], s->size[2]);
 }
 
 static inline U32
 Slice4_last(struct Slice4 *s) {
-  return Slice4_eval(s, s->size[0]-1, s->size[1]-1, s->size[2]-1, s->size[3]-1);
+  return Slice4_eval(s, s->size[0]-1, s->size[1], s->size[2], s->size[3]);
 }
 
 static inline U32
 Slice5_last(struct Slice5 *s) {
-  return Slice5_eval(s, s->size[0]-1, s->size[1]-1, s->size[2]-1, s->size[3]-1, s->size[4]-1);
+  return Slice5_eval(s, s->size[0]-1, s->size[1], s->size[2], s->size[3], s->size[4]);
+}
+
+// ----- end
+
+static inline U32
+Slice1_end(struct Slice1 *s) {
+  return Slice1_eval(s, s->size);
+}
+
+static inline U32
+Slice2_end(struct Slice2 *s) {
+  return Slice2_eval(s, s->size[0], s->size[1]);
+}
+
+static inline U32
+Slice3_end(struct Slice3 *s) {
+  return Slice3_eval(s, s->size[0], s->size[1], s->size[2]);
+}
+
+static inline U32
+Slice4_end(struct Slice4 *s) {
+  return Slice4_eval(s, s->size[0], s->size[1], s->size[2], s->size[3]);
+}
+
+static inline U32
+Slice5_end(struct Slice5 *s) {
+  return Slice5_eval(s, s->size[0], s->size[1], s->size[2], s->size[3], s->size[4]);
 }
 
 // ----- continuity

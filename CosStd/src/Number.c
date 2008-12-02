@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.6 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Number.c,v 1.7 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -447,6 +447,56 @@ defmethod(OBJ, gmodulo, Long, Long)
   retmethod(_1);
 endmethod
 
+// ----- conjugate
+
+defmethod(OBJ, gconjugate, Complex)
+  self->value = complex_make(complex_real(self->value),
+                            -complex_imag(self->value));
+  retmethod(_1);
+endmethod
+
+// ----- power
+
+defmethod(OBJ, gpower, Float, Int)
+  I32 n = self2->value;
+  R64 a = 1.0;
+  
+  if (n < 0) {
+    n = -n;
+    self->value = 1.0/self->value;
+  }
+
+  for (;;) {
+    if (n & 1)
+      a *= self->value;
+
+    if (n >>= 1)
+      self->value *= self->value;
+    else
+      retmethod(_1);
+  }
+endmethod
+
+defmethod(OBJ, gpower, Complex, Int)
+  I32 n = self2->value;
+  C64 a = 1.0;
+  
+  if (n < 0) {
+    n = -n;
+    self->value = 1.0/self->value;
+  }
+
+  for (;;) {
+    if (n & 1)
+      a *= self->value;
+
+    if (n >>= 1)
+      self->value *= self->value;
+    else
+      retmethod(_1);
+  }
+endmethod
+
 // ----- neg
 
 defmethod(OBJ, gneg, Number)
@@ -455,8 +505,16 @@ endmethod
 
 // ----- inv
 
-defmethod(OBJ, ginv, Number)
+defmethod(OBJ, ginv, Floating)
   retmethod(ginvert(gautoRelease(gclone(_1))));
+endmethod
+
+// ----- conj
+
+defmethod(OBJ, gconj, Complex)
+  OBJ z = aComplex(complex_make(complex_real(self->value),
+                               -complex_imag(self->value)));
+  retmethod(gautoRelease(z));
 endmethod
 
 // ----- add

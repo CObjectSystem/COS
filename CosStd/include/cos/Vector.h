@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.6 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Vector.h,v 1.7 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -132,9 +132,9 @@ defclass(IntVector8, IntVector) I32 _value[]; endclass
 defclass(IntVector9, IntVector) I32 _value[]; endclass
 defclass(IntVectorN, IntVector) I32 _value[]; endclass
 
-#define aIntVector(...)                   aVectorT    (Int,I32,__VA_ARGS__)
-#define aIntVectorRef(size,array)         aVectorRefT (Int,size,array)
-#define aIntSubVector(vector,start,size)  aSubVectorT (Int,vector,start,size)
+#define aIntVector(...)                  ( (OBJ)atIntVector   (__VA_ARGS__      ) )
+#define aIntVectorRef(size,array)        ( (OBJ)atIntVectorRef(size,array       ) )
+#define aIntSubVector(vector,start,size) ( (OBJ)atIntSubVector(vector,start,size) )
 
 #define atIntVector(...)                  atVectorT   (Int,I32,__VA_ARGS__)
 #define atIntVectorRef(size,array)        atVectorRefT(Int,size,array)
@@ -154,9 +154,9 @@ defclass(LngVector8, LngVector) I64 _value[]; endclass
 defclass(LngVector9, LngVector) I64 _value[]; endclass
 defclass(LngVectorN, LngVector) I64 _value[]; endclass
 
-#define aLngVector(...)                   aVectorT    (Lng,I64,__VA_ARGS__)
-#define aLngVectorRef(size,array)         aVectorRefT (Lng,size,array)
-#define aLngSubVector(vector,start,size)  aSubVectorT (Lng,vector,start,size)
+#define aLngVector(...)                  ( (OBJ)atLngVector   (__VA_ARGS__      ) )
+#define aLngVectorRef(size,array)        ( (OBJ)atLngVectorRef(size,array       ) )
+#define aLngSubVector(vector,start,size) ( (OBJ)atLngSubVector(vector,start,size) )
 
 #define atLngVector(...)                  atVectorT   (Lng,I64,__VA_ARGS__)
 #define atLngVectorRef(size,array)        atVectorRefT(Lng,size,array)
@@ -176,9 +176,9 @@ defclass(FltVector8, FltVector) R64 _value[]; endclass
 defclass(FltVector9, FltVector) R64 _value[]; endclass
 defclass(FltVectorN, FltVector) R64 _value[]; endclass
 
-#define aFltVector(...)                   aVectorT    (Flt,R64,__VA_ARGS__)
-#define aFltVectorRef(size,array)         aVectorRefT (Flt,size,array)
-#define aFltSubVector(vector,start,size)  aSubVectorT (Flt,vector,start,size)
+#define aFltVector(...)                  ( (OBJ)atFltVector   (__VA_ARGS__      ) )
+#define aFltVectorRef(size,array)        ( (OBJ)atFltVectorRef(size,array       ) )
+#define aFltSubVector(vector,start,size) ( (OBJ)atFltSubVector(vector,start,size) )
 
 #define atFltVector(...)                  atVectorT   (Flt,R64,__VA_ARGS__)
 #define atFltVectorRef(size,array)        atVectorRefT(Flt,size,array)
@@ -198,9 +198,9 @@ defclass(CpxVector8, CpxVector) C64 _value[]; endclass
 defclass(CpxVector9, CpxVector) C64 _value[]; endclass
 defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
 
-#define aCpxVector(...)                   aVectorT    (Cpx,C64,__VA_ARGS__)
-#define aCpxVectorRef(size,array)         aVectorRefT (Cpx,size,array)
-#define aCpxSubVector(vector,start,size)  aSubVectorT (Cpx,vector,start,size)
+#define aCpxVector(...)                  ( (OBJ)atCpxVector   (__VA_ARGS__      ) )
+#define aCpxVectorRef(size,array)        ( (OBJ)atCpxVectorRef(size,array       ) )
+#define aCpxSubVector(vector,start,size) ( (OBJ)atCpxSubVector(vector,start,size) )
 
 #define atCpxVector(...)                  atVectorT   (Cpx,C64,__VA_ARGS__)
 #define atCpxVectorRef(size,array)        atVectorRefT(Cpx,size,array)
@@ -208,7 +208,6 @@ defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
 
 // ----- automatic constructors implementation
 
-#define aVectorT(P,T,...) ( (OBJ)atVectorT(P,T,__VA_ARGS__) )
 #define atVectorT(P,T,...) \
         atVectorN(P,T,COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),10)) \
                   (N,COS_PP_NARG(__VA_ARGS__)),__VA_ARGS__)
@@ -217,14 +216,11 @@ defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
           {{{ COS_CLS_NAME(COS_PP_CAT3(P,Vector,N)).Behavior.id, COS_RC_AUTO }}}, \
           (T[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__) }} )
 
-#define aVectorRefT(P,size,array) ( (OBJ)atVectorRefT(P,size,array) )
 #define atVectorRefT(P,size,array) \
         ( &(struct COS_PP_CAT(P,Vector)) { \
           {{{ COS_CLS_NAME(COS_PP_CAT(P,Vector)).Behavior.id, COS_RC_AUTO }}}, \
           (array), (size) } )
 
-#define aSubVectorT(P,vector,substart,subsize) \
-        ( (OBJ)atSubVectorT(P,vector,substart,subsize) )
 #define atSubVectorT(P,vector,substart,subsize) \
         ( COS_PP_CAT(P,SubVector_init)(&(struct COS_PP_CAT(P,SubVector)) {{ \
           {{{ COS_CLS_NAME(COS_PP_CAT(P,SubVector)).Behavior.id, COS_RC_AUTO }}}, \
@@ -236,37 +232,35 @@ defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
 #include <cos/Value.h>
 #endif
 
-static inline struct IntSubVector*
+static inline struct IntVector*
 IntSubVector_init(struct IntSubVector *subvec, I32 substart)
 {
-  useclass(IntVector);
+  test_assert( cos_any_superClass(subvec->vector) == classref(IntVector),
+               "subvector accepts only fixed size vector" );
 
-  OBJ vec_spr = (OBJ)cos_class_get(cos_any_id(subvec->vector))->spr;
   struct IntVector *svec = &subvec->IntVector;
-  struct IntVector *vec  = STATIC_CAST(struct IntVector*, subvec->vector);
-  U32 start;
+  struct IntVector * vec = STATIC_CAST(struct IntVector*, subvec->vector);
 
-  test_assert( vec_spr == IntVector );
-  start = index_abs(substart, vec->size);
-  test_assert( start + svec->size <= vec->size );
+  U32 start = index_abs(substart, vec->size);
+  test_assert( start + svec->size <= vec->size, "subvector out of range" );
+
   svec->value = vec->value + start;
 
-  return subvec;
+  return svec;
 }
 
 static inline struct LngVector*
 LngSubVector_init(struct LngSubVector *subvec, I32 substart)
 {
-  useclass(LngVector);
+  test_assert( cos_any_superClass(subvec->vector) == classref(LngVector),
+               "subvector accepts only fixed size vector" );
 
-  OBJ vec_spr = (OBJ)cos_class_get(cos_any_id(subvec->vector))->spr;
   struct LngVector *svec = &subvec->LngVector;
-  struct LngVector *vec  = STATIC_CAST(struct LngVector*, subvec->vector);
-  U32 start;
+  struct LngVector * vec = STATIC_CAST(struct LngVector*, subvec->vector);
 
-  test_assert( vec_spr == LngVector );
-  start = index_abs(substart, vec->size);
-  test_assert( start + svec->size <= vec->size );
+  U32 start = index_abs(substart, vec->size);
+  test_assert( start + svec->size <= vec->size, "subvector out of range" );
+
   svec->value = vec->value + start;
 
   return svec;
@@ -275,16 +269,15 @@ LngSubVector_init(struct LngSubVector *subvec, I32 substart)
 static inline struct FltVector*
 FltSubVector_init(struct FltSubVector *subvec, I32 substart)
 {
-  useclass(FltVector);
+  test_assert( cos_any_superClass(subvec->vector) == classref(FltVector),
+               "subvector accepts only fixed size vector" );
 
-  OBJ vec_spr = (OBJ)cos_class_get(cos_any_id(subvec->vector))->spr;
   struct FltVector *svec = &subvec->FltVector;
-  struct FltVector *vec  = STATIC_CAST(struct FltVector*, subvec->vector);
-  U32 start;
+  struct FltVector * vec = STATIC_CAST(struct FltVector*, subvec->vector);
 
-  test_assert( vec_spr == FltVector );
-  start = index_abs(substart, vec->size);
-  test_assert( start + svec->size <= vec->size );
+  U32 start = index_abs(substart, vec->size);
+  test_assert( start + svec->size <= vec->size, "subvector out of range" );
+
   svec->value = vec->value + start;
 
   return svec;
@@ -293,16 +286,15 @@ FltSubVector_init(struct FltSubVector *subvec, I32 substart)
 static inline struct CpxVector*
 CpxSubVector_init(struct CpxSubVector *subvec, I32 substart)
 {
-  useclass(CpxVector);
+  test_assert( cos_any_superClass(subvec->vector) == classref(CpxVector),
+               "subvector accepts only fixed size vector" );
 
-  OBJ vec_spr = (OBJ)cos_class_get(cos_any_id(subvec->vector))->spr;
   struct CpxVector *svec = &subvec->CpxVector;
-  struct CpxVector *vec  = STATIC_CAST(struct CpxVector*, subvec->vector);
-  U32 start;
+  struct CpxVector * vec = STATIC_CAST(struct CpxVector*, subvec->vector);
 
-  test_assert( vec_spr == CpxVector );
-  start = index_abs(substart, vec->size);
-  test_assert( start + svec->size <= vec->size );
+  U32 start = index_abs(substart, vec->size);
+  test_assert( start + svec->size <= vec->size, "subvector out of range" );
+
   svec->value = vec->value + start;
 
   return svec;

@@ -1,25 +1,25 @@
 COS C89 compliance:
 -------------------
 
-COS "core" generates code conform to ISO C89 but it requires a ISO C99 preprocessor.
+COS core generates code conform to ISO C89 but it requires a ISO C99 preprocessor.
 
-CosBase can be compiled with a standalone C99 preprocessor and a C89 compiler.
+CosBase (core) can be compiled with a standalone C99 preprocessor and a C89 compiler.
 CosStd and other modules require a C99 compiler or a compiler which supports at least
   - compound litterals (automatic constructors)
   - flexible arrays (some class cluster definition like Array)
+  - 64 bits integers on non 64 bits architectures
   - complex numbers
-  - long long on non-64 bits architectures
   - some C99 library function (e.g. snprintf)
 
-Example of CosBase compilation with gcc:
-  cpp -std=c99 -pedantic -W -Wall -ICosBase/include -DCOS_C89 -E -o src/file.i src/file.c
-  gcc -std=c89 -pedantic -W -Wall -O3                         -c -o obj/file.o src/file.i
+Example of CosBase compilation with gcc (see CosBase/compile89.sh):
+  cpp -std=c99 -pedantic -W -Wall -Iinclude -DCOS_C89 -E -o src/file.i src/file.c
+  gcc -std=c89 -pedantic -W -Wall -O3                 -c -o obj/file.o src/file.i
 
   - the preprocessing step may generate warnings about the undefinition of __STDC_VERSION__
     but usually, standalone preprocessors allow to undef __STDC_VERSION__
-  - these steps can be achieved for CosBase using the compile89.sh script
 
 Standalone C99 preprocessor:
   http://code.google.com/p/ucpp/
 
 For more info, contact me: laurent.deniau@cern.ch
+

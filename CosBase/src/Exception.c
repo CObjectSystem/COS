@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.6 2008/11/10 08:41:47 ldeniau Exp $
+ | $Id: Exception.c,v 1.7 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -93,6 +93,10 @@ endmethod
 void cos_exception_assert(STR reason, STR func, STR file, int line)
 {
   useclass(ExBadAssert);
+  
+  if (cos_any_id(ExBadAssert) == 0)
+    cos_logmsg(COS_LOGMSG_ABORT,func,file,line,"%s",reason);
+
   THROW(gnewWithStr(ExBadAssert,reason),func,file,line);
 }
 
@@ -101,6 +105,10 @@ void cos_exception_assert(STR reason, STR func, STR file, int line)
 void cos_exception_errno(int err, STR func, STR file, int line)
 {
   useclass(ExErrno);
+
+  if (cos_any_id(ExErrno) == 0)
+    cos_logmsg(COS_LOGMSG_ABORT,func,file,line, "[%d] %s", err, strerror(err));
+
   THROW(gnewWithInt(ExErrno,err),func,file,line);
 }
 
@@ -117,37 +125,30 @@ endmethod
 // ----- signal
 
 #ifdef __GLIBC__
-extern char* strsignal(int);
+extern const char* strsignal(int);
+#else
+static const char* strsignal(int sig)
+{
+  switch(sig) {
+  case SIGABRT: return "Aborted";
+  case SIGALRM: return "Alarm clock";
+  case SIGBUS : return "Bus error";
+  case SIGFPE : return "Floating point exception";
+  case SIGILL : return "Illegal instruction";
+  case SIGINT : return "Interrupt";
+  case SIGQUIT: return "Quit";
+  case SIGSEGV: return "Segmentation fault";
+  case SIGTERM: return "Terminated";
+  default     : return "unknown signal";
+  }
+}
+#endif // __GLIBC__
 
 defmethod(OBJ, ginitWithInt, ExSignal, (int)val)
   defnext(OBJ, ginitWithStr, ExSignal, (STR)str);
   next_method(self, strsignal(val));
   self->sig = val;
 endmethod
-
-#else
-
-defmethod(OBJ, ginitWithInt, ExSignal, (int)val)
-  STR str;
-
-  switch(val) {
-  case SIGABRT: str = "Aborted"                 ; break;
-  case SIGALRM: str = "Alarm clock"             ; break;
-  case SIGBUS : str = "Bus error"               ; break;
-  case SIGFPE : str = "Floating point exception"; break;
-  case SIGILL : str = "Illegal instruction"     ; break;
-  case SIGINT : str = "Interrupt"               ; break;
-  case SIGQUIT: str = "Quit"                    ; break;
-  case SIGSEGV: str = "Segmentation fault"      ; break;
-  case SIGTERM: str = "Terminated"              ; break;
-  default     : str = ""                        ; break;
-  }
-
-  next_method(self, str);
-  self->sig = val;
-endmethod
-
-#endif // __GLIBC__
 
 defmethod(int, gint, ExSignal)
   retmethod(self->sig);
@@ -167,7 +168,12 @@ ex_signal(int sig)
   case SIGBUS :
   case SIGFPE :
   case SIGILL :
-  case SIGSEGV: cos_showCallStack(stderr);
+  case SIGSEGV: cos_showCallStack(0);
+  }
+
+  if (cos_any_id(ExSignal) == 0) {
+    if (sig == SIGABRT) signal(sig, SIG_DFL);
+    cos_abort("[%d] %s", sig, strsignal(sig));
   }
 
   THROW(gnewWithInt(ExSignal, sig));

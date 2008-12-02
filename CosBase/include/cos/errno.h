@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: errno.h,v 1.3 2008/10/31 15:19:43 ldeniau Exp $
+ | $Id: errno.h,v 1.4 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
+#include <cos/Object.h>
 #endif 
 
 #include <errno.h>

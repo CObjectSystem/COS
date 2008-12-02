@@ -1,0 +1,98 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- config for Linux
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: Linux,v 1.1 2008/12/02 17:32:21 ldeniau Exp $
+# |
+#
+
+#
+# library specific
+#
+LIBTYPE     := static shared
+LIBPREFIX   := lib
+LIBAREXT    := .a
+LIBSHEXT    := .so
+
+#
+# tools specific
+#
+GCC        := gcc
+DEP        := $(GCC) -M
+CPP        := $(GCC) -E
+CC         := $(GCC)
+LD         := $(GCC)
+AR         := ar -cr
+LN         := ln -sf
+RM         := rm -rf
+MKDIR      := mkdir -p
+TAR        := tar czf
+
+#
+# compiler and linker flags
+#
+CPPFLAGS    := -std=c99 -W -Wall -pedantic -pipe
+CCFLAGS     := -std=c99 -W -Wall -pedantic -pipe -O3
+LDFLAGS     := -std=c99 -W -Wall -pedantic -pipe -O3
+
+DEBUG_CPP   :=
+DEBUG_CC    := -g -rdynamic
+DEBUG_LD    := -g -rdynamic
+
+PROFILE_CPP :=
+PROFILE_CC  := -pg
+PROFILE_LD  := -pg
+
+RELEASE_CPP :=
+RELEASE_CC  := 
+RELEASE_LD  := 
+
+SHARED_CC   := -shared -fPIC
+SHARED_LD    = -shared -fPIC -Wl,-soname,$(@F)
+
+#
+# system specific
+#
+SYSFLAGS    := -DCOS_POSIX=COS_YES -DCOS_TLS=COS_YES \
+               -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
+               -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
+SYSLIBS     := -lpthread -ldl
+SYSLIBPATH  := LD_LIBRARY_PATH
+
+#
+# compiler specific (linux+gcc are the reference)
+#
+CCFLAGS     += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
+               -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
+               -Wpointer-arith -Wbad-function-cast -Wcast-align -Wcast-qual \
+               -Wfloat-equal -Wconversion -Wno-conversion -Winline \
+               --param large-function-growth=500 --param inline-unit-growth=200
+
+# end of makefile

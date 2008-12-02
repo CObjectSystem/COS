@@ -1,0 +1,122 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- prologue
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: prologue,v 1.1 2008/12/02 17:32:21 ldeniau Exp $
+# |
+#
+
+#
+# NOTE-DEV: important variables to set
+#
+# PREFIX  = where to get COS files (autodetect)
+# MAKDIR  = where to get COS makefiles (PREFIX/include/cos)
+# EXEDIR  = where to get COS tools (e.g. cosgen, cossym) (PREFIX/bin)
+# BASEDIR = where to get project files (base)
+# DESTDIR = where to put project build (destination)
+# INSTDIR = where to install project   (installation)
+# OSYS    = operating system
+# ARCH    = system architecture
+
+eq     = $(if $(subst $1,,$2),,t)
+neq    = $(if $(subst $1,,$2),t,)
+chop   = $(patsubst %$2,%,$1)
+assert = $(if $1,,$(error $2))
+exists = $(call assert,$(wildcard $1),$2)
+
+# detect prefix path (e.g . or ../CosBase or /usr or /usr/local)
+ifeq ($(PREFIX),)
+  PREFIX := $(dir $(subst include/cos/prologue,.,$(lastword $(MAKEFILE_LIST))))
+  PREFIX := $(call chop,$(PREFIX),/)
+endif
+
+# detect project path (e.g . or path-to-module or path-to-project)
+ifeq ($(BASEDIR),)
+  BASEDIR := $(dir $(firstword $(MAKEFILE_LIST)))
+  BASEDIR := $(call chop,$(BASEDIR),/)
+endif
+
+# detect destination path (e.g . or path-to-user)
+ifeq ($(DESTDIR),)
+  DESTDIR := $(if $(call eq,$(shell pwd),$(PWD)),.,$(PWD))
+endif
+
+# detect install path (e.g . or path-to-usr)
+ifeq ($(INSTDIR),)
+  INSTDIR := /usr
+endif
+
+# detect operating system (e.g. Linux)
+ifeq ($(OSYS),)
+  OSYS := $(shell uname -s)
+endif
+
+# detect architecture (e.g. x86_64)
+ifeq ($(ARCH),)
+  ARCH := $(shell uname -m)
+endif
+
+# other useful variables
+MAKDIR := $(PREFIX)/include/cos
+EXEDIR := $(PREFIX)/bin
+OSNAME := $(OSYS)_$(ARCH)
+
+# for debugging 
+ifeq ($(TRACE),yes)
+$(info PREFIX  = $(PREFIX))
+$(info BASEDIR = $(BASEDIR))
+$(info DESTDIR = $(DESTDIR))
+$(info INSTDIR = $(INSTDIR))
+$(info OSNAME  = $(OSNAME))
+endif
+
+# checks
+$(call exists, $(PREFIX)            , unable to find PREFIX='$(PREFIX)')
+$(call exists, $(BASEDIR)           , unable to find BASEDIR='$(BASEDIR)')
+$(call exists, $(DESTDIR)           , unable to find DESTDIR='$(DESTDIR)')
+$(call exists, $(INSTDIR)           , unable to find INSTDIR='$(INSTDIR)')
+$(call exists, $(MAKDIR)            , unable to find MAKDIR='$(MAKDIR)')
+$(call exists, $(EXEDIR)            , unable to find EXEDIR='$(EXEDIR)')
+$(call exists, $(MAKDIR)/epilogue   , unable to detect COS makefiles)
+$(call exists, $(MAKDIR)/cfg/$(OSYS), unable to find COS config for '$(OSYS)')
+$(call assert, $(OSYS)              , unable to detect operating system)
+$(call assert, $(ARCH)              , unable to detect system architecture)
+
+# cancel default rules
+.SUFFIXES:
+
+# default target
+.DEFAULT_GOAL = all
+
+# include operating system config
+include $(MAKDIR)/cfg/$(OSYS)
+
+# end of makefile
+

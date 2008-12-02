@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_exception.c,v 1.5 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: ut_exception.c,v 1.6 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -137,16 +137,12 @@ useclass(ExSignal);
   ENDTRY
 
   // -----
-  cos_stack_trace = NO;
-  
   for (i = 0; i < n_sig; i++)
     TRY
       raise(sig[i]);
     CATCH(ExSignal, ex)
       UTEST( gint(ex) == sig[i] );
     ENDTRY
-
-  cos_stack_trace = YES;
 
   UTEST_END
 }

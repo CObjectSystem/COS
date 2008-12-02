@@ -30,9 +30,19 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile89.sh,v 1.3 2008/11/18 19:08:58 ldeniau Exp $
+# | $Id: compile89.sh,v 1.4 2008/12/02 17:32:21 ldeniau Exp $
 # |
 #
+
+#
+# NOTE-USER: c89 example
+# this example is for CosBase itself which is C89 compliant
+#
+
+# dirs
+incdir=include
+srcdir=src
+exedir=../build/exe
 
 # defines
 DEFINE="-DCOS_C89 -DCOS_POSIX=1 -DCOS_TLS=1 -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE"
@@ -41,7 +51,7 @@ DEFINE="-DCOS_C89 -DCOS_POSIX=1 -DCOS_TLS=1 -D_XOPEN_SOURCE=500 -D_REENTRANT -D_
 C99="cc -std=c99 -pedantic -W -Wall -Iinclude -O3 $DEFINE -w"  # -w can be removed
 C89="cc -std=c89 -pedantic -W -Wall -Iinclude -O3 $DEFINE"
 
-# location
+# check location
 PWD=`basename \`pwd\``
 
 if [ "$PWD" != "CosBase" ] ; then
@@ -49,28 +59,36 @@ if [ "$PWD" != "CosBase" ] ; then
   exit;
 fi
 
-rm -f src/_cosgen.c src/_cossym.c
+# cleaning
+rm -f $srcdir/_cosgen.c $srcdir/_cossym.c $srcdir/libCosBase89.a $srcdir/*.o
 
-# collect generics (optional)
-../build/exe/cosgen --out=src/_cosgen.c include/cos/gen/*.h
+if [ "$1" = "clean" ] ; then
+  exit 1
+fi
 
-# compile source files (2 steps)
-for f in src/*.c; do
-  f=src/`basename $f .c`
+# 1) collect generics (preprocessing only)
+gen=`ls $incdir/cos/gen/*.h`
+$C99 -E $gen | $exedir/cosgen --out=$srcdir/_cosgen.c $gen
+
+# 2) compile source files (2 steps)
+for f in $srcdir/*.c; do
+  f=$srcdir/`basename $f .c`
   echo "compiling $f.c"
-  $C99 -E -o $f.i $f.c; # step 1: preprocessing
-  $C89 -c -o $f.o $f.i; # step 2: compilation
-  rm  $f.i
+  $C99 -E -o $f.i $f.c # 2.1) preprocessing
+  $C89 -c -o $f.o $f.i # 2.2) compilation
+  rm $f.i
 done
 
-# collect symbols
-../build/exe/cossym --out=src/_cossym.c src/*.o
+# 3) collect symbols (compilation only)
+$exedir/cossym --out=$srcdir/_cossym.c $srcdir/*.o
+$C89 -c -o $srcdir/_cossym.o $srcdir/_cossym.c
 
-# build program
-# $C89 src/_cossym.c src/*.o -o program
+# build archive
+ar -cr $srcdir/libCosBase89.a $srcdir/*.o
 
-# build program from archive (include previous collect & build)
-# ar -cr src/libCosBase89.a src/*.o
-# cossym --out=src/_cossym.c libCosBase89.a
-# $C89 libCosBase89.a src/_cossym.c -o program
+# build program (require main() to be defined)
+# $C89 $srcdir/*.o -o program
+
+# build program from archive (idem)
+# $C89 $srcdir/libCosBase89.a -o program
 

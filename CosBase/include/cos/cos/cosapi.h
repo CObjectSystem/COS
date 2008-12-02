@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.16 2008/11/18 08:34:25 ldeniau Exp $
+ | $Id: cosapi.h,v 1.17 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -169,7 +169,7 @@ BOOL cos_method_understand4_(struct cos_method_slot4*restrict*restrict,SEL,U32,U
 BOOL cos_method_understand5_(struct cos_method_slot5*restrict*restrict,SEL,U32,U32,U32,U32,U32);
 
 // logger message level (not thread safe)
-extern int  cos_logmsg_level_;
+extern int cos_logmsg_level_;
 
 /***********************************************************
  * Inlined functions

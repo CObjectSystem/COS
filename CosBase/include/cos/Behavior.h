@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Behavior.h,v 1.1 2008/06/27 16:17:14 ldeniau Exp $
+ | $Id: Behavior.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
+#include <cos/Object.h>
 #endif
 
 // Behavior is a core class, see cos/cos/coscls.h

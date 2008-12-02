@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.2 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: container.h,v 1.3 2008/12/02 17:32:21 ldeniau Exp $
  |
 */
 
@@ -41,27 +41,26 @@
 #endif 
 
 // generic accessors
-defgeneric(OBJ, gput   , to, obj);
+defgeneric(OBJ, gput   , to, what);
 defgeneric(OBJ, gget   , from);
 defgeneric(OBJ, gdrop  , from);
-defgeneric(OBJ, gupdate, to, obj);
+defgeneric(OBJ, gupdate, to, what);
 
 // generic accessors with location
-defgeneric(OBJ, gputAt   , to, obj, at);
+defgeneric(OBJ, gputAt   , to, what, at);
 defgeneric(OBJ, ggetAt   , from, at);
 defgeneric(OBJ, gdropAt  , from, at);
-defgeneric(OBJ, gupdateAt, to, obj, at);
+defgeneric(OBJ, gupdateAt, to, what, at);
 
 // stack-like accessors
-defgeneric(OBJ, gpush, to, obj);     // alias for gput
+defgeneric(OBJ, gpush, to, what);    // alias for gput
 defgeneric(OBJ, gtop , from);        // alias for gget
 defgeneric(OBJ, gpop , from);        // alias for gdrop
 
 // seq-like accessor
-defgeneric(OBJ, gappend, to  , obj);
-defgeneric(OBJ, ginsert, to  , obj);
-defgeneric(OBJ, gremove, from, obj);
-defgeneric(OBJ, gconcat, to  , obj);
+defgeneric(OBJ, gappend, to  , what);
+defgeneric(OBJ, ginsert, to  , what);
+defgeneric(OBJ, gremove, from, what);
 defgeneric(OBJ, glast  , from);
 
 // raw data (copy) accessors
