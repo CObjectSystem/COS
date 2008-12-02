@@ -1,0 +1,106 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- program rules
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: program.rules,v 1.1 2008/12/02 17:36:27 ldeniau Exp $
+# |
+#
+
+#
+# target context (deferred -> immediate)
+#
+BINNAME := $(program)$(TARGETEXT)
+
+$(TARGET).%: TARGET    := $(TARGET)
+$(TARGET).%: TARGETEXT := $(TARGETEXT)
+$(TARGET).%: BINNAME   := $(BINNAME)
+
+#
+# clean targets
+#
+ifneq ($(filter $(TARGET).clean,$(GOALS)),)
+
+.PHONY: $(TARGET).clean
+
+$(TARGET).clean:
+	$(RM) $(OBJDIR)
+	$(RM) $(BINDIR)/$(BINNAME)
+
+endif # $(TARGET).clean
+
+#
+# build targets
+#
+ifneq ($(filter $(TARGET) $(TARGET).run,$(GOALS)),)
+
+.PHONY: $(TARGET) $(TARGET).run $(TARGET).bin
+
+$(TARGET): $(TARGET).bin
+
+#
+# rules for running program
+#
+$(TARGET).run: $(TARGET).bin
+	@echo "*** Running" $(BINDIR)/$(BINNAME)
+ifneq ($(SHOW),yes)
+	@export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
+	sed 's, :,:,g'` ; \
+	$(BINDIR)/$(BINNAME) $(ARGS)
+else
+	export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
+	sed 's, :,:,g'` ; \
+	$(BINDIR)/$(BINNAME) $(ARGS)
+endif
+
+#
+# rules for building program
+#
+$(TARGET).bin: $(BINDIR)/$(BINNAME)
+
+$(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/_$(COSSYM).o
+	@echo "*** Building" $@
+	@$(MKDIR) $(@D)
+ifneq ($(SHOW),yes)
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	@$(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/_$(COSSYM).c $@
+	@$(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+else
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	 $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/_$(COSSYM).c $@
+	 $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+endif
+
+include $(MAKDIR)/mak/compile.rules
+
+endif # $(TARGET)
+
+# end of makefile

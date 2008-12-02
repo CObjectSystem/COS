@@ -1,0 +1,115 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- library rules
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: library.rules,v 1.1 2008/12/02 17:36:26 ldeniau Exp $
+# |
+#
+
+#
+# target context (deferred -> immediate)
+#
+LIBNAME := $(LIBPREFIX)$(library)$(TARGETEXT)
+
+$(TARGET).%: TARGET    := $(TARGET)
+$(TARGET).%: TARGETEXT := $(TARGETEXT)
+$(TARGET).%: LIBNAME   := $(LIBNAME)
+
+#
+# clean targets
+#
+ifneq ($(filter $(TARGET).clean,$(GOALS)),)
+
+.PHONY: $(TARGET).clean
+
+$(TARGET).clean:
+	$(RM) $(OBJDIR)
+	$(RM) $(LIBDIR)/$(LIBNAME).*
+
+endif # $(TARGET).clean
+
+#
+# build targets
+#
+ifneq ($(filter $(TARGET),$(GOALS)),)
+
+.PHONY: $(TARGET) $(TARGET).ar $(TARGET).sh
+
+$(TARGET): $(TARGET).ar $(TARGET).sh
+
+#
+# rules for building static library
+#
+ifneq ($(filter static,$(LIBTYPE)),)
+$(TARGET).ar: $(LIBDIR)/$(LIBNAME)$(LIBAREXT)
+else
+$(TARGET).ar:
+endif
+
+$(LIBDIR)/$(LIBNAME)$(LIBAREXT): $(OBJECTS)
+	@echo "*** Building " $@
+	@$(MKDIR) $(@D)
+ifneq ($(SHOW),yes)
+	@$(AR) $@ $^
+else
+	 $(AR) $@ $^
+endif
+
+#
+# rules for building shared library
+#
+ifneq ($(filter shared,$(LIBTYPE)),)
+$(TARGET).sh: $(LIBDIR)/$(LIBNAME)$(LIBSHEXT)
+else
+$(TARGET).sh:
+endif
+
+$(LIBDIR)/$(LIBNAME)$(LIBSHEXT): $(OBJECTS) $(OBJDIR)/$(library)_$(COSSYM).o
+	@echo "*** Building " $@
+	@$(MKDIR) $(@D)
+ifneq ($(SHOW),yes)
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
+	@$(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(library)_$(COSSYM).c --mod=$(library) $@.$(VERSION)
+	@$(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/$(library)_$(COSSYM).c -o $(<D)/$(library)_$(COSSYM).o
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
+	@$(LN) $(@F).$(VERSION) $@
+else
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
+	 $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(library)_$(COSSYM).c --mod=$(library) $@.$(VERSION)
+	 $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/$(library)_$(COSSYM).c -o $(<D)/$(library)_$(COSSYM).o
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
+	 $(LN) $(@F).$(VERSION) $@
+endif
+
+include $(MAKDIR)/mak/compile.rules
+
+endif # $(TARGET)
+
+# end of makefile

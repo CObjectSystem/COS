@@ -1,0 +1,73 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- program
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: program,v 1.1 2008/12/02 17:36:26 ldeniau Exp $
+# |
+#
+
+#
+# debug target
+#
+TARGET    := debug
+TARGETEXT := _d
+
+$(TARGET): CPPFLAGS += $(DEBUG_CPP)
+$(TARGET):  CCFLAGS += $(DEBUG_CC)
+$(TARGET):  LDFLAGS += $(DEBUG_LD)
+
+include $(MAKDIR)/mak/program.rules
+
+#
+# profile target
+#
+TARGET    := profile
+TARGETEXT := _p
+
+$(TARGET): CPPFLAGS += $(PROFILE_CPP)
+$(TARGET):  CCFLAGS += $(PROFILE_CC)
+$(TARGET):  LDFLAGS += $(PROFILE_LD)
+
+include $(MAKDIR)/mak/program.rules
+
+#
+# release target
+#
+TARGET    := release
+TARGETEXT :=
+
+$(TARGET): CPPFLAGS += $(RELEASE_CPP)
+$(TARGET):  CCFLAGS += $(RELEASE_CC)
+$(TARGET):  LDFLAGS += $(RELEASE_LD)
+
+include $(MAKDIR)/mak/program.rules
+
+# end of makefile
+

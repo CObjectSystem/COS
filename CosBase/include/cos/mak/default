@@ -1,0 +1,160 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- common
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: default,v 1.1 2008/12/02 17:36:26 ldeniau Exp $
+# |
+#
+
+COSSYM  := cossym
+COSGEN  := cosgen
+COSCMT  := coscmt
+
+VERSION := $(if $(version),$(version),0.0)
+RELEASE := $(if $(release),$(release),$(shell date +'%Y%m'))
+
+LNKTYPE := $(filter static shared,$(targets))
+LNKTYPE := $(if $(LNKTYPE),$(LNKTYPE),$(LIBTYPE))
+
+TARGETS := $(filter debug profile release,$(targets))
+TARGETS := $(if $(TARGETS),$(TARGETS),debug profile release)
+
+BINDIR  := $(DESTDIR)/$(OSNAME)/bin
+LIBDIR  := $(DESTDIR)/$(OSNAME)/lib
+OBJDIR   = $(DESTDIR)/$(OSNAME)/obj/$(TARGET)
+
+ifneq ($(wildcard $(BASEDIR)/include),)
+INCDIR  := $(BASEDIR)/include
+SRCDIR  := $(BASEDIR)/src
+else ifneq ($(wildcard $(BASEDIR)/src),)
+INCDIR  := $(BASEDIR)/src
+SRCDIR  := $(BASEDIR)/src
+else
+INCDIR  := $(BASEDIR)
+SRCDIR  := $(BASEDIR)
+endif
+
+SOURCES := $(wildcard $(SRCDIR)/*.c)
+
+OBJECTS  = $(addprefix $(OBJDIR)/, \
+             $(addsuffix .o,$(basename $(notdir $(SOURCES)))) \
+             $(library)_$(COSGEN).o)
+
+DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
+
+moddeps := $(if $(moddeps),$(moddeps),)
+moddirs := $(if $(moddirs),$(moddirs),$(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../..)
+MODULES := $(wildcard $(foreach d,$(moddirs),$(foreach m,$(moddeps),$(d)/$(m))))
+
+INCLUDE := $(addprefix -I, $(INCDIR) \
+             $(foreach m,$(MODULES),$(m)/include) \
+	           $(foreach d,$(incdirs),$(d)) \
+             $(wildcard $(PREFIX)/include))
+
+LIBRARY := $(addprefix -L, \
+             $(foreach m,$(MODULES),$(m)/$(OSNAME)/lib) \
+	           $(foreach d,$(libdirs),$(d)) \
+             $(wildcard $(PREFIX)/lib))
+
+LIBS     = $(addprefix -l, \
+             $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
+
+MODS    := $(addprefix --dep=, $(moddeps))
+
+GENERIC := $(filter-out $(PREFIX)/include/cos/cos/%.h \
+                        $(PREFIX)/include/cos/cpp/%.h, \
+             $(wildcard $(if $(defgens),$(defgens), \
+               $(if $(wildcard $(BASEDIR)/include), \
+                          $(INCDIR)/*.h \
+                          $(INCDIR)/*/*.h \
+                          $(INCDIR)/*/*/*.h \
+                          $(INCDIR)/*/*/*/*.h,) \
+                          $(SRCDIR)/*.h)))
+
+# for debugging 
+ifeq ($(TRACE),yes)
+TARGET := [$(TARGETS)]
+$(info VERSION = $(VERSION))
+$(info RELEASE = $(RELEASE))
+$(info TARGETS = $(TARGETS))
+$(info LNKTYPE = $(LNKTYPE))
+$(info HEADERS[$(words $(HEADERS))] = $(HEADERS))
+$(info GENERIC[$(words $(GENERIC))] = $(GENERIC))
+$(info SOURCES[$(words $(SOURCES))] = $(SOURCES))
+$(info OBJECTS[$(words $(OBJECTS))] = $(OBJECTS))
+$(info DEPENDS[$(words $(DEPENDS))] = $(DEPENDS))
+$(info MODDIRS[$(words $(moddirs))] = $(moddirs))
+$(info MODULES[$(words $(MODULES))] = $(MODULES))
+$(info INCLUDE[$(words $(INCLUDE))] = $(INCLUDE))
+$(info LIBRARY[$(words $(LIBRARY))] = $(LIBRARY))
+$(info LIBS   [$(words $(LIBS))] = $(LIBS))
+$(info MODS   [$(words $(MODS))] = $(MODS))
+endif
+
+# checks
+$(call assert, $(LNKTYPE), unable to detect link modes)
+$(call assert, $(SOURCES), unable to find source files)
+
+# standard flags
+CPPFLAGS    += $(SYSFLAGS)
+CCFLAGS     += $(SYSFLAGS)
+DEBUG_CPP   += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
+DEBUG_CC    += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
+PROFILE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRACT_PRE
+PROFILE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRACT_PRE
+RELEASE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
+RELEASE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
+
+#
+# targets
+#
+.PHONY: all all.run all.clean
+
+all: $(TARGETS)
+
+all.run: $(addsuffix .run,$(TARGETS))
+
+all.clean: $(addsuffix .clean,$(TARGETS))
+
+#
+# goals
+#
+GOALS := $(if $(MAKECMDGOALS),$(MAKECMDGOALS),$(.DEFAULT_GOAL))
+GOALS := $(patsubst all.clean,$(addsuffix .clean,$(TARGETS)),$(GOALS))
+GOALS := $(patsubst all.run,$(addsuffix .run,$(TARGETS)),$(GOALS))
+GOALS := $(patsubst all,$(TARGETS),$(GOALS))
+
+# for debugging 
+ifeq ($(TRACE),yes)
+$(info GOALS = $(GOALS))
+endif
+
+# end of makefile
+
