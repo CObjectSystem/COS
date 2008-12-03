@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.1 2008/12/02 17:36:26 ldeniau Exp $
+# | $Id: default,v 1.2 2008/12/03 15:32:08 ldeniau Exp $
 # |
 #
 
@@ -61,11 +61,16 @@ INCDIR  := $(BASEDIR)
 SRCDIR  := $(BASEDIR)
 endif
 
+HEADERS := $(wildcard $(SRCDIR)/*.h \
+             $(if $(wildcard $(BASEDIR)/include), \
+                  $(INCDIR)/*.h $(INCDIR)/*/*.h \
+                  $(INCDIR)/*/*/*.h $(INCDIR)/*/*/*/*.h,))
+
 SOURCES := $(wildcard $(SRCDIR)/*.c)
 
 OBJECTS  = $(addprefix $(OBJDIR)/, \
              $(addsuffix .o,$(basename $(notdir $(SOURCES)))) \
-             $(library)_$(COSGEN).o)
+             $(if $(GENERIC),$(library)_$(COSGEN).o,))
 
 DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
 
@@ -88,15 +93,11 @@ LIBS     = $(addprefix -l, \
 
 MODS    := $(addprefix --dep=, $(moddeps))
 
+ifneq ($(defgens),no)
 GENERIC := $(filter-out $(PREFIX)/include/cos/cos/%.h \
                         $(PREFIX)/include/cos/cpp/%.h, \
-             $(wildcard $(if $(defgens),$(defgens), \
-               $(if $(wildcard $(BASEDIR)/include), \
-                          $(INCDIR)/*.h \
-                          $(INCDIR)/*/*.h \
-                          $(INCDIR)/*/*/*.h \
-                          $(INCDIR)/*/*/*/*.h,) \
-                          $(SRCDIR)/*.h)))
+             $(if $(defgens),$(wildcard $(defgens)),$(HEADERS)))
+endif
 
 # for debugging 
 ifeq ($(TRACE),yes)
