@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.1 2008/12/02 17:32:21 ldeniau Exp $
+# | $Id: prologue,v 1.2 2008/12/03 18:23:22 ldeniau Exp $
 # |
 #
 
@@ -98,6 +98,8 @@ $(info OSNAME  = $(OSNAME))
 endif
 
 # checks
+$(call assert, $(OSYS)              , unable to detect operating system)
+$(call assert, $(ARCH)              , unable to detect system architecture)
 $(call exists, $(PREFIX)            , unable to find PREFIX='$(PREFIX)')
 $(call exists, $(BASEDIR)           , unable to find BASEDIR='$(BASEDIR)')
 $(call exists, $(DESTDIR)           , unable to find DESTDIR='$(DESTDIR)')
@@ -106,8 +108,6 @@ $(call exists, $(MAKDIR)            , unable to find MAKDIR='$(MAKDIR)')
 $(call exists, $(EXEDIR)            , unable to find EXEDIR='$(EXEDIR)')
 $(call exists, $(MAKDIR)/epilogue   , unable to detect COS makefiles)
 $(call exists, $(MAKDIR)/cfg/$(OSYS), unable to find COS config for '$(OSYS)')
-$(call assert, $(OSYS)              , unable to detect operating system)
-$(call assert, $(ARCH)              , unable to detect system architecture)
 
 # cancel default rules
 .SUFFIXES:
