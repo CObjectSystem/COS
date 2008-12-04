@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile.rules,v 1.1 2008/12/02 17:36:26 ldeniau Exp $
+# | $Id: compile.rules,v 1.2 2008/12/04 16:08:58 ldeniau Exp $
 # |
 #
 
@@ -39,12 +39,9 @@
 # rule for generics
 #
 $(OBJDIR)/$(library)_$(COSGEN).c: $(GENERIC)
-	@$(MKDIR) $(@D)
-ifneq ($(SHOW),yes)
-	@$(EXEDIR)/$(COSGEN) --out=$@ $^
-else
-	 $(EXEDIR)/$(COSGEN) --out=$@ $^
-endif
+	@  echo "*** Computing generics"
+	@  $(MKDIR) $(@D)
+	$_ $(EXEDIR)/$(COSGEN) --out=$@ $^
 
 $(GENERIC): $(EXEDIR)/$(COSCMT)
 
@@ -52,65 +49,50 @@ $(GENERIC): $(EXEDIR)/$(COSCMT)
 # rule for symbols (dummy)
 #
 $(OBJDIR)/$(library)_$(COSSYM).c:
-	@$(MKDIR) $(@D)
-ifneq ($(SHOW),yes)
-	@$(EXEDIR)/$(COSSYM) --out=$@
-else
-	 $(EXEDIR)/$(COSSYM) --out=$@
-endif
+	@  echo "*** Computing symbols"
+	@  $(MKDIR) $(@D)
+	$_ $(EXEDIR)/$(COSSYM) --out=$@
+
+$(OBJDIR)/$(library)_$(COSSYM)_s.c:
+	@  echo "*** Computing symbols"
+	@  $(MKDIR) $(@D)
+	$_ $(EXEDIR)/$(COSSYM) --out=$@
 
 #
 # rules for compilation
 #
 $(OBJDIR)/%.o: $(SRCDIR)/%.c $(OBJDIR)/%.d
-	@echo "*** Compiling" $< "->" $@
-ifneq ($(SHOW),yes)
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-else
-	 $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-endif
+	@  echo "*** Compiling" $< "->" $@
+	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
 $(OBJDIR)/$(library)_$(COSGEN).o: $(OBJDIR)/$(library)_$(COSGEN).c \
                                   $(OBJDIR)/$(library)_$(COSGEN).d
-	@echo "*** Compiling generics"
-ifneq ($(SHOW),yes)
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-else
-	 $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-endif
+	@  echo "*** Compiling generics"
+	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
 $(OBJDIR)/$(library)_$(COSSYM).o: $(OBJDIR)/$(library)_$(COSSYM).c
-	@echo "*** Compiling symbols"
-ifneq ($(SHOW),yes)
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-else
-	 $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
-endif
+	@  echo "*** Compiling symbols"
+	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+
+$(OBJDIR)/$(library)_$(COSSYM)_s.o: $(OBJDIR)/$(library)_$(COSSYM)_s.c
+	@  echo "*** Compiling symbols"
+	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
 #
 # rules for dependencies
 #
 $(OBJDIR)/%.d: $(SRCDIR)/%.c
-	@echo "*** Computing" $< "->" $@
-	@$(MKDIR) $(@D)
-ifneq ($(SHOW),yes)
-	@$(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
-   sed 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' > $@
-else
-	 $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
-   sed 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' > $@
-endif
+	@  echo "*** Computing" $< "->" $@
+	@  $(MKDIR) $(@D)
+	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
+     sed 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
+     > $@
 
 $(OBJDIR)/$(library)_$(COSGEN).d: $(OBJDIR)/$(library)_$(COSGEN).c
-	@echo "*** Computing generics"
-	@$(MKDIR) $(@D)
-ifneq ($(SHOW),yes)
-	@$(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
-   sed 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' > $@
-else
-	 $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
-   sed 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' > $@
-endif
+	@  $(MKDIR) $(@D)
+	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
+     sed 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
+     > $@
 
 #
 # include dependencies

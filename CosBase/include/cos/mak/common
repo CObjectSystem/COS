@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.1 2008/12/02 17:36:26 ldeniau Exp $
+# | $Id: common,v 1.2 2008/12/04 16:08:58 ldeniau Exp $
 # |
 #
 
@@ -38,18 +38,15 @@
 #
 .PHONY: clean
 clean:
-	find . \( -name '*~' -o -name '.*~' -o -name '.#*' \) -exec rm -f {} \;
+	@  echo "*** Cleaning"
+	$_ $(FIND) . -type f \( -name '*~' -o -name '.*~' -o -name '.#*' \) -exec $(RM) {} \;
 
 #
 # tools
 #
 $(EXEDIR)/$(COSCMT): CCFLAGS := $(CCFLAGS)
 $(EXEDIR)/$(COSCMT): $(wildcard $(BASEDIR)/bin/src/coscmt.c)
-ifneq ($(SHOW),yes)
-	@$(if $<,$(CC) $(CCFLAGS) $< -s -o $@,)
-else
-	 $(if $<,$(CC) $(CCFLAGS) $< -s -o $@,)
-endif
+	$_ $(if $<,$(CC) $(CCFLAGS) $< -s -o $@,)
 
 # end of makefile
 

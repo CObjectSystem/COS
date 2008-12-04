@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.4 2008/12/04 11:22:09 ldeniau Exp $
+# | $Id: default,v 1.5 2008/12/04 16:08:58 ldeniau Exp $
 # |
 #
 
@@ -172,6 +172,9 @@ GOALS := $(patsubst all,$(TARGETS),$(GOALS))
 ifeq ($(TRACE),yes)
 $(info GOALS = $(GOALS))
 endif
+
+# for trace/debugging 
+_ := $(if $(call eq,$(SHOW),yes),,@)
 
 # end of makefile
 

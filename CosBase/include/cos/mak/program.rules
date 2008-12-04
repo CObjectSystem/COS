@@ -29,19 +29,19 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.3 2008/12/04 11:22:09 ldeniau Exp $
+# | $Id: program.rules,v 1.4 2008/12/04 16:08:58 ldeniau Exp $
 # |
 #
 
 #
-# target context (deferred -> immediate)
+# targets context (deferred -> immediate)
 #
 BINNAME  := $(program)$(TARGETEXT)
 SBINNAME := $(program)$(TARGETEXT)$(if $(TARGETEXT),s,_s)
 
 $(TARGET).%: TARGET    := $(TARGET)
 $(TARGET).%: TARGETEXT := $(TARGETEXT)
-$(TARGET).%: BINNAME   := $(BINNAME)
+$(TARGET).%:  BINNAME  :=  $(BINNAME)
 $(TARGET).%: SBINNAME  := $(SBINNAME)
 
 #
@@ -52,9 +52,10 @@ ifneq ($(filter $(TARGET).clean,$(GOALS)),)
 .PHONY: $(TARGET).clean
 
 $(TARGET).clean:
-	$(RM) $(OBJDIR)
-	$(RM) $(BINDIR)/$(BINNAME)
-	$(RM) $(BINDIR)/$(SBINNAME)
+	@  echo "*** Cleaning" $(TARGET)
+	$_ $(RM) $(OBJDIR)
+	$_ $(RM) $(BINDIR)/$(BINNAME)
+	$_ $(RM) $(BINDIR)/$(SBINNAME)
 
 endif # $(TARGET).clean
 
@@ -63,33 +64,14 @@ endif # $(TARGET).clean
 #
 ifneq ($(filter $(TARGET) $(TARGET).run $(TARGET).srun,$(GOALS)),)
 
-.PHONY: $(TARGET) $(TARGET).run $(TARGET).bin $(TARGET).srun $(TARGET).sbin
+.PHONY: $(TARGET)      $(TARGET).clear
+.PHONY: $(TARGET).bin  $(TARGET).run
+.PHONY: $(TARGET).sbin $(TARGET).srun
 
-$(TARGET): $(if $(filter static,$(LNKTYPE)),$(TARGET).sbin,) \
-           $(if $(filter shared,$(LNKTYPE)),$(TARGET).bin, )
-
-#
-# rules for running program
-#
-$(TARGET).srun: $(TARGET).sbin
-	@echo "*** Running" $(BINDIR)/$(SBINNAME)
-ifneq ($(SHOW),yes)
-	@$(BINDIR)/$(SBINNAME) $(ARGS)
-else
-	 $(BINDIR)/$(SBINNAME) $(ARGS)
-endif
-
-$(TARGET).run: $(TARGET).bin
-	@echo "*** Running" $(BINDIR)/$(BINNAME)
-ifneq ($(SHOW),yes)
-	@export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
-	 sed 's, :,:,g'` ; \
-	 $(BINDIR)/$(BINNAME) $(ARGS)
-else
-	 export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
-	 sed 's, :,:,g'` ; \
-	 $(BINDIR)/$(BINNAME) $(ARGS)
-endif
+$(TARGET): $($(TARGET).pre) \
+           $(if $(filter shared,$(LNKTYPE)),$(TARGET).bin, ) \
+           $(if $(filter static,$(LNKTYPE)),$(TARGET).sbin,) \
+           $($(TARGET).post)
 
 #
 # rules for building static program
@@ -98,43 +80,47 @@ $(TARGET).sbin: CCFLAGS += $(STATIC_CC)
 $(TARGET).sbin: LDFLAGS += $(STATIC_LD)
 $(TARGET).sbin: $(BINDIR)/$(SBINNAME)
 
-$(BINDIR)/$(SBINNAME): $(OBJECTS) $(OBJDIR)/_$(COSSYM).o
-	@echo "*** Building" $@
-	@$(MKDIR) $(@D)
-ifneq ($(SHOW),yes)
-	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	@$(EXEDIR)/$(COSSYM)         --out=$(<D)/_$(COSSYM).c $@
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
-	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	@$(if $(STRIP),$(STRIP) $@,)
-else
-	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	 $(EXEDIR)/$(COSSYM)         --out=$(<D)/_$(COSSYM).c $@
-	 $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
-	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	 $(if $(STRIP),$(STRIP) $@,)
-endif
+$(BINDIR)/$(SBINNAME): $(OBJECTS) $(OBJDIR)/_$(COSSYM)_s.o
+	@  echo "*** Building" $@
+	@  $(MKDIR) $(@D)
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	$_ $(EXEDIR)/$(COSSYM)         --out=$(<D)/_$(COSSYM)_s.c $@
+	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM)_s.c -o $(<D)/_$(COSSYM)_s.o
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	$_ $(if $(STRIP),$(STRIP) $@,)
 
 #
 # rules for building shared program
 #
-$(TARGET).bin: $(BINDIR)/$(BINNAME)
+$(TARGET).bin: $(BINDIR)/$(BINNAME) $(TARGET).clear
 
 $(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/_$(COSSYM).o
-	@echo "*** Building" $@
-	@$(MKDIR) $(@D)
-ifneq ($(SHOW),yes)
-	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	@$(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/_$(COSSYM).c $@
-	@$(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
-	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-else
-	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	 $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/_$(COSSYM).c $@
-	 $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
-	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-endif
+	@  echo "*** Building" $@
+	@  $(MKDIR) $(@D)
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/_$(COSSYM).c $@
+	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
 
+#
+# rules for running static program (helper)
+#
+$(TARGET).srun: $(TARGET).sbin
+	@  echo "*** Running" $(BINDIR)/$(SBINNAME)
+	$_ $(BINDIR)/$(SBINNAME) $(ARGS)
+
+#
+# rules for running shared program (helper)
+#
+$(TARGET).run: $(TARGET).bin
+	@echo "*** Running" $(BINDIR)/$(BINNAME)
+	$_ export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
+	   sed 's, :,:,g'` ; \
+	   $(BINDIR)/$(BINNAME) $(ARGS)
+
+#
+# include other target rules
+#
 include $(MAKDIR)/mak/compile.rules
 
 endif # $(TARGET)

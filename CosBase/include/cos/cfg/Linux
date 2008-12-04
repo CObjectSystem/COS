@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.2 2008/12/04 09:54:49 ldeniau Exp $
+# | $Id: Linux,v 1.3 2008/12/04 16:08:58 ldeniau Exp $
 # |
 #
 
@@ -54,6 +54,7 @@ LN         := ln -sf
 STRIP      := strip -s
 RM         := rm -rf
 MKDIR      := mkdir -p
+FIND       := find
 TAR        := tar czf
 
 #
