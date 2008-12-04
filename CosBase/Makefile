@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.8 2008/12/02 17:32:21 ldeniau Exp $
+# | $Id: Makefile,v 1.9 2008/12/04 18:43:56 ldeniau Exp $
 # |
 #
 
@@ -49,6 +49,8 @@ package := $(library)-$(version)_$(release)
 # variables hereafter could be omitted
 
 targets := # default (debug profile release static shared)
+headers := # default
+sources := # default
 defgens := # default ($(wildcard $(BASEDIR)/include/cos/gen/*.h))
 
 # only names (as with -lname)

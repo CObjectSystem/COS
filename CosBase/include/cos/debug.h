@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: debug.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: debug.h,v 1.3 2008/12/04 18:39:29 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,6 @@
 #include <stdio.h>
 
 extern FILE *cos_logmsg_out;
-extern int   cos_logmsg_dispThreadId;
 
 // in cos/cos_debug.c
 void cos_showCallStack(FILE*);

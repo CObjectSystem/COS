@@ -29,14 +29,14 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.2 2008/12/04 16:39:41 ldeniau Exp $
+# | $Id: Darwin,v 1.3 2008/12/04 18:39:29 ldeniau Exp $
 # |
 #
 
 #
-# library specific
+# library specific (static not supported on MacOS X + gcc)
 #
-LIBTYPE     := static shared
+LIBTYPE     := shared
 LIBPREFIX   := lib
 LIBAREXT    := .a
 LIBSHEXT    := .so

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.9 2008/12/04 16:46:46 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.10 2008/12/04 18:39:29 ldeniau Exp $
  |
 */
 
@@ -48,9 +48,8 @@
 STATIC_ASSERT(COS_LOGMSG_value_must_be_within_trace_and_abort,
               COS_LOGMSG >= COS_LOGMSG_TRACE && COS_LOGMSG <= COS_LOGMSG_ABORT);
 
-FILE *cos_logmsg_out          = 0;
-int   cos_logmsg_level_       = COS_LOGMSG;
-int   cos_logmsg_dispThreadId = 0;
+FILE *cos_logmsg_out    = 0;
+int   cos_logmsg_level_ = COS_LOGMSG;
 
 int
 cos_logmsg_set(int lvl)
@@ -81,18 +80,11 @@ cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
    
     va_start(va,fmt);
 #if COS_POSIX
-    if (cos_logmsg_dispThreadId)
-      fprintf(cos_logmsg_out,"COS-%s[%u:%u]:(%s,%s,%d): ",
-              tag[lvl], (U32)getpid(), (U32)pthread_self(),
-              func ? func : "", file ? file : "", line);
-    else
-      fprintf(cos_logmsg_out,"COS-%s[%u]:(%s,%s,%d): ",
-              tag[lvl], (U32)getpid(),
-              func ? func : "", file ? file : "", line);
+    fprintf(cos_logmsg_out,"COS-%s[%u]:(%s,%s,%d): ",
+            tag[lvl], (U32)getpid(), func ? func : "", file ? file : "", line);
 #else
-      fprintf(cos_logmsg_out,"COS-%s:(%s,%s,%d): ",
-              tag[lvl],
-              func ? func : "", file ? file : "", line);
+    fprintf(cos_logmsg_out,"COS-%s:(%s,%s,%d): ",
+            tag[lvl], func ? func : "", file ? file : "", line);
 #endif
     vfprintf(cos_logmsg_out,fmt,va);
     putc('\n',cos_logmsg_out);
