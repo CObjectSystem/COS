@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.3 2008/12/04 09:54:49 ldeniau Exp $
+# | $Id: default,v 1.4 2008/12/04 11:22:09 ldeniau Exp $
 # |
 #
 
@@ -39,6 +39,8 @@ COSCMT  := coscmt
 
 VERSION := $(if $(version),$(version),0.0)
 RELEASE := $(if $(release),$(release),$(shell date +'%Y%m'))
+
+PRJTYPE := $(if $(program),program,$(if $(library),library,))
 
 LNKTYPE := $(filter static shared,$(targets))
 LNKTYPE := $(if $(LNKTYPE),$(LNKTYPE),$(LIBTYPE))
@@ -70,10 +72,20 @@ else
 HEADERS  = $(headers)
 endif
 
-ifeq ($(headers),)
+ifeq ($(sources),)
 SOURCES := $(wildcard $(SRCDIR)/*.c)
 else
 SOURCES  = $(sources)
+endif
+
+ifneq ($(defgens),no)
+GENERIC  = $(filter-out $(PREFIX)/include/cos/cos/%.h \
+                        $(PREFIX)/include/cos/cpp/%.h, \
+             $(if $(defgens),$(wildcard $(defgens)),$(HEADERS)))
+endif
+
+ifeq ($(moddirs),)
+moddirs := $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../..
 endif
 
 OBJECTS  = $(addprefix $(OBJDIR)/, \
@@ -81,10 +93,6 @@ OBJECTS  = $(addprefix $(OBJDIR)/, \
              $(if $(GENERIC),$(library)_$(COSGEN).o,))
 
 DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
-
-ifeq ($(moddirs),)
-moddirs := $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../..
-endif
 
 MODULES  = $(wildcard $(foreach d,$(moddirs),$(foreach m,$(moddeps),$(d)/$(m))))
 
@@ -103,18 +111,13 @@ LIBS     = $(addprefix -l, \
 
 MODS     = $(addprefix --dep=, $(moddeps))
 
-ifneq ($(defgens),no)
-GENERIC  = $(filter-out $(PREFIX)/include/cos/cos/%.h \
-                        $(PREFIX)/include/cos/cpp/%.h, \
-             $(if $(defgens),$(wildcard $(defgens)),$(HEADERS)))
-endif
-
 # for debugging 
 ifeq ($(TRACE),yes)
 TARGET := [$(TARGETS)]
 $(info VERSION = $(VERSION))
 $(info RELEASE = $(RELEASE))
 $(info TARGETS = $(TARGETS))
+$(info PRJTYPE = $(PRJTYPE))
 $(info LNKTYPE = $(LNKTYPE))
 $(info HEADERS[$(words $(HEADERS))] = $(HEADERS))
 $(info GENERIC[$(words $(GENERIC))] = $(GENERIC))

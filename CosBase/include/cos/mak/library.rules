@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library.rules,v 1.2 2008/12/04 09:54:49 ldeniau Exp $
+# | $Id: library.rules,v 1.3 2008/12/04 11:22:09 ldeniau Exp $
 # |
 #
 
@@ -62,8 +62,8 @@ ifneq ($(filter $(TARGET),$(GOALS)),)
 
 .PHONY: $(TARGET) $(TARGET).ar $(TARGET).sh
 
-$(TARGET): $(if $(filter static,$(LNKTYPE)),$(TARGET).ar,) \
-           $(if $(filter shared,$(LNKTYPE)),$(TARGET).sh,)
+$(TARGET): $(if $(filter shared,$(LNKTYPE)),$(TARGET).sh,) \
+           $(if $(filter static,$(LNKTYPE)),$(TARGET).ar,)
 
 #
 # rules for building static library
@@ -82,6 +82,8 @@ endif
 #
 # rules for building shared library
 #
+$(TARGET).sh: CCFLAGS += $(SHARED_CC)
+$(TARGET).sh: LDFLAGS += $(SHARED_LD)
 $(TARGET).sh: $(LIBDIR)/$(LIBNAME)$(LIBSHEXT)
 
 $(LIBDIR)/$(LIBNAME)$(LIBSHEXT): $(OBJECTS) $(OBJDIR)/$(library)_$(COSSYM).o

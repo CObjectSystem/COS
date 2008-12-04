@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS makefile -- program
+# | COS makefile -- project (program or library)
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.1 2008/12/02 17:36:26 ldeniau Exp $
+# | $Id: project,v 1.1 2008/12/04 11:22:09 ldeniau Exp $
 # |
 #
 
@@ -43,7 +43,7 @@ $(TARGET): CPPFLAGS += $(DEBUG_CPP)
 $(TARGET):  CCFLAGS += $(DEBUG_CC)
 $(TARGET):  LDFLAGS += $(DEBUG_LD)
 
-include $(MAKDIR)/mak/program.rules
+include $(MAKDIR)/mak/$(PRJTYPE).rules
 
 #
 # profile target
@@ -55,7 +55,7 @@ $(TARGET): CPPFLAGS += $(PROFILE_CPP)
 $(TARGET):  CCFLAGS += $(PROFILE_CC)
 $(TARGET):  LDFLAGS += $(PROFILE_LD)
 
-include $(MAKDIR)/mak/program.rules
+include $(MAKDIR)/mak/$(PRJTYPE).rules
 
 #
 # release target
@@ -67,7 +67,6 @@ $(TARGET): CPPFLAGS += $(RELEASE_CPP)
 $(TARGET):  CCFLAGS += $(RELEASE_CC)
 $(TARGET):  LDFLAGS += $(RELEASE_LD)
 
-include $(MAKDIR)/mak/program.rules
+include $(MAKDIR)/mak/$(PRJTYPE).rules
 
 # end of makefile
-

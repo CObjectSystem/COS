@@ -29,25 +29,16 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: epilogue,v 1.1 2008/12/02 17:32:21 ldeniau Exp $
+# | $Id: epilogue,v 1.2 2008/12/04 11:22:09 ldeniau Exp $
 # |
 #
 
-# default settings
+# default settings & target
 include $(MAKDIR)/mak/default
 
 # load project rules
-ifneq ($(program),)
-include $(MAKDIR)/mak/program
-else ifneq ($(library),)
-include $(MAKDIR)/mak/library
-else ifneq ($(plug-in),)
-include $(MAKDIR)/mak/plug-in
-endif
-
-# load package rules
-ifneq ($(package),)
-include $(MAKDIR)/mak/package
+ifneq ($(PRJTYPE),)
+include $(MAKDIR)/mak/project
 endif
 
 # common targets
