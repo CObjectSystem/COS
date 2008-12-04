@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_debug.c,v 1.4 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: cos_debug.c,v 1.5 2008/12/04 16:46:46 ldeniau Exp $
  |
 */
 
@@ -63,6 +63,7 @@ void cos_showCallStack(FILE *out)
 void cos_showCallStack(FILE *out)
 {
   cos_trace("stack trace not available");  
+  COS_UNUSED(out);
 }
 
 #endif

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.8 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.9 2008/12/04 16:46:46 ldeniau Exp $
  |
 */
 
@@ -82,7 +82,7 @@ cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
     va_start(va,fmt);
 #if COS_POSIX
     if (cos_logmsg_dispThreadId)
-      fprintf(cos_logmsg_out,"COS-%s[%u:%x]:(%s,%s,%d): ",
+      fprintf(cos_logmsg_out,"COS-%s[%u:%u]:(%s,%s,%d): ",
               tag[lvl], (U32)getpid(), (U32)pthread_self(),
               func ? func : "", file ? file : "", line);
     else
