@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.1 2008/12/02 17:32:21 ldeniau Exp $
+# | $Id: Linux,v 1.2 2008/12/04 09:54:49 ldeniau Exp $
 # |
 #
 
@@ -51,6 +51,7 @@ CC         := $(GCC)
 LD         := $(GCC)
 AR         := ar -cr
 LN         := ln -sf
+STRIP      := strip -s
 RM         := rm -rf
 MKDIR      := mkdir -p
 TAR        := tar czf
@@ -63,8 +64,8 @@ CCFLAGS     := -std=c99 -W -Wall -pedantic -pipe -O3
 LDFLAGS     := -std=c99 -W -Wall -pedantic -pipe -O3
 
 DEBUG_CPP   :=
-DEBUG_CC    := -g -rdynamic
-DEBUG_LD    := -g -rdynamic
+DEBUG_CC    := -g
+DEBUG_LD    := -g
 
 PROFILE_CPP :=
 PROFILE_CC  := -pg
@@ -73,6 +74,9 @@ PROFILE_LD  := -pg
 RELEASE_CPP :=
 RELEASE_CC  := 
 RELEASE_LD  := 
+
+STATIC_CC   := -static
+STATIC_LD   := -static
 
 SHARED_CC   := -shared -fPIC
 SHARED_LD    = -shared -fPIC -Wl,-soname,$(@F)

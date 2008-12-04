@@ -29,18 +29,20 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.1 2008/12/02 17:36:27 ldeniau Exp $
+# | $Id: program.rules,v 1.2 2008/12/04 09:54:49 ldeniau Exp $
 # |
 #
 
 #
 # target context (deferred -> immediate)
 #
-BINNAME := $(program)$(TARGETEXT)
+BINNAME  := $(program)$(TARGETEXT)
+SBINNAME := $(program)$(TARGETEXT)$(if $(TARGETEXT),s,_s)
 
 $(TARGET).%: TARGET    := $(TARGET)
 $(TARGET).%: TARGETEXT := $(TARGETEXT)
 $(TARGET).%: BINNAME   := $(BINNAME)
+$(TARGET).%: SBINNAME  := $(SBINNAME)
 
 #
 # clean targets
@@ -52,37 +54,67 @@ ifneq ($(filter $(TARGET).clean,$(GOALS)),)
 $(TARGET).clean:
 	$(RM) $(OBJDIR)
 	$(RM) $(BINDIR)/$(BINNAME)
+	$(RM) $(BINDIR)/$(SBINNAME)
 
 endif # $(TARGET).clean
 
 #
 # build targets
 #
-ifneq ($(filter $(TARGET) $(TARGET).run,$(GOALS)),)
+ifneq ($(filter $(TARGET) $(TARGET).run $(TARGET).srun,$(GOALS)),)
 
-.PHONY: $(TARGET) $(TARGET).run $(TARGET).bin
+.PHONY: $(TARGET) $(TARGET).run $(TARGET).bin $(TARGET).srun $(TARGET).sbin
 
-$(TARGET): $(TARGET).bin
+$(TARGET): $(if $(filter static,$(LNKTYPE)),$(TARGET).sbin,) \
+           $(if $(filter shared,$(LNKTYPE)),$(TARGET).bin, )
 
 #
 # rules for running program
 #
+$(TARGET).srun: $(TARGET).sbin
+	@echo "*** Running" $(BINDIR)/$(SBINNAME)
+ifneq ($(SHOW),yes)
+	@$(BINDIR)/$(SBINNAME) $(ARGS)
+else
+	 $(BINDIR)/$(SBINNAME) $(ARGS)
+endif
+
 $(TARGET).run: $(TARGET).bin
 	@echo "*** Running" $(BINDIR)/$(BINNAME)
 ifneq ($(SHOW),yes)
 	@export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
-	sed 's, :,:,g'` ; \
-	$(BINDIR)/$(BINNAME) $(ARGS)
+	 sed 's, :,:,g'` ; \
+	 $(BINDIR)/$(BINNAME) $(ARGS)
 else
-	export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
-	sed 's, :,:,g'` ; \
-	$(BINDIR)/$(BINNAME) $(ARGS)
+	 export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
+	 sed 's, :,:,g'` ; \
+	 $(BINDIR)/$(BINNAME) $(ARGS)
 endif
 
 #
 # rules for building program
 #
-$(TARGET).bin: $(BINDIR)/$(BINNAME)
+$(TARGET).bin : $(BINDIR)/$(BINNAME)
+$(TARGET).sbin: $(BINDIR)/$(SBINNAME)
+
+$(BINDIR)/$(SBINNAME): CCFLAGS += $(STATIC_CC)
+$(BINDIR)/$(SBINNAME): LDFLAGS += $(STATIC_LD)
+$(BINDIR)/$(SBINNAME): $(OBJECTS) $(OBJDIR)/_$(COSSYM).o
+	@echo "*** Building" $@
+	@$(MKDIR) $(@D)
+ifneq ($(SHOW),yes)
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	@$(EXEDIR)/$(COSSYM)         --out=$(<D)/_$(COSSYM).c $@
+	@$(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
+	@$(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	@$(if $(STRIP),$(STRIP) $@,)
+else
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	 $(EXEDIR)/$(COSSYM)         --out=$(<D)/_$(COSSYM).c $@
+	 $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
+	 $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	 $(if $(STRIP),$(STRIP) $@,)
+endif
 
 $(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/_$(COSSYM).o
 	@echo "*** Building" $@

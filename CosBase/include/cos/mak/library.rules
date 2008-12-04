@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library.rules,v 1.1 2008/12/02 17:36:26 ldeniau Exp $
+# | $Id: library.rules,v 1.2 2008/12/04 09:54:49 ldeniau Exp $
 # |
 #
 
@@ -62,16 +62,13 @@ ifneq ($(filter $(TARGET),$(GOALS)),)
 
 .PHONY: $(TARGET) $(TARGET).ar $(TARGET).sh
 
-$(TARGET): $(TARGET).ar $(TARGET).sh
+$(TARGET): $(if $(filter static,$(LNKTYPE)),$(TARGET).ar,) \
+           $(if $(filter shared,$(LNKTYPE)),$(TARGET).sh,)
 
 #
 # rules for building static library
 #
-ifneq ($(filter static,$(LIBTYPE)),)
 $(TARGET).ar: $(LIBDIR)/$(LIBNAME)$(LIBAREXT)
-else
-$(TARGET).ar:
-endif
 
 $(LIBDIR)/$(LIBNAME)$(LIBAREXT): $(OBJECTS)
 	@echo "*** Building " $@
@@ -85,11 +82,7 @@ endif
 #
 # rules for building shared library
 #
-ifneq ($(filter shared,$(LIBTYPE)),)
 $(TARGET).sh: $(LIBDIR)/$(LIBNAME)$(LIBSHEXT)
-else
-$(TARGET).sh:
-endif
 
 $(LIBDIR)/$(LIBNAME)$(LIBSHEXT): $(OBJECTS) $(OBJDIR)/$(library)_$(COSSYM).o
 	@echo "*** Building " $@
