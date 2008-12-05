@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.7 2008/12/05 19:22:58 ldeniau Exp $
+# | $Id: program.rules,v 1.8 2008/12/05 23:49:10 ldeniau Exp $
 # |
 #
 
@@ -80,7 +80,7 @@ $(BINDIR)/$(SBINNAME): $(OBJECTS) $(OBJDIR)/_$(COSSYM)_s.o
 	@  echo "*** Building" $@
 	@  $(MKDIR) $(@D)
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	$_ $(EXEDIR)/$(COSSYM)         --out=$(<D)/_$(COSSYM)_s.c $@
+	$_ $(EXEDIR)/$(COSSYM)         --out=$(<D)/_$(COSSYM)_s.c $(COSSYMOPT) $@
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM)_s.c -o $(<D)/_$(COSSYM)_s.o
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
 	$_ $(if $(STRIP),$(STRIP) $@,)
@@ -94,7 +94,7 @@ $(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/_$(COSSYM).o
 	@  echo "*** Building" $@
 	@  $(MKDIR) $(@D)
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/_$(COSSYM).c $@
+	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/_$(COSSYM).c $(COSSYMOPT) $@
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/_$(COSSYM).c -o $(<D)/_$(COSSYM).o
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
 

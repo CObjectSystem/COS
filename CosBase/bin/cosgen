@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosgen,v 1.7 2008/12/05 23:16:05 ldeniau Exp $
+# | $Id: cosgen,v 1.8 2008/12/05 23:49:10 ldeniau Exp $
 # |
 #
 
@@ -137,7 +137,7 @@ for f in $filelist; do
      | sed  -e 's/  *\(defgenericv*\) *(\([^;]*\);/@\1(\2;@/g' \
      | tr '@' '\n' \
      | grep -E -e '^defgenericv?\([^;]*;$' \
-     | sed  -e 's/  */ /g' -e 's/ \([,)\*]\)/\1/g' -e 's/( /(/g'`
+     | sed  -e 's/ *\([()\*]\) */\1/g' -e 's/ *, */, /g'`
 
   # includes
   if [ "$gen" != "" ] ; then

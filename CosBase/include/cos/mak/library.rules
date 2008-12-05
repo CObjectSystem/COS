@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library.rules,v 1.5 2008/12/05 18:18:29 ldeniau Exp $
+# | $Id: library.rules,v 1.6 2008/12/05 23:49:10 ldeniau Exp $
 # |
 #
 
@@ -85,7 +85,7 @@ $(LIBDIR)/$(LIBNAME)$(LIBSHEXT): $(OBJECTS) $(OBJDIR)/$(library)_$(COSSYM).o
 	@  echo "*** Building " $@
 	@  $(MKDIR) $(@D)
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
-	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(library)_$(COSSYM).c --mod=$(library) $@.$(VERSION)
+	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(library)_$(COSSYM).c --mod=$(library) $(COSSYMOPT) $@.$(VERSION)
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/$(library)_$(COSSYM).c -o $(<D)/$(library)_$(COSSYM).o
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
 	$_ $(LN) $(@F).$(VERSION) $@
