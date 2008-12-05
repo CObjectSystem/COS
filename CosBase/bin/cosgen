@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosgen,v 1.5 2008/12/05 18:18:28 ldeniau Exp $
+# | $Id: cosgen,v 1.6 2008/12/05 19:22:57 ldeniau Exp $
 # |
 #
 
@@ -38,7 +38,7 @@
 progname=`basename $0`
 exedir=`dirname $0`
 filelist=
-cmt="$exedir/coscmt"
+cmt="sed -nf $exedir/coscmt"
 out="_cosgen.c"
 datestr=`date`
 
@@ -112,8 +112,8 @@ while [ "$1" != "" ] ; do
 done
 
 # check coscmt
-if [ -d "$cmt" -o ! -x "$cmt" ] ; then
-  echo "error: unable to find coscmt ($cmt)"
+if [ ! -f "$exedir/coscmt" ] ; then
+  echo "error: unable to find coscmt"
   usage 
 fi
 

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile.rules,v 1.3 2008/12/05 18:18:29 ldeniau Exp $
+# | $Id: compile.rules,v 1.4 2008/12/05 19:22:58 ldeniau Exp $
 # |
 #
 
@@ -83,13 +83,13 @@ $(OBJDIR)/%.d: $(SRCDIR)/%.c
 	@  echo "*** Computing" $< "->" $@
 	@  $(MKDIR) $(@D)
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
-     sed 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
+     $(SED) 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
      > $@
 
 $(OBJDIR)/$(library)_$(COSGEN).d: $(OBJDIR)/$(library)_$(COSGEN).c
 	@  $(MKDIR) $(@D)
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
-     sed 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
+     $(SED) 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
      > $@
 
 #

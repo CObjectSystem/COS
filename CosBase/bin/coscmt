@@ -1,4 +1,4 @@
-#!/bin/sed -nf
+## !/bin/sed -nf
 
 # Remove C and C++ comments, by Brian Hiles (brian_hiles@rocketmail.com)
 

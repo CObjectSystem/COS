@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.5 2008/12/05 18:18:29 ldeniau Exp $
+# | $Id: Darwin,v 1.6 2008/12/05 19:22:58 ldeniau Exp $
 # |
 #
 
@@ -54,6 +54,7 @@ LN          := ln -sf
 STRIP       := strip
 RM          := rm -rf
 MKDIR       := mkdir -p
+SED         := sed
 GREP        := grep
 FIND        := find
 TAR         := tar cvz

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.6 2008/12/05 18:18:29 ldeniau Exp $
+# | $Id: program.rules,v 1.7 2008/12/05 19:22:58 ldeniau Exp $
 # |
 #
 
@@ -111,7 +111,7 @@ $(TARGET).srun: $(TARGET).sbin
 $(TARGET).run: $(TARGET).bin
 	@echo "*** Running" $(BINDIR)/$(BINNAME)
 	$_ export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
-	   sed 's, :,:,g'` ; \
+	   $(SED) 's, :,:,g'` ; \
 	   $(BINDIR)/$(BINNAME) $(ARGS)
 
 #
