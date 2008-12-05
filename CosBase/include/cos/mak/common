@@ -29,21 +29,24 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.5 2008/12/05 19:22:58 ldeniau Exp $
+# | $Id: common,v 1.6 2008/12/05 23:16:06 ldeniau Exp $
 # |
 #
 
 #
 # clean
 #
-.PHONY: clean cleanall
+.PHONY: clean cleanbuild cleanall
+
 clean:
 	@  echo "*** Cleaning files"
 	$_ $(FIND) $(BASEDIR) -type f \( -name '*~' -o -name '.*~' -o -name '.#*' \) -exec $(RM) {} \;
 
-cleanall: clean
-	@  echo "*** Cleaning module"
+cleanbuild:
+	@  echo "*** Cleaning builds"
 	$_ $(RM) `$(FIND) $(DESTDIR) -type d -name $(OSNAME)`
+
+cleanall: cleanbuild clean
 
 #
 # tarball

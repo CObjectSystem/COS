@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosgen,v 1.6 2008/12/05 19:22:57 ldeniau Exp $
+# | $Id: cosgen,v 1.7 2008/12/05 23:16:05 ldeniau Exp $
 # |
 #
 
@@ -38,7 +38,6 @@
 progname=`basename $0`
 exedir=`dirname $0`
 filelist=
-cmt="sed -nf $exedir/coscmt"
 out="_cosgen.c"
 datestr=`date`
 
@@ -65,10 +64,6 @@ cat <<END-OF-TEXT
       Put the result in file_name
       Default is: $out
 
-    --cmt=<path/prog_name>
-      Use prog_name to remove comments and literals from source code.
-      Default is: $cmt
-
 END-OF-TEXT
 
     exit 1
@@ -89,12 +84,6 @@ while [ "$1" != "" ] ; do
 		shift; continue;
 	fi
 
-	val=`expr $1 : '--cmt=\(.*\)'`
-	if [ "$val" != "" ] ; then
-		cmt="$val";
-		shift; continue;
-	fi
-
 	if [ "$1" = "--help" -o \
 	     "$1" =  "-help" ] ; then
     usage
@@ -112,8 +101,12 @@ while [ "$1" != "" ] ; do
 done
 
 # check coscmt
-if [ ! -f "$exedir/coscmt" ] ; then
-  echo "error: unable to find coscmt"
+if   [ -x "$exedir/coscmt" ] ; then
+  cmt="$exedir/coscmt -l"
+elif [ -f "$exedir/coscmt" ] ; then
+  cmt="sed -nf $exedir/coscmt"
+else
+  echo "error: unable to find file $exedir/coscmt"
   usage 
 fi
 
