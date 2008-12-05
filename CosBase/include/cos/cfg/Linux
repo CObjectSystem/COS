@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.4 2008/12/05 10:41:33 ldeniau Exp $
+# | $Id: Linux,v 1.5 2008/12/05 18:18:29 ldeniau Exp $
 # |
 #
 
@@ -44,18 +44,19 @@ LIBSHEXT    := .so
 #
 # tools specific
 #
-GCC        := gcc
-DEP        := $(GCC) -M
-CPP        := $(GCC) -E
-CC         := $(GCC)
-LD         := $(GCC)
-AR         := ar -cr
-LN         := ln -sf
-STRIP      := strip -s
-RM         := rm -rf
-MKDIR      := mkdir -p
-FIND       := find
-TAR        := tar czf
+GCC         := gcc
+DEP         := $(GCC) -M
+CPP         := $(GCC) -E
+CC          := $(GCC)
+LD          := $(GCC)
+AR          := ar -cr
+LN          := ln -sf
+STRIP       := strip -s
+RM          := rm -rf
+MKDIR       := mkdir -p
+GREP        := grep
+FIND        := find
+TAR         := tar cvz
 
 #
 # compiler and linker specific

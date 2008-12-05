@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library.rules,v 1.4 2008/12/04 16:08:58 ldeniau Exp $
+# | $Id: library.rules,v 1.5 2008/12/05 18:18:29 ldeniau Exp $
 # |
 #
 
@@ -45,16 +45,12 @@ $(TARGET).%: LIBNAME   := $(LIBNAME)
 #
 # clean targets
 #
-ifneq ($(filter $(TARGET).clean,$(GOALS)),)
-
 .PHONY: $(TARGET).clean
 
 $(TARGET).clean:
 	@  echo "*** Cleaning" $(TARGET)
 	$_ $(RM) $(OBJDIR)
 	$_ $(RM) $(LIBDIR)/$(LIBNAME).*
-
-endif # $(TARGET).clean
 
 #
 # build targets

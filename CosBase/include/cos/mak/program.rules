@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.5 2008/12/05 10:41:33 ldeniau Exp $
+# | $Id: program.rules,v 1.6 2008/12/05 18:18:29 ldeniau Exp $
 # |
 #
 
@@ -47,8 +47,6 @@ $(TARGET).%: SBINNAME  := $(SBINNAME)
 #
 # clean targets
 #
-ifneq ($(filter $(TARGET).clean,$(GOALS)),)
-
 .PHONY: $(TARGET).clean
 
 $(TARGET).clean:
@@ -56,8 +54,6 @@ $(TARGET).clean:
 	$_ $(RM) $(OBJDIR)
 	$_ $(RM) $(BINDIR)/$(BINNAME)
 	$_ $(RM) $(BINDIR)/$(SBINNAME)
-
-endif # $(TARGET).clean
 
 #
 # build targets

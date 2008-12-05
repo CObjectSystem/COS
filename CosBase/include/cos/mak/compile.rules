@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile.rules,v 1.2 2008/12/04 16:08:58 ldeniau Exp $
+# | $Id: compile.rules,v 1.3 2008/12/05 18:18:29 ldeniau Exp $
 # |
 #
 
@@ -42,8 +42,6 @@ $(OBJDIR)/$(library)_$(COSGEN).c: $(GENERIC)
 	@  echo "*** Computing generics"
 	@  $(MKDIR) $(@D)
 	$_ $(EXEDIR)/$(COSGEN) --out=$@ $^
-
-$(GENERIC): $(EXEDIR)/$(COSCMT)
 
 #
 # rule for symbols (dummy)

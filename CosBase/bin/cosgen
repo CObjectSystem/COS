@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosgen,v 1.4 2008/12/05 10:41:33 ldeniau Exp $
+# | $Id: cosgen,v 1.5 2008/12/05 18:18:28 ldeniau Exp $
 # |
 #
 
@@ -38,6 +38,7 @@
 progname=`basename $0`
 exedir=`dirname $0`
 filelist=
+cmt="$exedir/coscmt"
 out="_cosgen.c"
 datestr=`date`
 
@@ -64,6 +65,10 @@ cat <<END-OF-TEXT
       Put the result in file_name
       Default is: $out
 
+    --cmt=<path/prog_name>
+      Use prog_name to remove comments and literals from source code.
+      Default is: $cmt
+
 END-OF-TEXT
 
     exit 1
@@ -84,6 +89,12 @@ while [ "$1" != "" ] ; do
 		shift; continue;
 	fi
 
+	val=`expr $1 : '--cmt=\(.*\)'`
+	if [ "$val" != "" ] ; then
+		cmt="$val";
+		shift; continue;
+	fi
+
 	if [ "$1" = "--help" -o \
 	     "$1" =  "-help" ] ; then
     usage
@@ -91,7 +102,7 @@ while [ "$1" != "" ] ; do
 
 	val=`expr $1 : '--\(.*\)'`
 	if [ "$val" != "" ] ; then
-		echo "Unknown option: $1"
+		echo "error: unknown option --$val"
 		usage
 	fi
 
@@ -99,6 +110,12 @@ while [ "$1" != "" ] ; do
 	shift
 
 done
+
+# check coscmt
+if [ -d "$cmt" -o ! -x "$cmt" ] ; then
+  echo "error: unable to find coscmt ($cmt)"
+  usage 
+fi
 
 ##### Start of _cosgen.c #####
 
@@ -121,7 +138,8 @@ END-OF-TEXT
 
 for f in $filelist; do
   # retrieve generics
-  gen=`$exedir/coscmt -l $f \
+  gen=`cat $f \
+     | $cmt \
      | tr '\n\t' '  ' \
      | sed  -e 's/  *\(defgenericv*\) *(\([^;]*\);/@\1(\2;@/g' \
      | tr '@' '\n' \

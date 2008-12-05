@@ -29,24 +29,38 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.3 2008/12/05 09:53:28 ldeniau Exp $
+# | $Id: common,v 1.4 2008/12/05 18:18:29 ldeniau Exp $
 # |
 #
 
 #
 # clean
 #
-.PHONY: clean
+.PHONY: clean cleanall
 clean:
 	@  echo "*** Cleaning files"
-	$_ $(FIND) . -type f \( -name '*~' -o -name '.*~' -o -name '.#*' \) -exec $(RM) {} \;
+	$_ $(FIND) $(BASEDIR) -type f \( -name '*~' -o -name '.*~' -o -name '.#*' \) -exec $(RM) {} \;
+
+cleanall: clean
+	@  echo "*** Cleaning module"
+	$_ $(RM) `$(FIND) $(DESTDIR) -type d -name $(OSNAME)`
 
 #
 # tools
 #
-$(EXEDIR)/$(COSCMT): CCFLAGS := $(CCFLAGS)
-$(EXEDIR)/$(COSCMT): $(wildcard $(BASEDIR)/tools/src/coscmt.c)
+$(BINDIR)/$(COSCMT): CCFLAGS := $(CCFLAGS)
+$(BINDIR)/$(COSCMT): $(wildcard $(BASEDIR)/tools/src/coscmt.c)
+	@  $(if $<,$(MKDIR) $(@D),)
 	$_ $(if $<,$(CC) $(CCFLAGS) $< -s -o $@,)
+
+#
+# tarball
+#
+.PHONY: tarball
+tarball:
+	@  echo "*** Building tarball"
+	$_ cd $(BASEDIR); PACKDIR=`basename \`pwd\``; cd ..; \
+	   $(TAR) -f $(PACKAGE).tgz --exclude=CVS $$PACKDIR
 
 # end of makefile
 
