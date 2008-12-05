@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.5 2008/12/04 16:08:58 ldeniau Exp $
+# | $Id: default,v 1.6 2008/12/05 09:53:28 ldeniau Exp $
 # |
 #
 
@@ -157,7 +157,7 @@ all.run: $(addsuffix .run,$(TARGETS))
 
 all.srun: $(addsuffix .srun,$(TARGETS))
 
-all.clean: $(addsuffix .clean,$(TARGETS))
+all.clean: clean $(addsuffix .clean,$(TARGETS))
 
 #
 # goals
