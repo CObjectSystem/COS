@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosgen,v 1.3 2008/12/04 18:43:42 ldeniau Exp $
+# | $Id: cosgen,v 1.4 2008/12/05 10:41:33 ldeniau Exp $
 # |
 #
 
@@ -123,14 +123,14 @@ for f in $filelist; do
   # retrieve generics
   gen=`$exedir/coscmt -l $f \
      | tr '\n\t' '  ' \
-     | sed  -e 's/  *\(defgenericv\{0,1\}\) *(\([^;]*\);/@\1(\2;@/g' \
+     | sed  -e 's/  *\(defgenericv*\) *(\([^;]*\);/@\1(\2;@/g' \
      | tr '@' '\n' \
      | grep -E -e '^defgenericv?\([^;]*;$' \
      | sed  -e 's/  */ /g' -e 's/ \([,)\*]\)/\1/g' -e 's/( /(/g'`
 
   # includes
   if [ "$gen" != "" ] ; then
-    f=`echo $f | sed -e 's,^.*include/,,g' -e 's,^.*src/,,g'`
+    f=`echo $f | sed -e 's,^.*include/,,' -e 's,^.*src/,,'`
     echo "#include \"$f\""             >> $out
     gens="$gens$gen\n"
   fi

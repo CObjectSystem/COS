@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.1 2008/12/04 11:22:09 ldeniau Exp $
+# | $Id: project,v 1.2 2008/12/05 10:41:33 ldeniau Exp $
 # |
 #
 
@@ -39,9 +39,9 @@
 TARGET    := debug
 TARGETEXT := _d
 
-$(TARGET): CPPFLAGS += $(DEBUG_CPP)
-$(TARGET):  CCFLAGS += $(DEBUG_CC)
-$(TARGET):  LDFLAGS += $(DEBUG_LD)
+$(TARGET).%: CPPFLAGS += $(DEBUG_CPP)
+$(TARGET).%:  CCFLAGS += $(DEBUG_CC)
+$(TARGET).%:  LDFLAGS += $(DEBUG_LD)
 
 include $(MAKDIR)/mak/$(PRJTYPE).rules
 
@@ -51,9 +51,9 @@ include $(MAKDIR)/mak/$(PRJTYPE).rules
 TARGET    := profile
 TARGETEXT := _p
 
-$(TARGET): CPPFLAGS += $(PROFILE_CPP)
-$(TARGET):  CCFLAGS += $(PROFILE_CC)
-$(TARGET):  LDFLAGS += $(PROFILE_LD)
+$(TARGET).%: CPPFLAGS += $(PROFILE_CPP)
+$(TARGET).%:  CCFLAGS += $(PROFILE_CC)
+$(TARGET).%:  LDFLAGS += $(PROFILE_LD)
 
 include $(MAKDIR)/mak/$(PRJTYPE).rules
 
@@ -63,9 +63,9 @@ include $(MAKDIR)/mak/$(PRJTYPE).rules
 TARGET    := release
 TARGETEXT :=
 
-$(TARGET): CPPFLAGS += $(RELEASE_CPP)
-$(TARGET):  CCFLAGS += $(RELEASE_CC)
-$(TARGET):  LDFLAGS += $(RELEASE_LD)
+$(TARGET).%: CPPFLAGS += $(RELEASE_CPP)
+$(TARGET).%:  CCFLAGS += $(RELEASE_CC)
+$(TARGET).%:  LDFLAGS += $(RELEASE_LD)
 
 include $(MAKDIR)/mak/$(PRJTYPE).rules
 

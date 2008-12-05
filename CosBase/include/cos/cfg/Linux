@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.3 2008/12/04 16:08:58 ldeniau Exp $
+# | $Id: Linux,v 1.4 2008/12/05 10:41:33 ldeniau Exp $
 # |
 #
 
@@ -58,7 +58,7 @@ FIND       := find
 TAR        := tar czf
 
 #
-# compiler and linker flags
+# compiler and linker specific
 #
 CPPFLAGS    := -std=c99 -W -Wall -pedantic -pipe
 CCFLAGS     := -std=c99 -W -Wall -pedantic -pipe -O3

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.4 2008/12/04 16:08:58 ldeniau Exp $
+# | $Id: program.rules,v 1.5 2008/12/05 10:41:33 ldeniau Exp $
 # |
 #
 
@@ -41,7 +41,7 @@ SBINNAME := $(program)$(TARGETEXT)$(if $(TARGETEXT),s,_s)
 
 $(TARGET).%: TARGET    := $(TARGET)
 $(TARGET).%: TARGETEXT := $(TARGETEXT)
-$(TARGET).%:  BINNAME  :=  $(BINNAME)
+$(TARGET).%: BINNAME   := $(BINNAME)
 $(TARGET).%: SBINNAME  := $(SBINNAME)
 
 #

@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS makefile -- common
+# | COS makefile -- default
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,10 +29,13 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.6 2008/12/05 09:53:28 ldeniau Exp $
+# | $Id: default,v 1.7 2008/12/05 10:41:33 ldeniau Exp $
 # |
 #
 
+#
+# default settings
+#
 COSSYM  := cossym
 COSGEN  := cosgen
 COSCMT  := coscmt
@@ -111,9 +114,51 @@ LIBS     = $(addprefix -l, \
 
 MODS     = $(addprefix --dep=, $(moddeps))
 
+#
+# standard flags
+#
+CPPFLAGS    += $(SYSFLAGS)
+CCFLAGS     += $(SYSFLAGS)
+DEBUG_CPP   += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
+DEBUG_CC    += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
+PROFILE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRACT_PRE
+PROFILE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRACT_PRE
+RELEASE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
+RELEASE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
+
+#
+# standard targets
+#
+.PHONY: all all.run all.srun all.clean
+
+all: $(TARGETS)
+
+all.run: $(addsuffix .run,$(TARGETS))
+
+all.srun: $(addsuffix .srun,$(TARGETS))
+
+all.clean: clean $(addsuffix .clean,$(TARGETS))
+
+#
+# standard goals
+#
+GOALS := $(if $(MAKECMDGOALS),$(MAKECMDGOALS),$(.DEFAULT_GOAL))
+GOALS := $(patsubst all.clean,$(addsuffix .clean,$(TARGETS)),$(GOALS))
+GOALS := $(patsubst all.srun,$(addsuffix .srun,$(TARGETS)),$(GOALS))
+GOALS := $(patsubst all.run,$(addsuffix .run,$(TARGETS)),$(GOALS))
+GOALS := $(patsubst all,$(TARGETS),$(GOALS))
+
+#
+# for show/trace/debugging 
+#
+_ := $(if $(call eq,$(SHOW),yes),,@)
+
+#
 # for debugging 
+#
 ifeq ($(TRACE),yes)
 TARGET := [$(TARGETS)]
+$(info GOALS   = $(GOALS))
 $(info VERSION = $(VERSION))
 $(info RELEASE = $(RELEASE))
 $(info TARGETS = $(TARGETS))
@@ -130,51 +175,20 @@ $(info INCLUDE[$(words $(INCLUDE))] = $(INCLUDE))
 $(info LIBRARY[$(words $(LIBRARY))] = $(LIBRARY))
 $(info LIBS   [$(words $(LIBS))] = $(LIBS))
 $(info MODS   [$(words $(MODS))] = $(MODS))
+$(info CPPFLAGS    = $(CPPFLAGS))
+$(info CCFLAGS     = $(CCFLAGS))
+$(info LDFLAGS     = $(LDFLAGS))
+$(info DEBUG_CPP   = $(DEBUG_CPP))
+$(info DEBUG_CC    = $(DEBUG_CC))
+$(info PROFILE_CPP = $(PROFILE_CPP))
+$(info PROFILE_CC  = $(PROFILE_CC))
+$(info RELEASE_CPP = $(RELEASE_CPP))
+$(info RELEASE_CC  = $(RELEASE_CC))
 endif
 
 # checks
 $(call assert, $(LNKTYPE), unable to detect link modes)
 $(call assert, $(SOURCES), unable to find source files)
-
-# standard flags
-CPPFLAGS    += $(SYSFLAGS)
-CCFLAGS     += $(SYSFLAGS)
-DEBUG_CPP   += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
-DEBUG_CC    += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
-PROFILE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRACT_PRE
-PROFILE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRACT_PRE
-RELEASE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
-RELEASE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
-
-#
-# targets
-#
-.PHONY: all all.run all.srun all.clean
-
-all: $(TARGETS)
-
-all.run: $(addsuffix .run,$(TARGETS))
-
-all.srun: $(addsuffix .srun,$(TARGETS))
-
-all.clean: clean $(addsuffix .clean,$(TARGETS))
-
-#
-# goals
-#
-GOALS := $(if $(MAKECMDGOALS),$(MAKECMDGOALS),$(.DEFAULT_GOAL))
-GOALS := $(patsubst all.clean,$(addsuffix .clean,$(TARGETS)),$(GOALS))
-GOALS := $(patsubst all.srun,$(addsuffix .srun,$(TARGETS)),$(GOALS))
-GOALS := $(patsubst all.run,$(addsuffix .run,$(TARGETS)),$(GOALS))
-GOALS := $(patsubst all,$(TARGETS),$(GOALS))
-
-# for debugging 
-ifeq ($(TRACE),yes)
-$(info GOALS = $(GOALS))
-endif
-
-# for trace/debugging 
-_ := $(if $(call eq,$(SHOW),yes),,@)
 
 # end of makefile
 
