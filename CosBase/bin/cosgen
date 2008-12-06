@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosgen,v 1.8 2008/12/05 23:49:10 ldeniau Exp $
+# | $Id: cosgen,v 1.9 2008/12/06 00:11:49 ldeniau Exp $
 # |
 #
 
@@ -101,10 +101,13 @@ while [ "$1" != "" ] ; do
 done
 
 # check coscmt
-if   [ -x "$exedir/coscmt" ] ; then
-  cmt="$exedir/coscmt -l"
-elif [ -f "$exedir/coscmt" ] ; then
+if grep -F -q "COSGEN-SED-SCRIPT" "$exedir/coscmt" ; then
+  # bootstrap script
+  chmod -x "$exedir/coscmt"
   cmt="sed -nf $exedir/coscmt"
+elif  [ -x "$exedir/coscmt" ] ; then
+  # installed coscmt
+  cmt="$exedir/coscmt -l"
 else
   echo "error: unable to find file $exedir/coscmt"
   usage 

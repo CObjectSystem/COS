@@ -1,6 +1,9 @@
 
 #!/bin/sed -nf
 
+# NOTE-INFO: sed script used by cosgen
+# FILE-TAG: COSGEN-SED-SCRIPT
+
 # Remove C and C++ comments, by Brian Hiles (brian_hiles@rocketmail.com)
 
 # Sped up (and bugfixed to some extent) by Paolo Bonzini (bonzini@gnu.org)
