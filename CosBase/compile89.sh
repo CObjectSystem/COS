@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile89.sh,v 1.4 2008/12/02 17:32:21 ldeniau Exp $
+# | $Id: compile89.sh,v 1.5 2008/12/07 22:07:52 ldeniau Exp $
 # |
 #
 
@@ -42,7 +42,7 @@
 # dirs
 incdir=include
 srcdir=src
-exedir=../build/exe
+bindir=bin
 
 # defines
 DEFINE="-DCOS_C89 -DCOS_POSIX=1 -DCOS_TLS=1 -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE"
@@ -67,8 +67,7 @@ if [ "$1" = "clean" ] ; then
 fi
 
 # 1) collect generics (preprocessing only)
-gen=`ls $incdir/cos/gen/*.h`
-$C99 -E $gen | $exedir/cosgen --out=$srcdir/_cosgen.c $gen
+$bindir/cosgen --out=$srcdir/_cosgen.c $incdir/cos/gen/*.h
 
 # 2) compile source files (2 steps)
 for f in $srcdir/*.c; do
@@ -80,15 +79,16 @@ for f in $srcdir/*.c; do
 done
 
 # 3) collect symbols (compilation only)
-$exedir/cossym --out=$srcdir/_cossym.c $srcdir/*.o
+$bindir/cossym --mod=CosBase --out=$srcdir/_cossym.c $srcdir/*.o
 $C89 -c -o $srcdir/_cossym.o $srcdir/_cossym.c
 
-# build archive
-ar -cr $srcdir/libCosBase89.a $srcdir/*.o
+# build archive (must not contain symbol table)
+ar -rc $srcdir/libCosBase89.a $srcdir/*.o
+ar -d  $srcdir/libCosBase89.a _cossym.o
 
 # build program (require main() to be defined)
 # $C89 $srcdir/*.o -o program
 
 # build program from archive (idem)
-# $C89 $srcdir/libCosBase89.a -o program
+# $C89 $srcdir/libCosBase89.a $srcdir/_cossym.o -o program
 
