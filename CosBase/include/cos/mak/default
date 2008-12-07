@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.9 2008/12/05 23:49:10 ldeniau Exp $
+# | $Id: default,v 1.10 2008/12/07 21:51:57 ldeniau Exp $
 # |
 #
 
@@ -68,9 +68,6 @@ INCDIR  := $(BASEDIR)
 SRCDIR  := $(BASEDIR)
 endif
 
-MODDIRS := $(wildcard $(if $(moddirs),$(moddirs),$(BASEDIR) \
-                        $(BASEDIR)/.. $(BASEDIR)/../..))
-
 HEADERS := $(wildcard $(if $(headers),$(headers),$(SRCDIR)/*.h \
              $(if $(wildcard $(BASEDIR)/include),$(INCDIR)/*.h \
                $(INCDIR)/*/*.h $(INCDIR)/*/*/*.h $(INCDIR)/*/*/*/*.h,)))
@@ -78,7 +75,7 @@ HEADERS := $(wildcard $(if $(headers),$(headers),$(SRCDIR)/*.h \
 SOURCES := $(wildcard $(if $(sources),$(sources),$(SRCDIR)/*.c))
 
 ifneq ($(defgens),no)
-GENERIC  =  $(shell $(GREP) -F -l defgeneric \
+GENERIC :=  $(shell $(GREP) -F -l defgeneric \
                $(filter-out $(PREFIX)/include/cos/cos/%.h \
                             $(PREFIX)/include/cos/cpp/%.h, \
                  $(if $(defgens),$(wildcard $(defgens)),$(HEADERS))))
@@ -90,21 +87,27 @@ OBJECTS  = $(addprefix $(OBJDIR)/, \
 
 DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
 
-MODULES  = $(wildcard $(foreach d,$(MODDIRS),$(foreach m,$(moddeps),$(d)/$(m))))
+MODINCS := $(wildcard \
+             $(foreach d, $(moddirs) $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../.., \
+               $(foreach m, $(moddeps),$(d)/$(m))))
+             
+MODLIBS := $(wildcard \
+             $(foreach d, $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../.., \
+               $(foreach m, $(moddeps),$(d)/$(m))))
 
-INCLUDE  = $(addprefix -I, $(INCDIR) \
-             $(foreach m,$(MODULES),$(m)/include) \
+INCLUDE := $(addprefix -I, $(INCDIR) \
+             $(foreach m,$(MODINCS),$(m)/include) \
 	           $(foreach d,$(incdirs),$(d)) \
              $(wildcard $(PREFIX)/include))
 
-LIBRARY  = $(addprefix -L, \
-             $(foreach m,$(MODULES),$(m)/$(OSNAME)/lib) \
+LIBRARY := $(addprefix -L, \
+             $(foreach m,$(MODLIBS),$(m)/$(OSNAME)/lib) \
 	           $(foreach d,$(libdirs),$(d)) \
              $(wildcard $(PREFIX)/lib))
 
 LIBS     = $(addprefix -l, $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
 
-MODS     = $(addprefix --dep=, $(moddeps))
+MODS    := $(addprefix --dep=, $(moddeps))
 
 #
 # standard flags
@@ -161,8 +164,8 @@ $(info GENERIC[$(words $(GENERIC))] = $(GENERIC))
 $(info SOURCES[$(words $(SOURCES))] = $(SOURCES))
 $(info OBJECTS[$(words $(OBJECTS))] = $(OBJECTS))
 $(info DEPENDS[$(words $(DEPENDS))] = $(DEPENDS))
-$(info MODDIRS[$(words $(MODDIRS))] = $(MODDIRS))
-$(info MODULES[$(words $(MODULES))] = $(MODULES))
+$(info MODINCS[$(words $(MODINCS))] = $(MODINCS))
+$(info MODLIBS[$(words $(MODLIBS))] = $(MODLIBS))
 $(info INCLUDE[$(words $(INCLUDE))] = $(INCLUDE))
 $(info LIBRARY[$(words $(LIBRARY))] = $(LIBRARY))
 $(info LIBS   [$(words $(LIBS))] = $(LIBS))
