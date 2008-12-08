@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile89.sh,v 1.5 2008/12/07 22:07:52 ldeniau Exp $
+# | $Id: compile89.sh,v 1.6 2008/12/08 12:39:12 ldeniau Exp $
 # |
 #
 
@@ -79,7 +79,7 @@ for f in $srcdir/*.c; do
 done
 
 # 3) collect symbols (compilation only)
-$bindir/cossym --mod=CosBase --out=$srcdir/_cossym.c $srcdir/*.o
+$bindir/cossym --out=$srcdir/_cossym.c $srcdir/*.o
 $C89 -c -o $srcdir/_cossym.o $srcdir/_cossym.c
 
 # build archive (must not contain symbol table)
@@ -87,6 +87,8 @@ ar -rc $srcdir/libCosBase89.a $srcdir/*.o
 ar -d  $srcdir/libCosBase89.a _cossym.o
 
 # build program (require main() to be defined)
+# if the program defines classes, generics and methods,
+# step 3) collecting symbols should include its objects files.
 # $C89 $srcdir/*.o -o program
 
 # build program from archive (idem)
