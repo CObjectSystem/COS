@@ -29,15 +29,17 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.9 2008/12/04 18:43:56 ldeniau Exp $
+# | $Id: Makefile,v 1.10 2008/12/10 13:07:33 ldeniau Exp $
 # |
 #
 
 # detect location (bootstrap, normally $(cos) = cos)
-pwd := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
+pwd := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 cos := $(pwd)/include/cos
 
+#
 # standard COS makefile
+#
 
 include $(cos)/prologue
 
@@ -46,12 +48,12 @@ version := 0.7
 release := 200801
 package := $(library)-$(version)_$(release)
 
-# variables hereafter could be omitted
+# the following (empty) variables are mentioned for example
 
 targets := # default (debug profile release static shared)
 headers := # default
 sources := # default
-defgens := # default ($(wildcard $(BASEDIR)/include/cos/gen/*.h))
+defgens := # default $(wildcard $(BASEDIR)/include/cos/gen/*.h)
 
 # only names (as with -lname)
 moddeps := # none
@@ -62,7 +64,28 @@ moddirs := # default (. ..)
 libdirs := # none
 incdirs := # none
 
+# patterns
+cleanpat := # default
+tarpat   := # default
+
 include $(cos)/epilogue
+
+#
+# makefile customization
+#
+
+# COS tools installation:
+# 'cosgen' boostrap version of COS uses a portable 'coscmt' sed script to remove
+# C comments but the installed version uses a much faster C version of coscmt.
+
+TOOLS := $(filter-out %/coscmt, $(wildcard $(BASEDIR)/bin/*))
+
+install.pre: $(BINDIR)/$(COSCMT)
+	$_ $(CP) $(TOOLS) $(INSTDIR)/bin
+
+$(BINDIR)/$(COSCMT): CCFLAGS := $(CCFLAGS)
+$(BINDIR)/$(COSCMT): $(BASEDIR)/tools/src/coscmt.c
+	$_ $(CC) $(CCFLAGS) $< -s -o $@
 
 # end of COS makefile
 

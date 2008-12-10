@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.2 2008/12/03 18:23:22 ldeniau Exp $
+# | $Id: prologue,v 1.3 2008/12/10 13:07:34 ldeniau Exp $
 # |
 #
 
@@ -47,28 +47,26 @@
 
 eq     = $(if $(subst $1,,$2),,t)
 neq    = $(if $(subst $1,,$2),t,)
-chop   = $(patsubst %$2,%,$1)
 assert = $(if $1,,$(error $2))
 exists = $(call assert,$(wildcard $1),$2)
 
-# detect prefix path (e.g . or ../CosBase or /usr or /usr/local)
+# detect prefix path (e.g /path/to/CosBase or /usr or /usr/local)
 ifeq ($(PREFIX),)
-  PREFIX := $(dir $(subst include/cos/prologue,.,$(lastword $(MAKEFILE_LIST))))
-  PREFIX := $(call chop,$(PREFIX),/)
+  PREFIX := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+  PREFIX := $(subst /include/cos,,$(PREFIX))
 endif
 
-# detect project path (e.g . or path-to-module or path-to-project)
+# detect project path (e.g path-to-project)
 ifeq ($(BASEDIR),)
-  BASEDIR := $(dir $(firstword $(MAKEFILE_LIST)))
-  BASEDIR := $(call chop,$(BASEDIR),/)
+  BASEDIR := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
 endif
 
-# detect destination path (e.g . or path-to-user)
+# detect destination path (e.g path-to-user)
 ifeq ($(DESTDIR),)
-  DESTDIR := $(if $(call eq,$(shell pwd),$(PWD)),.,$(PWD))
+  DESTDIR := $(abspath $(PWD))
 endif
 
-# detect install path (e.g . or path-to-usr)
+# detect install path (e.g path-to-install)
 ifeq ($(INSTDIR),)
   INSTDIR := /usr
 endif
@@ -86,7 +84,7 @@ endif
 # other useful variables
 MAKDIR := $(PREFIX)/include/cos
 EXEDIR := $(PREFIX)/bin
-OSNAME := $(OSYS)_$(ARCH)
+OSNAME  = $(OSYS)_$(ARCH)
 
 # for debugging 
 ifeq ($(TRACE),yes)

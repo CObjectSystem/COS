@@ -29,9 +29,69 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.2 2008/12/05 10:41:33 ldeniau Exp $
+# | $Id: project,v 1.3 2008/12/10 13:07:34 ldeniau Exp $
 # |
 #
+
+#
+# project goals (fragile)
+#
+GOALS := $(patsubst install,                        all      ,$(GOALS))
+GOALS := $(patsubst tests,                          all      ,$(GOALS))
+GOALS := $(patsubst all.clean, $(addsuffix .clean,$(TARGETS)),$(GOALS))
+GOALS := $(patsubst all.srun,  $(addsuffix .srun, $(TARGETS)),$(GOALS))
+GOALS := $(patsubst all.run,   $(addsuffix .run,  $(TARGETS)),$(GOALS))
+GOALS := $(patsubst all,                          $(TARGETS) ,$(GOALS))
+
+GOALS := $(sort $(GOALS))
+
+ifeq ($(TRACE),yes)
+$(info GOALS   = $(GOALS))
+endif
+
+#
+# project targets
+#
+.PHONY: all all.run all.srun all.clean
+
+all      :                    $(TARGETS)
+all.run  : $(addsuffix .run,  $(TARGETS))
+all.srun : $(addsuffix .srun, $(TARGETS))
+all.clean: $(addsuffix .clean,$(TARGETS))
+
+#
+# install target
+#
+.PHONY: install
+.PHONY: install.dir 
+.PHONY: install.pre do.install install.post
+
+install: clean all install.dir install.pre do.install install.post
+
+install.dir:
+	@  $(MKDIR) $(INSTDIR)/include $(INSTDIR)/bin $(INSTDIR)/lib
+
+do.install:
+	@  echo "*** Installing module $($(PRJTYPE))"
+	$_ $(if $(wildcard $(BASEDIR)/include/*)      , $(CP) $(BASEDIR)/include       $(INSTDIR))
+	$_ $(if $(wildcard $(DESTDIR)/$(OSNAME)/bin/*), $(CP) $(DESTDIR)/$(OSNAME)/bin $(INSTDIR))
+	$_ $(if $(wildcard $(DESTDIR)/$(OSNAME)/lib/*), $(CP) $(DESTDIR)/$(OSNAME)/lib $(INSTDIR))
+	
+#
+# tests target
+#
+.PHONY: tests
+.PHONY: tests.dir 
+.PHONY: tests.pre do.tests tests.post
+
+tests: all tests.dir tests.pre do.tests tests.post
+
+tests.dir:
+	@  $(MKDIR) $(DESTDIR)/tests
+
+do.tests:
+	@  echo "*** Testing module $($(PRJTYPE))"
+	$_ cd $(DESTDIR)/tests && $(MAKE) -C $(BASEDIR)/tests $(if $(ARGS),release,debug).run $(ARGS)
 
 #
 # debug target

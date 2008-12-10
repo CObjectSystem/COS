@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.6 2008/12/05 23:16:06 ldeniau Exp $
+# | $Id: common,v 1.7 2008/12/10 13:07:34 ldeniau Exp $
 # |
 #
 
@@ -38,9 +38,12 @@
 #
 .PHONY: clean cleanbuild cleanall
 
+CLEANPAT := $(if $(cleanpat),$(cleanpat),'*~' '.*~' '.\#*')
+CLEANCMD := $(wordlist 2,99,$(addprefix -o -name ,$(CLEANPAT)))
+
 clean:
 	@  echo "*** Cleaning files"
-	$_ $(FIND) $(BASEDIR) -type f \( -name '*~' -o -name '.*~' -o -name '.#*' \) -exec $(RM) {} \;
+	$_ $(FIND) $(BASEDIR) -type f \( $(CLEANCMD) \) -exec $(RM) {} \;
 
 cleanbuild:
 	@  echo "*** Cleaning builds"
@@ -52,18 +55,17 @@ cleanall: cleanbuild clean
 # tarball
 #
 .PHONY: tarball
-tarball:
-	@  echo "*** Building tarball"
-	$_ cd $(BASEDIR); PACKDIR=`basename \`pwd\``; cd ..; \
-	   $(TAR) -f $(PACKAGE).tgz --exclude=CVS $$PACKDIR
 
-#
-# tools
-#
-$(BINDIR)/$(COSCMT): CCFLAGS := $(CCFLAGS)
-$(BINDIR)/$(COSCMT): $(wildcard $(BASEDIR)/tools/src/coscmt.c)
-	@  $(if $<,$(MKDIR) $(@D),)
-	$_ $(if $<,$(CC) $(CCFLAGS) $< -s -o $@,)
+TARPAT := $(if $(tarpat),$(tarpat),CVS)
+TARCMD := $(addprefix --exclude=,$(TARPAT))
+
+tarball: cleanall
+	@  echo "*** Building tarball"
+	$_ cd $(BASEDIR); \
+	   PCKDIR=`basename \`pwd\``; \
+	   TARDIR=$(if $(call eq,$(BASEDIR),$(DESTDIR)),.,$(DESTDIR)); \
+	   cd ..; \
+	   $(TAR) -f $$TARDIR/$(PACKAGE).tgz $(TARCMD) $$PCKDIR
 
 # end of makefile
 

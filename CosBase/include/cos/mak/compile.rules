@@ -29,50 +29,47 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile.rules,v 1.4 2008/12/05 19:22:58 ldeniau Exp $
+# | $Id: compile.rules,v 1.5 2008/12/10 13:07:34 ldeniau Exp $
 # |
 #
 
-.PRECIOUS: $(OBJDIR)/%.d $(OBJDIR)/$(library)_$(COSGEN).d
+.PRECIOUS: $(OBJDIR)/%.d $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).d
 
 #
 # rule for generics
 #
-$(OBJDIR)/$(library)_$(COSGEN).c: $(GENERIC)
+$(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c: $(GENERIC)
 	@  echo "*** Computing generics"
-	@  $(MKDIR) $(@D)
 	$_ $(EXEDIR)/$(COSGEN) --out=$@ $^
 
 #
 # rule for symbols (dummy)
 #
-$(OBJDIR)/$(library)_$(COSSYM).c:
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c:
 	@  echo "*** Computing symbols"
-	@  $(MKDIR) $(@D)
 	$_ $(EXEDIR)/$(COSSYM) --out=$@
 
-$(OBJDIR)/$(library)_$(COSSYM)_s.c:
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c:
 	@  echo "*** Computing symbols"
-	@  $(MKDIR) $(@D)
 	$_ $(EXEDIR)/$(COSSYM) --out=$@
 
 #
 # rules for compilation
 #
 $(OBJDIR)/%.o: $(SRCDIR)/%.c $(OBJDIR)/%.d
-	@  echo "*** Compiling" $< "->" $@
+	@  echo "*** Compiling" $(subst $(BASEDIR)/,,$<) "->" $(subst $(DESTDIR)/,,$@)
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
-$(OBJDIR)/$(library)_$(COSGEN).o: $(OBJDIR)/$(library)_$(COSGEN).c \
-                                  $(OBJDIR)/$(library)_$(COSGEN).d
+$(OBJDIR)/$($(PRJTYPE))_$(COSGEN).o: $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c \
+                                     $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).d
 	@  echo "*** Compiling generics"
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
-$(OBJDIR)/$(library)_$(COSSYM).o: $(OBJDIR)/$(library)_$(COSSYM).c
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM).o: $(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c
 	@  echo "*** Compiling symbols"
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
-$(OBJDIR)/$(library)_$(COSSYM)_s.o: $(OBJDIR)/$(library)_$(COSSYM)_s.c
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.o: $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c
 	@  echo "*** Compiling symbols"
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
@@ -80,14 +77,12 @@ $(OBJDIR)/$(library)_$(COSSYM)_s.o: $(OBJDIR)/$(library)_$(COSSYM)_s.c
 # rules for dependencies
 #
 $(OBJDIR)/%.d: $(SRCDIR)/%.c
-	@  echo "*** Computing" $< "->" $@
-	@  $(MKDIR) $(@D)
+	@  echo "*** Computing" $(subst $(BASEDIR)/,,$<) "->" $(subst $(DESTDIR)/,,$@)
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
      $(SED) 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
      > $@
 
-$(OBJDIR)/$(library)_$(COSGEN).d: $(OBJDIR)/$(library)_$(COSGEN).c
-	@  $(MKDIR) $(@D)
+$(OBJDIR)/$($(PRJTYPE))_$(COSGEN).d: $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
      $(SED) 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
      > $@

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.10 2008/12/07 21:51:57 ldeniau Exp $
+# | $Id: default,v 1.11 2008/12/10 13:07:34 ldeniau Exp $
 # |
 #
 
@@ -43,7 +43,7 @@ COSCMT  := coscmt
 VERSION := $(if $(version),$(version),0.0)
 RELEASE := $(if $(release),$(release),$(shell date +'%Y%m'))
 
-PRJTYPE := $(if $(program),program,$(if $(library),library,))
+PRJTYPE := $(if $(program),program,$(if $(library),library))
 
 LNKTYPE := $(filter static shared,$(targets))
 LNKTYPE := $(if $(LNKTYPE),$(LNKTYPE),$(LIBTYPE))
@@ -56,6 +56,7 @@ TARGETS := $(if $(TARGETS),$(TARGETS),debug profile release)
 BINDIR  := $(DESTDIR)/$(OSNAME)/bin
 LIBDIR  := $(DESTDIR)/$(OSNAME)/lib
 OBJDIR   = $(DESTDIR)/$(OSNAME)/obj/$(TARGET)
+TMPDIR  := $(DESTDIR)/$(OSNAME)/tmp/$(TARGET)
 
 ifneq ($(wildcard $(BASEDIR)/include),)
 INCDIR  := $(BASEDIR)/include
@@ -68,41 +69,41 @@ INCDIR  := $(BASEDIR)
 SRCDIR  := $(BASEDIR)
 endif
 
-HEADERS := $(wildcard $(if $(headers),$(headers),$(SRCDIR)/*.h \
+HEADERS := $(wildcard $(if $(headers),$(abspath $(headers)),$(SRCDIR)/*.h \
              $(if $(wildcard $(BASEDIR)/include),$(INCDIR)/*.h \
-               $(INCDIR)/*/*.h $(INCDIR)/*/*/*.h $(INCDIR)/*/*/*/*.h,)))
+               $(INCDIR)/*/*.h $(INCDIR)/*/*/*.h $(INCDIR)/*/*/*/*.h)))
 
-SOURCES := $(wildcard $(if $(sources),$(sources),$(SRCDIR)/*.c))
+SOURCES := $(wildcard $(if $(sources),$(abspath $(sources)),$(SRCDIR)/*.c))
 
 ifneq ($(defgens),no)
-GENERIC :=  $(shell $(GREP) -F -l defgeneric \
-               $(filter-out $(PREFIX)/include/cos/cos/%.h \
-                            $(PREFIX)/include/cos/cpp/%.h, \
-                 $(if $(defgens),$(wildcard $(defgens)),$(HEADERS))))
+GENERIC := $(filter-out $(PREFIX)/include/cos/cos/%.h \
+                        $(PREFIX)/include/cos/cpp/%.h, \
+             $(if $(defgens),$(wildcard $(abspath $(defgens))),$(HEADERS)))
+GENERIC := $(if $(GENERIC),$(shell $(GREP) -F -l defgeneric $(GENERIC)))
 endif
 
 OBJECTS  = $(addprefix $(OBJDIR)/, \
              $(addsuffix .o,$(basename $(notdir $(SOURCES)))) \
-             $(if $(GENERIC),$(library)_$(COSGEN).o,))
+             $(if $(GENERIC),$($(PRJTYPE))_$(COSGEN).o))
 
 DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
 
 MODINCS := $(wildcard \
-             $(foreach d, $(moddirs) $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../.., \
+             $(foreach d, $(abspath $(moddirs) $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../..), \
                $(foreach m, $(moddeps),$(d)/$(m))))
              
 MODLIBS := $(wildcard \
-             $(foreach d, $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../.., \
+             $(foreach d, $(abspath $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../..), \
                $(foreach m, $(moddeps),$(d)/$(m))))
 
 INCLUDE := $(addprefix -I, $(INCDIR) \
              $(foreach m,$(MODINCS),$(m)/include) \
-	           $(foreach d,$(incdirs),$(d)) \
+	           $(foreach d,$(wildcard $(abspath $(incdirs))),$(d)) \
              $(wildcard $(PREFIX)/include))
 
 LIBRARY := $(addprefix -L, \
              $(foreach m,$(MODLIBS),$(m)/$(OSNAME)/lib) \
-	           $(foreach d,$(libdirs),$(d)) \
+	           $(foreach d,$(wildcard $(abspath $(libdirs))),$(d)) \
              $(wildcard $(PREFIX)/lib))
 
 LIBS     = $(addprefix -l, $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
@@ -122,26 +123,9 @@ RELEASE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRAC
 RELEASE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
 
 #
-# standard targets
-#
-.PHONY: all all.run all.srun all.clean
-
-all: $(TARGETS)
-
-all.run: $(addsuffix .run,$(TARGETS))
-
-all.srun: $(addsuffix .srun,$(TARGETS))
-
-all.clean: $(addsuffix .clean,$(TARGETS))
-
-#
 # standard goals
 #
 GOALS := $(if $(MAKECMDGOALS),$(MAKECMDGOALS),$(.DEFAULT_GOAL))
-GOALS := $(patsubst all.clean,$(addsuffix .clean,$(TARGETS)),$(GOALS))
-GOALS := $(patsubst all.srun,$(addsuffix .srun,$(TARGETS)),$(GOALS))
-GOALS := $(patsubst all.run,$(addsuffix .run,$(TARGETS)),$(GOALS))
-GOALS := $(patsubst all,$(TARGETS),$(GOALS))
 
 #
 # for show/trace/debugging 
@@ -153,12 +137,11 @@ _ := $(if $(call eq,$(SHOW),yes),,@)
 #
 ifeq ($(TRACE),yes)
 TARGET := [$(TARGETS)]
-$(info GOALS   = $(GOALS))
 $(info VERSION = $(VERSION))
 $(info RELEASE = $(RELEASE))
-$(info TARGETS = $(TARGETS))
 $(info PRJTYPE = $(PRJTYPE))
 $(info LNKTYPE = $(LNKTYPE))
+$(info TARGETS = $(TARGETS))
 $(info HEADERS[$(words $(HEADERS))] = $(HEADERS))
 $(info GENERIC[$(words $(GENERIC))] = $(GENERIC))
 $(info SOURCES[$(words $(SOURCES))] = $(SOURCES))

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.6 2008/12/05 19:22:58 ldeniau Exp $
+# | $Id: Darwin,v 1.7 2008/12/10 13:07:34 ldeniau Exp $
 # |
 #
 
@@ -44,15 +44,15 @@ LIBSHEXT    := .so
 #
 # tools specific
 #
-GCC         := gcc -m64
-DEP         := $(GCC) -M
-CPP         := $(GCC) -E
-CC          := $(GCC)
-LD          := $(GCC)
+CC          := gcc -m64
+CPP         := $(CC) -E
+DEP         := $(CC) -M
+LD          := $(CC)
 AR          := ar -cr
-LN          := ln -sf
 STRIP       := strip
-RM          := rm -rf
+LN          := ln -sf
+RM          := rm -Rf
+CP          := cp -Rf
 MKDIR       := mkdir -p
 SED         := sed
 GREP        := grep
@@ -92,6 +92,7 @@ SYSFLAGS    := -DCOS_POSIX=COS_YES -DCOS_TLS=COS_NO \
                -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS     := -lpthread -ldl
 SYSLIBPATH  := DYLD_LIBRARY_PATH
+SYSPATH     := PATH
 
 #
 # compiler specific settings (linux+gcc are the reference)

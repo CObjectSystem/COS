@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library.rules,v 1.6 2008/12/05 23:49:10 ldeniau Exp $
+# | $Id: library.rules,v 1.7 2008/12/10 13:07:34 ldeniau Exp $
 # |
 #
 
@@ -57,12 +57,19 @@ $(TARGET).clean:
 #
 ifneq ($(filter $(TARGET),$(GOALS)),)
 
-.PHONY: $(TARGET) $(TARGET).ar $(TARGET).sh
+.PHONY: $(TARGET)
+.PHONY: $(TARGET).dir
+.PHONY: $(TARGET).ar  $(TARGET).sh
+.PHONY: $(TARGET).pre $(TARGET).post
 
-$(TARGET): $($(TARGET).pre) \
-           $(if $(filter shared,$(LNKTYPE)),$(TARGET).sh,) \
-           $(if $(filter static,$(LNKTYPE)),$(TARGET).ar,) \
-           $($(TARGET).post)
+$(TARGET): $(TARGET).dir \
+           $(TARGET).pre \
+           $(if $(filter shared,$(LNKTYPE)),$(TARGET).sh) \
+           $(if $(filter static,$(LNKTYPE)),$(TARGET).ar) \
+           $(TARGET).post
+
+$(TARGET).dir:
+	@  $(MKDIR) $(OBJDIR) $(TMPDIR) $(BINDIR) $(LIBDIR)
 
 #
 # rules for building static library
@@ -70,8 +77,7 @@ $(TARGET): $($(TARGET).pre) \
 $(TARGET).ar: $(LIBDIR)/$(LIBNAME)$(LIBAREXT)
 
 $(LIBDIR)/$(LIBNAME)$(LIBAREXT): $(OBJECTS)
-	@  echo "*** Building " $@
-	@  $(MKDIR) $(@D)
+	@  echo "*** Building " $(notdir $@)
 	$_ $(AR) $@ $^
 
 #
@@ -82,8 +88,7 @@ $(TARGET).sh: LDFLAGS += $(SHARED_LD)
 $(TARGET).sh: $(LIBDIR)/$(LIBNAME)$(LIBSHEXT)
 
 $(LIBDIR)/$(LIBNAME)$(LIBSHEXT): $(OBJECTS) $(OBJDIR)/$(library)_$(COSSYM).o
-	@  echo "*** Building " $@
-	@  $(MKDIR) $(@D)
+	@  echo "*** Building " $(notdir $@)
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
 	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(library)_$(COSSYM).c --mod=$(library) $(COSSYMOPT) $@.$(VERSION)
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/$(library)_$(COSSYM).c -o $(<D)/$(library)_$(COSSYM).o
