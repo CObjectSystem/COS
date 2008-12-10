@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library.rules,v 1.7 2008/12/10 13:07:34 ldeniau Exp $
+# | $Id: library.rules,v 1.8 2008/12/10 19:01:21 ldeniau Exp $
 # |
 #
 
@@ -48,7 +48,7 @@ $(TARGET).%: LIBNAME   := $(LIBNAME)
 .PHONY: $(TARGET).clean
 
 $(TARGET).clean:
-	@  echo "*** Cleaning" $(TARGET)
+	@  echo "*** Cleaning " $(TARGET)
 	$_ $(RM) $(OBJDIR)
 	$_ $(RM) $(LIBDIR)/$(LIBNAME).*
 

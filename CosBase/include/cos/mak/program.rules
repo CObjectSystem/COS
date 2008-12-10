@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program.rules,v 1.9 2008/12/10 13:07:34 ldeniau Exp $
+# | $Id: program.rules,v 1.10 2008/12/10 19:01:21 ldeniau Exp $
 # |
 #
 
@@ -50,7 +50,7 @@ $(TARGET).%: SBINNAME  := $(SBINNAME)
 .PHONY: $(TARGET).clean
 
 $(TARGET).clean:
-	@  echo "*** Cleaning" $(TARGET)
+	@  echo "*** Cleaning " $(TARGET)
 	$_ $(RM) $(OBJDIR)
 	$_ $(RM) $(BINDIR)/$(BINNAME)
 	$_ $(RM) $(BINDIR)/$(SBINNAME)
@@ -83,7 +83,7 @@ $(TARGET).sbin: LDFLAGS += $(STATIC_LD)
 $(TARGET).sbin: $(BINDIR)/$(SBINNAME)
 
 $(BINDIR)/$(SBINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM)_s.o
-	@  echo "*** Building" $(notdir $@)
+	@  echo "*** Building " $(notdir $@)
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
 	$_ $(EXEDIR)/$(COSSYM)      --out=$(<D)/$(program)_$(COSSYM)_s.c $(COSSYMOPT) $@
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/$(program)_$(COSSYM)_s.c -o $(<D)/$(program)_$(COSSYM)_s.o
@@ -106,14 +106,14 @@ $(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM).o
 # rules for running static program (helper)
 #
 $(TARGET).srun: $(TARGET)
-	@  echo "*** Running " $(SBINNAME)
+	@  echo "*** Running  " $(SBINNAME)
 	$_ $(BINDIR)/$(SBINNAME) $(ARGS)
 
 #
 # rules for running shared program (helper)
 #
 $(TARGET).run: $(TARGET)
-	@echo "*** Running " $(BINNAME)
+	@  echo "*** Running  " $(BINNAME)
 	$_ export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
 	   $(SED) 's, :,:,g'` ; \
 	   $(BINDIR)/$(BINNAME) $(ARGS)

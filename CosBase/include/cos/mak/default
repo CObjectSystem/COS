@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.11 2008/12/10 13:07:34 ldeniau Exp $
+# | $Id: default,v 1.12 2008/12/10 19:01:21 ldeniau Exp $
 # |
 #
 
@@ -48,7 +48,7 @@ PRJTYPE := $(if $(program),program,$(if $(library),library))
 LNKTYPE := $(filter static shared,$(targets))
 LNKTYPE := $(if $(LNKTYPE),$(LNKTYPE),$(LIBTYPE))
 
-PACKAGE := $(if $(package),$(package),$($(PRJTYPE))-$(VERSION)_$(RELEASE))
+PACKAGE := $(if $(package),$(package),$($(PRJTYPE))$(if $(version),-$(version))_$(RELEASE))
 
 TARGETS := $(filter debug profile release,$(targets))
 TARGETS := $(if $(TARGETS),$(TARGETS),debug profile release)
@@ -96,17 +96,25 @@ MODLIBS := $(wildcard \
              $(foreach d, $(abspath $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../..), \
                $(foreach m, $(moddeps),$(d)/$(m))))
 
+MODBINS := $(wildcard \
+             $(foreach d, $(abspath $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../..), \
+               $(foreach m, $(moddeps),$(d)/$(m))))
+
 INCLUDE := $(addprefix -I, $(INCDIR) \
-             $(foreach m,$(MODINCS),$(m)/include) \
-	           $(foreach d,$(wildcard $(abspath $(incdirs))),$(d)) \
+             $(addsuffix /include,$(MODINCS)) \
+	           $(wildcard $(abspath $(incdirs))) \
              $(wildcard $(PREFIX)/include))
 
 LIBRARY := $(addprefix -L, \
-             $(foreach m,$(MODLIBS),$(m)/$(OSNAME)/lib) \
-	           $(foreach d,$(wildcard $(abspath $(libdirs))),$(d)) \
+             $(addsuffix /$(OSNAME)/lib,$(MODLIBS)) \
+	           $(wildcard $(abspath $(libdirs))) \
              $(wildcard $(PREFIX)/lib))
 
-LIBS     = $(addprefix -l, $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
+BINARY  :=   $(addsuffix /$(OSNAME)/bin,$(MODBINS)) \
+             $(wildcard $(abspath $(bindirs)))
+
+LIBS     = $(addprefix -l, \
+             $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
 
 MODS    := $(addprefix --dep=, $(moddeps))
 

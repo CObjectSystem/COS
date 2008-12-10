@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.3 2008/12/10 13:07:34 ldeniau Exp $
+# | $Id: prologue,v 1.4 2008/12/10 19:01:21 ldeniau Exp $
 # |
 #
 
@@ -51,35 +51,24 @@ assert = $(if $1,,$(error $2))
 exists = $(call assert,$(wildcard $1),$2)
 
 # detect prefix path (e.g /path/to/CosBase or /usr or /usr/local)
-ifeq ($(PREFIX),)
-  PREFIX := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-  PREFIX := $(subst /include/cos,,$(PREFIX))
-endif
+PREFIX := $(abspath $(if $(PREFIX),$(PREFIX), \
+            $(subst include/cos/prologue,,$(lastword $(MAKEFILE_LIST)))))
 
 # detect project path (e.g path-to-project)
-ifeq ($(BASEDIR),)
-  BASEDIR := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
-endif
+BASEDIR := $(abspath $(if $(BASEDIR),$(BASEDIR), \
+             $(dir $(firstword $(MAKEFILE_LIST)))))
 
 # detect destination path (e.g path-to-user)
-ifeq ($(DESTDIR),)
-  DESTDIR := $(abspath $(PWD))
-endif
+DESTDIR := $(abspath $(if $(DESTDIR),$(DESTDIR),$(PWD)))
 
 # detect install path (e.g path-to-install)
-ifeq ($(INSTDIR),)
-  INSTDIR := /usr
-endif
+INSTDIR := $(abspath $(if $(INSTDIR),$(INSTDIR),/usr))
 
 # detect operating system (e.g. Linux)
-ifeq ($(OSYS),)
-  OSYS := $(shell uname -s)
-endif
+OSYS := $(if $(OSYS),$(OSYS),$(shell uname -s))
 
 # detect architecture (e.g. x86_64)
-ifeq ($(ARCH),)
-  ARCH := $(shell uname -m)
-endif
+ARCH := $(if $(ARCH),$(ARCH),$(shell uname -m))
 
 # other useful variables
 MAKDIR := $(PREFIX)/include/cos
@@ -100,8 +89,6 @@ $(call assert, $(OSYS)              , unable to detect operating system)
 $(call assert, $(ARCH)              , unable to detect system architecture)
 $(call exists, $(PREFIX)            , unable to find PREFIX='$(PREFIX)')
 $(call exists, $(BASEDIR)           , unable to find BASEDIR='$(BASEDIR)')
-$(call exists, $(DESTDIR)           , unable to find DESTDIR='$(DESTDIR)')
-$(call exists, $(INSTDIR)           , unable to find INSTDIR='$(INSTDIR)')
 $(call exists, $(MAKDIR)            , unable to find MAKDIR='$(MAKDIR)')
 $(call exists, $(EXEDIR)            , unable to find EXEDIR='$(EXEDIR)')
 $(call exists, $(MAKDIR)/epilogue   , unable to detect COS makefiles)

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.10 2008/12/10 13:07:33 ldeniau Exp $
+# | $Id: Makefile,v 1.11 2008/12/10 19:01:21 ldeniau Exp $
 # |
 #
 
@@ -46,23 +46,24 @@ include $(cos)/prologue
 library := CosBase
 version := 0.7
 release := 200801
-package := $(library)-$(version)_$(release)
 
 # the following (empty) variables are mentioned for example
 
-targets := # default (debug profile release static shared)
+package := # default
+targets := # default
 headers := # default
 sources := # default
-defgens := # default $(wildcard $(BASEDIR)/include/cos/gen/*.h)
+defgens := # default
 
 # only names (as with -lname)
 moddeps := # none
 libdeps := # none
 
 # only directories
-moddirs := # default (. ..)
+moddirs := # default
 libdirs := # none
 incdirs := # none
+bindirs := # none
 
 # patterns
 cleanpat := # default
