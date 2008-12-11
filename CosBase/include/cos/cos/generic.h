@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.9 2008/11/01 23:08:27 ldeniau Exp $
+ | $Id: generic.h,v 1.10 2008/12/11 17:25:58 ldeniau Exp $
  |
 */
 
@@ -197,15 +197,19 @@ COS_SCP_END
  */
 #define COS_GEN_MAK(  RET,NAME,...) \
         COS_GEN_MAK_0(RET,NAME,(__VA_ARGS__), \
-          COS_PP_FILTER((__VA_ARGS__),COS_PP_ISNTUPLE) )
+          COS_PP_FILTER((__VA_ARGS__),COS_PP_ISNTUPLE), \
+          COS_PP_FILTER((__VA_ARGS__),COS_PP_ISTUPLE ) )
 
-#define COS_GEN_MAK_0(RET,NAME,PS,CS) \
-        COS_GEN_MAK_1(RET,NAME,PS,COS_PP_LEN(CS))
+#define COS_GEN_MAK_0(RET,NAME,PS,CS,AS) \
+        COS_GEN_MAK_1(RET,NAME,PS,COS_PP_LEN(CS), \
+                      COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
+                      COS_PP_NOT(COS_TOK_ISVOID(RET)))
 
-#define COS_GEN_MAK_1(RET,NAME,PS,C) \
-COS_GEN_TYPECHK(RET,NAME,PS  ) \
-COS_GEN_RANKCHK(    NAME,   C) \
-COS_GEN_COMPMAK(RET,NAME,PS,C,COS_NO)
+#define COS_GEN_MAK_1(RET,NAME,PS,C,A,R) \
+COS_GEN_TYPECHK(RET,NAME,PS      ) \
+COS_GEN_RANKCHK(    NAME,   C    ) \
+COS_GEN_SIZECHK(    NAME,     A,R) \
+COS_GEN_COMPMAK(RET,NAME,PS,C,A,R,COS_NO)
 
 /* variadic generic definition
  */
@@ -255,8 +259,9 @@ COS_SCP_END
 #define COS_GEN_MAKV_2(RET,NAME,VPS,PS,AS,IS,C,A,R) \
 COS_GEN_TYPECHK(RET,NAME,PS             ) \
 COS_GEN_RANKCHK(    NAME,          C    ) \
+COS_GEN_SIZECHK(    NAME             A,R) \
 COS_GEN_VFUNDEF(RET,NAME,VPS,AS,IS,C,A,R) \
-COS_GEN_COMPMAK(RET,NAME,PS,       C,   COS_YES)
+COS_GEN_COMPMAK(RET,NAME,PS,       C,A,R,COS_YES)
 
 /*
  * Low-level implementation
@@ -283,6 +288,15 @@ extern RET (* \
 COS_STATIC_ASSERT( \
   COS_PP_CAT3(NAME,__generic_rank_greater_than_,COS_GEN_RNKMAX), \
   C <= COS_GEN_RNKMAX);
+
+// size check
+#define COS_GEN_SIZECHK(NAME,A,R) \
+COS_PP_IF(A)(COS_STATIC_ASSERT( \
+  COS_PP_CAT(NAME,__generic_arguments_size_greater_than_64Kb), \
+    sizeof(COS_ARG_TYPE(NAME)) < (1u << 16) );,) \
+COS_PP_IF(R)(COS_STATIC_ASSERT( \
+  COS_PP_CAT(NAME,__generic_return_value_size_greater_than_64Kb), \
+    sizeof(COS_RET_TYPE(NAME)) < (1u << 16) );,)
 
 //  generic function declaration
 #define COS_GEN_FUNCDCL(RET,NAME,PS,IS) \
@@ -359,7 +373,7 @@ void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
 }
 
 // component instantiation (see cos/cos/coscls.h)
-#define COS_GEN_COMPMAK(RET,NAME,PS,C,V) \
+#define COS_GEN_COMPMAK(RET,NAME,PS,C,A,R,V) \
 struct Generic COS_GEN_NAME(NAME) = { \
   /* encode rank into Any.id (temporally) and tag into rc */ \
   {{{ (U32)C << COS_ID_RNKSHT, cos_tag_generic }}, \
@@ -371,6 +385,10 @@ struct Generic COS_GEN_NAME(NAME) = { \
   COS_PP_STR(NAME), \
   /* signature (STR) */ \
   COS_PP_SEPWITH(COS_PP_MAP(((RET),COS_PP_SEQ(PS)),COS_GEN_STR),"\0"), \
+  /* size of monomorphic arguments struct */ \
+  COS_PP_IF(A)(sizeof(COS_ARG_TYPE(NAME)),0), \
+  /* size of returned value */ \
+  COS_PP_IF(R)(sizeof(COS_RET_TYPE(NAME)),0), \
   /* cryptic information */ \
   COS_GEN_INFO(0,COS_PP_LEN(PS), \
      COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_OBJ),COS_YES,COS_PP_AND), \
