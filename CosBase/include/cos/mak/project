@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.7 2008/12/12 17:37:50 ldeniau Exp $
+# | $Id: project,v 1.8 2008/12/12 17:59:54 ldeniau Exp $
 # |
 #
 
@@ -58,9 +58,6 @@ endif
 
 install: clean all install.dir install.pre do.install install.post
 
-install.dir:
-	$_ $(MKDIR) $(abspath $(addprefix $(INSTDIR)/,$(sort $(dir $(INSTALL)))))
-
 do.install:
 	@  echo "*** Installing $($(PRJTYPE))"
 	$_ cd $(BASEDIR);                                            \
@@ -72,6 +69,10 @@ do.install:
 	     $(CP) -P $$f $(INSTDIR)/$$f;                            \
 	   done
 
+install.dir:
+	$_ $(MKDIR) $(INSTDIR) \
+	     $(call missing,$(abspath $(addprefix $(INSTDIR)/,$(sort $(dir $(INSTALL))))))
+
 #
 # tests targets
 #
@@ -81,12 +82,14 @@ do.install:
 
 tests: all tests.dir tests.pre do.tests tests.post
 
-tests.dir:
-	$_ $(MKDIR) $(DESTDIR)/tests
-
 do.tests:
 	@  echo "*** Testing   $($(PRJTYPE))"
 	$_ cd $(DESTDIR)/tests && $(MAKE) -C $(BASEDIR)/tests $(if $(ARGS),release,debug).run
+
+tests.dir: $(DESTDIR)/tests
+
+$(DESTDIR)/tests:
+	$_ $(MKDIR) $@
 
 #
 # project targets
@@ -130,5 +133,20 @@ $(TARGET).%:  CCFLAGS += $(RELEASE_CC)
 $(TARGET).%:  LDFLAGS += $(RELEASE_LD)
 
 include $(MAKDIR)/mak/$(PRJTYPE).rules
+
+# directories target
+
+.PHONY: project.dir
+
+project.dir: $(TMPDIR) $(BINDIR) $(LIBDIR)
+
+$(TMPDIR):
+	$_ $(MKDIR) $@
+
+$(BINDIR):
+	$_ $(MKDIR) $@
+
+$(LIBDIR):
+	$_ $(MKDIR) $@
 
 # end of makefile

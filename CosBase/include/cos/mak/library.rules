@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library.rules,v 1.9 2008/12/12 17:37:50 ldeniau Exp $
+# | $Id: library.rules,v 1.10 2008/12/12 17:59:54 ldeniau Exp $
 # |
 #
 
@@ -68,8 +68,10 @@ $(TARGET): $(TARGET).dir \
            $(if $(filter static,$(LNKTYPE)),$(TARGET).ar) \
            $(TARGET).post
 
-$(TARGET).dir:
-	$_ $(MKDIR) $(OBJDIR) $(TMPDIR) $(BINDIR) $(LIBDIR)
+$(TARGET).dir: project.dir $(OBJDIR)
+
+$(OBJDIR):
+	$_ $(MKDIR) $@
 
 #
 # rules for building static library

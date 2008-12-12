@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.4 2008/12/10 19:01:21 ldeniau Exp $
+# | $Id: prologue,v 1.5 2008/12/12 17:59:54 ldeniau Exp $
 # |
 #
 
@@ -45,10 +45,11 @@
 # OSYS    = operating system
 # ARCH    = system architecture
 
-eq     = $(if $(subst $1,,$2),,t)
-neq    = $(if $(subst $1,,$2),t,)
-assert = $(if $1,,$(error $2))
-exists = $(call assert,$(wildcard $1),$2)
+eq      = $(if $(subst $1,,$2),,t)
+neq     = $(if $(subst $1,,$2),t,)
+assert  = $(if $1,,$(error $2))
+exists  = $(call assert,$(wildcard $1),$2)
+missing = $(filter-out $(wildcard $1),$1)
 
 # detect prefix path (e.g /path/to/CosBase or /usr or /usr/local)
 PREFIX := $(abspath $(if $(PREFIX),$(PREFIX), \
