@@ -29,21 +29,29 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.6 2008/12/12 18:23:28 ldeniau Exp $
+# | $Id: prologue,v 1.7 2008/12/12 18:30:47 ldeniau Exp $
 # |
 #
 
 #
-# NOTE-DEV: important variables to set
+# NOTE-USER: important variables from user
 #
-# PREFIX  = where to get COS files (autodetect)
-# MAKDIR  = where to get COS makefiles (PREFIX/include/cos)
-# EXEDIR  = where to get COS tools (e.g. cosgen, cossym) (PREFIX/bin)
-# BASEDIR = where to get project files (base)
-# DESTDIR = where to put project build (destination) (BUILD)
-# INSTDIR = where to install project   (installation) (INSTALL)
+# BUILD   = where to build   the project
+# INSTALL = where to install the project
+#
+
+#
+# NOTE-INFO: important variables to set
+#
+# PREFIX  = where to get     COS files                           (autodetect)
+# MAKDIR  = where to get     COS makefiles                       (PREFIX/include/cos)
+# EXEDIR  = where to get     COS tools         (cossym, cosgen)  (PREFIX/bin)
+# BASEDIR = where to get     the project files (base)            (autodetect)
+# DESTDIR = where to build   the project       (destination)     (BUILD   or  PWD)
+# INSTDIR = where to install the project       (installation)    (INSTALL or /usr)
 # OSYS    = operating system
 # ARCH    = system architecture
+#
 
 eq      = $(if $(subst $1,,$2),,t)
 neq     = $(if $(subst $1,,$2),t,)
