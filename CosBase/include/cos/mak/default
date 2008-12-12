@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.14 2008/12/12 17:24:13 ldeniau Exp $
+# | $Id: default,v 1.15 2008/12/12 18:23:28 ldeniau Exp $
 # |
 #
 
@@ -117,7 +117,7 @@ LIBRARY  = $(addprefix -L, \
 BINARY   =   $(addsuffix /$(OSNAME)/bin,$(MODBINS)) \
              $(wildcard $(abspath $(bindirs)))
 
-INSTALL  = $(subst $(BASEDIR)/,, \
+FILES    = $(subst $(BASEDIR)/,, \
            $(subst $(DESTDIR)/$(OSNAME)/,, \
              $(shell $(FIND) $(wildcard $(BASEDIR)/share/doc $(BASEDIR)/include \
                              $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
@@ -163,6 +163,7 @@ $(info MODINCS[$(words $(MODINCS))] = $(MODINCS))
 $(info MODLIBS[$(words $(MODLIBS))] = $(MODLIBS))
 $(info INCLUDE[$(words $(INCLUDE))] = $(INCLUDE))
 $(info LIBRARY[$(words $(LIBRARY))] = $(LIBRARY))
+$(info BINARY [$(words $(BINARY))] = $(BINARY))
 $(info LIBS   [$(words $(LIBS))] = $(LIBS))
 $(info MODS   [$(words $(MODS))] = $(MODS))
 $(info CPPFLAGS    = $(CPPFLAGS))

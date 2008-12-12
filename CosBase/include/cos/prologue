@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.5 2008/12/12 17:59:54 ldeniau Exp $
+# | $Id: prologue,v 1.6 2008/12/12 18:23:28 ldeniau Exp $
 # |
 #
 
@@ -40,8 +40,8 @@
 # MAKDIR  = where to get COS makefiles (PREFIX/include/cos)
 # EXEDIR  = where to get COS tools (e.g. cosgen, cossym) (PREFIX/bin)
 # BASEDIR = where to get project files (base)
-# DESTDIR = where to put project build (destination)
-# INSTDIR = where to install project   (installation)
+# DESTDIR = where to put project build (destination) (BUILD)
+# INSTDIR = where to install project   (installation) (INSTALL)
 # OSYS    = operating system
 # ARCH    = system architecture
 
@@ -60,10 +60,10 @@ BASEDIR := $(abspath $(if $(BASEDIR),$(BASEDIR), \
              $(dir $(firstword $(MAKEFILE_LIST)))))
 
 # detect destination path (e.g path-to-user)
-DESTDIR := $(abspath $(if $(DESTDIR),$(DESTDIR),$(PWD)))
+DESTDIR  = $(abspath $(if $(BUILD),$(BUILD),$(PWD)))
 
 # detect install path (e.g path-to-install)
-INSTDIR := $(abspath $(if $(INSTDIR),$(INSTDIR),/usr))
+INSTDIR  = $(abspath $(if $(INSTALL),$(INSTALL),/usr))
 
 # detect operating system (e.g. Linux)
 OSYS := $(if $(OSYS),$(OSYS),$(shell uname -s))

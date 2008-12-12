@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.8 2008/12/12 17:59:54 ldeniau Exp $
+# | $Id: project,v 1.9 2008/12/12 18:23:28 ldeniau Exp $
 # |
 #
 
@@ -60,18 +60,18 @@ install: clean all install.dir install.pre do.install install.post
 
 do.install:
 	@  echo "*** Installing $($(PRJTYPE))"
-	$_ cd $(BASEDIR);                                            \
-	   for f in $(filter share/doc/% include/%, $(INSTALL)) ; do \
-	     $(CP) -P $$f $(INSTDIR)/$$f;                            \
+	$_ cd $(BASEDIR);                                          \
+	   for f in $(filter share/doc/% include/%, $(FILES)) ; do \
+	     $(CP) -P $$f $(INSTDIR)/$$f;                          \
 	   done
-	$_ cd $(DESTDIR)/$(OSNAME);                                  \
-	   for f in $(filter bin/% lib/%, $(INSTALL)) ; do           \
-	     $(CP) -P $$f $(INSTDIR)/$$f;                            \
+	$_ cd $(DESTDIR)/$(OSNAME);                                \
+	   for f in $(filter bin/% lib/%, $(FILES)) ; do           \
+	     $(CP) -P $$f $(INSTDIR)/$$f;                          \
 	   done
 
 install.dir:
 	$_ $(MKDIR) $(INSTDIR) \
-	     $(call missing,$(abspath $(addprefix $(INSTDIR)/,$(sort $(dir $(INSTALL))))))
+	     $(call missing,$(abspath $(addprefix $(INSTDIR)/,$(sort $(dir $(FILES))))))
 
 #
 # tests targets
