@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.6 2008/12/12 17:24:13 ldeniau Exp $
+# | $Id: project,v 1.7 2008/12/12 17:37:50 ldeniau Exp $
 # |
 #
 
@@ -59,7 +59,7 @@ endif
 install: clean all install.dir install.pre do.install install.post
 
 install.dir:
-	@  $(MKDIR) $(abspath $(addprefix $(INSTDIR)/,$(sort $(dir $(INSTALL)))))
+	$_ $(MKDIR) $(abspath $(addprefix $(INSTDIR)/,$(sort $(dir $(INSTALL)))))
 
 do.install:
 	@  echo "*** Installing $($(PRJTYPE))"
@@ -82,7 +82,7 @@ do.install:
 tests: all tests.dir tests.pre do.tests tests.post
 
 tests.dir:
-	@  $(MKDIR) $(DESTDIR)/tests
+	$_ $(MKDIR) $(DESTDIR)/tests
 
 do.tests:
 	@  echo "*** Testing   $($(PRJTYPE))"
