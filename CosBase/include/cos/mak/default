@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.12 2008/12/10 19:01:21 ldeniau Exp $
+# | $Id: default,v 1.13 2008/12/12 16:56:45 ldeniau Exp $
 # |
 #
 
@@ -40,15 +40,14 @@ COSSYM  := cossym
 COSGEN  := cosgen
 COSCMT  := coscmt
 
+PRJTYPE := $(if $(program),program,$(if $(library),library))
+
 VERSION := $(if $(version),$(version),0.0)
 RELEASE := $(if $(release),$(release),$(shell date +'%Y%m'))
-
-PRJTYPE := $(if $(program),program,$(if $(library),library))
+PACKAGE := $(if $(package),$(package),$($(PRJTYPE))$(if $(version),-$(version))_$(RELEASE))
 
 LNKTYPE := $(filter static shared,$(targets))
 LNKTYPE := $(if $(LNKTYPE),$(LNKTYPE),$(LIBTYPE))
-
-PACKAGE := $(if $(package),$(package),$($(PRJTYPE))$(if $(version),-$(version))_$(RELEASE))
 
 TARGETS := $(filter debug profile release,$(targets))
 TARGETS := $(if $(TARGETS),$(TARGETS),debug profile release)
@@ -70,8 +69,8 @@ SRCDIR  := $(BASEDIR)
 endif
 
 HEADERS := $(wildcard $(if $(headers),$(abspath $(headers)),$(SRCDIR)/*.h \
-             $(if $(wildcard $(BASEDIR)/include),$(INCDIR)/*.h \
-               $(INCDIR)/*/*.h $(INCDIR)/*/*/*.h $(INCDIR)/*/*/*/*.h)))
+             $(if $(wildcard $(BASEDIR)/include),$(INCDIR)/*.h $(INCDIR)/*/*.h \
+             $(INCDIR)/*/*/*.h $(INCDIR)/*/*/*/*.h $(INCDIR)/*/*/*/*/*.h)))
 
 SOURCES := $(wildcard $(if $(sources),$(abspath $(sources)),$(SRCDIR)/*.c))
 
@@ -88,36 +87,41 @@ OBJECTS  = $(addprefix $(OBJDIR)/, \
 
 DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
 
-MODINCS := $(wildcard \
+MODINCS  = $(wildcard \
              $(foreach d, $(abspath $(moddirs) $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../..), \
                $(foreach m, $(moddeps),$(d)/$(m))))
              
-MODLIBS := $(wildcard \
+MODLIBS  = $(wildcard \
              $(foreach d, $(abspath $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../..), \
                $(foreach m, $(moddeps),$(d)/$(m))))
 
-MODBINS := $(wildcard \
+MODBINS  = $(wildcard \
              $(foreach d, $(abspath $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../..), \
                $(foreach m, $(moddeps),$(d)/$(m))))
 
-INCLUDE := $(addprefix -I, $(INCDIR) \
-             $(addsuffix /include,$(MODINCS)) \
-	           $(wildcard $(abspath $(incdirs))) \
-             $(wildcard $(PREFIX)/include))
-
-LIBRARY := $(addprefix -L, \
-             $(addsuffix /$(OSNAME)/lib,$(MODLIBS)) \
-	           $(wildcard $(abspath $(libdirs))) \
-             $(wildcard $(PREFIX)/lib))
-
-BINARY  :=   $(addsuffix /$(OSNAME)/bin,$(MODBINS)) \
-             $(wildcard $(abspath $(bindirs)))
+MODS    := $(addprefix --dep=, $(moddeps))
 
 LIBS     = $(addprefix -l, \
              $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
 
-MODS    := $(addprefix --dep=, $(moddeps))
+INCLUDE  = $(addprefix -I, $(INCDIR) \
+             $(addsuffix /include,$(MODINCS)) \
+	           $(wildcard $(abspath $(incdirs))) \
+             $(wildcard $(PREFIX)/include))
 
+LIBRARY  = $(addprefix -L, \
+             $(addsuffix /$(OSNAME)/lib,$(MODLIBS)) \
+	           $(wildcard $(abspath $(libdirs))) \
+             $(wildcard $(PREFIX)/lib))
+
+BINARY   =   $(addsuffix /$(OSNAME)/bin,$(MODBINS)) \
+             $(wildcard $(abspath $(bindirs)))
+
+INSTALL  = $(subst $(BASEDIR)/,, \
+           $(subst $(DESTDIR)/$(OSNAME)/,, \
+             $(shell $(FIND) $(BASEDIR)/share/doc $(BASEDIR)/include \
+                             $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib \
+                             -name CVS -prune -o \( -type f -o -type l \) -print)))
 #
 # standard flags
 #

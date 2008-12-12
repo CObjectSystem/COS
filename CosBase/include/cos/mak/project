@@ -29,12 +29,12 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.4 2008/12/10 19:01:21 ldeniau Exp $
+# | $Id: project,v 1.5 2008/12/12 16:56:45 ldeniau Exp $
 # |
 #
 
 #
-# project goals (fragile)
+# project goals
 #
 GOALS := $(patsubst install,                        all      ,$(GOALS))
 GOALS := $(patsubst tests,                          all      ,$(GOALS))
@@ -50,17 +50,7 @@ $(info GOALS = $(GOALS))
 endif
 
 #
-# project targets
-#
-.PHONY: all all.run all.srun all.clean
-
-all      :                    $(TARGETS)
-all.run  : $(addsuffix .run,  $(TARGETS))
-all.srun : $(addsuffix .srun, $(TARGETS))
-all.clean: $(addsuffix .clean,$(TARGETS))
-
-#
-# install target
+# install targets
 #
 .PHONY: install
 .PHONY: install.dir 
@@ -69,16 +59,27 @@ all.clean: $(addsuffix .clean,$(TARGETS))
 install: clean all install.dir install.pre do.install install.post
 
 install.dir:
-	@  $(MKDIR) $(INSTDIR)/include $(INSTDIR)/bin $(INSTDIR)/lib
+	@  $(MKDIR) $(addprefix $(INSTDIR)/,$(sort $(dir $(INSTALL))))
 
 do.install:
 	@  echo "*** Installing $($(PRJTYPE))"
-	$_ $(if $(wildcard $(BASEDIR)/include/*)      , $(CP) $(BASEDIR)/include       $(INSTDIR))
-	$_ $(if $(wildcard $(DESTDIR)/$(OSNAME)/bin/*), $(CP) $(DESTDIR)/$(OSNAME)/bin $(INSTDIR))
-	$_ $(if $(wildcard $(DESTDIR)/$(OSNAME)/lib/*), $(CP) $(DESTDIR)/$(OSNAME)/lib $(INSTDIR))
+	$_ cd $(BASEDIR);              \
+	   for f in $(INSTDOC) ; do    \
+	     $(CP) $$f $(INSTDIR)/doc/$$f; \
+	   done;                       \
+	   for f in $(INSTINC) ; do    \
+	     $(CP) $$f $(INSTDIR)/$$f; \
+	   done
+	$_ cd $(DESTDIR)/$(OSNAME);    \
+	   for f in $(INSTBIN) ; do    \
+	     $(CP) $$f $(INSTDIR)/$$f; \
+	   done;                       \
+	   for f in $(INSTLIB) ; do    \
+	     $(CP) $$f $(INSTDIR)/$$f; \
+	   done
 
 #
-# tests target
+# tests targets
 #
 .PHONY: tests
 .PHONY: tests.dir 
@@ -94,8 +95,17 @@ do.tests:
 	$_ cd $(DESTDIR)/tests && $(MAKE) -C $(BASEDIR)/tests $(if $(ARGS),release,debug).run
 
 #
-# debug target
+# project targets
 #
+.PHONY: all all.run all.srun all.clean
+
+all      :                    $(TARGETS)
+all.run  : $(addsuffix .run,  $(TARGETS))
+all.srun : $(addsuffix .srun, $(TARGETS))
+all.clean: $(addsuffix .clean,$(TARGETS))
+
+# debug target
+
 TARGET    := debug
 TARGETEXT := _d
 
@@ -105,9 +115,8 @@ $(TARGET).%:  LDFLAGS += $(DEBUG_LD)
 
 include $(MAKDIR)/mak/$(PRJTYPE).rules
 
-#
 # profile target
-#
+
 TARGET    := profile
 TARGETEXT := _p
 
@@ -117,9 +126,8 @@ $(TARGET).%:  LDFLAGS += $(PROFILE_LD)
 
 include $(MAKDIR)/mak/$(PRJTYPE).rules
 
-#
 # release target
-#
+
 TARGET    := release
 TARGETEXT :=
 

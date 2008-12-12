@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.11 2008/12/10 19:01:21 ldeniau Exp $
+# | $Id: Makefile,v 1.12 2008/12/12 16:56:44 ldeniau Exp $
 # |
 #
 
@@ -79,7 +79,7 @@ include $(cos)/epilogue
 # 'cosgen' boostrap version of COS uses a portable 'coscmt' sed script to remove
 # C comments but the installed version uses a much faster C version of coscmt.
 
-TOOLS := $(filter-out %/coscmt, $(wildcard $(BASEDIR)/bin/*))
+TOOLS = $(filter-out %/coscmt %/CVS, $(wildcard $(BASEDIR)/bin/*))
 
 install.pre: $(BINDIR)/$(COSCMT)
 	$_ $(CP) $(TOOLS) $(INSTDIR)/bin
