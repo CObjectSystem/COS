@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.10 2008/12/11 17:25:58 ldeniau Exp $
+ | $Id: generic.h,v 1.11 2008/12/12 11:16:13 ldeniau Exp $
  |
 */
 
@@ -259,7 +259,7 @@ COS_SCP_END
 #define COS_GEN_MAKV_2(RET,NAME,VPS,PS,AS,IS,C,A,R) \
 COS_GEN_TYPECHK(RET,NAME,PS             ) \
 COS_GEN_RANKCHK(    NAME,          C    ) \
-COS_GEN_SIZECHK(    NAME             A,R) \
+COS_GEN_SIZECHK(    NAME,            A,R) \
 COS_GEN_VFUNDEF(RET,NAME,VPS,AS,IS,C,A,R) \
 COS_GEN_COMPMAK(RET,NAME,PS,       C,A,R,COS_YES)
 
