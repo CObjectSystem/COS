@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile.rules,v 1.5 2008/12/10 13:07:34 ldeniau Exp $
+# | $Id: compile.rules,v 1.6 2008/12/12 13:27:11 ldeniau Exp $
 # |
 #
 
@@ -79,12 +79,12 @@ $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.o: $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c
 $(OBJDIR)/%.d: $(SRCDIR)/%.c
 	@  echo "*** Computing" $(subst $(BASEDIR)/,,$<) "->" $(subst $(DESTDIR)/,,$@)
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
-     $(SED) 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
+     $(SED) -e 's,[^:]*:,$(basename $@).o  \\\n$(basename $@).d: \\\n ,' \
      > $@
 
 $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).d: $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
-     $(SED) 's,$$[^:]*:,$(basename $@).o $(basename $@).d : ,g' \
+     $(SED) -e 's,[^:]*:,$(basename $@).o  \\\n$(basename $@).d: \\\n ,' \
      > $@
 
 #

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.13 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: cosdef.h,v 1.14 2008/12/12 13:27:11 ldeniau Exp $
  |
 */
 
@@ -66,7 +66,8 @@ typedef unsigned long long U64, ULONG;
 typedef _LongLong          I64, LONG;
 typedef _ULongLong         U64, ULONG;
 #else
-#error "COS: 64 bits integers not supported"
+typedef struct {U32 _[2];} I64, LONG;
+typedef struct {U32 _[2];} U64, ULONG;
 #endif
 
 typedef double             R64, FLOAT;
@@ -76,7 +77,7 @@ typedef _Complex double    C64, COMPLEX;
 #elif defined(_ComplexDouble)
 typedef _ComplexDouble     C64, COMPLEX;
 #else
-#error "COS: complex not supported"
+typedef struct {R64 _[2];} C64, COMPLEX;
 #endif
 
 typedef size_t                  SIZE;
