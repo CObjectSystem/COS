@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.13 2008/12/12 16:56:45 ldeniau Exp $
+# | $Id: default,v 1.14 2008/12/12 17:24:13 ldeniau Exp $
 # |
 #
 
@@ -99,7 +99,7 @@ MODBINS  = $(wildcard \
              $(foreach d, $(abspath $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../..), \
                $(foreach m, $(moddeps),$(d)/$(m))))
 
-MODS    := $(addprefix --dep=, $(moddeps))
+MODS     = $(addprefix --dep=, $(moddeps))
 
 LIBS     = $(addprefix -l, \
              $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
@@ -119,8 +119,8 @@ BINARY   =   $(addsuffix /$(OSNAME)/bin,$(MODBINS)) \
 
 INSTALL  = $(subst $(BASEDIR)/,, \
            $(subst $(DESTDIR)/$(OSNAME)/,, \
-             $(shell $(FIND) $(BASEDIR)/share/doc $(BASEDIR)/include \
-                             $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib \
+             $(shell $(FIND) $(wildcard $(BASEDIR)/share/doc $(BASEDIR)/include \
+                             $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
                              -name CVS -prune -o \( -type f -o -type l \) -print)))
 #
 # standard flags
