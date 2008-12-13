@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.16 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Array.c,v 1.17 2008/12/13 00:50:03 ldeniau Exp $
  |
 */
 
@@ -1130,7 +1130,13 @@ endmethod
 #define SORT(a,b) if (GCMP(b,a) == Lesser) EXCH(a,b)
 #define GCMP(a,b) geval2(fun,a,b)
 
-static U32 x = 1; // no need to be thread safe
+static inline U32
+pivot(void)
+{
+  static U32 x = 1; // no need to be thread safe
+  
+  return x = x * 2621124293u + 1;
+}
 
 static void
 quicksort_fun(OBJ a[], I32 r, OBJ fun)
@@ -1146,9 +1152,9 @@ quicksort_fun(OBJ a[], I32 r, OBJ fun)
   NETSORT(a,r);
 
   // select pivot as the median-of-three taken pseudo-randomly
-  x = x * 2621124293u + 1, i = x % (r+1) + 0, EXCH(a[i],a[0  ]);
-  x = x * 2621124293u + 1, i = x % (r  ) + 1, EXCH(a[i],a[r  ]);
-  x = x * 2621124293u + 1, i = x % (r-1) + 1, EXCH(a[i],a[r-1]);
+  i = pivot() % (r+1) + 0, EXCH(a[i],a[0  ]);
+  i = pivot() % (r  ) + 1, EXCH(a[i],a[r  ]);
+  i = pivot() % (r-1) + 1, EXCH(a[i],a[r-1]);
   SORT(a[0],a[r-1]);
   if ((ri = GCMP(a[r  ],a[0])) == Lesser) EXCH(a[r],a[0  ]);
   if ((rj = GCMP(a[r-1],a[r])) == Lesser) EXCH(a[r],a[r-1]);
@@ -1206,9 +1212,9 @@ quicksort_fct(OBJ a[], I32 r, OBJFCT2 fct)
   NETSORT(a,r);
 
   // select pivot as the median-of-three taken pseudo-randomly
-  x = x * 2621124293u + 1, i = x % (r+1) + 0, EXCH(a[i],a[0  ]);
-  x = x * 2621124293u + 1, i = x % (r  ) + 1, EXCH(a[i],a[r  ]);
-  x = x * 2621124293u + 1, i = x % (r-1) + 1, EXCH(a[i],a[r-1]);
+  i = pivot() % (r+1) + 0, EXCH(a[i],a[0  ]);
+  i = pivot() % (r  ) + 1, EXCH(a[i],a[r  ]);
+  i = pivot() % (r-1) + 1, EXCH(a[i],a[r-1]);
   SORT(a[0],a[r-1]);
   if ((ri = GCMP(a[r  ],a[0])) == Lesser) EXCH(a[r],a[0  ]);
   if ((rj = GCMP(a[r-1],a[r])) == Lesser) EXCH(a[r],a[r-1]);

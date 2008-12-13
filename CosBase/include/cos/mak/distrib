@@ -1,0 +1,100 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- distribution
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: distrib,v 1.1 2008/12/13 00:51:45 ldeniau Exp $
+# |
+#
+
+# checks
+$(call assert, $(PRJTYPE), empty project type)
+
+#
+# install targets
+#
+.PHONY: install
+.PHONY: install.dir 
+.PHONY: install.pre do.install install.post
+
+install: clean all install.dir install.pre do.install install.post
+
+FILES = $(subst $(BASEDIR)/,, \
+          $(shell $(FIND) $(BASEDIR) -maxdepth 1 \
+                  -name CVS -prune -o \( -type f -o -type l \) -print))
+
+do.install:
+	@  echo "*** Installing $($(PRJTYPE))"
+	$_ cd $(BASEDIR);                                     \
+	   for f in $(FILES) ; do                             \
+	     $(CP) -P $$f $(INSTDIR)/share/$($(PRJTYPE))/$$f; \
+	   done;                                              \
+	   for m in $(moddeps) ; do                           \
+	     $(MAKE) -C $(BASEDIR)/$$m;                       \
+	   done
+
+install.dir: $(INSTDIR)/share/$($(PRJTYPE))
+
+$(INSTDIR)/share/$($(PRJTYPE)):
+	$_ $(MKDIR) $@
+
+#
+# tests targets
+#
+.PHONY: tests
+.PHONY: tests.dir 
+.PHONY: tests.pre do.tests tests.post
+
+tests: all tests.dir tests.pre do.tests tests.post
+
+do.tests:
+	@  echo "*** Testing    $($(PRJTYPE))"
+	$_ for m in $(moddeps) ; do                                \
+	     $(MKDIR) $(DESTDIR)/$$m;                              \
+	     cd $(DESTDIR)/$$m && $(MAKE) -C $(BASEDIR)/$$m tests; \
+	   done
+
+tests.dir: $(DESTDIR)
+
+$(DESTDIR):
+	$_ $(MKDIR) $@
+
+#
+# project targets
+#
+.PHONY: all
+
+all:
+	@  echo "*** Building   $($(PRJTYPE))"
+	$_ for m in $(moddeps) ; do                          \
+	     $(MKDIR) $(DESTDIR)/$$m;                        \
+	     cd $(DESTDIR)/$$m && $(MAKE) -C $(BASEDIR)/$$m; \
+	   done
+
+# end of makefile

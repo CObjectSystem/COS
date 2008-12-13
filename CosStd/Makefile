@@ -29,12 +29,12 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.5 2008/12/02 17:32:21 ldeniau Exp $
+# | $Id: Makefile,v 1.6 2008/12/13 00:50:03 ldeniau Exp $
 # |
 #
 
 # detect location (bootstrap, normally $(cos) = cos)
-pwd := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
+pwd := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 cos := $(pwd)/../CosBase/include/cos
 
 # standard COS makefile

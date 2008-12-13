@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS makefile -- project (program or library)
+# | COS makefile -- project
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,9 +29,14 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.10 2008/12/12 18:30:48 ldeniau Exp $
+# | $Id: project,v 1.11 2008/12/13 00:50:03 ldeniau Exp $
 # |
 #
+
+# checks
+$(call assert, $(PRJTYPE), empty project type)
+$(call assert, $(LNKTYPE), unable to detect link modes)
+$(call assert, $(SOURCES), unable to find source files)
 
 #
 # project goals
@@ -60,13 +65,13 @@ install: clean all install.dir install.pre do.install install.post
 
 do.install:
 	@  echo "*** Installing $($(PRJTYPE))"
-	$_ cd $(BASEDIR);                                          \
-	   for f in $(filter share/doc/% include/%, $(FILES)) ; do \
-	     $(CP) -P $$f $(INSTDIR)/$$f;                          \
+	$_ cd $(BASEDIR);                                      \
+	   for f in $(filter share/% include/%, $(FILES)) ; do \
+	     $(CP) -P $$f $(INSTDIR)/$$f;                      \
 	   done
-	$_ cd $(DESTDIR)/$(OSNAME);                                \
-	   for f in $(filter bin/% lib/%, $(FILES)) ; do           \
-	     $(CP) -P $$f $(INSTDIR)/$$f;                          \
+	$_ cd $(DESTDIR)/$(OSNAME);                            \
+	   for f in $(filter bin/% lib/%, $(FILES)) ; do       \
+	     $(CP) -P $$f $(INSTDIR)/$$f;                      \
 	   done
 
 install.dir:
@@ -110,7 +115,7 @@ $(TARGET).%: CPPFLAGS += $(DEBUG_CPP)
 $(TARGET).%:  CCFLAGS += $(DEBUG_CC)
 $(TARGET).%:  LDFLAGS += $(DEBUG_LD)
 
-include $(MAKDIR)/mak/$(PRJTYPE).rules
+include $(MAKDIR)/mak/$(PRJTYPE)
 
 # profile target
 
@@ -121,7 +126,7 @@ $(TARGET).%: CPPFLAGS += $(PROFILE_CPP)
 $(TARGET).%:  CCFLAGS += $(PROFILE_CC)
 $(TARGET).%:  LDFLAGS += $(PROFILE_LD)
 
-include $(MAKDIR)/mak/$(PRJTYPE).rules
+include $(MAKDIR)/mak/$(PRJTYPE)
 
 # release target
 
@@ -132,7 +137,7 @@ $(TARGET).%: CPPFLAGS += $(RELEASE_CPP)
 $(TARGET).%:  CCFLAGS += $(RELEASE_CC)
 $(TARGET).%:  LDFLAGS += $(RELEASE_LD)
 
-include $(MAKDIR)/mak/$(PRJTYPE).rules
+include $(MAKDIR)/mak/$(PRJTYPE)
 
 # directories target
 

@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS makefile -- main
+# | COS makefile
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,18 +29,26 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.1 2008/06/27 16:17:13 ldeniau Exp $
+# | $Id: Makefile,v 1.2 2008/12/13 00:50:02 ldeniau Exp $
 # |
 #
 
-# check config
-ifeq ($(wildcard config.build),)
-$(error config.build not found. Run configure first)
-endif
+# detect location (bootstrap, normally $(cos) = cos)
+pwd := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+cos := $(pwd)/CosBase/include/cos
 
-# load config
-include config.build
+#
+# standard COS makefile
+#
 
-# TODO
+include $(cos)/prologue
+
+distrib := cos
+version := 0.7
+release := 200801
+
+moddeps := CosBase CosStd
+
+include $(cos)/epilogue
 
 # end of makefile

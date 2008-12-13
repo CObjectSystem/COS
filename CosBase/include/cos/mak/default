@@ -29,22 +29,24 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.15 2008/12/12 18:23:28 ldeniau Exp $
+# | $Id: default,v 1.16 2008/12/13 00:50:03 ldeniau Exp $
 # |
 #
 
 #
 # default settings
 #
-COSSYM  := cossym
-COSGEN  := cosgen
-COSCMT  := coscmt
-
-PRJTYPE := $(if $(program),program,$(if $(library),library))
+PRJTYPE := $(if $(program),program,$(if $(library),library,$(if $(distrib),distrib)))
 
 VERSION := $(if $(version),$(version),0.0)
 RELEASE := $(if $(release),$(release),$(shell date +'%Y%m'))
 PACKAGE := $(if $(package),$(package),$($(PRJTYPE))$(if $(version),-$(version))_$(RELEASE))
+
+ifneq ($(filter program library,$(PRJTYPE)),)
+
+COSSYM  := cossym
+COSGEN  := cosgen
+COSCMT  := coscmt
 
 LNKTYPE := $(filter static shared,$(targets))
 LNKTYPE := $(if $(LNKTYPE),$(LNKTYPE),$(LIBTYPE))
@@ -52,10 +54,7 @@ LNKTYPE := $(if $(LNKTYPE),$(LNKTYPE),$(LIBTYPE))
 TARGETS := $(filter debug profile release,$(targets))
 TARGETS := $(if $(TARGETS),$(TARGETS),debug profile release)
 
-BINDIR  := $(DESTDIR)/$(OSNAME)/bin
-LIBDIR  := $(DESTDIR)/$(OSNAME)/lib
-OBJDIR   = $(DESTDIR)/$(OSNAME)/obj/$(TARGET)
-TMPDIR  := $(DESTDIR)/$(OSNAME)/tmp/$(TARGET)
+# sources
 
 ifneq ($(wildcard $(BASEDIR)/include),)
 INCDIR  := $(BASEDIR)/include
@@ -81,21 +80,24 @@ GENERIC := $(filter-out $(PREFIX)/include/cos/cos/%.h \
 GENERIC := $(if $(GENERIC),$(shell $(GREP) -F -l defgeneric $(GENERIC)))
 endif
 
+# destinations
+
+BINDIR   = $(DESTDIR)/$(OSNAME)/bin
+LIBDIR   = $(DESTDIR)/$(OSNAME)/lib
+OBJDIR   = $(DESTDIR)/$(OSNAME)/obj/$(TARGET)
+TMPDIR   = $(DESTDIR)/$(OSNAME)/tmp/$(TARGET)
+
 OBJECTS  = $(addprefix $(OBJDIR)/, \
              $(addsuffix .o,$(basename $(notdir $(SOURCES)))) \
              $(if $(GENERIC),$($(PRJTYPE))_$(COSGEN).o))
 
 DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
 
-MODINCS  = $(wildcard \
+BASEMOD  = $(wildcard \
              $(foreach d, $(abspath $(moddirs) $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../..), \
                $(foreach m, $(moddeps),$(d)/$(m))))
              
-MODLIBS  = $(wildcard \
-             $(foreach d, $(abspath $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../..), \
-               $(foreach m, $(moddeps),$(d)/$(m))))
-
-MODBINS  = $(wildcard \
+DESTMOD  = $(wildcard \
              $(foreach d, $(abspath $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../..), \
                $(foreach m, $(moddeps),$(d)/$(m))))
 
@@ -105,23 +107,26 @@ LIBS     = $(addprefix -l, \
              $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
 
 INCLUDE  = $(addprefix -I, $(INCDIR) \
-             $(addsuffix /include,$(MODINCS)) \
+             $(addsuffix /include,$(BASEMOD)) \
 	           $(wildcard $(abspath $(incdirs))) \
              $(wildcard $(PREFIX)/include))
 
 LIBRARY  = $(addprefix -L, \
-             $(addsuffix /$(OSNAME)/lib,$(MODLIBS)) \
+             $(addsuffix /$(OSNAME)/lib,$(DESTMOD)) \
 	           $(wildcard $(abspath $(libdirs))) \
              $(wildcard $(PREFIX)/lib))
 
-BINARY   =   $(addsuffix /$(OSNAME)/bin,$(MODBINS)) \
+BINARY   =   $(addsuffix /$(OSNAME)/bin,$(DESTMOD)) \
              $(wildcard $(abspath $(bindirs)))
 
 FILES    = $(subst $(BASEDIR)/,, \
            $(subst $(DESTDIR)/$(OSNAME)/,, \
-             $(shell $(FIND) $(wildcard $(BASEDIR)/share/doc $(BASEDIR)/include \
+             $(shell $(FIND) $(wildcard $(BASEDIR)/share $(BASEDIR)/include \
                              $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
                              -name CVS -prune -o \( -type f -o -type l \) -print)))
+
+endif # library or program
+
 #
 # standard flags
 #
@@ -159,8 +164,8 @@ $(info GENERIC[$(words $(GENERIC))] = $(GENERIC))
 $(info SOURCES[$(words $(SOURCES))] = $(SOURCES))
 $(info OBJECTS[$(words $(OBJECTS))] = $(OBJECTS))
 $(info DEPENDS[$(words $(DEPENDS))] = $(DEPENDS))
-$(info MODINCS[$(words $(MODINCS))] = $(MODINCS))
-$(info MODLIBS[$(words $(MODLIBS))] = $(MODLIBS))
+$(info BASEMOD[$(words $(BASEMOD))] = $(BASEMOD))
+$(info DESTMOD[$(words $(DESTMOD))] = $(DESTMOD))
 $(info INCLUDE[$(words $(INCLUDE))] = $(INCLUDE))
 $(info LIBRARY[$(words $(LIBRARY))] = $(LIBRARY))
 $(info BINARY [$(words $(BINARY))] = $(BINARY))
@@ -176,10 +181,6 @@ $(info PROFILE_CC  = $(PROFILE_CC))
 $(info RELEASE_CPP = $(RELEASE_CPP))
 $(info RELEASE_CC  = $(RELEASE_CC))
 endif
-
-# checks
-$(call assert, $(LNKTYPE), unable to detect link modes)
-$(call assert, $(SOURCES), unable to find source files)
 
 # end of makefile
 
