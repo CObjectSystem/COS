@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.4 2008/12/15 14:27:28 ldeniau Exp $
+# | $Id: program,v 1.5 2008/12/15 17:37:32 ldeniau Exp $
 # |
 #
 
@@ -90,7 +90,7 @@ $(BINDIR)/$(SBINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM)_s.o
 	$_ $(EXEDIR)/$(COSSYM)      --out=$(<D)/$(program)_$(COSSYM)_s.c $(COSSYMOPT) $@
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/$(program)_$(COSSYM)_s.c -o $(<D)/$(program)_$(COSSYM)_s.o
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	$_ $(if $(STRIP),$(STRIP) $@)
+	$_ $(if $(STRIP),$(if $(call eq,$(TARGET),release),$(STRIP) $@))
 
 #
 # rules for building shared program
@@ -103,6 +103,7 @@ $(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM).o
 	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(program)_$(COSSYM).c $(COSSYMOPT) $@
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/$(program)_$(COSSYM).c -o $(<D)/$(program)_$(COSSYM).o
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+	$_ $(if $(STRIP),$(if $(call eq,$(TARGET),release),$(STRIP) $@))
 
 #
 # rules for running static program (helper)
