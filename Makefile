@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.4 2008/12/15 12:06:37 ldeniau Exp $
+# | $Id: Makefile,v 1.5 2008/12/15 17:26:57 ldeniau Exp $
 # |
 #
 
@@ -59,7 +59,7 @@ FILES := $(subst $(BASEDIR)/,, \
            $(shell $(FIND) $(BASEDIR) -maxdepth 1 \
                    -name CVS -prune -o \( -type f -o -type l \) -print))
 
-install.pre:
+install.post:
 	$_ cd $(BASEDIR);                                         \
      for f in $(FILES) ; do                                 \
        $(CP) -P $$f $(INSTDIR)/share/doc/$($(PRJTYPE))/$$f; \

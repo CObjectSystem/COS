@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: distrib,v 1.4 2008/12/15 14:27:28 ldeniau Exp $
+# | $Id: distrib,v 1.5 2008/12/15 17:26:57 ldeniau Exp $
 # |
 #
 
@@ -76,7 +76,7 @@ $(addsuffix .tests,$(moddeps)):
 .PHONY: install install.prn install.pre do.install install.post
 .PHONY: $(addsuffix .install,$(moddeps))
 
-install: clean install.prn install.pre do.install install.post
+install: install.prn install.pre do.install install.post
 
 install.prn:
 	@  echo "*** Installing $($(PRJTYPE))"
@@ -84,6 +84,7 @@ install.prn:
 do.install: $(addsuffix .install,$(moddeps))
 
 $(addsuffix .install,$(moddeps)):
-	$_ $(MAKE) -C $(BASEDIR)/$(basename $@) install
+	$_ [ -d $(DESTDIR)/$(basename $@) ] || $(MKDIR)   $(DESTDIR)/$(basename $@)
+	$_   cd $(DESTDIR)/$(basename $@)   && $(MAKE) -C $(BASEDIR)/$(basename $@) install INSTALL=$(INSTDIR)
 
 # end of makefile

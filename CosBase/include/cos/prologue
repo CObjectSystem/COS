@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.7 2008/12/12 18:30:47 ldeniau Exp $
+# | $Id: prologue,v 1.8 2008/12/15 17:26:57 ldeniau Exp $
 # |
 #
 
@@ -60,8 +60,8 @@ exists  = $(call assert,$(wildcard $1),$2)
 missing = $(filter-out $(wildcard $1),$1)
 
 # detect prefix path (e.g /path/to/CosBase or /usr or /usr/local)
-PREFIX := $(abspath $(if $(PREFIX),$(PREFIX), \
-            $(subst include/cos/prologue,,$(lastword $(MAKEFILE_LIST)))))
+PREFIX  := $(abspath $(if $(PREFIX),$(PREFIX), \
+             $(subst include/cos/prologue,,$(lastword $(MAKEFILE_LIST)))))
 
 # detect project path (e.g path-to-project)
 BASEDIR := $(abspath $(if $(BASEDIR),$(BASEDIR), \
@@ -74,15 +74,15 @@ DESTDIR  = $(abspath $(if $(BUILD),$(BUILD),$(PWD)))
 INSTDIR  = $(abspath $(if $(INSTALL),$(INSTALL),/usr))
 
 # detect operating system (e.g. Linux)
-OSYS := $(if $(OSYS),$(OSYS),$(shell uname -s))
+OSYS    := $(if $(OSYS),$(OSYS),$(shell uname -s))
 
 # detect architecture (e.g. x86_64)
-ARCH := $(if $(ARCH),$(ARCH),$(shell uname -m))
+ARCH    := $(if $(ARCH),$(ARCH),$(shell uname -m))
 
 # other useful variables
-MAKDIR := $(PREFIX)/include/cos
-EXEDIR := $(PREFIX)/bin
-OSNAME  = $(OSYS)_$(ARCH)
+MAKDIR  := $(PREFIX)/include/cos
+EXEDIR  := $(PREFIX)/bin
+OSNAME   = $(OSYS)_$(ARCH)
 
 # for debugging 
 ifeq ($(TRACE),yes)

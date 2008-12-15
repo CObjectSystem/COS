@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.7 2008/12/10 13:07:34 ldeniau Exp $
+# | $Id: common,v 1.8 2008/12/15 17:26:57 ldeniau Exp $
 # |
 #
 
@@ -47,7 +47,7 @@ clean:
 
 cleanbuild:
 	@  echo "*** Cleaning builds"
-	$_ $(RM) `$(FIND) $(DESTDIR) -type d -name $(OSNAME)`
+	$_ $(RM) `$(FIND) $(DESTDIR) -type d -name $(OSNAME) -print`
 
 cleanall: cleanbuild clean
 

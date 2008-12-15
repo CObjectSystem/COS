@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.12 2008/12/15 14:27:28 ldeniau Exp $
+# | $Id: project,v 1.13 2008/12/15 17:26:57 ldeniau Exp $
 # |
 #
 
@@ -58,13 +58,15 @@ endif
 # install targets
 #
 .PHONY: install
-.PHONY: install.dir 
+.PHONY: install.prn install.dir
 .PHONY: install.pre do.install install.post
 
-install: clean all install.dir install.pre do.install install.post
+install: all install.prn install.dir install.pre do.install install.post
 
-do.install:
+install.prn:
 	@  echo "*** Installing $($(PRJTYPE))"
+
+do.install: clean
 	$_ cd $(BASEDIR);                                      \
 	   for f in $(filter share/% include/%, $(FILES)) ; do \
 	     $(CP) -P $$f $(INSTDIR)/$$f;                      \
@@ -76,19 +78,21 @@ do.install:
 
 install.dir:
 	$_ $(MKDIR) $(INSTDIR) \
-	$(call missing,$(abspath $(addprefix $(INSTDIR)/,$(sort $(dir $(FILES))))))
+	   $(call missing,$(sort $(abspath $(addprefix $(INSTDIR)/,$(dir $(FILES))))))
 
 #
 # tests targets
 #
 .PHONY: tests
-.PHONY: tests.dir 
+.PHONY: tests.prn tests.dir
 .PHONY: tests.pre do.tests tests.post
 
-tests: all tests.dir tests.pre do.tests tests.post
+tests: all tests.prn tests.dir tests.pre do.tests tests.post
+
+tests.prn:
+	@  echo "*** Testing   $($(PRJTYPE))"
 
 do.tests:
-	@  echo "*** Testing   $($(PRJTYPE))"
 	$_ cd $(DESTDIR)/tests && $(MAKE) -C $(BASEDIR)/tests $(if $(ARGS),release,debug).run
 
 tests.dir: $(call missing,$(DESTDIR)/tests)
