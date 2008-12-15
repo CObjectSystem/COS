@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.2 2008/12/13 00:50:02 ldeniau Exp $
+# | $Id: Makefile,v 1.3 2008/12/15 10:10:26 ldeniau Exp $
 # |
 #
 
@@ -50,5 +50,13 @@ release := 200801
 moddeps := CosBase CosStd
 
 include $(cos)/epilogue
+
+#
+# makefile customization
+#
+
+FILES := $(subst $(BASEDIR)/,, \
+           $(shell $(FIND) $(BASEDIR) -maxdepth 1 \
+                   -name CVS -prune -o \( -type f -o -type l \) -print))
 
 # end of makefile

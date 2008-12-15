@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile,v 1.1 2008/12/13 00:50:03 ldeniau Exp $
+# | $Id: compile,v 1.2 2008/12/15 10:10:26 ldeniau Exp $
 # |
 #
 
@@ -45,11 +45,11 @@ $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c: $(GENERIC)
 #
 # rule for symbols (dummy)
 #
-$(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c:
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c: $(OBJDIR)
 	@  echo "*** Computing symbols"
 	$_ $(EXEDIR)/$(COSSYM) --out=$@
 
-$(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c:
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c: $(OBJDIR)
 	@  echo "*** Computing symbols"
 	$_ $(EXEDIR)/$(COSSYM) --out=$@
 
@@ -76,7 +76,7 @@ $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.o: $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c
 #
 # rules for dependencies
 #
-$(OBJDIR)/%.d: $(SRCDIR)/%.c
+$(OBJDIR)/%.d: $(SRCDIR)/%.c $(OBJDIR)
 	@  echo "*** Computing" $(subst $(BASEDIR)/,,$<) "->" $(subst $(DESTDIR)/,,$@)
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
 	   $(SED) -e 's,[^:]*:,$(basename $@).o $(basename $@).d:,' > $@

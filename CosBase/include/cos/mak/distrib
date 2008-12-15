@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: distrib,v 1.1 2008/12/13 00:51:45 ldeniau Exp $
+# | $Id: distrib,v 1.2 2008/12/15 10:10:26 ldeniau Exp $
 # |
 #
 
@@ -37,64 +37,55 @@
 $(call assert, $(PRJTYPE), empty project type)
 
 #
-# install targets
+# project targets
 #
-.PHONY: install
-.PHONY: install.dir 
-.PHONY: install.pre do.install install.post
+.PHONY: all all.prn all.pre do.all all.post
+.PHONY: $(moddeps)
 
-install: clean all install.dir install.pre do.install install.post
+all: all.prn all.pre do.all all.post
 
-FILES = $(subst $(BASEDIR)/,, \
-          $(shell $(FIND) $(BASEDIR) -maxdepth 1 \
-                  -name CVS -prune -o \( -type f -o -type l \) -print))
+all.prn:
+	@  echo "*** Building $($(PRJTYPE))"
 
-do.install:
-	@  echo "*** Installing $($(PRJTYPE))"
-	$_ cd $(BASEDIR);                                     \
-	   for f in $(FILES) ; do                             \
-	     $(CP) -P $$f $(INSTDIR)/share/$($(PRJTYPE))/$$f; \
-	   done;                                              \
-	   for m in $(moddeps) ; do                           \
-	     $(MAKE) -C $(BASEDIR)/$$m;                       \
-	   done
+do.all: $(moddeps)
 
-install.dir: $(INSTDIR)/share/$($(PRJTYPE))
-
-$(INSTDIR)/share/$($(PRJTYPE)):
-	$_ $(MKDIR) $@
+$(moddeps):
+	$_ $(MKDIR)   $(DESTDIR)/$@; \
+	   cd         $(DESTDIR)/$@; \
+	   $(MAKE) -C $(BASEDIR)/$@
 
 #
 # tests targets
 #
-.PHONY: tests
-.PHONY: tests.dir 
-.PHONY: tests.pre do.tests tests.post
+.PHONY: tests tests.prn tests.pre do.tests tests.post
+.PHONY: $(addsuffix .tests,$(moddeps))
 
-tests: all tests.dir tests.pre do.tests tests.post
+tests: tests.prn tests.pre do.tests tests.post
 
-do.tests:
-	@  echo "*** Testing    $($(PRJTYPE))"
-	$_ for m in $(moddeps) ; do                                \
-	     $(MKDIR) $(DESTDIR)/$$m;                              \
-	     cd $(DESTDIR)/$$m && $(MAKE) -C $(BASEDIR)/$$m tests; \
-	   done
+tests.prn:
+	@  echo "*** Testing $($(PRJTYPE))"
 
-tests.dir: $(DESTDIR)
+do.tests: $(addsuffix .tests,$(moddeps))
 
-$(DESTDIR):
-	$_ $(MKDIR) $@
+$(addsuffix .tests,$(moddeps)):
+	$_ $(MKDIR)   $(DESTDIR)/$(basename $@); \
+	   cd         $(DESTDIR)/$(basename $@); \
+	   $(MAKE) -C $(BASEDIR)/$(basename $@) tests
 
 #
-# project targets
+# install targets
 #
-.PHONY: all
+.PHONY: install install.prn install.pre do.install install.post
+.PHONY: $(addsuffix .install,$(moddeps))
 
-all:
-	@  echo "*** Building   $($(PRJTYPE))"
-	$_ for m in $(moddeps) ; do                          \
-	     $(MKDIR) $(DESTDIR)/$$m;                        \
-	     cd $(DESTDIR)/$$m && $(MAKE) -C $(BASEDIR)/$$m; \
-	   done
+install: clean install.prn install.pre do.install install.post
+
+install.prn:
+	@  echo "*** Installing $($(PRJTYPE))"
+
+do.install: $(addsuffix .install,$(moddeps))
+
+$(addsuffix .install,$(moddeps)):
+	$_ $(MAKE) -C $(BASEDIR)/$(basename $@) install
 
 # end of makefile
