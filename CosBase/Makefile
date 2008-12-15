@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.13 2008/12/15 14:27:28 ldeniau Exp $
+# | $Id: Makefile,v 1.14 2008/12/15 17:33:13 ldeniau Exp $
 # |
 #
 
@@ -86,7 +86,7 @@ install.pre: $(BINDIR)/$(COSCMT)
 
 $(BINDIR)/$(COSCMT) : CCFLAGS := $(CCFLAGS)
 $(BINDIR)/$(COSCMT): $(BASEDIR)/tools/src/coscmt.c
-	$_ $(CC) $(CCFLAGS) $< -s -o $@
+	$_ $(CC) $(CCFLAGS) $< -o $@
 
 # end of COS makefile
 
