@@ -29,14 +29,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.7 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Number.c,v 1.8 2008/12/15 14:38:55 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Number.h>
 #include <cos/TrueFalse.h>
-#include <cos/stdgen.h>
+#include <cos/gen/init.h>
+#include <cos/gen/logic.h>
+#include <cos/gen/object.h>
+#include <cos/gen/operator.h>
+#include <cos/gen/value.h>
 
 makclass(Number  , Value);
 makclass(Integral, Number);

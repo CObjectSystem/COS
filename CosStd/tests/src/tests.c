@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.1 2008/12/15 14:33:49 ldeniau Exp $
+ | $Id: tests.c,v 1.2 2008/12/15 14:38:55 ldeniau Exp $
  |
 */
 
@@ -46,7 +46,7 @@
 static void
 on_exit(void)
 {
-  fprintf(stderr, "** COS deinit duration: %.3f s\n", cos_deinitDuration());
+  printf("\n** COS deinit duration: %.3f s\n", cos_deinitDuration());
 }
 
 int main(int argc, char *argv[])
@@ -69,14 +69,14 @@ int main(int argc, char *argv[])
     // must be loaded before first message is sent
     atexit(on_exit);
     cos_init(); // explicit initialization for measurement
-    fprintf(stderr, "** COS init duration: %.3f s\n", cos_initDuration());
+    printf("** COS init duration: %.3f s\n", cos_initDuration());
   }
     
   // convert signal to exception
   cos_signal_std();
 
   // testsuites
-  fprintf(stderr, "\n** C Object System Testsuite (%d bits) **\n", bits);
+  printf("\n** C Object System Testsuite (%d bits) **\n", bits);
   // ut_autoconst();
   // ut_autovector();
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
   // speed testsuites
   if (!speed_test) return EXIT_SUCCESS;
   
-  fprintf(stderr, "\n** C Object System Speed Testsuite (%d bits) **\n", bits);
+  printf("\n** C Object System Speed Testsuite (%d bits) **\n", bits);
 
   stest_stat();
 
