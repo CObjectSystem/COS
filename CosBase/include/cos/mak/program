@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.3 2008/12/13 00:50:03 ldeniau Exp $
+# | $Id: program,v 1.4 2008/12/15 14:27:28 ldeniau Exp $
 # |
 #
 
@@ -50,7 +50,7 @@ $(TARGET).%: SBINNAME  := $(SBINNAME)
 .PHONY: $(TARGET).clean
 
 $(TARGET).clean:
-	@  echo "*** Cleaning " $(TARGET)
+	@  echo "*** Cleaning $(TARGET)"
 	$_ $(RM) $(OBJDIR)
 	$_ $(RM) $(BINDIR)/$(BINNAME)
 	$_ $(RM) $(BINDIR)/$(SBINNAME)
@@ -72,7 +72,7 @@ $(TARGET): $(TARGET).dir \
            $(if $(filter static,$(LNKTYPE)),$(TARGET).sbin) \
            $(TARGET).post
 
-$(TARGET).dir: project.dir $(OBJDIR)
+$(TARGET).dir: project.dir $(call missing,$(OBJDIR))
 
 $(OBJDIR):
 	$_ $(MKDIR) $@
@@ -108,14 +108,14 @@ $(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM).o
 # rules for running static program (helper)
 #
 $(TARGET).srun: $(TARGET)
-	@  echo "*** Running  " $(SBINNAME)
+	@  echo "*** Running  $(SBINNAME)"
 	$_ $(BINDIR)/$(SBINNAME) $(ARGS)
 
 #
 # rules for running shared program (helper)
 #
 $(TARGET).run: $(TARGET)
-	@  echo "*** Running  " $(BINNAME)
+	@  echo "*** Running  $(BINNAME)"
 	$_ export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
 	   $(SED) 's, :,:,g'` ; \
 	   $(BINDIR)/$(BINNAME) $(ARGS)

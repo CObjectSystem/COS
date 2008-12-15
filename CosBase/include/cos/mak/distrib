@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: distrib,v 1.3 2008/12/15 12:06:37 ldeniau Exp $
+# | $Id: distrib,v 1.4 2008/12/15 14:27:28 ldeniau Exp $
 # |
 #
 
@@ -50,9 +50,8 @@ all.prn:
 do.all: $(moddeps)
 
 $(moddeps):
-	$_ $(MKDIR)   $(DESTDIR)/$@
-	$_ cd         $(DESTDIR)/$@; \
-	   $(MAKE) -C $(BASEDIR)/$@
+	$_ [ -d $(DESTDIR)/$@ ] || $(MKDIR)   $(DESTDIR)/$@
+	$_   cd $(DESTDIR)/$@   && $(MAKE) -C $(BASEDIR)/$@
 
 #
 # tests targets
@@ -68,9 +67,8 @@ tests.prn:
 do.tests: $(addsuffix .tests,$(moddeps))
 
 $(addsuffix .tests,$(moddeps)):
-	$_ $(MKDIR)   $(DESTDIR)/$(basename $@)
-	$_ cd         $(DESTDIR)/$(basename $@); \
-	   $(MAKE) -C $(BASEDIR)/$(basename $@) tests
+	$_ [ -d $(DESTDIR)/$(basename $@) ] || $(MKDIR)   $(DESTDIR)/$(basename $@)
+	$_   cd $(DESTDIR)/$(basename $@)   && $(MAKE) -C $(BASEDIR)/$(basename $@) tests
 
 #
 # install targets

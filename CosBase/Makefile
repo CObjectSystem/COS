@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.12 2008/12/12 16:56:44 ldeniau Exp $
+# | $Id: Makefile,v 1.13 2008/12/15 14:27:28 ldeniau Exp $
 # |
 #
 
@@ -84,7 +84,7 @@ TOOLS = $(filter-out %/coscmt %/CVS, $(wildcard $(BASEDIR)/bin/*))
 install.pre: $(BINDIR)/$(COSCMT)
 	$_ $(CP) $(TOOLS) $(INSTDIR)/bin
 
-$(BINDIR)/$(COSCMT): CCFLAGS := $(CCFLAGS)
+$(BINDIR)/$(COSCMT) : CCFLAGS := $(CCFLAGS)
 $(BINDIR)/$(COSCMT): $(BASEDIR)/tools/src/coscmt.c
 	$_ $(CC) $(CCFLAGS) $< -s -o $@
 

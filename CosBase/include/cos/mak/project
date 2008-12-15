@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.11 2008/12/13 00:50:03 ldeniau Exp $
+# | $Id: project,v 1.12 2008/12/15 14:27:28 ldeniau Exp $
 # |
 #
 
@@ -91,7 +91,7 @@ do.tests:
 	@  echo "*** Testing   $($(PRJTYPE))"
 	$_ cd $(DESTDIR)/tests && $(MAKE) -C $(BASEDIR)/tests $(if $(ARGS),release,debug).run
 
-tests.dir: $(DESTDIR)/tests
+tests.dir: $(call missing,$(DESTDIR)/tests)
 
 $(DESTDIR)/tests:
 	$_ $(MKDIR) $@
@@ -143,7 +143,7 @@ include $(MAKDIR)/mak/$(PRJTYPE)
 
 .PHONY: project.dir
 
-project.dir: $(TMPDIR) $(BINDIR) $(LIBDIR)
+project.dir: $(call missing,$(TMPDIR) $(BINDIR) $(LIBDIR))
 
 $(TMPDIR):
 	$_ $(MKDIR) $@

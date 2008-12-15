@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library,v 1.3 2008/12/13 00:50:03 ldeniau Exp $
+# | $Id: library,v 1.4 2008/12/15 14:27:28 ldeniau Exp $
 # |
 #
 
@@ -48,7 +48,7 @@ $(TARGET).%: LIBNAME   := $(LIBNAME)
 .PHONY: $(TARGET).clean
 
 $(TARGET).clean:
-	@  echo "*** Cleaning " $(TARGET)
+	@  echo "*** Cleaning $(TARGET)"
 	$_ $(RM) $(OBJDIR)
 	$_ $(RM) $(LIBDIR)/$(LIBNAME).*
 
@@ -68,7 +68,7 @@ $(TARGET): $(TARGET).dir \
            $(if $(filter static,$(LNKTYPE)),$(TARGET).ar) \
            $(TARGET).post
 
-$(TARGET).dir: project.dir $(OBJDIR)
+$(TARGET).dir: project.dir $(call missing,$(OBJDIR))
 
 $(OBJDIR):
 	$_ $(MKDIR) $@

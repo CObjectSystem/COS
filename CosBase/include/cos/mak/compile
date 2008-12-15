@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile,v 1.2 2008/12/15 10:10:26 ldeniau Exp $
+# | $Id: compile,v 1.3 2008/12/15 14:27:28 ldeniau Exp $
 # |
 #
 
@@ -39,45 +39,46 @@
 # rule for generics
 #
 $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c: $(GENERIC)
-	@  echo "*** Computing generics"
+	@  echo "*** Computing [$(TARGET)] generics"
 	$_ $(EXEDIR)/$(COSGEN) --out=$@ $^
 
 #
 # rule for symbols (dummy)
 #
-$(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c: $(OBJDIR)
-	@  echo "*** Computing symbols"
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c: $(call missing,$(OBJDIR))
+	@  echo "*** Computing [$(TARGET)] symbols"
 	$_ $(EXEDIR)/$(COSSYM) --out=$@
 
-$(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c: $(OBJDIR)
-	@  echo "*** Computing symbols"
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c: $(call missing,$(OBJDIR))
+	@  echo "*** Computing [$(TARGET)] symbols"
 	$_ $(EXEDIR)/$(COSSYM) --out=$@
 
 #
 # rules for compilation
 #
 $(OBJDIR)/%.o: $(SRCDIR)/%.c $(OBJDIR)/%.d
-	@  echo "*** Compiling" $(subst $(BASEDIR)/,,$<) "->" $(subst $(DESTDIR)/,,$@)
+	@  echo "*** Compiling [$(TARGET)]" $(<F)
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
 $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).o: $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c \
                                      $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).d
-	@  echo "*** Compiling generics"
+	@  echo "*** Compiling [$(TARGET)] generics"
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
 $(OBJDIR)/$($(PRJTYPE))_$(COSSYM).o: $(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c
-	@  echo "*** Compiling symbols"
+	@  echo "*** Compiling [$(TARGET)] symbols"
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
 $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.o: $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c
-	@  echo "*** Compiling symbols"
+	@  echo "*** Compiling [$(TARGET)] symbols"
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
 #
 # rules for dependencies
 #
-$(OBJDIR)/%.d: $(SRCDIR)/%.c $(OBJDIR)
-	@  echo "*** Computing" $(subst $(BASEDIR)/,,$<) "->" $(subst $(DESTDIR)/,,$@)
+$(OBJDIR)/%.d: TARGET := $(TARGET)
+$(OBJDIR)/%.d: $(SRCDIR)/%.c $(call missing,$(OBJDIR))
+	@  echo "*** Computing [$(TARGET)]" $(<F)
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
 	   $(SED) -e 's,[^:]*:,$(basename $@).o $(basename $@).d:,' > $@
 
