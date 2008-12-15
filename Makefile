@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.3 2008/12/15 10:10:26 ldeniau Exp $
+# | $Id: Makefile,v 1.4 2008/12/15 12:06:37 ldeniau Exp $
 # |
 #
 
@@ -58,5 +58,11 @@ include $(cos)/epilogue
 FILES := $(subst $(BASEDIR)/,, \
            $(shell $(FIND) $(BASEDIR) -maxdepth 1 \
                    -name CVS -prune -o \( -type f -o -type l \) -print))
+
+install.pre:
+	$_ cd $(BASEDIR);                                         \
+     for f in $(FILES) ; do                                 \
+       $(CP) -P $$f $(INSTDIR)/share/doc/$($(PRJTYPE))/$$f; \
+     done
 
 # end of makefile
