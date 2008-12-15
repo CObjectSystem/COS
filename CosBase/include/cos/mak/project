@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.13 2008/12/15 17:26:57 ldeniau Exp $
+# | $Id: project,v 1.14 2008/12/15 17:45:42 ldeniau Exp $
 # |
 #
 
@@ -90,7 +90,7 @@ install.dir:
 tests: all tests.prn tests.dir tests.pre do.tests tests.post
 
 tests.prn:
-	@  echo "*** Testing   $($(PRJTYPE))"
+	@  echo "*** Testing $($(PRJTYPE))"
 
 do.tests:
 	$_ cd $(DESTDIR)/tests && $(MAKE) -C $(BASEDIR)/tests $(if $(ARGS),release,debug).run

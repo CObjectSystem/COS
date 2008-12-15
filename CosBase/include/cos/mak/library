@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library,v 1.4 2008/12/15 14:27:28 ldeniau Exp $
+# | $Id: library,v 1.5 2008/12/15 17:45:42 ldeniau Exp $
 # |
 #
 
@@ -79,7 +79,7 @@ $(OBJDIR):
 $(TARGET).ar: $(LIBDIR)/$(LIBNAME)$(LIBAREXT)
 
 $(LIBDIR)/$(LIBNAME)$(LIBAREXT): $(OBJECTS)
-	@  echo "*** Building " $(notdir $@)
+	@  echo "*** Building $(notdir $@)"
 	$_ $(AR) $@ $^
 
 #
@@ -90,7 +90,7 @@ $(TARGET).sh: LDFLAGS += $(SHARED_LD)
 $(TARGET).sh: $(LIBDIR)/$(LIBNAME)$(LIBSHEXT)
 
 $(LIBDIR)/$(LIBNAME)$(LIBSHEXT): $(OBJECTS) $(OBJDIR)/$(library)_$(COSSYM).o
-	@  echo "*** Building " $(notdir $@)
+	@  echo "*** Building $(notdir $@)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
 	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(library)_$(COSSYM).c --mod=$(library) $(COSSYMOPT) $@.$(VERSION)
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/$(library)_$(COSSYM).c -o $(<D)/$(library)_$(COSSYM).o

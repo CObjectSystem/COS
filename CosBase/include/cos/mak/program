@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.5 2008/12/15 17:37:32 ldeniau Exp $
+# | $Id: program,v 1.6 2008/12/15 17:45:42 ldeniau Exp $
 # |
 #
 
@@ -85,7 +85,7 @@ $(TARGET).sbin: LDFLAGS += $(STATIC_LD)
 $(TARGET).sbin: $(BINDIR)/$(SBINNAME)
 
 $(BINDIR)/$(SBINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM)_s.o
-	@  echo "*** Building " $(notdir $@)
+	@  echo "*** Building $(notdir $@)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
 	$_ $(EXEDIR)/$(COSSYM)      --out=$(<D)/$(program)_$(COSSYM)_s.c $(COSSYMOPT) $@
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/$(program)_$(COSSYM)_s.c -o $(<D)/$(program)_$(COSSYM)_s.o
@@ -98,7 +98,7 @@ $(BINDIR)/$(SBINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM)_s.o
 $(TARGET).bin: $(BINDIR)/$(BINNAME)
 
 $(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM).o
-	@  echo "*** Building " $(notdir $@)
+	@  echo "*** Building $(notdir $@)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
 	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(program)_$(COSSYM).c $(COSSYMOPT) $@
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/$(program)_$(COSSYM).c -o $(<D)/$(program)_$(COSSYM).o
@@ -109,14 +109,14 @@ $(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM).o
 # rules for running static program (helper)
 #
 $(TARGET).srun: $(TARGET)
-	@  echo "*** Running  $(SBINNAME)"
+	@  echo "*** Running $(SBINNAME)"
 	$_ $(BINDIR)/$(SBINNAME) $(ARGS)
 
 #
 # rules for running shared program (helper)
 #
 $(TARGET).run: $(TARGET)
-	@  echo "*** Running  $(BINNAME)"
+	@  echo "*** Running $(BINNAME)"
 	$_ export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
 	   $(SED) 's, :,:,g'` ; \
 	   $(BINDIR)/$(BINNAME) $(ARGS)
