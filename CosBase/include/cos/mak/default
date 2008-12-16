@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.16 2008/12/13 00:50:03 ldeniau Exp $
+# | $Id: default,v 1.17 2008/12/16 14:34:37 ldeniau Exp $
 # |
 #
 
@@ -123,7 +123,7 @@ FILES    = $(subst $(BASEDIR)/,, \
            $(subst $(DESTDIR)/$(OSNAME)/,, \
              $(shell $(FIND) $(wildcard $(BASEDIR)/share $(BASEDIR)/include \
                              $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
-                             -name CVS -prune -o \( -type f -o -type l \) -print)))
+                             -name CVS -prune -o \( -type f -o -type l \) -name '[!.]*' -print)))
 
 endif # library or program
 

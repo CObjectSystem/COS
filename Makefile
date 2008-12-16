@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.5 2008/12/15 17:26:57 ldeniau Exp $
+# | $Id: Makefile,v 1.6 2008/12/16 14:34:37 ldeniau Exp $
 # |
 #
 
@@ -56,13 +56,17 @@ include $(cos)/epilogue
 #
 
 FILES := $(subst $(BASEDIR)/,, \
-           $(shell $(FIND) $(BASEDIR) -maxdepth 1 \
-                   -name CVS -prune -o \( -type f -o -type l \) -print))
+           $(shell $(FIND) $(BASEDIR) -maxdepth 1 -name CVS -prune \
+                   -o \( -type f -o -type l \) -name '[!.]*' -print))
 
 install.post:
 	$_ cd $(BASEDIR);                                         \
      for f in $(FILES) ; do                                 \
        $(CP) -P $$f $(INSTDIR)/share/doc/$($(PRJTYPE))/$$f; \
      done
+
+uninstall:
+	@  echo "*** Uninstalling $($(PRJTYPE))"
+
 
 # end of makefile
