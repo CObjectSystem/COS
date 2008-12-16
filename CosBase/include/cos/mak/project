@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.14 2008/12/15 17:45:42 ldeniau Exp $
+# | $Id: project,v 1.15 2008/12/16 15:23:53 ldeniau Exp $
 # |
 #
 
@@ -65,6 +65,13 @@ install: all install.prn install.dir install.pre do.install install.post
 
 install.prn:
 	@  echo "*** Installing $($(PRJTYPE))"
+
+install.dir do.install: \
+FILES = $(subst $(BASEDIR)/,, \
+        $(subst $(DESTDIR)/$(OSNAME)/,, \
+        $(shell $(FIND) $(wildcard $(BASEDIR)/share $(BASEDIR)/include \
+                        $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
+                        -name CVS -prune -o \( -type f -o -type l \) -name '[!.]*' -print)))
 
 do.install: clean
 	$_ cd $(BASEDIR);                                      \
