@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.15 2008/12/16 15:23:53 ldeniau Exp $
+# | $Id: project,v 1.16 2008/12/20 00:02:38 ldeniau Exp $
 # |
 #
 
@@ -66,26 +66,58 @@ install: all install.prn install.dir install.pre do.install install.post
 install.prn:
 	@  echo "*** Installing $($(PRJTYPE))"
 
-install.dir do.install: \
-FILES = $(subst $(BASEDIR)/,, \
-        $(subst $(DESTDIR)/$(OSNAME)/,, \
-        $(shell $(FIND) $(wildcard $(BASEDIR)/share $(BASEDIR)/include \
-                        $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
-                        -name CVS -prune -o \( -type f -o -type l \) -name '[!.]*' -print)))
+do.install: clean base.install dest.install
 
-do.install: clean
-	$_ cd $(BASEDIR);                                      \
-	   for f in $(filter share/% include/%, $(FILES)) ; do \
-	     $(CP) -P $$f $(INSTDIR)/$$f;                      \
+base.install: \
+FILES = $(subst $(BASEDIR)/,, \
+        $(shell $(FIND) $(wildcard $(BASEDIR)/bin $(BASEDIR)/share $(BASEDIR)/include) \
+                        \( $(INSEXCMD) \) -prune -o \( -type f -o -type l \) -print))
+
+dest.install: \
+FILES = $(subst $(DESTDIR)/$(OSNAME)/,, \
+        $(shell $(FIND) $(wildcard $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
+                        \( $(INSEXCMD) \) -prune -o \( -type f -o -type l \) -print))
+
+install.dir: \
+FILES = $(subst $(BASEDIR)/,, $(subst $(DESTDIR)/$(OSNAME)/,, \
+        $(shell $(FIND) $(wildcard $(BASEDIR)/bin $(BASEDIR)/share $(BASEDIR)/include \
+                                   $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
+                        \( $(INSEXCMD) \) -prune -o -type d -print)))
+
+base.install:
+	$_ for f in $(FILES) ; do \
+	     $(CP) $(BASEDIR)/$$f $(INSTDIR)/$$f ; \
+	     echo  $(INSTDIR)/$$f >> $(DESTDIR)/$(INSTALLED) ; \
 	   done
-	$_ cd $(DESTDIR)/$(OSNAME);                            \
-	   for f in $(filter bin/% lib/%, $(FILES)) ; do       \
-	     $(CP) -P $$f $(INSTDIR)/$$f;                      \
+
+dest.install:
+	$_ for f in $(FILES) ; do \
+	     $(CP) $(DESTDIR)/$(OSNAME)/$$f $(INSTDIR)/$$f ; \
+	     echo  $(INSTDIR)/$$f >> $(DESTDIR)/$(INSTALLED) ; \
 	   done
 
 install.dir:
 	$_ $(MKDIR) $(INSTDIR) \
-	   $(call missing,$(sort $(abspath $(addprefix $(INSTDIR)/,$(dir $(FILES))))))
+	   $(call missing,$(sort $(abspath $(addprefix $(INSTDIR)/,$(FILES)))))
+
+#
+# uninstall targets
+#
+.PHONY: uninstall
+.PHONY: uninstall.prn uninstall.pre do.uninstall uninstall.post
+
+uninstall: uninstall.prn uninstall.pre do.uninstall uninstall.post
+
+uninstall.prn:
+	@  echo "*** Uninstalling $($(PRJTYPE))"
+
+do.uninstall:
+	$_ if [ -f $(DESTDIR)/$(INSTALLED) ] ; then \
+	     for f in `$(SORT) -u $(DESTDIR)/$(INSTALLED)` ; do \
+	       $(RM) $$f ; \
+	     done ; \
+	     $(RM) $(DESTDIR)/$(INSTALLED) ; \
+	   fi
 
 #
 # tests targets

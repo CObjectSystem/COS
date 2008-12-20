@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.8 2008/12/15 17:26:57 ldeniau Exp $
+# | $Id: prologue,v 1.9 2008/12/20 00:02:38 ldeniau Exp $
 # |
 #
 
@@ -38,19 +38,22 @@
 #
 # BUILD   = where to build   the project
 # INSTALL = where to install the project
+# OSYS    = operating system     (optional, autodetected if not provided)
+# ARCH    = system architecture  (optional, autodetected if not provided)
 #
 
 #
 # NOTE-INFO: important variables to set
 #
-# PREFIX  = where to get     COS files                           (autodetect)
-# MAKDIR  = where to get     COS makefiles                       (PREFIX/include/cos)
-# EXEDIR  = where to get     COS tools         (cossym, cosgen)  (PREFIX/bin)
-# BASEDIR = where to get     the project files (base)            (autodetect)
+# BASEDIR = where to get     the project files (base)            (autodetected)
 # DESTDIR = where to build   the project       (destination)     (BUILD   or  PWD)
 # INSTDIR = where to install the project       (installation)    (INSTALL or /usr)
-# OSYS    = operating system
-# ARCH    = system architecture
+#
+# PREFIX  = where to get     COS files                           (autodetected)
+# MAKDIR  = where to get     COS makefiles                       (PREFIX/include/cos)
+# EXEDIR  = where to get     COS tools         (cossym, cosgen)  (PREFIX/bin)
+#
+# OSNAME  = OSYS + _ + ARCH
 #
 
 eq      = $(if $(subst $1,,$2),,t)
@@ -60,29 +63,30 @@ exists  = $(call assert,$(wildcard $1),$2)
 missing = $(filter-out $(wildcard $1),$1)
 
 # detect prefix path (e.g /path/to/CosBase or /usr or /usr/local)
-PREFIX  := $(abspath $(if $(PREFIX),$(PREFIX), \
-             $(subst include/cos/prologue,,$(lastword $(MAKEFILE_LIST)))))
+PREFIX   := $(abspath $(subst include/cos/prologue,,$(lastword $(MAKEFILE_LIST))))
 
 # detect project path (e.g path-to-project)
-BASEDIR := $(abspath $(if $(BASEDIR),$(BASEDIR), \
-             $(dir $(firstword $(MAKEFILE_LIST)))))
+BASEDIR  := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
 
-# detect destination path (e.g path-to-user)
-DESTDIR  = $(abspath $(if $(BUILD),$(BUILD),$(PWD)))
+# set/detect destination path (e.g path-to-user)
+DESTDIR   = $(abspath $(if $(BUILD),$(BUILD),$(PWD)))
 
-# detect install path (e.g path-to-install)
-INSTDIR  = $(abspath $(if $(INSTALL),$(INSTALL),/usr))
+# set/detect install path (e.g path-to-install)
+INSTDIR   = $(abspath $(if $(INSTALL),$(INSTALL),/usr))
 
-# detect operating system (e.g. Linux)
-OSYS    := $(if $(OSYS),$(OSYS),$(shell uname -s))
+# set/detect operating system (e.g. Linux)
+OSYS     := $(if $(OSYS),$(OSYS),$(shell uname -s))
 
-# detect architecture (e.g. x86_64)
-ARCH    := $(if $(ARCH),$(ARCH),$(shell uname -m))
+# set/detect architecture (e.g. x86_64)
+ARCH     := $(if $(ARCH),$(ARCH),$(shell uname -m))
 
 # other useful variables
-MAKDIR  := $(PREFIX)/include/cos
-EXEDIR  := $(PREFIX)/bin
-OSNAME   = $(OSYS)_$(ARCH)
+MAKDIR   := $(PREFIX)/include/cos
+EXEDIR   := $(PREFIX)/bin
+OSNAME    = $(OSYS)_$(ARCH)
+
+# file listing installed files
+INSTALLED = installed_$(OSNAME).txt
 
 # for debugging 
 ifeq ($(TRACE),yes)

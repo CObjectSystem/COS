@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.16 2008/12/16 15:23:53 ldeniau Exp $
+# | $Id: Makefile,v 1.17 2008/12/20 00:02:38 ldeniau Exp $
 # |
 #
 
@@ -55,19 +55,20 @@ headers := # default
 sources := # default
 defgens := # default
 
-# only names (as with -lname)
+# only names (as with -lname, module, library)
 moddeps := # none
 libdeps := # none
 
-# only directories
+# only directories (module, library, include, binary)
 moddirs := # default
 libdirs := # none
 incdirs := # none
 bindirs := # none
 
-# patterns
+# patterns (clean, not install, not tar)
 cleanpat := # default
-tarpat   := # default
+insexpat := # default
+tarexpat := # default
 
 include $(cos)/epilogue
 
@@ -79,12 +80,9 @@ include $(cos)/epilogue
 # 'cosgen' boostrap version of COS uses a portable 'coscmt' sed script to remove
 # C comments but the installed version uses a much faster C version of coscmt.
 
-install.pre: \
-TOOLS = $(filter-out %/coscmt %/CVS, $(wildcard $(BASEDIR)/bin/*))
-
 install.pre: $(BINDIR)/$(COSCMT)
-	$_ [ -d $(INSTDIR)/bin ] || $(MKDIR) $(INSTDIR)/bin
-	$_ $(CP) $(TOOLS) $(INSTDIR)/bin
+	$_ $(RM)    $(INSTDIR)/bin/$(COSCMT)
+	$_ $(CP) $< $(INSTDIR)/bin/$(COSCMT)
 
 $(BINDIR)/$(COSCMT) : CCFLAGS := $(CCFLAGS)
 $(BINDIR)/$(COSCMT): $(BASEDIR)/tools/src/coscmt.c

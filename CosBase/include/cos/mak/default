@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.18 2008/12/16 15:23:53 ldeniau Exp $
+# | $Id: default,v 1.19 2008/12/20 00:02:38 ldeniau Exp $
 # |
 #
 
@@ -120,6 +120,18 @@ BINARY   =   $(addsuffix /$(OSNAME)/bin,$(DESTMOD)) \
              $(wildcard $(abspath $(bindirs)))
 
 endif # library or program
+
+#
+# standard patterns
+#
+CLEANPAT := $(if $(cleanpat),$(cleanpat),'*~' '.*~' '.\#*')
+CLEANCMD := $(wordlist 2,99,$(addprefix -o -name ,$(CLEANPAT)))
+
+INSEXPAT := $(if $(insexpat),$(insexpat),'*~' '.*')
+INSEXCMD := $(wordlist 2,99,$(addprefix -o -name ,$(INSEXPAT) $(INSTALLED) CVS))
+
+TAREXPAT := $(if $(tarexpat),$(tarexpat),'.*')
+TAREXCMD := $(addprefix --exclude=,$(TAREXPAT) $(PACKAGE).tgz CVS)
 
 #
 # standard flags

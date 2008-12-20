@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: distrib,v 1.5 2008/12/15 17:26:57 ldeniau Exp $
+# | $Id: distrib,v 1.6 2008/12/20 00:02:38 ldeniau Exp $
 # |
 #
 
@@ -86,5 +86,21 @@ do.install: $(addsuffix .install,$(moddeps))
 $(addsuffix .install,$(moddeps)):
 	$_ [ -d $(DESTDIR)/$(basename $@) ] || $(MKDIR)   $(DESTDIR)/$(basename $@)
 	$_   cd $(DESTDIR)/$(basename $@)   && $(MAKE) -C $(BASEDIR)/$(basename $@) install INSTALL=$(INSTDIR)
+
+#
+# uninstall targets
+#
+.PHONY: uninstall uninstall.prn uninstall.pre do.uninstall uninstall.post
+.PHONY: $(addsuffix .uninstall,$(moddeps))
+
+uninstall: uninstall.prn uninstall.pre do.uninstall uninstall.post
+
+uninstall.prn:
+	@  echo "*** Uninstalling $($(PRJTYPE))"
+
+do.uninstall: $(addsuffix .uninstall,$(moddeps))
+
+$(addsuffix .uninstall,$(moddeps)):
+	$_ cd $(DESTDIR)/$(basename $@) && $(MAKE) -C $(BASEDIR)/$(basename $@) uninstall
 
 # end of makefile

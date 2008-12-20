@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.8 2008/12/15 17:26:57 ldeniau Exp $
+# | $Id: common,v 1.9 2008/12/20 00:02:38 ldeniau Exp $
 # |
 #
 
@@ -37,9 +37,6 @@
 # clean
 #
 .PHONY: clean cleanbuild cleanall
-
-CLEANPAT := $(if $(cleanpat),$(cleanpat),'*~' '.*~' '.\#*')
-CLEANCMD := $(wordlist 2,99,$(addprefix -o -name ,$(CLEANPAT)))
 
 clean:
 	@  echo "*** Cleaning files"
@@ -56,16 +53,10 @@ cleanall: cleanbuild clean
 #
 .PHONY: tarball
 
-TARPAT := $(if $(tarpat),$(tarpat),CVS)
-TARCMD := $(addprefix --exclude=,$(TARPAT))
-
 tarball: cleanall
 	@  echo "*** Building tarball"
-	$_ cd $(BASEDIR); \
-	   PCKDIR=`basename \`pwd\``; \
-	   TARDIR=$(if $(call eq,$(BASEDIR),$(DESTDIR)),.,$(DESTDIR)); \
-	   cd ..; \
-	   $(TAR) -f $$TARDIR/$(PACKAGE).tgz $(TARCMD) $$PCKDIR
+	$_ cd $(BASEDIR)/.. ; \
+	   $(MKTAR) -f $(DESTDIR)/$(PACKAGE).tgz $(TAREXCMD) $(notdir $(BASEDIR))
 
 # end of makefile
 
