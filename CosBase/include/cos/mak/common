@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.9 2008/12/20 00:02:38 ldeniau Exp $
+# | $Id: common,v 1.10 2008/12/20 00:41:29 ldeniau Exp $
 # |
 #
 
@@ -56,7 +56,7 @@ cleanall: cleanbuild clean
 tarball: cleanall
 	@  echo "*** Building tarball"
 	$_ cd $(BASEDIR)/.. ; \
-	   $(MKTAR) -f $(DESTDIR)/$(PACKAGE).tgz $(TAREXCMD) $(notdir $(BASEDIR))
+	   $(MKTAR) -f $(PACKAGE).tgz $(TAREXCMD) $(notdir $(BASEDIR))
 
 # end of makefile
 

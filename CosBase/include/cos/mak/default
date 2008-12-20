@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.20 2008/12/20 00:15:52 ldeniau Exp $
+# | $Id: default,v 1.21 2008/12/20 00:41:29 ldeniau Exp $
 # |
 #
 
@@ -128,10 +128,10 @@ CLEANPAT := $(if $(cleanpat),$(cleanpat),'*~' '.*~' '.\#*')
 CLEANCMD := $(wordlist 2,99,$(addprefix -o -name ,$(CLEANPAT)))
 
 INSEXPAT := $(if $(insexpat),$(insexpat),'*~' '.*')
-INSEXCMD := $(wordlist 2,99,$(addprefix -o -name ,$(INSEXPAT) $(INSTALLED) CVS CVSROOT))
+INSEXCMD := $(wordlist 2,99,$(addprefix -o -name ,CVS CVSROOT $(INSTALLED) $(INSEXPAT)))
 
 TAREXPAT := $(if $(tarexpat),$(tarexpat),'.*')
-TAREXCMD := $(addprefix --exclude=,$(TAREXPAT) $(PACKAGE).tgz CVS CVSROOT)
+TAREXCMD := $(addprefix --exclude=,CVS CVSROOT $(TAREXPAT))
 
 #
 # standard flags
