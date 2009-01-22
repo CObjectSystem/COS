@@ -29,64 +29,75 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.9 2008/12/20 00:02:38 ldeniau Exp $
+# | $Id: prologue,v 1.10 2009/01/22 16:45:07 ldeniau Exp $
 # |
 #
 
 #
-# NOTE-USER: important variables from user
+# NOTE-USER: config variables from make invocation
 #
-# BUILD   = where to build   the project
-# INSTALL = where to install the project
-# OSYS    = operating system     (optional, autodetected if not provided)
-# ARCH    = system architecture  (optional, autodetected if not provided)
+# INSTALL = where to install the project (optional, default '/usr'    )
+# OSYS    = operating system             (optional, default 'uname -s')
+# ARCH    = system architecture          (optional, default 'uname -m')
+# ARGS    = program.run extra arguments
+# SHOW    = yes -> show  commands
+# TRACE   = yes -> trace variables
 #
 
 #
-# NOTE-INFO: important variables to set
-#
-# BASEDIR = where to get     the project files (base)            (autodetected)
-# DESTDIR = where to build   the project       (destination)     (BUILD   or  PWD)
-# INSTDIR = where to install the project       (installation)    (INSTALL or /usr)
+# NOTE-INFO: important variables set
 #
 # PREFIX  = where to get     COS files                           (autodetected)
 # MAKDIR  = where to get     COS makefiles                       (PREFIX/include/cos)
 # EXEDIR  = where to get     COS tools         (cossym, cosgen)  (PREFIX/bin)
-#
-# OSNAME  = OSYS + _ + ARCH
+# BASEDIR = where to get     the project files (base)            (autodetected)
+# DESTDIR = where to build   the project       (destination)     (autodetected)
+# INSTDIR = where to install the project       (installation)    (INSTALL)
+# OSNAME  = OSYS_ARCH
 #
 
+# some useful functions
 eq      = $(if $(subst $1,,$2),,t)
 neq     = $(if $(subst $1,,$2),t,)
 assert  = $(if $1,,$(error $2))
 exists  = $(call assert,$(wildcard $1),$2)
 missing = $(filter-out $(wildcard $1),$1)
+reverse = $(strip $(if $1,$(call reverse,$(wordlist 2,$(words $1),$1)) $(firstword $1)))
 
 # detect prefix path (e.g /path/to/CosBase or /usr or /usr/local)
-PREFIX   := $(abspath $(subst include/cos/prologue,,$(lastword $(MAKEFILE_LIST))))
+PREFIX := $(abspath $(subst include/cos/prologue,,$(lastword $(MAKEFILE_LIST))))
 
 # detect project path (e.g path-to-project)
-BASEDIR  := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
+BASEDIR := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
 
-# set/detect destination path (e.g path-to-user)
-DESTDIR   = $(abspath $(if $(BUILD),$(BUILD),$(PWD)))
+# detect destination path (e.g path-to-user)
+DESTDIR := $(abspath $(PWD))
 
 # set/detect install path (e.g path-to-install)
-INSTDIR   = $(abspath $(if $(INSTALL),$(INSTALL),/usr))
+ifeq ($(INSTDIR),)
+INSTDIR = $(abspath $(if $(INSTALL),$(INSTALL),$(firstword $(wildcard /usr))))
+endif
 
-# set/detect operating system (e.g. Linux)
-OSYS     := $(if $(OSYS),$(OSYS),$(shell uname -s))
-
-# set/detect architecture (e.g. x86_64)
-ARCH     := $(if $(ARCH),$(ARCH),$(shell uname -m))
-
-# other useful variables
-MAKDIR   := $(PREFIX)/include/cos
-EXEDIR   := $(PREFIX)/bin
-OSNAME    = $(OSYS)_$(ARCH)
+# set install path for documentation (e.g path-to-install-shared)
+ifeq ($(INSTDOC),)
+INSTDOC = $(INSTDIR)/share/doc/$($(PRJTYPE))
+endif
 
 # file listing installed files
-INSTALLED = installed_$(OSNAME).txt
+ifeq ($(INSTALLED),)
+INSTALLED = $(INSTDOC)/installed_$(OSNAME).txt
+endif
+
+# set/detect operating system (e.g. Linux)
+OSYS := $(if $(OSYS),$(OSYS),$(shell uname -s))
+
+# set/detect architecture (e.g. x86_64)
+ARCH := $(if $(ARCH),$(ARCH),$(shell uname -m))
+
+# other useful variables
+MAKDIR := $(PREFIX)/include/cos
+EXEDIR := $(PREFIX)/bin
+OSNAME  = $(OSYS)_$(ARCH)
 
 # for debugging 
 ifeq ($(TRACE),yes)
@@ -112,6 +123,11 @@ $(call exists, $(MAKDIR)/cfg/$(OSYS), unable to find COS config for '$(OSYS)')
 
 # default target
 .DEFAULT_GOAL = all
+
+# exported variables
+export INSTDIR
+export INSTDOC
+export INSTALLED
 
 # include operating system config
 include $(MAKDIR)/cfg/$(OSYS)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector_p.h,v 1.1 2008/12/15 12:10:37 ldeniau Exp $
+ | $Id: FltVector_p.h,v 1.2 2009/01/22 16:45:08 ldeniau Exp $
  |
 */
 
@@ -54,7 +54,7 @@ vector_alloc(U32 size)
   useclass(FltVectorN);
 
   OBJ _cls = size >= N ? FltVectorN : (OBJ)cls[size];
-  OBJ _vec = gallocWithSize(_cls, size * sizeof(R64));
+  OBJ _vec = gallocWithSize(_cls, size * sizeof(F64));
   struct FltVectorN *nvec = STATIC_CAST(struct FltVectorN*, _vec);
   struct FltVector  * vec = &nvec->FltVector;
 
@@ -102,13 +102,13 @@ dynvector_alloc(U32 size)
 }
 
 static void
-dynvector_resizeBy(struct FltDynVector *dvec, R64 factor)
+dynvector_resizeBy(struct FltDynVector *dvec, float factor)
 {
   useclass(ExBadAlloc);
 
   struct FltVector *vec = &dvec->FltDynVectorN.FltVector;
   U32  size  = dvec->capacity * factor;
-  R64 *value = realloc(vec->value, size * sizeof(OBJ));
+  F64 *value = realloc(vec->value, size * sizeof(OBJ));
 
   if (!value) THROW(ExBadAlloc);
   

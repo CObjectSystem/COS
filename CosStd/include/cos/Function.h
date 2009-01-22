@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Function.h,v 1.3 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Function.h,v 1.4 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -44,27 +44,27 @@
 
 typedef I32 (*I32FCT1)(I32);
 typedef I64 (*I64FCT1)(I64);
-typedef R64 (*R64FCT1)(R64);
+typedef F64 (*F64FCT1)(F64);
 typedef C64 (*C64FCT1)(C64);
 
 typedef I32 (*I32FCT2)(I32,I32);
 typedef I64 (*I64FCT2)(I64,I64);
-typedef R64 (*R64FCT2)(R64,R64);
+typedef F64 (*F64FCT2)(F64,F64);
 typedef C64 (*C64FCT2)(C64,C64);
 
 typedef I32 (*I32FCT3)(I32,I32,I32);
 typedef I64 (*I64FCT3)(I64,I64,I64);
-typedef R64 (*R64FCT3)(R64,R64,R64);
+typedef F64 (*F64FCT3)(F64,F64,F64);
 typedef C64 (*C64FCT3)(C64,C64,C64);
 
 typedef I32 (*I32FCT4)(I32,I32,I32,I32);
 typedef I64 (*I64FCT4)(I64,I64,I64,I64);
-typedef R64 (*R64FCT4)(R64,R64,R64,R64);
+typedef F64 (*F64FCT4)(F64,F64,F64,F64);
 typedef C64 (*C64FCT4)(C64,C64,C64,C64);
 
 typedef I32 (*I32FCT5)(I32,I32,I32,I32,I32);
 typedef I64 (*I64FCT5)(I64,I64,I64,I64,I64);
-typedef R64 (*R64FCT5)(R64,R64,R64,R64,R64);
+typedef F64 (*F64FCT5)(F64,F64,F64,F64,F64);
 typedef C64 (*C64FCT5)(C64,C64,C64,C64,C64);
 
 // ----- definitions
@@ -85,11 +85,11 @@ defclass(LngFunction3,Function) I64FCT3 fct; endclass
 defclass(LngFunction4,Function) I64FCT4 fct; endclass
 defclass(LngFunction5,Function) I64FCT5 fct; endclass
 
-defclass(FltFunction1,Function) R64FCT1 fct; endclass
-defclass(FltFunction2,Function) R64FCT2 fct; endclass
-defclass(FltFunction3,Function) R64FCT3 fct; endclass
-defclass(FltFunction4,Function) R64FCT4 fct; endclass
-defclass(FltFunction5,Function) R64FCT5 fct; endclass
+defclass(FltFunction1,Function) F64FCT1 fct; endclass
+defclass(FltFunction2,Function) F64FCT2 fct; endclass
+defclass(FltFunction3,Function) F64FCT3 fct; endclass
+defclass(FltFunction4,Function) F64FCT4 fct; endclass
+defclass(FltFunction5,Function) F64FCT5 fct; endclass
 
 defclass(CpxFunction1,Function) C64FCT1 fct; endclass
 defclass(CpxFunction2,Function) C64FCT2 fct; endclass

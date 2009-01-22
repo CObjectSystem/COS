@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: operator.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: operator.h,v 1.3 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -61,14 +61,14 @@ defgeneric(OBJ, gmod , _1, _2); // return _1 % _2
    the types of _1 and _2 differ, some operations may not be available
    if they may induce a loss of information (e.g. gaddTo(Int,Long)).
 */
-defgeneric(OBJ, gnegate   , _1);     // return _1 = -_1 
-defgeneric(OBJ, ginvert   , _1);     // return _1 = 1/_1
-defgeneric(OBJ, gconjugate, _1);     // return _1 = _1^*
-defgeneric(OBJ, gaddTo    , _1, _2); // return _1 += _2 
-defgeneric(OBJ, gsubTo    , _1, _2); // return _1 -= _2 
-defgeneric(OBJ, gmulBy    , _1, _2); // return _1 *= _2 
-defgeneric(OBJ, gdivBy    , _1, _2); // return _1 /= _2 
-defgeneric(OBJ, gpower    , _1, _2); // return _1 = _1 ** _2
-defgeneric(OBJ, gmodulo   , _1, _2); // return _1 %= _2 
+defgeneric(void, gnegate   , _1);     // return _1 = -_1 
+defgeneric(void, ginvert   , _1);     // return _1 = 1/_1
+defgeneric(void, gconjugate, _1);     // return _1 = _1^*
+defgeneric(void, gaddTo    , _1, _2); // return _1 += _2 
+defgeneric(void, gsubTo    , _1, _2); // return _1 -= _2 
+defgeneric(void, gmulBy    , _1, _2); // return _1 *= _2 
+defgeneric(void, gdivBy    , _1, _2); // return _1 /= _2 
+defgeneric(void, gpower    , _1, _2); // return _1 = _1 ** _2
+defgeneric(void, gmodulo   , _1, _2); // return _1 %= _2 
 
 #endif // COS_GEN_OPERATOR_H

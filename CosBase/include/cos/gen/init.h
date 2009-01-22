@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.7 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: init.h,v 1.8 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -50,18 +50,16 @@ defgeneric(OBJ , ginitWithObj7 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6
 defgeneric(OBJ , ginitWithObj8 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7, (OBJ)_8, (OBJ)_9);
 defgeneric(OBJ , ginitWithObj9 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7, (OBJ)_8, (OBJ)_9, (OBJ)_10);
 
-defgeneric(OBJ, ginitWithChr , _1, (I8 )val);
-defgeneric(OBJ, ginitWithSht , _1, (I16)val);
 defgeneric(OBJ, ginitWithInt , _1, (I32)val);
 defgeneric(OBJ, ginitWithLng , _1, (I64)val);
-defgeneric(OBJ, ginitWithFlt , _1, (R64)val);
+defgeneric(OBJ, ginitWithFlt , _1, (F64)val);
 defgeneric(OBJ, ginitWithCpx , _1, (C64)val);
 
 defgeneric(OBJ, ginitWithChrPtr , _1, (U32)n, (I8 *)val);
 defgeneric(OBJ, ginitWithShtPtr , _1, (U32)n, (I16*)val);
 defgeneric(OBJ, ginitWithIntPtr , _1, (U32)n, (I32*)val);
 defgeneric(OBJ, ginitWithLngPtr , _1, (U32)n, (I64*)val);
-defgeneric(OBJ, ginitWithFltPtr , _1, (U32)n, (R64*)val);
+defgeneric(OBJ, ginitWithFltPtr , _1, (U32)n, (F64*)val);
 defgeneric(OBJ, ginitWithCpxPtr , _1, (U32)n, (C64*)val);
 defgeneric(OBJ, ginitWithObjPtr , _1, (U32)n, (OBJ*)obj);
 
@@ -113,16 +111,6 @@ gnewWithObj9(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5, OBJ _6, OBJ _7, OBJ _8, OBJ
 }
 
 static inline OBJ
-gnewWithChr(OBJ _1, I8 val) {
-  return ginitWithChr(galloc(_1),val); COS_UNUSED(gnewWithChr);
-}
-
-static inline OBJ
-gnewWithSht(OBJ _1, I16 val) {
-  return ginitWithSht(galloc(_1),val); COS_UNUSED(gnewWithSht);
-}
-
-static inline OBJ
 gnewWithInt(OBJ _1, I32 val) {
   return ginitWithInt(galloc(_1),val); COS_UNUSED(gnewWithInt);
 }
@@ -133,7 +121,7 @@ gnewWithLng(OBJ _1, I64 val) {
 }
 
 static inline OBJ
-gnewWithFlt(OBJ _1, R64 val) {
+gnewWithFlt(OBJ _1, F64 val) {
   return ginitWithFlt(galloc(_1),val); COS_UNUSED(gnewWithFlt);
 }
 
@@ -165,7 +153,7 @@ gnewWithLngPtr(OBJ _1, U32 n, I64 *val) {
 }
 
 static inline OBJ
-gnewWithFltPtr(OBJ _1, U32 n, R64 *val) {
+gnewWithFltPtr(OBJ _1, U32 n, F64 *val) {
   return ginitWithFltPtr(galloc(_1),n,val); COS_UNUSED(gnewWithFltPtr);
 }
 

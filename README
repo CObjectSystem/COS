@@ -29,30 +29,52 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.3 2008/12/20 00:02:38 ldeniau Exp $
+# | $Id: README,v 1.4 2009/01/22 16:45:07 ldeniau Exp $
 # |
 #
 
-Installation:
--------------
+Compilation/tests/[Un]install:
+------------------------------
 
-compile  :   make           [BUILD=path]
-tests    :   make tests     [BUILD=path]
-install  :   make install   [INSTALL=path]
-uninstall:   make uninstall [BUILD=path] [INSTALL=path]
+# in the source tree
+cd path-to-cos
+make [target] [INSTALL=path-to-prefix]
 
-default build   path is .
-default install path is /usr
+# ouside the source tree
+cd path-to-build
+make -f path-to-cos/Makefile [target] [INSTALL=path-to-prefix]
+
+# possible targets
+tests, install, uninstall
+
+# default install
+INSTALL=/usr
+
+Makefile examples:
+------------------
+
+# distribution
+path-to-cos/Makefile
+
+# library
+path-to-cos/CosBase/Makefile
+
+# program
+path-to-cos/CosBase/tests/Makefile
+
+Debugging Makefiles:
+--------------------
+
+make [target] SHOW=yes TRACE=yes
+
+# debug flags
+SHOW  will show the commands run
+TRACE will show the value of important variables
 
 Documentation:
 --------------
 
-INSTALL/share/doc/cos/
-
-Program makefile:
------------------
-
-see CosBase/tests/Makefile
+path-to-prefix/share/doc/cos/
 
 Project information:
 --------------------

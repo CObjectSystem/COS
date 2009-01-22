@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile89.sh,v 1.6 2008/12/08 12:39:12 ldeniau Exp $
+# | $Id: compile89.sh,v 1.7 2009/01/22 16:45:07 ldeniau Exp $
 # |
 #
 
@@ -66,8 +66,9 @@ if [ "$1" = "clean" ] ; then
   exit 1
 fi
 
-# 1) collect generics (preprocessing only)
+# 1) collect generics and properties (preprocessing only)
 $bindir/cosgen --out=$srcdir/_cosgen.c $incdir/cos/gen/*.h
+$bindir/cosprp --out=$srcdir/_cosprp.c $incdir/cos/prp/*.h
 
 # 2) compile source files (2 steps)
 for f in $srcdir/*.c; do

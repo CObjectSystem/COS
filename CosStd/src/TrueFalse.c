@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: TrueFalse.c,v 1.2 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: TrueFalse.c,v 1.3 2009/01/22 16:45:08 ldeniau Exp $
  |
 */
 
@@ -68,19 +68,19 @@ endmethod
    ? | ? | ? | ?
  */
 
-defmethod(OBJ, gequal, mTrueFalse, mTrueFalse)
+defmethod(OBJ, gisEqual, mTrueFalse, mTrueFalse)
   retmethod(TrueFalse);
 endmethod
 
-defmethod(OBJ, gequal, mTrue, mTrueFalse)
+defmethod(OBJ, gisEqual, mTrue, mTrueFalse)
   retmethod(_2);
 endmethod
 
-defmethod(OBJ, gequal, mTrueFalse, mTrue)
+defmethod(OBJ, gisEqual, mTrueFalse, mTrue)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gequal, mFalse, mFalse)
+defmethod(OBJ, gisEqual, mFalse, mFalse)
   retmethod(True);
 endmethod
 

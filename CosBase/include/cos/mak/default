@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.21 2008/12/20 00:41:29 ldeniau Exp $
+# | $Id: default,v 1.22 2009/01/22 16:45:07 ldeniau Exp $
 # |
 #
 
@@ -46,6 +46,7 @@ ifneq ($(filter program library,$(PRJTYPE)),)
 
 COSSYM  := cossym
 COSGEN  := cosgen
+COSPRP  := cosprp
 COSCMT  := coscmt
 
 LNKTYPE := $(filter static shared,$(targets))
@@ -80,6 +81,13 @@ GENERIC := $(filter-out $(PREFIX)/include/cos/cos/%.h \
 GENERIC := $(if $(GENERIC),$(shell $(GREP) -F -l defgeneric $(GENERIC)))
 endif
 
+ifneq ($(defprps),no)
+PRPERTY := $(filter-out $(PREFIX)/include/cos/cos/%.h \
+                        $(PREFIX)/include/cos/cpp/%.h, \
+             $(if $(defprps),$(wildcard $(abspath $(defprps))),$(HEADERS)))
+PRPERTY := $(if $(PRPERTY),$(shell $(GREP) -F -l defproperty $(PRPERTY)))
+endif
+
 # destinations
 
 BINDIR   = $(DESTDIR)/$(OSNAME)/bin
@@ -89,7 +97,8 @@ TMPDIR   = $(DESTDIR)/$(OSNAME)/tmp/$(TARGET)
 
 OBJECTS  = $(addprefix $(OBJDIR)/, \
              $(addsuffix .o,$(basename $(notdir $(SOURCES)))) \
-             $(if $(GENERIC),$($(PRJTYPE))_$(COSGEN).o))
+             $(if $(GENERIC),$($(PRJTYPE))_$(COSGEN).o) \
+             $(if $(PRPERTY),$($(PRJTYPE))_$(COSPRP).o))
 
 DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
 
@@ -103,8 +112,7 @@ DESTMOD  = $(wildcard \
 
 MODS     = $(addprefix --dep=, $(moddeps))
 
-LIBS     = $(addprefix -l, \
-             $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
+LIBS     = $(addprefix -l, $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
 
 INCLUDE  = $(addprefix -I, $(INCDIR) \
              $(addsuffix /include,$(BASEMOD)) \
@@ -117,21 +125,22 @@ LIBRARY  = $(addprefix -L, \
              $(wildcard $(PREFIX)/lib))
 
 BINARY   =   $(addsuffix /$(OSNAME)/bin,$(DESTMOD)) \
-             $(wildcard $(abspath $(bindirs)))
+             $(wildcard $(abspath $(bindirs))) \
+             $(wildcard $(PREFIX)/bin)
 
 endif # library or program
 
 #
 # standard patterns
 #
-CLEANPAT := $(if $(cleanpat),$(cleanpat),'*~' '.*~' '.\#*')
-CLEANCMD := $(wordlist 2,99,$(addprefix -o -name ,$(CLEANPAT)))
+CLEANPAT := '*~' '.*~' '.\#*'
+CLEANCMD := $(wordlist 2,99,$(addprefix -o -name ,$(CLEANPAT) $(cleanpat)))
 
-INSEXPAT := $(if $(insexpat),$(insexpat),'*~' '.*')
-INSEXCMD := $(wordlist 2,99,$(addprefix -o -name ,CVS CVSROOT $(INSTALLED) $(INSEXPAT)))
+TAREXPAT := 'CVS*' TODO tmp $(CLEANPAT) $(cleanpat)
+TAREXCMD := $(addprefix --exclude=,$(TAREXPAT) $(tarexpat))
 
-TAREXPAT := $(if $(tarexpat),$(tarexpat),'.*')
-TAREXCMD := $(addprefix --exclude=,CVS CVSROOT $(TAREXPAT))
+INSEXPAT := '[Mm]akefile' $(TAREXPAT) $(tarexpat)
+INSEXCMD := $(wordlist 2,99,$(addprefix -o -name ,$(INSEXPAT) $(insexpat)))
 
 #
 # standard flags
@@ -167,6 +176,7 @@ $(info LNKTYPE = $(LNKTYPE))
 $(info TARGETS = $(TARGETS))
 $(info HEADERS[$(words $(HEADERS))] = $(HEADERS))
 $(info GENERIC[$(words $(GENERIC))] = $(GENERIC))
+$(info PRPERTY[$(words $(PRPERTY))] = $(PRPERTY))
 $(info SOURCES[$(words $(SOURCES))] = $(SOURCES))
 $(info OBJECTS[$(words $(OBJECTS))] = $(OBJECTS))
 $(info DEPENDS[$(words $(DEPENDS))] = $(DEPENDS))

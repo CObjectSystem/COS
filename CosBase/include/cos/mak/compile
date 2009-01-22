@@ -29,11 +29,13 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile,v 1.4 2008/12/20 00:12:10 ldeniau Exp $
+# | $Id: compile,v 1.5 2009/01/22 16:45:07 ldeniau Exp $
 # |
 #
 
-.PRECIOUS: $(OBJDIR)/%.d $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).d
+.PRECIOUS: $(OBJDIR)/%.d
+.PRECIOUS: $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).d
+.PRECIOUS: $(OBJDIR)/$($(PRJTYPE))_$(COSPRP).d
 
 #
 # rule for generics
@@ -41,6 +43,13 @@
 $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c: $(GENERIC)
 	@  echo "*** Computing [$(TARGET)] generics"
 	$_ $(EXEDIR)/$(COSGEN) --out=$@ $^
+
+#
+# rule for properties
+#
+$(OBJDIR)/$($(PRJTYPE))_$(COSPRP).c: $(PRPERTY)
+	@  echo "*** Computing [$(TARGET)] properties"
+	$_ $(EXEDIR)/$(COSPRP) --out=$@ $^
 
 #
 # rule for symbols (dummy)
@@ -58,20 +67,25 @@ $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c: $(call missing,$(OBJDIR))
 #
 $(OBJDIR)/%.o: $(SRCDIR)/%.c $(OBJDIR)/%.d
 	@  echo "*** Compiling [$(TARGET)]" $(<F)
-	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+	$_ cd $(<D) && $(CC) $(INCLUDE) $(CCFLAGS) -c $(<F) -o $@
 
 $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).o: $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c \
                                      $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).d
 	@  echo "*** Compiling [$(TARGET)] generics"
-	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+	$_ cd $(<D) && $(CC) $(INCLUDE) $(CCFLAGS) -c $(<F) -o $@
+
+$(OBJDIR)/$($(PRJTYPE))_$(COSPRP).o: $(OBJDIR)/$($(PRJTYPE))_$(COSPRP).c \
+                                     $(OBJDIR)/$($(PRJTYPE))_$(COSPRP).d
+	@  echo "*** Compiling [$(TARGET)] properties"
+	$_ cd $(<D) && $(CC) $(INCLUDE) $(CCFLAGS) -c $(<F) -o $@
 
 $(OBJDIR)/$($(PRJTYPE))_$(COSSYM).o: $(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c
 	@  echo "*** Compiling [$(TARGET)] symbols"
-	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+	$_ cd $(<D) && $(CC) $(INCLUDE) $(CCFLAGS) -c $(<F) -o $@
 
 $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.o: $(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c
 	@  echo "*** Compiling [$(TARGET)] symbols"
-	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
+	$_ cd $(<D) && $(CC) $(INCLUDE) $(CCFLAGS) -c $(<F) -o $@
 
 #
 # rules for dependencies
@@ -83,6 +97,10 @@ $(OBJDIR)/%.d: $(SRCDIR)/%.c $(call missing,$(OBJDIR))
 	   $(SED) -e 's,[^:]*:,$(basename $@).o $(basename $@).d:,' > $@
 
 $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).d: $(OBJDIR)/$($(PRJTYPE))_$(COSGEN).c
+	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
+	   $(SED) -e 's,[^:]*:,$(basename $@).o $(basename $@).d:,' > $@
+
+$(OBJDIR)/$($(PRJTYPE))_$(COSPRP).d: $(OBJDIR)/$($(PRJTYPE))_$(COSPRP).c
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
 	   $(SED) -e 's,[^:]*:,$(basename $@).o $(basename $@).d:,' > $@
 

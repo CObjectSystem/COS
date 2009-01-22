@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.7 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Vector.h,v 1.8 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -68,7 +68,7 @@ defclass(LngVector, Vector)
 endclass
 
 defclass(FltVector, Vector)
-  R64 *value;
+  F64 *value;
   U32  size;
 endclass
 
@@ -164,23 +164,23 @@ defclass(LngVectorN, LngVector) I64 _value[]; endclass
 
 // ----- Vector of double
 
-defclass(FltVector0, FltVector) R64 _value[]; endclass
-defclass(FltVector1, FltVector) R64 _value[]; endclass
-defclass(FltVector2, FltVector) R64 _value[]; endclass
-defclass(FltVector3, FltVector) R64 _value[]; endclass
-defclass(FltVector4, FltVector) R64 _value[]; endclass
-defclass(FltVector5, FltVector) R64 _value[]; endclass
-defclass(FltVector6, FltVector) R64 _value[]; endclass
-defclass(FltVector7, FltVector) R64 _value[]; endclass
-defclass(FltVector8, FltVector) R64 _value[]; endclass
-defclass(FltVector9, FltVector) R64 _value[]; endclass
-defclass(FltVectorN, FltVector) R64 _value[]; endclass
+defclass(FltVector0, FltVector) F64 _value[]; endclass
+defclass(FltVector1, FltVector) F64 _value[]; endclass
+defclass(FltVector2, FltVector) F64 _value[]; endclass
+defclass(FltVector3, FltVector) F64 _value[]; endclass
+defclass(FltVector4, FltVector) F64 _value[]; endclass
+defclass(FltVector5, FltVector) F64 _value[]; endclass
+defclass(FltVector6, FltVector) F64 _value[]; endclass
+defclass(FltVector7, FltVector) F64 _value[]; endclass
+defclass(FltVector8, FltVector) F64 _value[]; endclass
+defclass(FltVector9, FltVector) F64 _value[]; endclass
+defclass(FltVectorN, FltVector) F64 _value[]; endclass
 
 #define aFltVector(...)                  ( (OBJ)atFltVector   (__VA_ARGS__      ) )
 #define aFltVectorRef(size,array)        ( (OBJ)atFltVectorRef(size,array       ) )
 #define aFltSubVector(vector,start,size) ( (OBJ)atFltSubVector(vector,start,size) )
 
-#define atFltVector(...)                  atVectorT   (Flt,R64,__VA_ARGS__)
+#define atFltVector(...)                  atVectorT   (Flt,F64,__VA_ARGS__)
 #define atFltVectorRef(size,array)        atVectorRefT(Flt,size,array)
 #define atFltSubVector(vector,start,size) atSubVectorT(Flt,vector,start,size)
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.17 2008/12/13 00:50:03 ldeniau Exp $
+ | $Id: Array.c,v 1.18 2009/01/22 16:45:08 ldeniau Exp $
  |
 */
 
@@ -42,6 +42,7 @@
 #include <cos/Functor.h>
 #include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
+#include <cos/gen/accessor.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
@@ -246,7 +247,7 @@ endmethod
  
 // ----- setters
 
-defmethod(OBJ, gputAt, Array, Any, Int)
+defmethod(void, gputAt, Array, Any, Int)
   U32 i = index_abs(self3->value, self->size);
   test_assert( i < self->size, "index out of range" );
 
@@ -254,17 +255,15 @@ defmethod(OBJ, gputAt, Array, Any, Int)
   OBJ  old = *obj;
   *obj = gretain(_2);
   grelease(old);
-  
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, Array, Array, Range1)
+defmethod(void, gputAt, Array, Array, Range1)
   OBJ slice = Slice1_range(atSlice(0,0), self3, self->size);
 
-  retmethod( gputAt(_1,_2,slice) );  
+  gputAt(_1,_2,slice);
 endmethod
 
-defmethod(OBJ, gputAt, Array, Array, Slice1)
+defmethod(void, gputAt, Array, Array, Slice1)
   test_assert( self3->start < self->size && Slice1_last(self3) < self->size,
                "slice out of range" );
 
@@ -278,11 +277,9 @@ defmethod(OBJ, gputAt, Array, Array, Slice1)
     *obj = gretain(*src);
     grelease(old);
   }
-  
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, Array, Array, IntVector)
+defmethod(void, gputAt, Array, Array, IntVector)
   test_assert( self2->size >= self3->size,
                "incompatible array sizes" );
 
@@ -299,8 +296,6 @@ defmethod(OBJ, gputAt, Array, Array, IntVector)
     obj[i] = gretain(*src);
     grelease(old);
   }
-
-  retmethod(_1);  
 endmethod
 
 // ----- getters
@@ -330,17 +325,15 @@ endmethod
 
 // ----- accessors and adjustment
 
-defalias (OBJ, (gput)gappend, DynArray, Any);
-defalias (OBJ, (gput)gpush  , DynArray, Any);
-defmethod(OBJ,  gput        , DynArray, Any)
+defalias (void, (gput)gappend, DynArray, Any);
+defalias (void, (gput)gpush  , DynArray, Any);
+defmethod(void,  gput        , DynArray, Any)
   struct Array *arr = &self->DynArrayN.Array;
 
   if (arr->size == self->capacity)
     dynarray_resizeBy(self, 1.8);
     
   arr->object[arr->size++] = gretain(_2);
-
-  retmethod(_1);
 endmethod
 
 defalias (OBJ, (gget)glast, DynArray);
@@ -351,24 +344,23 @@ defmethod(OBJ,  gget      , DynArray)
   retmethod( arr->size ? arr->object[arr->size-1] : 0 );
 endmethod
 
-defalias (OBJ, (gdrop)gpop, DynArray);
-defmethod(OBJ,  gdrop     , DynArray)
+defalias (void, (gdrop)gpop, DynArray);
+defmethod(void,  gdrop     , DynArray)
   struct Array *arr = &self->DynArrayN.Array;
-  
-  retmethod(arr->size ? grelease(arr->object[--arr->size]) : 0);
+
+  if (arr->size)
+    grelease(arr->object[--arr->size]);
 endmethod
 
-defmethod(OBJ, gadjust, DynArray)
+defmethod(void, gadjust, DynArray)
   if (self->DynArrayN.Array.size < self->capacity)
     dynarray_resizeBy(self, 1.0);
 
   test_assert( cos_any_changeClass(_1, classref(DynArrayN)),
                "unable to change dynamic array to fixed size array" );
-
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ,  gappend, DynArray, Array)
+defmethod(void, gappend, DynArray, Array)
   struct Array *arr = &self->DynArrayN.Array;
 
   if (self->capacity - arr->size < self2->size) { // enlarge first
@@ -388,54 +380,44 @@ defmethod(OBJ,  gappend, DynArray, Array)
     *obj++ = gretain(*src++);
 
   arr->size += self2->size;
-
-  retmethod(_1);
 endmethod
 
 // ----- clear (in place) 
 
-defmethod(OBJ, gclear, Array)
+defmethod(void, gclear, Array)
   OBJ *obj = self1->object;
   OBJ *end = self1->object+self1->size;
 
   while (obj < end)
     grelease(*obj), *obj++ = Nil; 
-
-  retmethod(_1);
 endmethod
 
 // ----- reverse (in place)
 
-defmethod(OBJ, greverse, Array)
+defmethod(void, greverse, Array)
   OBJ *obj = self->object;
   OBJ *end = self->object+self->size-1;
   OBJ  tmp;
   
   while (obj < end)
     tmp = *obj, *obj++ = *end, *end-- = tmp;
-
-  retmethod(_1);
 endmethod
 
 // ----- apply (in place)
 
-defmethod(OBJ, gapply, Functor, Array)
+defmethod(void, gapply, Functor, Array)
   OBJ *obj = self2->object;
   OBJ *end = self2->object+self2->size;
 
   while(obj < end) geval1(_1, *obj++);
-  
-  retmethod(_2);
 endmethod
 
-defmethod(OBJ, gapply, Function1, Array)
+defmethod(void, gapply, Function1, Array)
   OBJ *obj = self2->object;
   OBJ *end = self2->object+self2->size;
   OBJFCT1 fct = self->fct;
 
   while(obj < end) fct(*obj++);
-  
-  retmethod(_2);
 endmethod
 
 // ----- map, map2, map3, map4
@@ -841,9 +823,9 @@ defmethod(OBJ, gany, Function1, Array)
   retmethod(False);
 endmethod
 
-// ----- equal, min, max
+// ----- isEqual, min, max
 
-defmethod(OBJ, gequal, Array, Array)
+defmethod(OBJ, gisEqual, Array, Array)
   if (self1 == self2)
     retmethod(True);
     
@@ -855,7 +837,7 @@ defmethod(OBJ, gequal, Array, Array)
   OBJ *obj2 = self2->object;
 
   for (; obj1 < end1; obj1++, obj2++)
-    if (gequal(*obj1, *obj2) == False)
+    if (gisEqual(*obj1, *obj2) == False)
       retmethod(False);
       
   retmethod(True);
@@ -908,8 +890,9 @@ defmethod(OBJ, gfilter, Functor, Array)
     if (geval1(_1, *src) == True)
       *obj++ = gretain(*src), ++arr->size;
 
+  gadjust(_arr);
   UNPRT(_arr);
-  retmethod(gadjust(gautoRelease(_arr)));
+  retmethod(gautoRelease(_arr));
 endmethod
 
 defmethod(OBJ, gfilter, Function1, Array)
@@ -924,8 +907,9 @@ defmethod(OBJ, gfilter, Function1, Array)
     if (fct(*src) == True)
       *obj++ = gretain(*src), ++arr->size;
 
+  gadjust(_arr);
   UNPRT(_arr);
-  retmethod(gadjust(gautoRelease(_arr)));
+  retmethod(gautoRelease(_arr));
 endmethod
 
 defmethod(OBJ, greduce, Functor, Any, Array)
@@ -1063,7 +1047,7 @@ defmethod(OBJ, gfind, Function2, Any, Array)
     retmethod(Nil);
   
   test_assert( res == Greater,
-    "gfind expects functor returning TrueFalse or Ordered predicates" );
+    "gfind expects functor returning subtypes of TrueFalse or Ordered predicates" );
 
   U32 lo = 1, hi = self3->size-1;
     
@@ -1256,18 +1240,15 @@ quicksort_fct(OBJ a[], I32 r, OBJFCT2 fct)
   quicksort_fct(l,q,fct); // tail recursion
 }
 
-defmethod(OBJ, gsort, Array)
+defmethod(void, gsort, Array)
   quicksort_fct(self->object, self->size-1, gcompare);
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gsortBy, Array, Functor)
+defmethod(void, gsortBy, Array, Functor)
   quicksort_fun(self->object, self->size-1, _2);
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gsortBy, Array, Function2)
+defmethod(void, gsortBy, Array, Function2)
   quicksort_fct(self->object, self->size-1, self2->fct);
-  retmethod(_1);
 endmethod
 

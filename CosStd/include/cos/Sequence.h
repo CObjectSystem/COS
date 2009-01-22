@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.3 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Sequence.h,v 1.4 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -44,59 +44,59 @@ defclass(Sequence, Value)
 endclass
 
 defclass(Sequence1, Sequence)
-  R64 start ;
-  R64 stride;
+  F64 start ;
+  F64 stride;
   U32 size  ;
 endclass
 
 defclass(Sequence2, Sequence)
-  R64 start;
-  R64 stride[2];
+  F64 start;
+  F64 stride[2];
   U32 size  [2];
 endclass
 
 defclass(Sequence3, Sequence)
-  R64 start;
-  R64 stride[3];
+  F64 start;
+  F64 stride[3];
   U32 size  [3];
 endclass
 
 defclass(Sequence4, Sequence)
-  R64 start;
-  R64 stride[4];
+  F64 start;
+  F64 stride[4];
   U32 size  [4];
 endclass
 
 defclass(Sequence5, Sequence)
-  R64 start;
-  R64 stride[5];
+  F64 start;
+  F64 stride[5];
   U32 size  [5];
 endclass
 
 // ----- evaluation
 
-static inline R64
+static inline F64
 Sequence1_eval(struct Sequence1 *s, U32 i0) {
   return s->start + i0 * s->stride;
 }
 
-static inline R64
+static inline F64
 Sequence2_eval(struct Sequence2 *s, U32 i0, U32 i1) {
   return s->start + i0 * s->stride[0] + i1 * s->stride[1];
 }
 
-static inline R64
+static inline F64
 Sequence3_eval(struct Sequence3 *s, U32 i0, U32 i1, U32 i2) {
   return s->start + i0 * s->stride[0] + i1 * s->stride[1] + i2 * s->stride[2];
 }
 
-static inline R64
+static inline F64
 Sequence4_eval(struct Sequence4 *s, U32 i0, U32 i1, U32 i2, U32 i3) {
   return s->start + i0 * s->stride[0] + i1 * s->stride[1] + i2 * s->stride[2]
                   + i3 * s->stride[3];
 }
 
-static inline R64
+static inline F64
 Sequence5_eval(struct Sequence5 *s, U32 i0, U32 i1, U32 i2, U32 i3, U32 i4) {
   return s->start + i0 * s->stride[0] + i1 * s->stride[1] + i2 * s->stride[2]
                   + i3 * s->stride[3] + i4 * s->stride[4];

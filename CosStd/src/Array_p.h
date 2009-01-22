@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_p.h,v 1.3 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Array_p.h,v 1.4 2009/01/22 16:45:08 ldeniau Exp $
  |
 */
 
@@ -102,7 +102,7 @@ dynarray_alloc(U32 size)
 }
 
 static void
-dynarray_resizeBy(struct DynArray *darr, R64 factor)
+dynarray_resizeBy(struct DynArray *darr, float factor)
 {
   useclass(ExBadAlloc);
 

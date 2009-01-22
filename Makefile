@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.8 2008/12/20 00:02:38 ldeniau Exp $
+# | $Id: Makefile,v 1.9 2009/01/22 16:45:07 ldeniau Exp $
 # |
 #
 
@@ -45,33 +45,9 @@ include $(cos)/prologue
 
 distrib := cos
 version := 0.7
-release := 200801
-
-moddeps := CosBase CosStd
+#release := 200801
+modules := CosBase CosStd
 
 include $(cos)/epilogue
-
-#
-# makefile customization
-#
-
-install.post: \
-FILES = $(subst $(BASEDIR)/,, \
-        $(shell $(FIND) $(BASEDIR) -maxdepth 1 \
-                        \( $(INSEXCMD) \) -prune -o \( -type f -o -type l \) -print))
-
-install.post:
-	$_ for f in $(FILES) ; do \
-	     $(CP) $(BASEDIR)/$$f $(INSTDIR)/share/doc/$($(PRJTYPE))/$$f ; \
-	     echo $(INSTDIR)/share/doc/$($(PRJTYPE))/$$f >> $(DESTDIR)/$(INSTALLED) ; \
-	   done
-
-uninstall.post:
-	$_ if [ -f $(DESTDIR)/$(INSTALLED) ] ; then \
-	     for f in `$(SORT) -u $(DESTDIR)/$(INSTALLED)` ; do \
-	       $(RM) $$f ; \
-	     done ; \
-	     $(RM) $(DESTDIR)/$(INSTALLED) ; \
-	   fi
 
 # end of makefile

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.7 2008/10/24 14:17:15 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.8 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -61,14 +61,15 @@ ut_autorelease(void)
     c = gclone(a);
     UTEST( gretainCount(a) == 1 );
     UTEST( gretainCount(c) == 1 );
-    UTEST( grelease(a) == Nil   );
-    UTEST( grelease(c) == Nil   );
+    UTEST( (grelease(a), 1) );
+    UTEST( (grelease(c), 1) );
 
     // ----
     a = gretain(gnew(A));
     UTEST( gretainCount(a) == 2  );
-    UTEST( grelease(a) == a      );
-    UTEST( grelease(a) == Nil    );
+    UTEST( (grelease(a), 1) );
+    UTEST( gretainCount(a) == 1  );
+    UTEST( (grelease(a), 1) );
 
     // ----
     ar = gnew(AutoRelease);
@@ -78,7 +79,7 @@ ut_autorelease(void)
     UTEST( gretainCount(a) == 2  );
     grelease(ar);
     UTEST( gretainCount(a) == 1  );
-    UTEST( grelease(a) == Nil    );
+    UTEST( (grelease(a), 1) );
 
     // ----
     ar = gnew(AutoRelease);
@@ -93,8 +94,9 @@ ut_autorelease(void)
     UTEST( gretainCount(a) == 2  );
     grelease(ar);
     UTEST( gretainCount(a) == 2  );
-    UTEST( grelease(a) != Nil    );
-    UTEST( grelease(a) == Nil    );
+    UTEST( (grelease(a), 1) );
+    UTEST( gretainCount(a) == 1  );
+    UTEST( (grelease(a), 1) );
 
     // ----
     ar = gnew(AutoRelease);
@@ -108,8 +110,8 @@ ut_autorelease(void)
     UTEST( gsize(ar) == 1 );
     UTEST( gretainCount(c) == 1  );
     grelease(ar);
-    UTEST( grelease(a) == Nil    );
-    UTEST( grelease(c) == Nil    );
+    UTEST( (grelease(a), 1) );
+    UTEST( (grelease(c), 1) );
 
     // ----
     ar = gnew(AutoRelease);

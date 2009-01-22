@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.3 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: algorithm.h,v 1.4 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -41,8 +41,8 @@
 #endif 
 
 // in place (returned value is discarded if any)
-defgeneric(OBJ, gapply  , fun, _1);
-defgeneric(OBJ, greverse, _1);
+defgeneric(void, gapply  , fun, _1);
+defgeneric(void, greverse, _1);
 
 // map
 defgeneric(OBJ, gmap   , fun, _1);
@@ -74,8 +74,9 @@ defgeneric(OBJ, gmin, _1);
 defgeneric(OBJ, gmax, _1);
 
 // sorting (in place, fun must return Ordered)
-defgeneric(OBJ, gsort  , _1);
-defgeneric(OBJ, gsortBy, _1, fun);
+defgeneric(void, gsort    , _1);
+defgeneric(void, gsortBy  , _1, fun);
+defgeneric(OBJ , gisSorted, _1); // return True or False
 
 // linear      find if fun returns TrueFalse
 // logarithmic find if fun returns Ordered

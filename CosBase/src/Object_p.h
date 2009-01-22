@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object_p.h,v 1.2 2008/11/07 14:12:07 ldeniau Exp $
+ | $Id: Object_p.h,v 1.3 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
 static inline void*
-object_alloc(OBJ _cls, SIZE extra)
+object_alloc(OBJ _cls, size_t extra)
 {
   useclass(ExBadAlloc);
   struct Class *cls = STATIC_CAST(struct Class*, _cls);

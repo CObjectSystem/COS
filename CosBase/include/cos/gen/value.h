@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.10 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: value.h,v 1.11 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -44,25 +44,21 @@ defgeneric(BOOL , gbool, _1);
 defgeneric(void*, gptr , _1);
 defgeneric(FUNC , gfct , _1);
 
-defgeneric(I8   , gchr, _1);
-defgeneric(I16  , gsht, _1);
 defgeneric(I32  , gint, _1);
 defgeneric(I64  , glng, _1);
-defgeneric(R64  , gflt, _1);
+defgeneric(F64  , gflt, _1);
 defgeneric(C64  , gcpx, _1);
 
-defgeneric(I8   , gchrAt, _1, at);
-defgeneric(I16  , gshtAt, _1, at);
 defgeneric(I32  , gintAt, _1, at);
 defgeneric(I64  , glngAt, _1, at);
-defgeneric(R64  , gfltAt, _1, at);
+defgeneric(F64  , gfltAt, _1, at);
 defgeneric(C64  , gcpxAt, _1, at);
 
 defgeneric(I8*  , gchrPtr, _1);
 defgeneric(I16* , gshtPtr, _1);
 defgeneric(I32* , gintPtr, _1);
 defgeneric(I64* , glngPtr, _1);
-defgeneric(R64* , gfltPtr, _1);
+defgeneric(F64* , gfltPtr, _1);
 defgeneric(C64* , gcpxPtr, _1);
 
 #endif // COS_GEN_VALUE_H

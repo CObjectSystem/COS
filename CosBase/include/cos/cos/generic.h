@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.11 2008/12/12 11:16:13 ldeniau Exp $
+ | $Id: generic.h,v 1.12 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -208,6 +208,7 @@ COS_SCP_END
 #define COS_GEN_MAK_1(RET,NAME,PS,C,A,R) \
 COS_GEN_TYPECHK(RET,NAME,PS      ) \
 COS_GEN_RANKCHK(    NAME,   C    ) \
+COS_GEN_NAMECHK(    NAME         ) \
 COS_GEN_SIZECHK(    NAME,     A,R) \
 COS_GEN_COMPMAK(RET,NAME,PS,C,A,R,COS_NO)
 
@@ -259,6 +260,7 @@ COS_SCP_END
 #define COS_GEN_MAKV_2(RET,NAME,VPS,PS,AS,IS,C,A,R) \
 COS_GEN_TYPECHK(RET,NAME,PS             ) \
 COS_GEN_RANKCHK(    NAME,          C    ) \
+COS_GEN_NAMECHK(    NAME                ) \
 COS_GEN_SIZECHK(    NAME,            A,R) \
 COS_GEN_VFUNDEF(RET,NAME,VPS,AS,IS,C,A,R) \
 COS_GEN_COMPMAK(RET,NAME,PS,       C,A,R,COS_YES)
@@ -275,7 +277,7 @@ typedef COS_PP_IF(A)( \
   struct { COS_PP_SEPWITH(COS_PP_MAP(AS,COS_PRM_DECL),;); }, \
   void ) COS_ARG_TYPE(NAME);
 
-// type check
+// generic type check
 #define COS_GEN_TYPECHK(RET,NAME,PS) \
 extern COS_GEN_TYPE(NAME) \
   COS_PP_CAT(NAME,__invalid_makgeneric_vs_defgeneric); \
@@ -283,13 +285,19 @@ extern RET (* \
   COS_PP_CAT(NAME,__invalid_makgeneric_vs_defgeneric) ) \
                             COS_PP_MAP(PS,COS_SIG_GEN);
 
-// rank check
+// generic rank check
 #define COS_GEN_RANKCHK(NAME,C) \
 COS_STATIC_ASSERT( \
   COS_PP_CAT3(NAME,__generic_rank_greater_than_,COS_GEN_RNKMAX), \
   C <= COS_GEN_RNKMAX);
 
-// size check
+// generic name check
+#define COS_GEN_NAMECHK(NAME) \
+COS_STATIC_ASSERT( \
+  COS_PP_CAT(NAME,__name_is_longer_than_64_chars), \
+  sizeof(COS_PP_STR(NAME)) <= 64);
+
+// generic arg size check
 #define COS_GEN_SIZECHK(NAME,A,R) \
 COS_PP_IF(A)(COS_STATIC_ASSERT( \
   COS_PP_CAT(NAME,__generic_arguments_size_greater_than_64Kb), \

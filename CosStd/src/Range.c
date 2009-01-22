@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Range.c,v 1.2 2009/01/22 16:45:08 ldeniau Exp $
  |
 */
 
@@ -91,7 +91,7 @@ endmethod
 
 // ----- equality
 
-defmethod(OBJ, gequal, Range1, Range1)
+defmethod(OBJ, gisEqual, Range1, Range1)
   BOOL res = self1->start  == self2->start
           && self1->end    == self2->end 
           && self1->stride == self2->stride;
@@ -99,7 +99,7 @@ defmethod(OBJ, gequal, Range1, Range1)
   retmethod( res ? True : False );
 endmethod
 
-defmethod(OBJ, gequal, Range2, Range2)
+defmethod(OBJ, gisEqual, Range2, Range2)
   BOOL res = YES;
 
   for (int i = 0; res && i < 2; i++)
@@ -110,7 +110,7 @@ defmethod(OBJ, gequal, Range2, Range2)
   retmethod( res ? True : False );
 endmethod
 
-defmethod(OBJ, gequal, Range3, Range3)
+defmethod(OBJ, gisEqual, Range3, Range3)
   BOOL res = YES;
 
   for (int i = 0; res && i < 3; i++)
@@ -121,7 +121,7 @@ defmethod(OBJ, gequal, Range3, Range3)
   retmethod( res ? True : False );
 endmethod
 
-defmethod(OBJ, gequal, Range4, Range4)
+defmethod(OBJ, gisEqual, Range4, Range4)
   BOOL res = YES;
 
   for (int i = 0; res && i < 4; i++)
@@ -132,7 +132,7 @@ defmethod(OBJ, gequal, Range4, Range4)
   retmethod( res ? True : False );
 endmethod
 
-defmethod(OBJ, gequal, Range5, Range5)
+defmethod(OBJ, gisEqual, Range5, Range5)
   BOOL res = YES;
 
   for (int i = 0; res && i < 5; i++)

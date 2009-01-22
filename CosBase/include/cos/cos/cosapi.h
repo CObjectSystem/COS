@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.17 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: cosapi.h,v 1.18 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -291,6 +291,13 @@ cos_any_id(OBJ obj)
   COS_UNUSED(cos_any_id);
 }
 
+static inline U32
+cos_any_rc(OBJ obj)
+{
+  return COS_STATIC_CAST(struct Any*, obj)->rc;
+  COS_UNUSED(cos_any_rc);
+}
+
 static inline const struct Class*
 cos_any_class(OBJ obj)
 {
@@ -348,7 +355,7 @@ cos_exception_protect(struct cos_exception_protect *ptr, OBJ const *obj)
 
 static inline struct cos_exception_extendedProtect
 cos_exception_extendedProtect(struct cos_exception_extendedProtect *ptr,
-                              OBJ const *obj, OBJFCT1 fct)
+                              OBJ const *obj, OBJFCT0 fct)
 {
   struct cos_exception_context *cxt = cos_exception_context();
 

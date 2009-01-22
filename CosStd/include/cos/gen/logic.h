@@ -32,62 +32,52 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.4 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: logic.h,v 1.5 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
 #include <cos/gen/object.h>
 
-// return True, False or TrueFalse (= uncertain, undetermined)
 defgeneric(OBJ, gnot    , _1);     
 defgeneric(OBJ, gand    , _1, _2);
 defgeneric(OBJ, gor     , _1, _2);
-defgeneric(OBJ, gxor    , _1, _2); // not (_1 equal _2)
+defgeneric(OBJ, gxor    , _1, _2); // not (_1 isEqual _2)
 defgeneric(OBJ, gimplies, _1, _2); // (not _1) or _2
 
-// gequal() and gcompare() are provided by cos/gen/object.h
-
 // inliners
-static inline OBJ
-gEQ(OBJ _1, OBJ _2) {
-  useclass(Equal);
-  OBJ res = gcompare(_1,_2);
-  return res == Equal ? True : False; COS_UNUSED(gEQ);
+
+static inline BOOL
+equal(OBJ _1, OBJ _2) {
+  return gisEqual(_1,_2) == True;
 }
 
-static inline OBJ
-gNE(OBJ _1, OBJ _2) {
-  useclass(Equal);
-  OBJ res = gcompare(_1,_2);
-  return res == Equal ? False : True; COS_UNUSED(gNE);
-}
-
-static inline OBJ
-gLT(OBJ _1, OBJ _2) {
+static inline BOOL
+lesser(OBJ _1, OBJ _2) {
   useclass(Lesser);
-  OBJ res = gcompare(_1,_2);
-  return res == Lesser ? True : False; COS_UNUSED(gLT);
+  return gcompare(_1,_2) == Lesser;
 }
 
-static inline OBJ
-gGT(OBJ _1, OBJ _2) {
+static inline BOOL
+greater(OBJ _1, OBJ _2) {
   useclass(Greater);
-  OBJ res = gcompare(_1,_2);
-  return res == Greater ? True : False; COS_UNUSED(gGT);
+  return gcompare(_1,_2) == Greater;
 }
 
-static inline OBJ
-gLE(OBJ _1, OBJ _2) {
+static inline BOOL
+notEqual(OBJ _1, OBJ _2) {
+  return gisEqual(_1,_2) != True;
+}
+
+static inline BOOL
+lesserEqual(OBJ _1, OBJ _2) {
   useclass(Greater);
-  OBJ res = gcompare(_1,_2);
-  return res == Greater ? False : True; COS_UNUSED(gLE);
+  return gcompare(_1,_2) != Greater;
 }
 
-static inline OBJ
-gGE(OBJ _1, OBJ _2) {
+static inline BOOL
+greaterEqual(OBJ _1, OBJ _2) {
   useclass(Lesser);
-  OBJ res = gcompare(_1,_2);
-  return res == Lesser ? False : True; COS_UNUSED(gGE);
+  return gcompare(_1,_2) != Lesser;
 }
 
 #endif // COS_GEN_LOGIC_H

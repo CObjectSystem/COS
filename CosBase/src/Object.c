@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.8 2008/10/24 21:08:39 ldeniau Exp $
+ | $Id: Object.c,v 1.9 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -52,7 +52,7 @@ defmethod(OBJ, galloc, mObject)
   retmethod( object_alloc(_1, 0) );
 endmethod
 
-defmethod(OBJ, gallocWithSize, mObject, (SIZE)extra)
+defmethod(OBJ, gallocWithSize, mObject, (size_t)extra)
   retmethod( object_alloc(_1, extra) );
 endmethod
 

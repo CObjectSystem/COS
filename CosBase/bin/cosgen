@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosgen,v 1.9 2008/12/06 00:11:49 ldeniau Exp $
+# | $Id: cosgen,v 1.10 2009/01/22 16:45:07 ldeniau Exp $
 # |
 #
 
@@ -101,7 +101,7 @@ while [ "$1" != "" ] ; do
 done
 
 # check coscmt
-if grep -F -q "COSGEN-SED-SCRIPT" "$exedir/coscmt" ; then
+if grep -F -q "COS-SED-SCRIPT" "$exedir/coscmt" ; then
   # bootstrap script
   chmod -x "$exedir/coscmt"
   cmt="sed -nf $exedir/coscmt"
@@ -150,7 +150,7 @@ for f in $filelist; do
   fi
 done
 
-# makgenerics
+# makgeneric
 echo "$gens" \
   | sort -u -t ',' -k 2 \
   | sed -e 's/defgeneric/makgeneric/g' >> $out

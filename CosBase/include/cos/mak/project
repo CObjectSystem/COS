@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.16 2008/12/20 00:02:38 ldeniau Exp $
+# | $Id: project,v 1.17 2009/01/22 16:45:07 ldeniau Exp $
 # |
 #
 
@@ -47,107 +47,11 @@ GOALS := $(patsubst all.clean, $(addsuffix .clean,$(TARGETS)),$(GOALS))
 GOALS := $(patsubst all.srun,  $(addsuffix .srun, $(TARGETS)),$(GOALS))
 GOALS := $(patsubst all.run,   $(addsuffix .run,  $(TARGETS)),$(GOALS))
 GOALS := $(patsubst all,                          $(TARGETS) ,$(GOALS))
-
 GOALS := $(sort $(GOALS))
 
 ifeq ($(TRACE),yes)
 $(info GOALS = $(GOALS))
 endif
-
-#
-# install targets
-#
-.PHONY: install
-.PHONY: install.prn install.dir
-.PHONY: install.pre do.install install.post
-
-install: all install.prn install.dir install.pre do.install install.post
-
-install.prn:
-	@  echo "*** Installing $($(PRJTYPE))"
-
-do.install: clean base.install dest.install
-
-base.install: \
-FILES = $(subst $(BASEDIR)/,, \
-        $(shell $(FIND) $(wildcard $(BASEDIR)/bin $(BASEDIR)/share $(BASEDIR)/include) \
-                        \( $(INSEXCMD) \) -prune -o \( -type f -o -type l \) -print))
-
-dest.install: \
-FILES = $(subst $(DESTDIR)/$(OSNAME)/,, \
-        $(shell $(FIND) $(wildcard $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
-                        \( $(INSEXCMD) \) -prune -o \( -type f -o -type l \) -print))
-
-install.dir: \
-FILES = $(subst $(BASEDIR)/,, $(subst $(DESTDIR)/$(OSNAME)/,, \
-        $(shell $(FIND) $(wildcard $(BASEDIR)/bin $(BASEDIR)/share $(BASEDIR)/include \
-                                   $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib) \
-                        \( $(INSEXCMD) \) -prune -o -type d -print)))
-
-base.install:
-	$_ for f in $(FILES) ; do \
-	     $(CP) $(BASEDIR)/$$f $(INSTDIR)/$$f ; \
-	     echo  $(INSTDIR)/$$f >> $(DESTDIR)/$(INSTALLED) ; \
-	   done
-
-dest.install:
-	$_ for f in $(FILES) ; do \
-	     $(CP) $(DESTDIR)/$(OSNAME)/$$f $(INSTDIR)/$$f ; \
-	     echo  $(INSTDIR)/$$f >> $(DESTDIR)/$(INSTALLED) ; \
-	   done
-
-install.dir:
-	$_ $(MKDIR) $(INSTDIR) \
-	   $(call missing,$(sort $(abspath $(addprefix $(INSTDIR)/,$(FILES)))))
-
-#
-# uninstall targets
-#
-.PHONY: uninstall
-.PHONY: uninstall.prn uninstall.pre do.uninstall uninstall.post
-
-uninstall: uninstall.prn uninstall.pre do.uninstall uninstall.post
-
-uninstall.prn:
-	@  echo "*** Uninstalling $($(PRJTYPE))"
-
-do.uninstall:
-	$_ if [ -f $(DESTDIR)/$(INSTALLED) ] ; then \
-	     for f in `$(SORT) -u $(DESTDIR)/$(INSTALLED)` ; do \
-	       $(RM) $$f ; \
-	     done ; \
-	     $(RM) $(DESTDIR)/$(INSTALLED) ; \
-	   fi
-
-#
-# tests targets
-#
-.PHONY: tests
-.PHONY: tests.prn tests.dir
-.PHONY: tests.pre do.tests tests.post
-
-tests: all tests.prn tests.dir tests.pre do.tests tests.post
-
-tests.prn:
-	@  echo "*** Testing $($(PRJTYPE))"
-
-do.tests:
-	$_ cd $(DESTDIR)/tests && $(MAKE) -C $(BASEDIR)/tests $(if $(ARGS),release,debug).run
-
-tests.dir: $(call missing,$(DESTDIR)/tests)
-
-$(DESTDIR)/tests:
-	$_ $(MKDIR) $@
-
-#
-# project targets
-#
-.PHONY: all all.run all.srun all.clean
-
-all      :                    $(TARGETS)
-all.run  : $(addsuffix .run,  $(TARGETS))
-all.srun : $(addsuffix .srun, $(TARGETS))
-all.clean: $(addsuffix .clean,$(TARGETS))
 
 # debug target
 
@@ -186,15 +90,9 @@ include $(MAKDIR)/mak/$(PRJTYPE)
 
 .PHONY: project.dir
 
-project.dir: $(call missing,$(TMPDIR) $(BINDIR) $(LIBDIR))
+project.dir: $(call missing,$(BINDIR) $(LIBDIR) $(TMPDIR))
 
-$(TMPDIR):
-	$_ $(MKDIR) $@
-
-$(BINDIR):
-	$_ $(MKDIR) $@
-
-$(LIBDIR):
+$(BINDIR) $(LIBDIR) $(TMPDIR):
 	$_ $(MKDIR) $@
 
 # end of makefile

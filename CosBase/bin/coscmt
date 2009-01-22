@@ -1,8 +1,8 @@
 
 #!/bin/sed -nf
 
-# NOTE-INFO: sed script used by cosgen
-# FILE-TAG: COSGEN-SED-SCRIPT
+# NOTE-INFO: sed script used by cosgen and cosprp
+# FILE-TAG: COS-SED-SCRIPT
 
 # Remove C and C++ comments, by Brian Hiles (brian_hiles@rocketmail.com)
 

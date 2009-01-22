@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.3 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: container.h,v 1.4 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -40,31 +40,25 @@
 #error "COS: missing #include <cos/Object.h>"
 #endif 
 
-// generic accessors
-defgeneric(OBJ, gput   , to, what);
-defgeneric(OBJ, gget   , from);
-defgeneric(OBJ, gdrop  , from);
-defgeneric(OBJ, gupdate, to, what);
-
-// generic accessors with location
-defgeneric(OBJ, gputAt   , to, what, at);
-defgeneric(OBJ, ggetAt   , from, at);
-defgeneric(OBJ, gdropAt  , from, at);
-defgeneric(OBJ, gupdateAt, to, what, at);
-
 // stack-like accessors
-defgeneric(OBJ, gpush, to, what);    // alias for gput
-defgeneric(OBJ, gtop , from);        // alias for gget
-defgeneric(OBJ, gpop , from);        // alias for gdrop
+defgeneric(void, gpush, to, what);    // alias for gput
+defgeneric(OBJ , gtop , from);        // alias for gget
+defgeneric(void, gpop , from);        // alias for gdrop
 
 // seq-like accessor
-defgeneric(OBJ, gappend, to  , what);
-defgeneric(OBJ, ginsert, to  , what);
-defgeneric(OBJ, gremove, from, what);
-defgeneric(OBJ, glast  , from);
+defgeneric(void, gappend, to  , what);
+defgeneric(void, ginsert, to  , what);
+defgeneric(OBJ , glast  , from);
 
 // raw data (copy) accessors
 defgeneric(void, ggetValue  , from, what);
 defgeneric(void, ggetValueAt, from, what, at);
+
+// drop element
+defgeneric(void, gdrop  , from);
+defgeneric(void, gdropAt, from, at);
+
+// adjust object (e.g. capacity to size)
+defgeneric(void, gadjust, _1);
 
 #endif // COS_GEN_CONTAINER_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.6 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: FltVector.c,v 1.7 2009/01/22 16:45:08 ldeniau Exp $
  |
 */
 
@@ -42,6 +42,7 @@
 #include <cos/Functor.h>
 #include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
+#include <cos/gen/accessor.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
@@ -85,9 +86,9 @@ endmethod
 defmethod(OBJ, ginitWith, FltVector, FltVector) // copy
   test_assert(self1->size <= self2->size, "incompatible vector sizes");
 
-  R64 *src = self2->value;
-  R64 *val = self1->value;
-  R64 *end = self1->value+self1->size;
+  F64 *src = self2->value;
+  F64 *val = self1->value;
+  F64 *end = self1->value+self1->size;
   
   while (val < end)
     *val++ = *src++;
@@ -98,9 +99,9 @@ endmethod
 defmethod(OBJ, ginitWith, mFltVector, FltVector) // clone
   struct FltVector* vec = vector_alloc(self2->size);
   OBJ _vec = (OBJ)vec; PRT(_vec);
-  R64 *src = self2->value;
-  R64 *val = vec  ->value;
-  R64 *end = vec  ->value+vec->size;
+  F64 *src = self2->value;
+  F64 *val = vec  ->value;
+  F64 *end = vec  ->value+vec->size;
   
   while (val < end)
     *val++ = *src++;
@@ -114,9 +115,9 @@ defmethod(OBJ, ginitWith2, mFltVector, Value, Int) // constant
   
   struct FltVector* vec = vector_alloc(self3->value);
   OBJ _vec = (OBJ)vec; PRT(_vec);
-  R64 *val = vec->value;
-  R64 *end = vec->value+vec->size;
-  R64  ini = gflt(_2);
+  F64 *val = vec->value;
+  F64 *end = vec->value+vec->size;
+  F64  ini = gflt(_2);
   
   while (val < end)
     *val++ = ini;
@@ -137,10 +138,10 @@ defmethod(OBJ, ginitWith2, mFltVector, FltVector, Slice1)
 
   struct FltVector* vec = vector_alloc(self3->size);
   OBJ _vec = (OBJ)vec; PRT(_vec);
-  R64 *src = self2->value+self3->start;
+  F64 *src = self2->value+self3->start;
   I32 step = self3->stride;
-  R64 *val = vec->value;
-  R64 *end = vec->value+vec->size;
+  F64 *val = vec->value;
+  F64 *end = vec->value+vec->size;
 
   for (; val < end; src += step)
     *val++ = *src;
@@ -152,9 +153,9 @@ endmethod
 defmethod(OBJ, ginitWith2, mFltVector, FltVector, IntVector)
   struct FltVector* vec = vector_alloc(self3->size);
   OBJ _vec = (OBJ)vec; PRT(_vec);
-  R64 *val = vec->value;
-  R64 *end = vec->value+vec->size;
-  R64 *src = self2->value;
+  F64 *val = vec->value;
+  F64 *end = vec->value+vec->size;
+  F64 *src = self2->value;
   U32 size = self2->size;
   I32 *idx = self3->value;
 
@@ -206,16 +207,16 @@ endmethod
  
 // ----- equality
 
-defmethod(OBJ, gequal, FltVector, FltVector)
+defmethod(OBJ, gisEqual, FltVector, FltVector)
   if (self1 == self2)
     retmethod(True);
 
   if (self1->size != self2->size)
     retmethod(False);
     
-  R64 *val1 = self1->value;
-  R64 *end1 = self1->value+self1->size;
-  R64 *val2 = self2->value;
+  F64 *val1 = self1->value;
+  F64 *end1 = self1->value+self1->size;
+  F64 *val2 = self2->value;
 
   for (; val1 < end1; val1++, val2++)
     if (float_equal(*val1,*val2))
@@ -226,113 +227,101 @@ endmethod
 
 // ----- setters
 
-defmethod(OBJ, gput, FltVector, Value)
-  R64 *val = self->value;
-  R64 *end = self->value+self->size;
-  R64  ini = gflt(_2);
+defmethod(void, gput, FltVector, Value)
+  F64 *val = self->value;
+  F64 *end = self->value+self->size;
+  F64  ini = gflt(_2);
 
   while (val < end)
     *val++ = ini;
-
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gput, FltVector, FltVector)
-  R64 *val = self->value;
-  R64 *end = self->value+self->size;
+defmethod(void, gput, FltVector, FltVector)
+  F64 *val = self->value;
+  F64 *end = self->value+self->size;
 
   while (val < end) {
     if (end-val < self2->size) {
-      R64 *src = self2->value;
+      F64 *src = self2->value;
 
       while (val < end)
         *val++ = *src++;
 
     } else {
-      R64 *src = self2->value;
-      R64 *end = self2->value+self2->size;
+      F64 *src = self2->value;
+      F64 *end = self2->value+self2->size;
 
       while (src < end)
         *val++ = *src++;
     }
   }
-  
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, FltVector, Value, Int)
+defmethod(void, gputAt, FltVector, Value, Int)
   U32 i = index_abs(self3->value, self->size);
   test_assert( i < self->size, "index out of range" );
 
   self1->value[i] = gflt(_2);
-
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, FltVector, Value, Range1)
+defmethod(void, gputAt, FltVector, Value, Range1)
   OBJ slice = Slice1_range(atSlice(0,0), self3, self->size);
 
-  retmethod( gputAt(_1,_2,slice) );  
+  gputAt(_1,_2,slice);
 endmethod
 
-defmethod(OBJ, gputAt, FltVector, Value, Slice1)
+defmethod(void, gputAt, FltVector, Value, Slice1)
   test_assert( self3->start < self->size && Slice1_last(self3) < self->size,
                "slice out of range" );
 
-  R64 *val = self1->value+self3->start;
-  R64 *end = self1->value+Slice1_last(self3);
+  F64 *val = self1->value+self3->start;
+  F64 *end = self1->value+Slice1_last(self3);
   I32 step = self3->stride;
-  R64  ini = gflt(_2);
+  F64  ini = gflt(_2);
 
   for (; val < end; val += step)
     *val = ini;
-
-   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, FltVector, Value, IntVector)
-  R64 *val = self1->value;
+defmethod(void, gputAt, FltVector, Value, IntVector)
+  F64 *val = self1->value;
   U32 size = self1->size;
   I32 *idx = self3->value;
   I32 *end = self3->value+self3->size;
-  R64  ini = gflt(_2);
+  F64  ini = gflt(_2);
 
   for(; idx < end; idx++) {
     U32 i = index_abs(*idx, size);
     test_assert( i < size, "index out of range" );
     val[i] = ini;
   }
-
-  retmethod(_1);  
 endmethod
 
-defmethod(OBJ, gputAt, FltVector, FltVector, Range1)
+defmethod(void, gputAt, FltVector, FltVector, Range1)
   OBJ slice = Slice1_range(atSlice(0,0), self3, self->size);
 
-  retmethod( gputAt(_1,_2,slice) );  
+  gputAt(_1,_2,slice);
 endmethod
 
-defmethod(OBJ, gputAt, FltVector, FltVector, Slice1)
+defmethod(void, gputAt, FltVector, FltVector, Slice1)
   test_assert( self3->start < self->size && Slice1_last(self3) < self->size,
                "slice out of range" );
 
-  R64 *val = self1->value+self3->start;
-  R64 *src = self2->value;
-  R64 *end = self2->value+self2->size;
+  F64 *val = self1->value+self3->start;
+  F64 *src = self2->value;
+  F64 *end = self2->value+self2->size;
   I32 step = self3->stride;
 
   for (; src < end; src++, val += step)
     *val = *src;
-  
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gputAt, FltVector, FltVector, IntVector)
+defmethod(void, gputAt, FltVector, FltVector, IntVector)
   test_assert( self2->size == self3->size,
                "incompatible vector sizes" );
 
-  R64 *val = self1->value;
-  R64 *src = self2->value;
+  F64 *val = self1->value;
+  F64 *src = self2->value;
   U32 size = self1->size;
   I32 *idx = self3->value;
   I32 *end = self3->value+self3->size;
@@ -342,13 +331,11 @@ defmethod(OBJ, gputAt, FltVector, FltVector, IntVector)
     test_assert( i < size, "index out of range" );
     val[i] = *src;
   }
-
-  retmethod(_1);  
 endmethod
 
 // ----- getter
 
-defmethod(R64, gfltAt, FltVector, Int)
+defmethod(F64, gfltAt, FltVector, Int)
   U32 i = index_abs(self2->value, self->size);
   test_assert( i < self->size, "index out of range" );
 
@@ -376,17 +363,15 @@ endmethod
 
 // ----- accessors and adjustment
 
-defalias (OBJ, (gput)gappend, FltDynVector, Value);
-defalias (OBJ, (gput)gpush  , FltDynVector, Value);
-defmethod(OBJ,  gput        , FltDynVector, Value)
+defalias (void, (gput)gappend, FltDynVector, Value);
+defalias (void, (gput)gpush  , FltDynVector, Value);
+defmethod(void,  gput        , FltDynVector, Value)
   struct FltVector *vec = &self->FltDynVectorN.FltVector;
 
   if (vec->size == self->capacity)
     dynvector_resizeBy(self, 1.8);
 
   vec->value[vec->size++] = gflt(_2);
-
-  retmethod(_1);
 endmethod
 
 defalias (OBJ, (gget)glast, FltDynVector);
@@ -397,24 +382,22 @@ defmethod(OBJ,  gget      , FltDynVector)
   retmethod( vec->size ? gautoRelease(aFloat(vec->value[vec->size-1])) : 0 );
 endmethod
 
-defalias (OBJ, (gdrop)gpop, FltDynVector);
-defmethod(OBJ,  gdrop     , FltDynVector)
+defalias (void, (gdrop)gpop, FltDynVector);
+defmethod(void,  gdrop     , FltDynVector)
   struct FltVector *vec = &self->FltDynVectorN.FltVector;
   
-  retmethod( vec->size ? gautoRelease(aFloat(vec->value[--vec->size])) : 0 );
+  if (vec->size) --vec->size;
 endmethod
 
-defmethod(OBJ, gadjust, FltDynVector)
+defmethod(void, gadjust, FltDynVector)
   if (self->FltDynVectorN.FltVector.size < self->capacity)
     dynvector_resizeBy(self, 1.0);
 
   test_assert( cos_any_changeClass(_1, classref(FltDynVectorN)),
                "unable to change dynamic vector to fixed size vector" );
-
-  retmethod(_1);
 endmethod
 
-defmethod(OBJ, gappend, FltDynVector, FltVector)
+defmethod(void, gappend, FltDynVector, FltVector)
   struct FltVector *vec = &self->FltDynVectorN.FltVector;
 
   if (self->capacity - vec->size < self2->size) { // enlarge first
@@ -426,48 +409,42 @@ defmethod(OBJ, gappend, FltDynVector, FltVector)
     dynvector_resizeBy(self, size);
   }
 
-  R64 *val = vec  ->value;
-  R64 *end = vec  ->value+self2->size;
-  R64 *src = self2->value;
+  F64 *val = vec  ->value;
+  F64 *end = vec  ->value+self2->size;
+  F64 *src = self2->value;
 
   while (val < end)
     *val++ = *src++;
 
   vec->size += self2->size;
-
-  retmethod(_1);
 endmethod
 
 // ----- clear (in place) 
 
-defmethod(OBJ, gclear, FltVector)
-  R64 *val = self1->value;
-  R64 *end = self1->value+self1->size;
+defmethod(void, gclear, FltVector)
+  F64 *val = self1->value;
+  F64 *end = self1->value+self1->size;
 
   while (val < end)
     *val++ = 0; 
-
-  retmethod(_1);
 endmethod
 
 // ----- reverse (in place)
 
-defmethod(OBJ, greverse, FltVector)
-  R64 *val = self->value;
-  R64 *end = self->value+self->size-1;
-  R64  tmp;
+defmethod(void, greverse, FltVector)
+  F64 *val = self->value;
+  F64 *end = self->value+self->size-1;
+  F64  tmp;
   
   while (val < end)
     tmp = *val, *val++ = *end, *end-- = tmp;
-
-  retmethod(_1);
 endmethod
 
 // ----- apply (in place)
 
-defmethod(OBJ, gapply, Functor, FltVector)
-  R64 *val = self2->value;
-  R64 *end = self2->value+self2->size;
+defmethod(void, gapply, Functor, FltVector)
+  F64 *val = self2->value;
+  F64 *end = self2->value+self2->size;
   struct Float *flt = atFloat(0);
   OBJ obj = (OBJ)flt;
 
@@ -476,13 +453,11 @@ defmethod(OBJ, gapply, Functor, FltVector)
     geval1(_1, obj);
     *val++ = flt->value;
   }
-  
-  retmethod(_2);
 endmethod
 
-defmethod(OBJ, gapply, Function1, FltVector)
-  R64 *val = self2->value;
-  R64 *end = self2->value+self2->size;
+defmethod(void, gapply, Function1, FltVector)
+  F64 *val = self2->value;
+  F64 *end = self2->value+self2->size;
   OBJFCT1 fct = self->fct;
   struct Float *flt = atFloat(0);
   OBJ obj = (OBJ)flt;
@@ -492,8 +467,6 @@ defmethod(OBJ, gapply, Function1, FltVector)
     fct(obj);
     *val++ = flt->value;
   }
-  
-  retmethod(_2);
 endmethod
 
 // ----- map, fold, ...
@@ -547,7 +520,7 @@ defmethod(U32, gsize, FltVector)
   retmethod(self->size);
 endmethod
 
-defmethod(R64*, gfltPtr, FltVector)
+defmethod(F64*, gfltPtr, FltVector)
   retmethod(self->value);
 endmethod
 
@@ -560,15 +533,13 @@ defmethod(OBJ, ginitWith, mFltVector, Sequence1)
   retmethod((OBJ)vec);
 endmethod
 
-defmethod(OBJ, gput, FltVector, Sequence1)
+defmethod(void, gput, FltVector, Sequence1)
   U32 i, j;
 
   for (i = j = 0; i < self->size; i++, j++) {
     if (j >= self2->size) j = 0;
     self1->value[i] = Sequence1_eval(self2, j);
   }
-
-  retmethod(_1);
 endmethod
 
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.15 2008/11/18 08:34:25 ldeniau Exp $
+ | $Id: method.h,v 1.16 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -195,6 +195,7 @@
 #define COS_MTH_DEF_1(RET,NAME,PS,CS,AS,C,A,R) \
 COS_MTH_MSPECHK(    NAME,   CS         ) \
 COS_MTH_RANKCHK(    NAME,   CS,   C    ) \
+COS_MTH_NAMECHK(    NAME,   CS         ) \
 COS_MTH_TYPECHK(RET,NAME,PS,CS         ) \
 COS_MTH_COMPMAK(    NAME,   CS,   C    ) \
 COS_MTH_FUNCDEF(RET,NAME,PS,CS,AS,C,A,R) \
@@ -223,14 +224,14 @@ static struct Class* const _cos_mth_nxt_cls[] = \
  * Low-level implementation
  */
 
-// specialization check
+// method specialization check
 #define COS_MTH_MSPECHK(NAME,CS) \
   COS_STATIC_ASSERT( \
     COS_PP_CAT(COS_SYM_NAME(NAME,CS), \
       __method_cannot_be_specialized_for_class_predicate_INSTANCE), \
     COS_PP_SEPWITH(COS_PP_MAP(CS,COS_CLS_MSPE),&&));
 
-// rank check
+// method rank check
 #define COS_MTH_RANKCHK(NAME,CS,C) \
 COS_PP_IF(COS_PP_GE(C,5))( \
   COS_STATIC_ASSERT( \
@@ -239,7 +240,13 @@ COS_PP_IF(COS_PP_GE(C,5))( \
     COS_PP_SEPWITH(COS_PP_MAP(CS,COS_CLS_RANK),+) < COS_MTH_RNKMAX); \
 ,/* always true */)
 
-// type check
+// method name check
+#define COS_MTH_NAMECHK(NAME,CS) \
+COS_STATIC_ASSERT( \
+  COS_PP_CAT(COS_SYM_NAME(NAME,CS),__name_is_longer_than_256_chars), \
+  sizeof(COS_PP_STR(COS_SYM_NAME(NAME,CS))) <= 256);
+
+// method type check
 #define COS_MTH_TYPECHK(RET,NAME,PS,CS) \
 extern COS_GEN_TYPE(NAME) \
   COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defmethod_vs_defgeneric); \

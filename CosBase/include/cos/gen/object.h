@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.13 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: object.h,v 1.14 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,7 @@
 
 // allocator, deallocator
 defgeneric(OBJ , galloc        , _1);
-defgeneric(OBJ , gallocWithSize, _1, (SIZE)extra);
+defgeneric(OBJ , gallocWithSize, _1, (size_t)extra);
 defgeneric(void, gdealloc      , _1);
 
 // constructors, destructor, clearing
@@ -52,12 +52,12 @@ defgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
 defgeneric(OBJ , ginitWithLoc  , _1, _2, (STR)func, (STR)file, (int)line);
 defgeneric(OBJ , ginitWithStr  , _1, (STR)str);
 defgeneric(OBJ , gdeinit       , _1);
-defgeneric(OBJ , gclear        , _1);
+defgeneric(void, gclear        , _1);
 
 // ownership
 defgeneric(OBJ , gretain       , _1);
-defgeneric(OBJ , grelease      , _1);
-defgeneric(OBJ , gdiscard      , _1);
+defgeneric(void, grelease      , _1);
+defgeneric(void, gdiscard      , _1);
 defgeneric(OBJ , gautoRelease  , _1);
 defgeneric(U32 , gretainCount  , _1);
 
@@ -71,12 +71,9 @@ defgeneric(STR , gclassName    , _1);
 defgeneric(OBJ , gsuperClass   , _1);
 
 // comparison
-defgeneric(OBJ , gequal        , _1, _2); // return True or False
+defgeneric(OBJ , gisEqual      , _1, _2); // return True or False
 defgeneric(OBJ , gcompare      , _1, _2); // return Equal, Lesser or Greater
 defgeneric(U32 , ghash         , _1);
-
-// adjust object (capacity to size)
-defgeneric(OBJ , gadjust       , _1);
 
 // contract
 defgeneric(void, ginvariant    , _1, (STR)func, (STR)file, (int)line);

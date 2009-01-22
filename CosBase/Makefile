@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.17 2008/12/20 00:02:38 ldeniau Exp $
+# | $Id: Makefile,v 1.18 2009/01/22 16:45:07 ldeniau Exp $
 # |
 #
 
@@ -54,21 +54,25 @@ targets := # default
 headers := # default
 sources := # default
 defgens := # default
+defprps := # default
 
-# only names (as with -lname, module, library)
+# project components (only sub{module} names)
+modules := # none
+
+# project dependencies (only {module|library} names as with -lname)
 moddeps := # none
 libdeps := # none
 
-# only directories (module, library, include, binary)
+# project dependencies (only {module|library|include|binary} paths as with -Ipath or -Lpath)
 moddirs := # default
 libdirs := # none
 incdirs := # none
 bindirs := # none
 
-# patterns (clean, not install, not tar)
+# patterns (clean, install-excluded, tar-excluded)
 cleanpat := # default
-insexpat := # default
 tarexpat := # default
+insexpat := # default
 
 include $(cos)/epilogue
 
@@ -84,10 +88,21 @@ install.pre: $(BINDIR)/$(COSCMT)
 	$_ $(RM)    $(INSTDIR)/bin/$(COSCMT)
 	$_ $(CP) $< $(INSTDIR)/bin/$(COSCMT)
 
-$(BINDIR)/$(COSCMT) : CCFLAGS := $(CCFLAGS)
+$(BINDIR)/$(COSCMT): CCFLAGS := $(CCFLAGS)
 $(BINDIR)/$(COSCMT): $(BASEDIR)/tools/src/coscmt.c
 	$_ $(CC) $(CCFLAGS) $< -o $@
 	$_ $(if $(STRIP),$(STRIP) $@)
+
+# COS uninstallation:
+# remove $(prefix)/include/cos and $(prefix)/share/doc/cos directories
+
+uninstall.post:
+	$_ for d in $(INSTDIR)/include/cos $(INSTDOC) ; do \
+	     if [ -d $$d ] ; then \
+	       echo "*** Removing $$d" ; \
+	       $(RM) $$d ; \
+	     fi ; \
+	   done
 
 # end of COS makefile
 

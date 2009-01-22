@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.14 2008/12/12 13:27:11 ldeniau Exp $
+ | $Id: cosdef.h,v 1.15 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -40,54 +40,52 @@
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/cosdef.h>"
 #endif
 
-typedef _Bool                   BOOL;
+typedef signed   char        I8 , BYTE;
+typedef unsigned char        U8 , UBYTE;
 
-typedef signed   char      I8 , BYTE;
-typedef unsigned char      U8 , UBYTE;
-
-typedef signed   short     I16, SHORT;
-typedef unsigned short     U16, USHORT;
+typedef signed   short       I16, SHORT;
+typedef unsigned short       U16, USHORT;
 
 #if UINT_MAX >= 4294967295UL
-typedef signed   int       I32, INT;
-typedef unsigned int       U32, UINT;
+typedef signed   int         I32, INT;
+typedef unsigned int         U32, UINT;
 #else
-typedef signed   long      I32, INT;
-typedef unsigned long      U32, UINT;
+typedef signed   long        I32, INT;
+typedef unsigned long        U32, UINT;
 #endif
 
 #if ULONG_MAX >= 18446744073709551615ULL
-typedef signed   long      I64, LONG;
-typedef unsigned long      U64, ULONG;
+typedef signed   long        I64, LONG;
+typedef unsigned long        U64, ULONG;
 #elif ULLONG_MAX >= 18446744073709551615ULL
-typedef signed   long long I64, LONG;
-typedef unsigned long long U64, ULONG;
+typedef signed   long long   I64, LONG;
+typedef unsigned long long   U64, ULONG;
 #elif defined(_LongLong)
-typedef _LongLong          I64, LONG;
-typedef _ULongLong         U64, ULONG;
+typedef _LongLong            I64, LONG;
+typedef _ULongLong           U64, ULONG;
 #else
-typedef struct {U32 _[2];} I64, LONG;
-typedef struct {U32 _[2];} U64, ULONG;
+typedef struct { U32 _[2]; } I64, LONG;
+typedef struct { U32 _[2]; } U64, ULONG;
 #endif
 
-typedef double             R64, FLOAT;
+typedef double               F64, FLOAT;
 
 #if __STDC_VERSION__ >= 199901L
-typedef _Complex double    C64, COMPLEX;
+typedef _Complex double      C64, COMPLEX;
 #elif defined(_ComplexDouble)
-typedef _ComplexDouble     C64, COMPLEX;
+typedef _ComplexDouble       C64, COMPLEX;
 #else
-typedef struct {R64 _[2];} C64, COMPLEX;
+typedef struct { R64 _[2]; } C64, COMPLEX;
 #endif
 
-typedef size_t                  SIZE;
-typedef ptrdiff_t               IDX;
-typedef const char*             STR; // string literal
-typedef struct OBJ*             OBJ; // object ADT, never defined
-typedef const struct Generic*   SEL; // message selector
+typedef _Bool                BOOL;
+typedef const char*           STR; // string literal
+typedef struct OBJ*           OBJ; // object ADT, never defined
+typedef const struct Generic* SEL; // message selector
 
 typedef void (*FUNC)(void);
 
+typedef void (*OBJFCT0)(OBJ);
 typedef OBJ  (*OBJFCT1)(OBJ);
 typedef OBJ  (*OBJFCT2)(OBJ,OBJ);
 typedef OBJ  (*OBJFCT3)(OBJ,OBJ,OBJ);
@@ -159,7 +157,7 @@ struct cos_exception_extendedProtect {
   struct cos_exception_protect *prv;
   OBJ const *obj;
   OBJ const *alt;
-  OBJFCT1    fct;
+  OBJFCT0    fct;
 };
 
 // dispatch caches

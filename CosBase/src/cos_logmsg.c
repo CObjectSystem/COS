@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.10 2008/12/04 18:39:29 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.11 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -77,14 +77,14 @@ cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
 
     if (cos_logmsg_out == 0     ) cos_logmsg_out = stderr;
     if (cos_logmsg_out == stderr) fflush(stdout);
-   
+
     va_start(va,fmt);
 #if COS_POSIX
-    fprintf(cos_logmsg_out,"COS-%s[%u]:(%s,%s,%d): ",
-            tag[lvl], (U32)getpid(), func ? func : "", file ? file : "", line);
+    fprintf(cos_logmsg_out,"COS-%s[%u]:(%s,%d,%s): ",
+            tag[lvl], (U32)getpid(), file ? file : "", line, func ? func : "");
 #else
-    fprintf(cos_logmsg_out,"COS-%s:(%s,%s,%d): ",
-            tag[lvl], func ? func : "", file ? file : "", line);
+    fprintf(cos_logmsg_out,"COS-%s:(%s,%d,%s): ",
+            tag[lvl], file ? file : "", line, func ? func : "");
 #endif
     vfprintf(cos_logmsg_out,fmt,va);
     putc('\n',cos_logmsg_out);

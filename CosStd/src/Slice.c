@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.1 2008/09/28 19:56:26 ldeniau Exp $
+ | $Id: Slice.c,v 1.2 2009/01/22 16:45:08 ldeniau Exp $
  |
 */
 
@@ -95,7 +95,7 @@ endmethod
 
 // ----- equality
 
-defmethod(OBJ, gequal, Slice1, Slice1)
+defmethod(OBJ, gisEqual, Slice1, Slice1)
   BOOL res = self1->start  == self2->start
           && self1->stride == self2->stride
           && self1->size   == self2->size;
@@ -103,7 +103,7 @@ defmethod(OBJ, gequal, Slice1, Slice1)
   retmethod( res ? True : False );
 endmethod
 
-defmethod(OBJ, gequal, Slice2, Slice2)
+defmethod(OBJ, gisEqual, Slice2, Slice2)
   BOOL res = self1->start  == self2->start;
 
   for (int i = 0; res && i < 2; i++)
@@ -113,7 +113,7 @@ defmethod(OBJ, gequal, Slice2, Slice2)
   retmethod( res ? True : False );
 endmethod
 
-defmethod(OBJ, gequal, Slice3, Slice3)
+defmethod(OBJ, gisEqual, Slice3, Slice3)
   BOOL res = self1->start  == self2->start;
 
   for (int i = 0; res && i < 3; i++)
@@ -123,7 +123,7 @@ defmethod(OBJ, gequal, Slice3, Slice3)
   retmethod( res ? True : False );
 endmethod
 
-defmethod(OBJ, gequal, Slice4, Slice4)
+defmethod(OBJ, gisEqual, Slice4, Slice4)
   BOOL res = self1->start  == self2->start;
 
   for (int i = 0; res && i < 4; i++)
@@ -133,7 +133,7 @@ defmethod(OBJ, gequal, Slice4, Slice4)
   retmethod( res ? True : False );
 endmethod
 
-defmethod(OBJ, gequal, Slice5, Slice5)
+defmethod(OBJ, gisEqual, Slice5, Slice5)
   BOOL res = self1->start  == self2->start;
 
   for (int i = 0; res && i < 5; i++)

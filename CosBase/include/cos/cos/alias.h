@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: alias.h,v 1.2 2008/11/07 23:39:35 ldeniau Exp $
+ | $Id: alias.h,v 1.3 2009/01/22 16:45:07 ldeniau Exp $
  |
 */
 
@@ -98,13 +98,14 @@
 
 #define COS_ALS_DEF_1(RET,NAME,ALIAS,PS,CS,C) \
 COS_ALS_TYPECHK(RET,NAME,ALIAS,PS,CS  ) \
+COS_ALS_NAMECHK(         ALIAS,   CS  ) \
 COS_ALS_COMPMAK(    NAME,ALIAS,   CS,C)
 
 /*
  * Low-level implementation
  */
 
-// type comparison
+// alias type comparison
 #define COS_ALS_TYPECHK(RET,NAME,ALIAS,PS,CS) \
 extern COS_GEN_TYPE(ALIAS) \
   COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defalias_vs_defgeneric); \
@@ -114,7 +115,13 @@ extern RET (* \
   COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defalias_vs_defgeneric)) \
                                           COS_PP_MAP(PS,COS_SIG_GEN);
 
-// component intantiation (see cos/cos/coscls.h)
+// alias name check
+#define COS_ALS_NAMECHK(NAME,CS) \
+COS_STATIC_ASSERT( \
+  COS_PP_CAT(COS_SYM_NAME(NAME,CS),__name_is_longer_than_256_chars), \
+  sizeof(COS_PP_STR(COS_SYM_NAME(NAME,CS))) <= 256);
+
+// alias intantiation (see cos/cos/coscls.h)
 #define COS_ALS_COMPMAK(NAME,ALIAS,CS,C) \
 COS_PP_SEP(COS_PP_MAP(CS,COS_ALS_CLS)) \
 extern struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS); \

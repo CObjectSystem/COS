@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.2 2008/12/15 14:38:55 ldeniau Exp $
+ | $Id: tests.c,v 1.3 2009/01/22 16:45:08 ldeniau Exp $
  |
 */
 
@@ -55,7 +55,9 @@ int main(int argc, char *argv[])
   int init_time = NO;
   int speed_test = NO;
   int i;
-  
+
+  cos_logmsg_set(COS_LOGMSG_DEBUG);
+
   for (i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "-i"))
       init_time = YES;
