@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.15 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: cosdef.h,v 1.16 2009/01/23 10:34:58 ldeniau Exp $
  |
 */
 
@@ -61,7 +61,7 @@ typedef unsigned long        U64, ULONG;
 typedef signed   long long   I64, LONG;
 typedef unsigned long long   U64, ULONG;
 #elif defined(_LongLong)
-typedef _LongLong            I64, LONG;
+typedef  _LongLong           I64, LONG;
 typedef _ULongLong           U64, ULONG;
 #else
 typedef struct { U32 _[2]; } I64, LONG;
@@ -75,7 +75,7 @@ typedef _Complex double      C64, COMPLEX;
 #elif defined(_ComplexDouble)
 typedef _ComplexDouble       C64, COMPLEX;
 #else
-typedef struct { R64 _[2]; } C64, COMPLEX;
+typedef struct { F64 _[2]; } C64, COMPLEX;
 #endif
 
 typedef _Bool                BOOL;

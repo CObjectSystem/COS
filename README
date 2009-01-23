@@ -29,11 +29,11 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.4 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: README,v 1.5 2009/01/23 10:34:58 ldeniau Exp $
 # |
 #
 
-Compilation/tests/[Un]install:
+Compilation/tests/[un]install:
 ------------------------------
 
 # in the source tree
@@ -62,7 +62,7 @@ path-to-cos/CosBase/Makefile
 # program
 path-to-cos/CosBase/tests/Makefile
 
-Debugging Makefiles:
+Debugging makefiles:
 --------------------
 
 make [target] SHOW=yes TRACE=yes
@@ -70,6 +70,17 @@ make [target] SHOW=yes TRACE=yes
 # debug flags
 SHOW  will show the commands run
 TRACE will show the value of important variables
+
+Supported platforms:
+--------------------
+
+platform name is detected using the posix command "uname -s"
+
+the list of supported platforms are in the directory
+path-to-cos/CosBase/include/cos/cfg/
+
+porting on Unixes/Posix compliant platform should be easy
+porting on Windows probably requires some Posix like environment (e.g. Mingw, Cygwin)
 
 Documentation:
 --------------
