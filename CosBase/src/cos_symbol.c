@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.19 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.20 2009/01/23 10:33:07 ldeniau Exp $
  |
 */
 
@@ -854,27 +854,61 @@ cos_method_nextClear(void)
 
 #include <cos/debug.h>
 
-#if __STDC__VERSION < 199901L
-int snprintf(char *str, size_t size, const char *format, ...);
-#endif
+static inline char*
+cpyStr(char *dst, char *end, const char *src)
+{
+  while (dst < end && *src)
+    *dst++ = *src++;
+    
+  return dst;
+}
+
+static inline char*
+cpyClsName(char *dst, char *end, struct Class *const *cls, U32 ncls)
+{
+  U32 i;
+  
+  if (dst < end) *dst++ = '<';
+
+  for (i = 0; i < ncls && dst < end; i++) {
+    dst = cpyStr(dst, end, cls[i]->name);
+    if (i < ncls-1 && dst < end) *dst++ = ',';
+  }
+  
+  if (dst < end) *dst++ = '>';
+  if (dst < end) *dst   =  0 ;
+
+  return dst;
+}
+
+static inline char*
+cpyObjClsName(char *dst, char *end, OBJ obj[], U32 nobj)
+{
+  U32 i;
+  
+  if (dst < end) *dst++ = '(';
+
+  for (i = 0; i < nobj && dst < end; i++) {
+    dst = cpyStr(dst, end, cos_any_className(obj[i]));
+    if (i < nobj-1 && dst < end) *dst++ = ',';
+  }
+
+  if (dst < end) *dst++ = ')';
+  if (dst < end) *dst   =  0 ;
+  
+  return dst;
+}
 
 char*
 cos_method_name(const struct Method *mth, char *str, U32 sz)
 {
   struct Class* const *cls = STATIC_CAST(const struct Method5*, mth)->cls;
+  U32  ncls = COS_GEN_RNK(mth->gen);
+  char *end = str+sz;
 
-  switch( COS_GEN_RNK(mth->gen) ) {
-  case 1: snprintf(str, sz, "%s<%s>", mth->gen->name,
-                   cls[0]->name); break;
-  case 2: snprintf(str, sz, "%s<%s,%s>", mth->gen->name,
-                   cls[0]->name, cls[1]->name); break;
-  case 3: snprintf(str, sz, "%s<%s,%s,%s>", mth->gen->name,
-                   cls[0]->name, cls[1]->name, cls[2]->name); break;
-  case 4: snprintf(str, sz, "%s<%s,%s,%s,%s>", mth->gen->name,
-                   cls[0]->name, cls[1]->name, cls[2]->name, cls[3]->name); break;
-  case 5: snprintf(str, sz, "%s<%s,%s,%s,%s,%s>", mth->gen->name,
-                   cls[0]->name, cls[1]->name, cls[2]->name, cls[3]->name, cls[4]->name); break;
-  }
+  cpyClsName(cpyStr(str,end,mth->gen->name), end,cls,ncls);
+
+  if (sz > 0) str[sz-1] = 0;
   
   return str;
 }
@@ -882,23 +916,13 @@ cos_method_name(const struct Method *mth, char *str, U32 sz)
 char*
 cos_method_call(SEL gen, OBJ obj[], char *str, U32 sz)
 {
-  switch( COS_GEN_RNK(gen) ) {
-  case 1: snprintf(str, sz, "%s(%s)", gen->name,
-                   cos_any_className(obj[0])); break;
-  case 2: snprintf(str, sz, "%s(%s,%s)", gen->name,
-                   cos_any_className(obj[0]), cos_any_className(obj[1])); break;
-  case 3: snprintf(str, sz, "%s(%s,%s,%s)", gen->name,
-                   cos_any_className(obj[0]), cos_any_className(obj[1]),
-                   cos_any_className(obj[2])); break;
-  case 4: snprintf(str, sz, "%s(%s,%s,%s,%s)", gen->name,
-                   cos_any_className(obj[0]), cos_any_className(obj[1]),
-                   cos_any_className(obj[2]), cos_any_className(obj[3])); break;
-  case 5: snprintf(str, sz, "%s(%s,%s,%s,%s,%s)", gen->name,
-                   cos_any_className(obj[0]), cos_any_className(obj[1]),
-                   cos_any_className(obj[2]), cos_any_className(obj[3]),
-                   cos_any_className(obj[4])); break;
-  }
-  
+  U32  ncls = COS_GEN_RNK(gen);
+  char *end = str+sz;
+
+  cpyObjClsName(cpyStr(str,end,gen->name), end,obj,ncls);
+
+  if (sz > 0) str[sz-1] = 0;
+
   return str;
 }
 
@@ -906,36 +930,20 @@ char*
 cos_method_callName(const struct Method *mth, OBJ obj[], char *str, U32 sz)
 {
   struct Class* const *cls = STATIC_CAST(const struct Method5*, mth)->cls;
+  U32  ncls = COS_GEN_RNK(mth->gen);
+  char *end = str+sz;
 
-  switch( COS_GEN_RNK(mth->gen) ) {
-  case 1: snprintf(str, sz, "%s<%s>(%s)", mth->gen->name,
-                   cls[0]->name,
-                   cos_any_className(obj[0])); break;
-  case 2: snprintf(str, sz, "%s<%s,%s>(%s,%s)", mth->gen->name,
-                   cls[0]->name, cls[1]->name,
-                   cos_any_className(obj[0]), cos_any_className(obj[1])); break;
-  case 3: snprintf(str, sz, "%s<%s,%s,%s>(%s,%s,%s)", mth->gen->name,
-                   cls[0]->name, cls[1]->name, cls[2]->name,
-                   cos_any_className(obj[0]), cos_any_className(obj[1]),
-                   cos_any_className(obj[2])); break;
-  case 4: snprintf(str, sz, "%s<%s,%s,%s,%s>(%s,%s,%s,%s)", mth->gen->name,
-                   cls[0]->name, cls[1]->name, cls[2]->name, cls[3]->name,
-                   cos_any_className(obj[0]), cos_any_className(obj[1]),
-                   cos_any_className(obj[2]), cos_any_className(obj[3])); break;
-  case 5: snprintf(str, sz, "%s<%s,%s,%s,%s,%s>(%s,%s,%s,%s,%s)", mth->gen->name,
-                   cls[0]->name, cls[1]->name, cls[2]->name, cls[3]->name, cls[4]->name,
-                   cos_any_className(obj[0]), cos_any_className(obj[1]),
-                   cos_any_className(obj[2]), cos_any_className(obj[3]),
-                   cos_any_className(obj[4])); break;
-  }
-  
+  cpyObjClsName(cpyClsName(cpyStr(str,end,mth->gen->name), end,cls,ncls), end,obj,ncls);
+
+  if (sz > 0) str[sz-1] = 0;
+
   return str;
 }
 
 static void
 mth_trace(STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)
 {
-  char buf[128];
+  char buf[256];
 
   if (enter)
     cos_logmsg(COS_LOGMSG_TRACE,0,file,line,"-> %s",cos_method_callName(mth,obj,buf,sizeof buf));
