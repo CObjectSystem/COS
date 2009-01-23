@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.12 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: config.h,v 1.13 2009/01/23 10:33:48 ldeniau Exp $
  |
 */
 
@@ -85,14 +85,16 @@
 #define _Bool unsigned char
 #endif
 
+/*
 #ifndef _LongLong
-#define _LongLong  struct {          long _[2]; } //          __long_long__
-#define _ULongLong struct { unsigned long _[2]; } // unsigned __long_long__
+#define _LongLong            __long_long__
+#define _ULongLong  unsigned __long_long__
 #endif
 
 #ifndef _ComplexDouble
-#define _ComplexDouble  struct { double _[2]; } // __complex__
+#define _ComplexDouble __complex__
 #endif
+*/
 
 #ifndef __FUNC__
 #define __FUNC__ ""
@@ -109,9 +111,25 @@
 /* NOTE-CONF: POSIX and Thread Local Storage
    define system flags here or with SYSFLAGS in the config.xxx makefile
 */
-// #define COS_POSIX 1
-// #define COS_TLS   1
+// default assumptions
+#ifndef COS_POSIX
+#define COS_POSIX 1
+#endif
 
+#ifndef COS_TLS
+#define COS_TLS 1
+#endif
+
+// check for negations
+#ifdef COS_NOTLS
+#undef COS_TLS
+#endif
+
+#ifdef COS_NOPOSIX
+#undef COS_POSIX
+#endif
+
+// adjust keywords
 #if !COS_TLS
 #define __thread
 #endif
