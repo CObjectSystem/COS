@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.12 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: generic.h,v 1.13 2009/01/23 15:55:53 ldeniau Exp $
  |
 */
 
@@ -85,9 +85,10 @@
    {generic,param}-name:
      identifier                                     // C99 6.4.2.1
 
-   where in the context of generics:
-     - the class-name_opt in param-decl is discarded and can be replaced by
-       anything.
+   - the class-name_opt in param-decl is discarded and can be replaced by
+     anything.
+
+   - makgeneric is optional if you use the makefiles provided by COS.
 
    examples:
      usegeneric(ga,gb,(gc)gfoo);  // declare generics ga, gb, and gc as gfoo

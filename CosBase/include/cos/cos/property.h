@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.1 2009/01/23 15:12:28 ldeniau Exp $
+ | $Id: property.h,v 1.2 2009/01/23 15:55:54 ldeniau Exp $
  |
 */
 
@@ -69,6 +69,9 @@
      the name of the property class is built from the name of the property
      prefixed by 'P_'.
 
+   - makproperty are optional if you use the makefiles provided by COS
+     (as for makgeneric)
+
    examples:
      useproperty(firstname, (fullname)name); // declare properties (classes)
 
@@ -82,9 +85,6 @@
      defproperty( class-name, property-specifier );
      defproperty( class-name, property-specifier, read-action );
      defproperty( class-name, property-specifier, read-action, write-action );
-     
-     defproperty( class-name, (attribute)property-name );
-     defproperty( class-name, (attribute)property-name );
      
    property-specifier:
      property-name
@@ -103,7 +103,6 @@
    examples:
      defproperty(Person, name);             // read-write property-attribute name
      defproperty(Person, name, );           // read-only  property-attribute name
-     defproperty(Person, name, , );         // read-write property-attribute name
      defproperty(Person, (name)fullname);   // property fullname   for attribute name
      defproperty(Person, (name)familyname); // property familyname for attribute name
 
@@ -180,20 +179,24 @@
         COS_CLS_DEF_2(COS_PRP_NAME(NAME),Property)
 
 #define COS_PRP_DEF_2(NAME,PROP) \
-        COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP)) \
+        COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),) \
         COS_PRP_DEF_PUT(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP))
 
 #define COS_PRP_DEF_3(NAME,PROP,GET) \
-        COS_PRP_DEF_GETBOX(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),GET)
+        COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX)
 
-#define COS_PRP_DEF_4(NAME,PROP,GET,PUT) \
-        COS_PRP_DEF_GETBOX(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),GET) \
-        COS_PRP_DEF_PUTBOX(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),PUT)
+#define COS_PRP_DEF_4(NAME,PROP,GET,SET) \
+        COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX  ) \
+        COS_PRP_DEF_SET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),UNBOX)
 
-// getter/setter for objects
-#define COS_PRP_DEF_GET(NAME,PROP,ATTR) \
+#define COS_PRP_DEF_GET(NAME,PROP,ATTR,BOX) \
    COS_MTH_DEF(OBJ, ggetAt, NAME, COS_MPR_NAME(PROP)) \
-     COS_MTH_RET(self->ATTR); \
+     COS_MTH_RET(BOX(self->ATTR)); \
+   COS_MTH_END
+
+#define COS_PRP_DEF_SET(NAME,PROP,ATTR,UNBOX) \
+   COS_MTH_DEF(void, gputAt, NAME, Any, COS_MPR_NAME(PROP)) \
+       self->ATTR = UNBOX(_2); \
    COS_MTH_END
 
 #define COS_PRP_DEF_PUT(NAME,PROP,ATTR) \
@@ -202,17 +205,6 @@
        grelease(self->ATTR); \
        self->ATTR = gretain(_2); \
      } \
-   COS_MTH_END
-
-// getter/setter for non-objects
-#define COS_PRP_DEF_GETBOX(NAME,PROP,ATTR,BOX) \
-   COS_MTH_DEF(OBJ, ggetAt, NAME, COS_MPR_NAME(PROP)) \
-     COS_MTH_RET(BOX(self->ATTR)); \
-   COS_MTH_END
-
-#define COS_PRP_DEF_PUTBOX(NAME,PROP,ATTR,UNBOX) \
-   COS_MTH_DEF(void, gputAt, NAME, Any, COS_MPR_NAME(PROP)) \
-       self->ATTR = UNBOX(_2); \
    COS_MTH_END
 
 /* property instantiation
