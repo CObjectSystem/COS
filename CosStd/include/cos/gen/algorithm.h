@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.4 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: algorithm.h,v 1.5 2009/01/23 16:13:21 ldeniau Exp $
  |
 */
 
@@ -84,7 +84,7 @@ defgeneric(OBJ, gfind, fun, obj, _1);
 
 // bag-like algorithms - TODO
 defgeneric(OBJ, gunique, _1);
-defgeneric(OBJ, group  , _1);
+defgeneric(OBJ, ggroup , _1);
 defgeneric(OBJ, gsplit , _1);
 
 // set-like algorithms - TODO

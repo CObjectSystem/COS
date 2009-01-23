@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.4 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: container.h,v 1.5 2009/01/23 16:13:21 ldeniau Exp $
  |
 */
 
@@ -48,6 +48,7 @@ defgeneric(void, gpop , from);        // alias for gdrop
 // seq-like accessor
 defgeneric(void, gappend, to  , what);
 defgeneric(void, ginsert, to  , what);
+defgeneric(OBJ , gfirst , from);
 defgeneric(OBJ , glast  , from);
 
 // raw data (copy) accessors
@@ -57,6 +58,9 @@ defgeneric(void, ggetValueAt, from, what, at);
 // drop element
 defgeneric(void, gdrop  , from);
 defgeneric(void, gdropAt, from, at);
+
+// check for element
+defgeneric(OBJ , gisEmpty, _1);
 
 // adjust object (e.g. capacity to size)
 defgeneric(void, gadjust, _1);
