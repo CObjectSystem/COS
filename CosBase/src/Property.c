@@ -1,16 +1,13 @@
-#ifndef COS_GEN_ACCESSOR_H
-#define COS_GEN_ACCESSOR_H
-
 /*
  o---------------------------------------------------------------------o
  |
- | COS generics for accessor
+ | COS Property
  |
  o---------------------------------------------------------------------o
  |
  | C Object System
  |
- | Copyright (c) 2006+ Laurent Deniau, laurent.deniau*cern.ch
+ | Copyright (c) 2006+ Laurent Deniau, laurent.deniau@cern.ch
  |
  | For more information, see:
  | http://cern.ch/laurent.deniau/cos.html
@@ -32,18 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: accessor.h,v 1.2 2009/01/23 15:12:28 ldeniau Exp $
+ | $Id: Property.c,v 1.1 2009/01/23 15:12:28 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
+#include <cos/Property.h>
 
-// generic accessors
-defgeneric(void, gput, to, what);
-defgeneric(OBJ , gget, from);
+// -----
 
-// generic accessors with location
-defgeneric(void, gputAt, to, what, at);
-defgeneric(OBJ , ggetAt, from, at);
+makclass(Property,Nil);
 
-#endif // COS_GEN_ACCESSOR_H

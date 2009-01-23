@@ -1,16 +1,16 @@
-#ifndef COS_GEN_ACCESSOR_H
-#define COS_GEN_ACCESSOR_H
+#ifndef COS_PROPERTY_H
+#define COS_PROPERTY_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS generics for accessor
+ | COS Property
  |
  o---------------------------------------------------------------------o
  |
  | C Object System
  |
- | Copyright (c) 2006+ Laurent Deniau, laurent.deniau*cern.ch
+ | Copyright (c) 2006+ Laurent Deniau, laurent.deniau@cern.ch
  |
  | For more information, see:
  | http://cern.ch/laurent.deniau/cos.html
@@ -32,18 +32,34 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: accessor.h,v 1.2 2009/01/23 15:12:28 ldeniau Exp $
+ | $Id: Property.h,v 1.1 2009/01/23 15:12:28 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
+#include <cos/Nil.h>
 
-// generic accessors
-defgeneric(void, gput, to, what);
-defgeneric(OBJ , gget, from);
+/* NOTE-USER: Property
 
-// generic accessors with location
-defgeneric(void, gputAt, to, what, at);
-defgeneric(OBJ , ggetAt, from, at);
+   Property is the root class of all properties. Properties are classes
+   deriving from the class Property with name prefixed by P_. Using the
+   property 'name' is equivalent to use the class 'P_name'.
+   
+   Properties are useful for KVC (Key-Value Coding) which allow to use
+   any object as an associative collection, as well as for serialization,
+   attribute introspection and scripting.
+*/
 
-#endif // COS_GEN_ACCESSOR_H
+defclass(Property,Nil)
+endclass
+
+// class-property define getters/setters
+
+#ifndef COS_GEN_OBJECT_H
+#include <cos/gen/object.h>
+#endif
+
+#ifndef COS_GEN_ACCESSOR_H
+#include <cos/gen/accessor.h>
+#endif
+
+#endif // COS_PROPERTY_H

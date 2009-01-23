@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.9 2008/11/04 19:38:34 ldeniau Exp $
+ | $Id: base.h,v 1.10 2009/01/23 15:12:28 ldeniau Exp $
  |
 */
 
@@ -126,6 +126,11 @@
 #define COS_PCL_RANK(NAME)    COS_PP_CAT(cos_k_pm,NAME)
 #define COS_GEN_TYPE(NAME)    COS_PP_CAT(cos_G_  ,NAME)
 #define COS_NXT_TYPE(NAME)    COS_PP_CAT(cos_N_  ,NAME)
+
+// property names
+#define COS_PRP_NAME(NAME)    COS_PP_CAT(P_      ,NAME)
+#define COS_MPR_NAME(NAME)    COS_PP_CAT(mP_     ,NAME)
+#define COS_PPR_NAME(NAME)    COS_PP_CAT(pmP_    ,NAME)
 
 // generics return and arguments type
 #define COS_RET_TYPE(NAME)    COS_PP_CAT(NAME,_ret_t)

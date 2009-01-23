@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utils.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: utils.h,v 1.2 2009/01/23 15:12:28 ldeniau Exp $
  |
  o
 */
@@ -69,7 +69,7 @@
 #define COS_PP_CAT4(a,b,c,...) COS_PP_CAT4_(a,b,c,__VA_ARGS__)
 #define COS_PP_CAT_NARG(a,...) COS_PP_CAT  (a,COS_PP_NARG(__VA_ARGS__))
 
-#define COS_PP_DUP(n,...)    COS_PP_CAT_(COS_PP_DUP_,n)(__VA_ARGS__)
+#define COS_PP_DUP(n,...)      COS_PP_CAT_(COS_PP_DUP_,n)(__VA_ARGS__)
 
 /***********************************************************
  * Implementation
