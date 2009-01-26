@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.10 2009/01/23 15:12:28 ldeniau Exp $
+ | $Id: base.h,v 1.11 2009/01/26 14:30:41 ldeniau Exp $
  |
 */
 
@@ -176,6 +176,10 @@
         COS_PP_IF(COS_PP_ISTUPLE(a))(COS_PP_SWAP((COS_PP_PART a),COS_PP_ARG1),a)
 #define COS_DCL_LNAME(a) \
         COS_PP_IF(COS_PP_ISTUPLE(a))(COS_PP_EAT a,a)
+
+// declaration of property name: (class)property
+#define COS_DCL_PNAME(NAME) \
+        (COS_PRP_NAME(COS_DCL_GNAME(NAME)))COS_DCL_LNAME(NAME)
 
 // parameters parsing: (type)name -> <type name> | <type> | <name>
 #define COS_PRM_DECL(a) \

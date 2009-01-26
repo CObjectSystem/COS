@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.8 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: init.h,v 1.9 2009/01/26 14:30:41 ldeniau Exp $
  |
 */
 
@@ -50,6 +50,8 @@ defgeneric(OBJ , ginitWithObj7 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6
 defgeneric(OBJ , ginitWithObj8 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7, (OBJ)_8, (OBJ)_9);
 defgeneric(OBJ , ginitWithObj9 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7, (OBJ)_8, (OBJ)_9, (OBJ)_10);
 
+defgeneric(OBJ, ginitWithChr , _1, (I32)val);
+defgeneric(OBJ, ginitWithSht , _1, (I32)val);
 defgeneric(OBJ, ginitWithInt , _1, (I32)val);
 defgeneric(OBJ, ginitWithLng , _1, (I64)val);
 defgeneric(OBJ, ginitWithFlt , _1, (F64)val);
@@ -108,6 +110,16 @@ gnewWithObj8(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5, OBJ _6, OBJ _7, OBJ _8, OBJ
 static inline OBJ
 gnewWithObj9(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5, OBJ _6, OBJ _7, OBJ _8, OBJ _9, OBJ _10) {
   return ginitWithObj9(galloc(_1),_2,_3,_4,_5,_6,_7,_8,_9,_10);  COS_UNUSED(gnewWithObj9);
+}
+
+static inline OBJ
+gnewWithChr(OBJ _1, I32 val) {
+  return ginitWithChr(galloc(_1),val); COS_UNUSED(gnewWithChr);
+}
+
+static inline OBJ
+gnewWithSht(OBJ _1, I32 val) {
+  return ginitWithSht(galloc(_1),val); COS_UNUSED(gnewWithSht);
 }
 
 static inline OBJ

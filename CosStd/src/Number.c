@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.9 2009/01/22 16:45:08 ldeniau Exp $
+ | $Id: Number.c,v 1.10 2009/01/26 14:30:41 ldeniau Exp $
  |
 */
 
@@ -50,6 +50,9 @@ makclass(Int     , Integral);
 makclass(Long    , Integral);
 makclass(Float   , Floating);
 makclass(Complex , Floating);
+
+makclass(Char    , Int);
+makclass(Short   , Int);
 
 // ----- copy constructor
 
@@ -110,27 +113,45 @@ endmethod
 
 // ----- value constructor
 
-defmethod(OBJ, ginitWithInt, Int, (INT)val)
+defmethod(OBJ, ginitWithChr, Char, (I32)val)
+  self->Int.value = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithSht, Short, (I32)val)
+  self->Int.value = val;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithInt, Int, (I32)val)
   self->value = val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWithLng, Long, (LONG)val)
+defmethod(OBJ, ginitWithLng, Long, (I64)val)
   self->value = val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWithFlt, Float, (FLOAT)val)
+defmethod(OBJ, ginitWithFlt, Float, (F64)val)
   self->value = val;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWithCpx, Complex, (COMPLEX)val)
+defmethod(OBJ, ginitWithCpx, Complex, (C64)val)
   self->value = val;
   retmethod(_1);
 endmethod
 
 // ----- value
+
+defmethod(I32, gchr, Char)
+  retmethod(self->Int.value);
+endmethod
+
+defmethod(I32, gsht, Short)
+  retmethod(self->Int.value);
+endmethod
 
 defmethod(I32, gint, Int)
   retmethod(self->value);

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.6 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: Number.h,v 1.7 2009/01/26 14:30:41 ldeniau Exp $
  |
 */
 
@@ -52,24 +52,38 @@ endclass
 // ----- integral
 
 defclass(Int, Integral)
-  INT value;
+  I32 value;
 endclass
 
 defclass(Long, Integral)
-  LONG value;
+  I64 value;
+endclass
+
+defclass(Char, Int)
+endclass
+
+defclass(Short, Int)
 endclass
 
 // ----- floating
 
 defclass(Float, Floating)
-  FLOAT value;
+  F64 value;
 endclass
 
 defclass(Complex, Floating)
-  COMPLEX value;
+  C64 value;
 endclass
 
 // ----- automatic constructors
+
+#define aChar(C)  ( (OBJ)atChar(C) )
+#define atChar(C) ( &(struct Char) {{ \
+        {{{{{ COS_CLS_NAME(Char).Behavior.id, COS_RC_AUTO }}}}}, (C) }} )
+
+#define aShort(S)  ( (OBJ)atShort(S) )
+#define atShort(S) ( &(struct Short) {{ \
+        {{{{{ COS_CLS_NAME(Short).Behavior.id, COS_RC_AUTO }}}}}, (S) }} )
 
 #define aInt(I)  ( (OBJ)atInt(I) )
 #define atInt(I) ( &(struct Int) { \

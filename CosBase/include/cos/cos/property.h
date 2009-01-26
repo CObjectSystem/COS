@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.3 2009/01/26 09:46:26 ldeniau Exp $
+ | $Id: property.h,v 1.4 2009/01/26 14:30:41 ldeniau Exp $
  |
 */
 
@@ -163,12 +163,12 @@
 /* property reference
  */
 #define COS_PRP_REF(...) \
-        COS_PP_ID(COS_CLS_REF COS_PP_MAP((__VA_ARGS__),COS_PRP_NAME))
+        COS_CLS_REF(COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_PRP_NAME)))
 
 /* property declaration
  */
 #define COS_PRP_USE(...) \
-        COS_PP_ID(COS_CLS_USE COS_PP_MAP((__VA_ARGS__),COS_PRP_NAME))
+        COS_CLS_USE(COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_DCL_PNAME)))
 
 /* property definition
  */

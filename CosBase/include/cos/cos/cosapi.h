@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.18 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: cosapi.h,v 1.19 2009/01/26 14:30:41 ldeniau Exp $
  |
 */
 
@@ -55,6 +55,8 @@ BOOL   cos_any_unsafeChangeClass(OBJ,const struct Class *new,
 struct Class* cos_class_get(U32);
 struct Class* cos_class_getWithStr(STR);
 BOOL          cos_class_isSubclassOf(const struct Class*,const struct Class*);
+
+struct Class* cos_property_getWithStr(STR);
 
 struct Generic* cos_generic_get(U32);
 struct Generic* cos_generic_getWithStr(STR);

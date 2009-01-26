@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.11 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: value.h,v 1.12 2009/01/26 14:30:41 ldeniau Exp $
  |
 */
 
@@ -44,11 +44,15 @@ defgeneric(BOOL , gbool, _1);
 defgeneric(void*, gptr , _1);
 defgeneric(FUNC , gfct , _1);
 
+defgeneric(I32  , gchr, _1);
+defgeneric(I32  , gsht, _1);
 defgeneric(I32  , gint, _1);
 defgeneric(I64  , glng, _1);
 defgeneric(F64  , gflt, _1);
 defgeneric(C64  , gcpx, _1);
 
+defgeneric(I32  , gchrAt, _1, at);
+defgeneric(I32  , gshtAt, _1, at);
 defgeneric(I32  , gintAt, _1, at);
 defgeneric(I64  , glngAt, _1, at);
 defgeneric(F64  , gfltAt, _1, at);

@@ -29,13 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.20 2009/01/23 10:33:07 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.21 2009/01/26 14:30:41 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Class.h>
 #include <cos/MetaClass.h>
+#include <cos/Property.h>
 #include <cos/Method.h>
 #include <cos/gen/object.h>
 
@@ -50,10 +51,11 @@ static struct Object **tbl[MAX_TBL];
 static struct {
   struct Behavior **bhv; // sorted by id % msk
   struct Class    **cls; // sorted by str
+  struct Class    **prp; // sorted by str
   struct Generic  **gen; // sorted by str
   struct Method   **mth; // sorted by gen then rnk
   FUNC            **nxt; // not sorted
-  U32 msk, n_cls, n_gen, n_mth, n_nxt, m_nxt;
+  U32 msk, n_cls, n_prp, n_gen, n_mth, n_nxt, m_nxt;
 } sym;
 
 static inline U32
@@ -139,6 +141,14 @@ cls_strcmp(const void *str, const void *_cls)
 }
 
 static int // qsort
+prp_strcmp(const void *str, const void *_prp)
+{
+  struct Class *prp = *(struct Class* const*)_prp;
+
+  return strcmp(str,prp->name+2); // skip P_
+}
+
+static int // qsort
 gen_strcmp(const void *str, const void *_gen)
 {
   struct Generic *gen = *(struct Generic* const*)_gen;
@@ -153,9 +163,16 @@ cls_isMeta(struct Class *cls)
 }
 
 static inline BOOL
-cls_isProp(struct Class *cls)
+cls_isPropMeta(struct Class *cls)
 {
   return cos_any_isa((OBJ)cls, classref(PropMetaClass));
+}
+
+static inline BOOL
+cls_isProperty(struct Class *cls)
+{
+  return cls->spr == classref(Property)
+      && cls->name[0] == 'P' && cls->name[1] == '_';
 }
 
 static inline void
@@ -197,6 +214,23 @@ bhv_enlarge(U32 msk)
   }
 
   sym.bhv = bhv, sym.msk = msk;
+}
+
+static inline void
+cls_setProp(void)
+{
+  struct Class **cls = sym.cls;
+  U32 n = sym.n_cls;
+  
+  while (n && !cls_isProperty(*cls))
+    --n, ++cls;
+
+  sym.prp = cls;
+
+  while (n &&  cls_isProperty(*cls))
+    --n, ++cls;
+
+  sym.n_prp = cls - sym.prp;
 }
 
 static inline void
@@ -402,6 +436,9 @@ sym_init(void)
 
   // set generics' methods indexes
   gen_setMth();
+
+  // set property classes
+  cls_setProp();
 }
 
 static void
@@ -409,6 +446,7 @@ sym_deinit(void)
 {
   free(sym.bhv), sym.bhv = 0, sym.  msk = 0;
   free(sym.cls), sym.cls = 0, sym.n_cls = 0;
+                 sym.prp = 0, sym.n_prp = 0;
   free(sym.gen), sym.gen = 0, sym.n_gen = 0;
   free(sym.mth), sym.mth = 0, sym.n_mth = 0;
   free(sym.nxt), sym.nxt = 0, sym.n_nxt = 0, sym.m_nxt = 0;
@@ -431,7 +469,7 @@ cls_init(void)
       ginitialize((OBJ)cls);
     } else
 
-    if (cls_isProp(cls)) {
+    if (cls_isPropMeta(cls)) {
       cls = cos_class_getWithStr(cls->name+2);
       ginitialize((OBJ)cls);
     }
@@ -455,7 +493,7 @@ cls_deinit(void)
       gdeinitialize((OBJ)cls);
     } else
 
-    if (cls_isProp(cls)) {
+    if (cls_isPropMeta(cls)) {
       cls = cos_class_getWithStr(cls->name+2);
       gdeinitialize((OBJ)cls);
     }
@@ -600,6 +638,7 @@ cos_class_getWithStr(STR str)
   cls = bsearch(p, sym.cls, sym.n_cls, sizeof *sym.cls, cls_strcmp);
 
   if (!cls) return 0;
+  
   cls = *(struct Class**)cls;
 
   switch(p-str) {
@@ -611,12 +650,12 @@ cos_class_getWithStr(STR str)
 
   case 2:
     cls = cos_class_get(cls->Behavior.id);
-    test_assert( cls_isProp(cls),
+    test_assert( cls_isPropMeta(cls),
                  "class starting by 'pm' should be a instance of PropMetaClass" );
     break;
 
   default:
-    test_assert( !cls_isMeta(cls) && !cls_isProp(cls),
+    test_assert( !cls_isMeta(cls) && !cls_isPropMeta(cls),
                  "class not starting by 'm' or 'pm' should be a instance of Class" );
   }
 
@@ -632,6 +671,20 @@ cos_class_isSubclassOf(const struct Class *cls, const struct Class *ref)
     cls = cls->spr;
 
   return cls == ref;
+}
+
+// ----- properties
+
+struct Class*
+cos_property_getWithStr(STR str)
+{
+  struct Class *prp;
+
+  prp = bsearch(str, sym.prp, sym.n_prp, sizeof *sym.prp, prp_strcmp);
+
+  if (!prp) return 0;
+  
+  return prp ? *(struct Class**)prp : 0;
 }
 
 // ----- any
@@ -958,10 +1011,11 @@ cos_symbol_showSummary(FILE *fp)
 {
   if (!fp) fp = stderr;
 
-  fprintf(fp, "classes  : %4u\n"     , sym.n_cls);
-  fprintf(fp, "generics : %4u\n"     , sym.n_gen);
-  fprintf(fp, "methods  : %4u\n"     , sym.n_mth);
-  fprintf(fp, "behaviors: %4u / %u\n", sym.n_cls*3+sym.n_gen, sym.msk+!!sym.msk);
+  fprintf(fp, "classes   : %4u\n"     , sym.n_cls);
+  fprintf(fp, "properties: %4u\n"     , sym.n_prp);
+  fprintf(fp, "generics  : %4u\n"     , sym.n_gen);
+  fprintf(fp, "methods   : %4u\n"     , sym.n_mth);
+  fprintf(fp, "behaviors : %4u / %u\n", sym.n_cls*3+sym.n_gen, sym.msk+!!sym.msk);
 }
 
 void
@@ -971,19 +1025,42 @@ cos_symbol_showClasses(FILE *fp)
 
   if (!fp) fp = stderr;
 
-  fprintf(fp, "classes  : %4u\n", sym.n_cls);
+  fprintf(fp, "classes   : %4u\n", sym.n_cls);
 
   for (i = 0; i < sym.n_cls; i++) {
     j = sym.cls[i]->Behavior.id & sym.msk;
 
     fprintf(fp, "cls[%3u] = %-40s : %-40s [%2u,%9u->%3u]%c\n",
             i,
-            sym.cls[i]->name,
+            sym.cls[i]->name+2,
             sym.cls[i]->spr ? sym.cls[i]->spr->name : "NIL",
             COS_CLS_RNK(sym.cls[i]),
             COS_CLS_TAG(sym.cls[i]),
             j,
             (OBJ)sym.bhv[j] == (OBJ)sym.cls[i] ? '=' : 'x');
+  }
+}
+
+void
+cos_symbol_showProperties(FILE *fp)
+{
+  U32 i,j;
+
+  if (!fp) fp = stderr;
+
+  fprintf(fp, "properties: %4u\n", sym.n_prp);
+
+  for (i = 0; i < sym.n_prp; i++) {
+    j = sym.prp[i]->Behavior.id & sym.msk;
+
+    fprintf(fp, "prp[%3u] = %-40s : %-40s [%2u,%9u->%3u]%c\n",
+            i,
+            sym.prp[i]->name,
+            sym.prp[i]->spr ? sym.prp[i]->spr->name : "NIL",
+            COS_CLS_RNK(sym.prp[i]),
+            COS_CLS_TAG(sym.prp[i]),
+            j,
+            (OBJ)sym.bhv[j] == (OBJ)sym.prp[i] ? '=' : 'x');
   }
 }
 
@@ -994,7 +1071,7 @@ cos_symbol_showGenerics(FILE *fp)
 
   if (!fp) fp = stderr;
 
-  fprintf(fp, "generics : %4u\n", sym.n_gen);
+  fprintf(fp, "generics  : %4u\n", sym.n_gen);
 
   for (i = 0; i < sym.n_gen; i++) {
     j = sym.gen[i]->Behavior.id & sym.msk;
@@ -1025,7 +1102,7 @@ cos_symbol_showMethods(FILE *fp)
 
   if (!fp) fp = stderr;
 
-  fprintf(fp,"methods  : %4u\n", sym.n_mth);
+  fprintf(fp,"methods   : %4u\n", sym.n_mth);
 
   for (i = 0; i < sym.n_mth; i++) {
     fprintf(fp,"mth[%3u] =", i);
