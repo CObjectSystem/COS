@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.4 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.5 2009/01/26 16:54:04 ldeniau Exp $
  |
 */
 
@@ -190,7 +190,7 @@ endmethod
 
 // ---- doC
 
-// activate contract max level
+// activate maximum contract level
 enum { COS_CONTRACT_SAVE = COS_CONTRACT };
 
 #undef  COS_CONTRACT

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_properties.c,v 1.1 2009/01/26 15:19:35 ldeniau Exp $
+ | $Id: ut_properties.c,v 1.2 2009/01/26 16:50:03 ldeniau Exp $
  |
 */
 
@@ -40,17 +40,69 @@
 #include "utest.h"
 #include "tests.h"
 
+static BOOL
+chk_prop(OBJ prp, STR str)
+{
+  return prp == (OBJ)cos_property_getWithStr(str);
+}
+
+static BOOL
+chk_prop_class(OBJ cls)
+{
+  useproperty(class);
+  return ggetAt(cls, class) == gclass(cls);
+}
+
+static BOOL
+chk_prop_superClass(OBJ cls)
+{
+  useproperty(superClass);
+  return ggetAt(cls, superClass) == gsuperClass(cls);
+}
+
 void
 ut_properties(void)
 {
-  useproperty((class)cls, name, size, superClass);
-  
+  useproperty(class, name, size, superClass, error, signal);
+  useproperty((class)cls,(size)sz,(superClass)spr); // check local renaming syntax
+
+  useclass(Object,Class,MetaClass,PropMetaClass);
+  useclass(A,B,C,D,E);
+
   UTEST_START("properties definition & use")
   
-    UTEST( (OBJ)cos_property_getWithStr("class")      == cls        );
-    UTEST( (OBJ)cos_property_getWithStr("name")       == name       );
-    UTEST( (OBJ)cos_property_getWithStr("size")       == size       );
-    UTEST( (OBJ)cos_property_getWithStr("superClass") == superClass );
+    UTEST( class == cls );
+    UTEST( size == sz );
+    UTEST( superClass == spr );
+
+    UTEST( chk_prop(class, "class") );
+    UTEST( chk_prop(error, "error") );
+    UTEST( chk_prop(name, "name") );
+    UTEST( chk_prop(signal, "signal") );
+    UTEST( chk_prop(size, "size") );
+    UTEST( chk_prop(superClass, "superClass") );
+
+    UTEST( chk_prop_class(Object) );
+    UTEST( chk_prop_class(Class) );
+    UTEST( chk_prop_class(MetaClass) );
+    UTEST( chk_prop_class(PropMetaClass) );
+    
+    UTEST( chk_prop_class(A) );
+    UTEST( chk_prop_class(B) );
+    UTEST( chk_prop_class(C) );
+    UTEST( chk_prop_class(D) );
+    UTEST( chk_prop_class(E) );
+
+    UTEST( chk_prop_superClass(Object) );
+    UTEST( chk_prop_superClass(Class) );
+    UTEST( chk_prop_superClass(MetaClass) );
+    UTEST( chk_prop_superClass(PropMetaClass) );
+    
+    UTEST( chk_prop_superClass(A) );
+    UTEST( chk_prop_superClass(B) );
+    UTEST( chk_prop_superClass(C) );
+    UTEST( chk_prop_superClass(D) );
+    UTEST( chk_prop_superClass(E) );
 
   UTEST_END
 }
