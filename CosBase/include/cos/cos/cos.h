@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.9 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: cos.h,v 1.10 2009/01/26 09:46:26 ldeniau Exp $
  |
 */
 
@@ -78,6 +78,7 @@ extern "C" {
 #include <cos/cos/alias.h>
 #include <cos/cos/method.h>
 #include <cos/cos/generic.h>
+#include <cos/cos/property.h>
 #include <cos/cos/contract.h>
 #include <cos/cos/exception.h>
 

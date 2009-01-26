@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosprp,v 1.1 2009/01/23 10:34:58 ldeniau Exp $
+# | $Id: cosprp,v 1.2 2009/01/26 09:46:25 ldeniau Exp $
 # |
 #
 
@@ -128,7 +128,7 @@ cat > $out <<END-OF-TEXT
  * -----------------------------
  */
 
-#include <cos/Object.h>
+#include <cos/Property.h>
 
 END-OF-TEXT
 
@@ -139,8 +139,9 @@ for f in $filelist; do
      | tr '\n\t' '  ' \
      | sed  -e 's/  *\(defproperty\) *(\([^;]*\);/@\1(\2;@/g' \
      | tr '@' '\n' \
-     | grep -E -e '^defproperty?\([^;]*;$'`
-
+     | grep -E -e '^defproperty\([^;]*;$' \
+     | sed  -e 's/ *\([()]\) */\1/g' -e 's/ *)/)/g'`
+  
   # includes
   if [ "$prp" != "" ] ; then
     f=`echo $f | sed -e 's,^.*include/,,' -e 's,^.*src/,,'`
@@ -151,7 +152,7 @@ done
 
 # makproperty
 echo "$prps" \
-  | sort -u -t ',' -k 2 \
+  | sort -u \
   | sed -e 's/defproperty/makproperty/g' >> $out
 
 ##### Enf of _cosprp.c #####

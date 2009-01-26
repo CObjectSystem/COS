@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.2 2009/01/23 15:55:54 ldeniau Exp $
+ | $Id: property.h,v 1.3 2009/01/26 09:46:26 ldeniau Exp $
  |
 */
 
@@ -173,19 +173,21 @@
 /* property definition
  */
 #define COS_PRP_DEF(...) \
-        COS_PP_CAT_NARG(COS_PRP_DEF_,__VA_ARGS__)(__VA_ARGS__)
+        COS_PP_CAT_NARG(COS_PRP_DEF_,__VA_ARGS__)(__VA_ARGS__) \
+        COS_SCP_END
         
 #define COS_PRP_DEF_1(NAME) \
-        COS_CLS_DEF_2(COS_PRP_NAME(NAME),Property)
+        COS_CLS_DEF_2(COS_PRP_NAME(NAME),Property) \
+        COS_CLS_END
 
 #define COS_PRP_DEF_2(NAME,PROP) \
         COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),) \
         COS_PRP_DEF_PUT(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP))
 
-#define COS_PRP_DEF_3(NAME,PROP,GET) \
+#define COS_PRP_DEF_3(NAME,PROP,BOX) \
         COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX)
 
-#define COS_PRP_DEF_4(NAME,PROP,GET,SET) \
+#define COS_PRP_DEF_4(NAME,PROP,BOX,UNBOX) \
         COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX  ) \
         COS_PRP_DEF_SET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),UNBOX)
 

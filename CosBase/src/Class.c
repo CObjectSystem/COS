@@ -29,12 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.3 2008/07/02 17:08:58 ldeniau Exp $
+ | $Id: Class.c,v 1.4 2009/01/26 09:46:26 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Class.h>
+#include <cos/prp/object.h>
 #include <cos/gen/object.h>
 #include <cos/gen/message.h>
 #include <cos/gen/value.h>
@@ -43,7 +44,11 @@
 
 makclass(Class,Behavior);
 
-// -----
+// ----- properties
+
+defproperty(Class, (spr)superClass, (OBJ));
+
+// ----- direct getters
 
 defmethod(STR, gstr, Class)
   retmethod( self->name );
