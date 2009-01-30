@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.5 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: coscls.h,v 1.6 2009/01/30 17:40:12 ldeniau Exp $
  |
 */
 
@@ -171,6 +171,7 @@ COS_CLS_END
 COS_CLS_DEF(Method,Object)
   struct Generic* gen;
   U32 info; // store cryptic information, see cos/cos/method.h
+  U32 arnd;
 COS_CLS_END
 
 COS_CLS_DEF(Method1,Method)

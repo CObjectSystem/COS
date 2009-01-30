@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.16 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: method.h,v 1.17 2009/01/30 17:40:12 ldeniau Exp $
  |
 */
 
@@ -40,21 +40,7 @@
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/method.h>"
 #endif
 
-/* NOTE-USER: method declaration, definition and instantiation
-
-   method-reference:
-     methodref( generic-name , class-list )
-
-   method-declaration:
-     usemethod( method-decl );
-
-   method-decl:
-     generic-name , class-list
-     ( generic-name , class-list ) local-name
-
-   class-list:
-     class-name
-     class-list , class-name
+/* NOTE-USER: definition and instantiation
 
    method-definition:
      defmethod( generic-specifier )
@@ -73,9 +59,6 @@
      - the last param-decl must be (va_list)va for variadic generics.
 
    examples:
-     usemethod(gfoo,A,B);      // declare method gfoo(A,B)
-     usemethod((gfoo,A,B)foo); // declare method gfoo(A,B) as foo
-
      defmethod(OBJ, gclone   , Object)                        .. endmethod
      defmethod(OBJ, ggetAt   , Array, Range)                  .. endmethod
      defmethod(OBJ, ggetAtIdx, Array, (U32)idx)               .. endmethod
@@ -98,8 +81,6 @@
 /* method keywords:
  */
 #ifdef  COS_DISABLE_ALL
-#define COS_DISABLE_methodref
-#define COS_DISABLE_usemethod
 #define COS_DISABLE_defmethod
 #define COS_DISABLE_endmethod
 #define COS_DISABLE_retmethod
@@ -108,14 +89,6 @@
 #define COS_DISABLE_next_method_p
 #define COS_DISABLE_forward_message
 #define COS_DISABLE_RETVAL
-#endif
-
-#ifndef COS_DISABLE_methodref
-#define methodref(...) COS_MTH_REF(__VA_ARGS__)
-#endif
-
-#ifndef COS_DISABLE_usemethod
-#define usemethod(...) COS_MTH_USE(__VA_ARGS__)
 #endif
 
 #ifndef COS_DISABLE_defmethod
@@ -153,31 +126,6 @@
 /***********************************************************
  * Implementation
  */
-
-/* method reference
- */
-#define COS_MTH_REF(NAME,...) \
-        (&COS_MTH_NAME(NAME,(__VA_ARGS__)))
-
-/* method declaration
- */
-#define COS_MTH_USE(...) \
-        COS_PP_IF(COS_PP_ISTUPLE(__VA_ARGS__))( \
-          COS_PP_PAIR(COS_MTH_USE_0,(COS_PP_PPART __VA_ARGS__)), \
-          COS_MTH_USE_1(__VA_ARGS__))
-
-#define COS_MTH_USE_0(DECL,LNAME) \
-        COS_MTH_USE_2(COS_PP_ARG1 DECL,LNAME,(COS_PP_REST DECL))
-
-#define COS_MTH_USE_1(NAME,...) \
-        COS_MTH_USE_2(NAME,NAME,(__VA_ARGS__))
-
-#define COS_MTH_USE_2(GNAME,LNAME,CS) \
-        COS_MTH_USE_3(GNAME,LNAME,CS,COS_PP_LEN(CS))
-
-#define COS_MTH_USE_3(GNAME,LNAME,CS,C) \
-        extern struct COS_PP_CAT(Method,C) COS_MTH_NAME(GNAME,CS); \
-        static OBJ const LNAME = (OBJ)(void*)&COS_MTH_NAME(GNAME,CS)
 
 /* method definition and instantiation
  */
@@ -312,8 +260,10 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
   {{{ 0, cos_tag_method }}, \
    /* reference to generic */ \
    &COS_GEN_NAME(NAME), \
-   /* cryptic information */ \
-   COS_MTH_INFO(COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_RANK)),0,0,0,0,0) }, \
+   /* method rank */ \
+   COS_MTH_INFO(COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_RANK)),0,0,0,0,0), \
+   /* around method rank */ \
+   0 }, \
    /* reference to function */ \
    COS_FCT_NAME(NAME,CS), \
    /* references to classes of specialization */ \
@@ -392,7 +342,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 
 // forward_message
 #define COS_MTH_FWD(...) \
-   COS_MTH_FWDN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
+  COS_MTH_FWDN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__)
 
 #define COS_MTH_FWDN(N,...) \
   do { \
@@ -420,8 +370,8 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
   }
 
 #define COS_MTH_TRC_LOC \
-    if (COS_CONTRACT < COS_CONTRACT_POST || _cos_ctr_st != cos_tag_post) \
-      _cos_mth_line = __LINE__;
+  if (COS_CONTRACT < COS_CONTRACT_POST || _cos_ctr_st != cos_tag_post) \
+    _cos_mth_line = __LINE__;
 
 // method info encoding and decoding
 #define COS_MTH_INFO(...) \

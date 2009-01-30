@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: alias.h,v 1.3 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: alias.h,v 1.4 2009/01/30 17:40:12 ldeniau Exp $
  |
 */
 
@@ -130,7 +130,9 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(ALIAS,CS) = { \
   {{{ 0, cos_tag_alias }}, \
    /* reference to generic */ \
    &COS_GEN_NAME(ALIAS), \
-   /* cryptic information */ \
+   /* method rank */ \
+   0, \
+   /* around method rank */ \
    0 }, \
    /* reference to function */ \
    0, \

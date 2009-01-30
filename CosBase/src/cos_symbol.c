@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.23 2009/01/30 16:02:57 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.24 2009/01/30 17:40:13 ldeniau Exp $
  |
 */
 
@@ -54,7 +54,7 @@ static struct {
   struct Class    **cls; // sorted  by name
   struct Class    **prp; // sorted  by name
   struct Generic  **gen; // sorted  by name
-  struct Method   **mth; // sorted  by generic name then method rank then class names
+  struct Method   **mth; // sorted  by gen-name,mth-rank,rnd-rank,cls-name
   FUNC            **nxt; // not sorted
   U32 msk, n_cls, n_prp, n_gen, n_mth, n_nxt, m_nxt;
 } sym;
@@ -132,6 +132,11 @@ mth_cmp(const void *_mth1, const void *_mth2)
   // descending rank order
   if ((res = (mth1->Method.info < mth2->Method.info) -
              (mth1->Method.info > mth2->Method.info)))
+    return res;
+
+  // normal vs around rank order (descending)
+  if ((res = (mth1->Method.arnd < mth2->Method.arnd) -
+             (mth1->Method.arnd > mth2->Method.arnd)))
     return res;
 
   // ascending classes name
@@ -401,7 +406,7 @@ cls_setClassProp(const struct Generic *gen)
 }
 
 static void
-cls_unsetClassProp(void)
+cls_clearClassProp(void)
 {
   U32 i;
   
@@ -441,9 +446,8 @@ nxt_clear(void)
 static inline BOOL
 cls_isSubOf(const struct Class *cls, const struct Class *ref)
 {
-  U32 rnk = COS_ID_URK(cos_class_id(ref));
-
-  while (cos_class_id(cls) > rnk)
+  // a class is a subclass of itself
+  while (cos_class_id(cls) > COS_ID_URK(cos_class_id(ref)))
     cls = cls->spr;
 
   return cls == ref;
@@ -452,15 +456,13 @@ cls_isSubOf(const struct Class *cls, const struct Class *ref)
 static inline BOOL
 mth_isSubOf(struct Class* const*cls, struct Class* const* ref, U32 n)
 {
-  while (--n)
-    if (!cls_isSubOf(cls[n],ref[n]))
-      return NO;
+  while (--n && cls_isSubOf(cls[n],ref[n])) ;
 
-  return cls_isSubOf(cls[0],ref[0]);
+  return  !n && cls_isSubOf(cls[0],ref[0]);
 }
 
-static inline void
-nxt_init(FUNC *fct, SEL gen, U32 info, struct Class *const *cls)
+static inline FUNC
+nxt_init(SEL gen, U32 info, struct Class *const *cls)
 {
   struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
@@ -478,13 +480,10 @@ nxt_init(FUNC *fct, SEL gen, U32 info, struct Class *const *cls)
       break;
 
   for (; i < n_mth; i++)
-    if (mth_isSubOf(cls, mth[i]->cls, n_cls)) {
-      *fct = (FUNC)mth[i]->fct;
-      nxt_add(fct);
-      return;
-    }
+    if (mth_isSubOf(cls, mth[i]->cls, n_cls))
+      return (FUNC)mth[i]->fct;
 
-  *fct = 0;
+  return 0;
 }
 
 static void
@@ -620,7 +619,8 @@ sym_init(void)
 static void
 sym_deinit(void)
 {
-  cls_unsetClassProp();
+  nxt_clear();
+  cls_clearClassProp();
   
   free(sym.bhv), sym.bhv = 0, sym.  msk = 0;
   free(sym.cls), sym.cls = 0, sym.n_cls = 0;
@@ -1072,7 +1072,10 @@ void
 cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
 {
   pthread_mutex_lock(&nxt_lock);
-  if (*fct == (FUNC)YES) nxt_init(fct,gen,rnk,cls);
+  if (*fct == (FUNC)YES) {
+    *fct = nxt_init(gen,rnk,cls);
+    nxt_add(fct);
+  }
   pthread_mutex_unlock(&nxt_lock);
 }
 
@@ -1089,8 +1092,8 @@ cos_method_nextClear(void)
 void
 cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
 {
-  if (*fct == (FUNC)YES)
-    nxt_init(fct,gen,rnk,cls);
+  *fct = nxt_init(gen,rnk,cls);
+  nxt_add(fct);
 }
 
 void
