@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.22 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.23 2009/01/30 16:02:57 ldeniau Exp $
  |
 */
 
@@ -465,9 +465,15 @@ nxt_init(FUNC *fct, SEL gen, U32 info, struct Class *const *cls)
   struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
   U32 n_cls = COS_GEN_RNK (gen);
-  U32 i = 0;
+  enum { n = 5 };
+  U32 i;
 
-  for (; i < n_mth; i++)
+  for (i = 0; i < n_mth; i += n)
+    if (info > mth[i]->Method.info)
+      break;
+
+  if (i)
+  for (i -= n-1; i < n_mth; i++)
     if (info > mth[i]->Method.info)
       break;
 
