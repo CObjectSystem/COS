@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.13 2009/01/26 09:46:26 ldeniau Exp $
+ | $Id: Any.c,v 1.14 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
@@ -46,7 +46,7 @@ makclass(Any,_);
 
 // ----- properties
 
-defmethod(OBJ, ggetAt, Any, mP_class)
+defmethod(OBJ, ggetAt, Any, pmP_class)
   retmethod( (OBJ)cos_class_get(self->id) );
 endmethod
 

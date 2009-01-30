@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.7 2008/10/29 15:43:10 ldeniau Exp $
+ | $Id: class.h,v 1.8 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
@@ -219,7 +219,9 @@ struct Class COS_MCL_NAME(NAME) = { /* metaclass */ \
   /* classes' names share the same string (STR) */ \
   0, \
   /* metaclass derives from super metaclass */ \
-  META_SUPER_REF \
+  META_SUPER_REF, \
+  /* reference to its (class) instance */ \
+  { &COS_CLS_NAME(NAME) } \
 }; \
 struct Class COS_PCL_NAME(NAME) = { /* property metaclass */ \
   /* Any.id must be zero (init), encode tag into Any.rc */ \
@@ -230,7 +232,9 @@ struct Class COS_PCL_NAME(NAME) = { /* property metaclass */ \
   /* classes' names share the same string (STR) */ \
   "pm" COS_PP_STR(NAME), \
   /* property metaclass derives from metaclass */ \
-  &COS_MCL_NAME(NAME) \
+  &COS_MCL_NAME(NAME), \
+  /* reference to its (class) instance */ \
+  { &COS_CLS_NAME(NAME) } \
 }; \
 struct Class COS_CLS_NAME(NAME) = { /* class */ \
   /* Any.id must be zero (init), encode tag into Any.rc */ \
@@ -242,7 +246,9 @@ struct Class COS_CLS_NAME(NAME) = { /* class */ \
   /* hack: pre-init link to property metaclasses */ \
   COS_STATIC_CAST(STR, (void*)&COS_PCL_NAME(NAME)), \
   /* class derives from super class */ \
-  SUPER_REF \
+  SUPER_REF, \
+  /* reference to its read/write properties */ \
+  { 0 } \
 }
 
 // class super-class link

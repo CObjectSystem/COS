@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.13 2009/01/23 15:55:53 ldeniau Exp $
+ | $Id: generic.h,v 1.14 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
@@ -450,11 +450,12 @@ struct Generic COS_GEN_NAME(NAME) = { \
    ((U32)(varg) & 0x01) << 29 | \
    ((U32)(oarg) & 0x01) << 28 | \
    ((U32)(narg) & 0x3F) << 22 | \
-   ((U32)(nmth) & COS_GEN_MAXMTH))
+   ((U32)(nmth) & COS_GEN_MTHMSK))
 
-#define COS_GEN_MAXMTH 0x003FFFFF
+#define COS_GEN_MTHMSK ((U32)0x003FFFFF) // 2^(32-10)-1
+#define COS_GEN_MTHSHT 22                //    32-10
 
-#define COS_GEN_NMTH(gen) ((gen)->info &  COS_GEN_MAXMTH  ) // num mths     {0..4194303}
+#define COS_GEN_NMTH(gen) ((gen)->info &  COS_GEN_MTHMSK  ) // num mths     {0..4194303}
 #define COS_GEN_NARG(gen) ((gen)->info & ((U32)0x3F << 22)) // num args     {0..63}
 #define COS_GEN_OARG(gen) ((gen)->info & ((U32)0x01 << 28)) // args are OBJ {0,>0}
 #define COS_GEN_VARG(gen) ((gen)->info & ((U32)0x01 << 29)) // is variadic  {0,>0}

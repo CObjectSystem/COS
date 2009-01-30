@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.14 2009/01/26 14:30:41 ldeniau Exp $
+ | $Id: tests.c,v 1.15 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
@@ -54,11 +54,14 @@ int main(int argc, char *argv[])
   enum { bits = CHAR_BIT*sizeof(void*) };
   int init_time = NO;
   int speed_test = NO;
+  int debug_sym = NO;
   int i;
   
   cos_logmsg_set(COS_LOGMSG_DEBUG);
 
   for (i = 1; i < argc; i++) {
+    if (!strcmp(argv[i], "-d"))
+      debug_sym = YES;
     if (!strcmp(argv[i], "-i"))
       init_time = YES;
     if (!strcmp(argv[i], "-s"))
@@ -78,6 +81,17 @@ int main(int argc, char *argv[])
   // convert signal to exception
   cos_signal_std();
 
+  // for debugging
+  if (debug_sym) {
+    cos_init();
+    cos_symbol_showSummary(0);
+    cos_symbol_showClasses(0);
+    cos_symbol_showProperties(0);
+    cos_symbol_showGenerics(0);
+    cos_symbol_showMethods(0);
+    cos_symbol_showClassProperties(0,YES);
+  }
+  
   // testsuites
   printf("\n** C Object System Testsuite (%d bits) **\n", bits);
   ut_methods();

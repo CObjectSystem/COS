@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile,v 1.5 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: compile,v 1.6 2009/01/30 12:12:56 ldeniau Exp $
 # |
 #
 
@@ -54,11 +54,11 @@ $(OBJDIR)/$($(PRJTYPE))_$(COSPRP).c: $(PRPERTY)
 #
 # rule for symbols (dummy)
 #
-$(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c: $(call missing,$(OBJDIR))
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM).c: $(OBJECTS) $(call missing,$(OBJDIR))
 	@  echo "*** Computing [$(TARGET)] symbols"
 	$_ $(EXEDIR)/$(COSSYM) --out=$@
 
-$(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c: $(call missing,$(OBJDIR))
+$(OBJDIR)/$($(PRJTYPE))_$(COSSYM)_s.c: $(OBJECTS) $(call missing,$(OBJDIR))
 	@  echo "*** Computing [$(TARGET)] symbols"
 	$_ $(EXEDIR)/$(COSSYM) --out=$@
 

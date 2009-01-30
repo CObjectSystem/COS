@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.18 2009/01/22 16:45:08 ldeniau Exp $
+ | $Id: Array.c,v 1.19 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
@@ -847,7 +847,7 @@ defmethod(OBJ, gmin, Array)
   useclass(Greater);
   
   if (self->size == 0)
-    retmethod(Nil);
+    retmethod(0);
 
   OBJ  min = self->object[0];
   OBJ *obj = self->object+1;
@@ -864,7 +864,7 @@ defmethod(OBJ, gmax, Array)
   useclass(Lesser);
   
   if (self->size == 0)
-    retmethod(Nil);
+    retmethod(0);
 
   OBJ  max = self->object[0];
   OBJ *obj = self->object+1;
@@ -974,7 +974,7 @@ defmethod(OBJ, gfind, Functor, Any, Array)
   useclass(Lesser, Equal, Greater);
 
   if (self3->size == 0)
-    retmethod(Nil);
+    retmethod(0);
 
   OBJ *obj = self3->object;
   OBJ  res = geval2(_1, _2, *obj);
@@ -990,12 +990,12 @@ defmethod(OBJ, gfind, Functor, Any, Array)
       if (geval2(_1, _2, *obj) == True) // found
         retmethod(*obj);
 
-    retmethod(Nil);
+    retmethod(0);
   }
 
   // binary search
   if (res == Lesser)
-    retmethod(Nil);
+    retmethod(0);
   
   test_assert( res == Greater,
     "gfind expects functor returning TrueFalse or Ordered predicates" );
@@ -1015,14 +1015,14 @@ defmethod(OBJ, gfind, Functor, Any, Array)
       lo = i+1;
   }
 
-  retmethod(Nil);  
+  retmethod(0);  
 endmethod
 
 defmethod(OBJ, gfind, Function2, Any, Array)
   useclass(Lesser, Equal, Greater);
 
   if (self3->size == 0)
-    retmethod(Nil);
+    retmethod(0);
 
   OBJFCT2 fct = self->fct;
   OBJ *obj = self3->object;
@@ -1039,18 +1039,18 @@ defmethod(OBJ, gfind, Function2, Any, Array)
       if (fct(_2, *obj) == True) // found
         retmethod(*obj);
 
-    retmethod(Nil);
+    retmethod(0);
   }
 
   // binary search
   if (res == Lesser)
-    retmethod(Nil);
+    retmethod(0);
   
   test_assert( res == Greater,
-    "gfind expects functor returning subtypes of TrueFalse or Ordered predicates" );
+    "gfind expects functor returning TrueFalse or Ordered predicates" );
 
   U32 lo = 1, hi = self3->size-1;
-    
+
   while(lo <= hi) {
     U32 i = (lo + hi) / 2;
     res = fct(_2, obj[i]);
@@ -1064,6 +1064,7 @@ defmethod(OBJ, gfind, Function2, Any, Array)
       lo = i+1;
   }
 
+  retmethod(0);
 endmethod
 
 // ----- sorting (in place)

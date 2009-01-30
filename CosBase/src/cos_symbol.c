@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.21 2009/01/26 14:30:41 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.22 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
@@ -39,6 +39,7 @@
 #include <cos/Property.h>
 #include <cos/Method.h>
 #include <cos/gen/object.h>
+#include <cos/gen/accessor.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -49,11 +50,11 @@ enum { MAX_TBL = 50 };
 static struct Object **tbl[MAX_TBL];
 
 static struct {
-  struct Behavior **bhv; // sorted by id % msk
-  struct Class    **cls; // sorted by str
-  struct Class    **prp; // sorted by str
-  struct Generic  **gen; // sorted by str
-  struct Method   **mth; // sorted by gen then rnk
+  struct Behavior **bhv; // indexed by id % msk
+  struct Class    **cls; // sorted  by name
+  struct Class    **prp; // sorted  by name
+  struct Generic  **gen; // sorted  by name
+  struct Method   **mth; // sorted  by generic name then method rank then class names
   FUNC            **nxt; // not sorted
   U32 msk, n_cls, n_prp, n_gen, n_mth, n_nxt, m_nxt;
 } sym;
@@ -90,7 +91,7 @@ bhv_tag(void)
 static inline void
 bhv_setTag(struct Behavior *bhv)
 {
-  if (bhv->Object.Any.id) {  // generics case
+  if (bhv->Object.Any.id) { // generics case
     if (bhv->id) cos_abort("behavior has already an id");
 
     bhv->id = bhv->Object.Any.id | bhv_tag();
@@ -120,16 +121,28 @@ gen_cmp(const void *_gen1, const void *_gen2)
 static int // qsort
 mth_cmp(const void *_mth1, const void *_mth2)
 {
-  struct Method *mth1 = *(struct Method* const*)_mth1;
-  struct Method *mth2 = *(struct Method* const*)_mth2;
-  int res;
+  struct Method5 *mth1 = *(struct Method5* const*)_mth1;
+  struct Method5 *mth2 = *(struct Method5* const*)_mth2;
+  int i, n, res;
 
   // ascending generic name
-  if (mth1->gen != mth2->gen && (res=strcmp(mth1->gen->name,mth2->gen->name)))
-    return res;
+  if (mth1->Method.gen != mth2->Method.gen)
+    return strcmp(mth1->Method.gen->name, mth2->Method.gen->name);
 
   // descending rank order
-  return (mth1->info < mth2->info) - (mth1->info > mth2->info);
+  if ((res = (mth1->Method.info < mth2->Method.info) -
+             (mth1->Method.info > mth2->Method.info)))
+    return res;
+
+  // ascending classes name
+  n = COS_GEN_RNK(mth1->Method.gen);
+  
+  for (i = 0; i < n; i++) {
+    if (mth1->cls[i] != mth2->cls[i])
+      return strcmp(mth1->cls[i]->name, mth2->cls[i]->name);
+  }
+
+  return 0; // should never be reached
 }
 
 static int // qsort
@@ -157,19 +170,25 @@ gen_strcmp(const void *str, const void *_gen)
 }
 
 static inline BOOL
-cls_isMeta(struct Class *cls)
+cls_isMeta(const struct Class *cls)
 {
-  return cos_any_isa((OBJ)cls, classref(MetaClass));
+  return cls->Behavior.Object.Any.id == classref(MetaClass)->Behavior.id;
 }
 
 static inline BOOL
-cls_isPropMeta(struct Class *cls)
+cls_isPropMeta(const struct Class *cls)
 {
-  return cos_any_isa((OBJ)cls, classref(PropMetaClass));
+  return cls->Behavior.Object.Any.id == classref(PropMetaClass)->Behavior.id;
 }
 
 static inline BOOL
-cls_isProperty(struct Class *cls)
+cls_isClass(const struct Class *cls)
+{
+  return !cls_isMeta(cls) && !cls_isPropMeta(cls);
+}
+
+static inline BOOL
+cls_isProperty(const struct Class *cls)
 {
   return cls->spr == classref(Property)
       && cls->name[0] == 'P' && cls->name[1] == '_';
@@ -190,7 +209,7 @@ mth_initAlias(struct Method1 *ali)
 static inline void
 gen_incMth(struct Generic *gen)
 {
-  if (COS_GEN_NMTH(gen) == COS_GEN_MAXMTH)
+  if (COS_GEN_NMTH(gen) == COS_GEN_MTHMSK)
     cos_abort("too many specializations for generic %s", gen->name);
 
   ++gen->info;
@@ -217,6 +236,22 @@ bhv_enlarge(U32 msk)
 }
 
 static inline void
+gen_setMth(void)
+{
+  U32 i, n = 0;
+
+  for (i = 0; i < sym.n_gen; i++) {
+    struct Generic *gen = sym.gen[i];
+    gen->mth = n;
+    n += COS_GEN_NMTH(gen);
+  }
+
+  // missing generics
+  if (n != sym.n_mth)
+    cos_abort("incomplete or missing symbols table");
+}
+
+static inline void
 cls_setProp(void)
 {
   struct Class **cls = sym.cls;
@@ -233,20 +268,145 @@ cls_setProp(void)
   sym.n_prp = cls - sym.prp;
 }
 
-static inline void
-gen_setMth(void)
+static inline U32
+cls_encodeProp(U32 i, U32 n)
 {
-  U32 i, n = 0;
+  // encoding: p = 0..2^4-1, n = 0..2^6-1, i = 0..2^22-1
+  U32 p = 0;
+  
+  while (n >= (1 << 6))
+    ++p, ++n, n /= 2;
 
-  for (i = 0; i < sym.n_gen; i++) {
-    struct Generic *gen = sym.gen[i];
-    gen->mth = n;
-    n += COS_GEN_NMTH(gen);
+  if (i > COS_GEN_MTHMSK || p >= (1 << 4))
+    cos_abort("invalid class properties index and counts");
+
+  return (p << 6 | n) << COS_GEN_MTHSHT | i;
+}
+
+static inline U32
+cls_decodePropIdx(U32 prp)
+{
+  return prp & COS_GEN_MTHMSK;
+}
+
+static inline U32
+cls_decodePropCnt(U32 prp, BOOL floor)
+{
+  // decoding: cnt = n * 2^p
+  U32 n = prp >> COS_GEN_MTHSHT;
+  U32 p = 0, r = 0;
+  
+  if (n >= (1 << 6)) {
+    p  = (n >> 6);
+    n &= (1 << 6) - 1;
+    if (floor) r = (1 << p) - 1;
   }
 
-  // missing generics
-  if (n != sym.n_mth)
-    cos_abort("incomplete or missing symbols table");
+  return (n << p) - r;
+}
+
+static U32
+cls_classPropCnt(const struct Generic *gen, const struct Class *cls, I32 rnk)
+{
+  U32 n=0, p=0;
+  I32 r = COS_CLS_RNK(cls);
+
+       if (gen == genericref(ggetAt)) p = 0;
+  else if (gen == genericref(gputAt)) p = 1;
+  else cos_abort("invalid generic '%s' for properties", gen->name);
+
+  if ((U32)rnk > (U32)r) rnk = r;
+
+  while (r >= rnk && !cls_isClass(cls))
+    --r, cls = cls->spr;
+
+  while (r >= rnk) {
+    n += cls_decodePropCnt(cls->ref.prp[p],NO);
+    --r, cls = cls->spr;
+  }
+
+  return n;
+}
+
+static U32
+cls_classPropLst(const struct Generic *gen,
+                 const struct Class   *cls, I32 rnk,
+                 const struct Class  **prp, U32 n_prp)
+{
+  struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
+  U32 n_mth = COS_GEN_NMTH(gen);
+  U32 i=0, c=0, p=0;
+  I32 r = COS_CLS_RNK(cls);
+
+       if (gen == genericref(ggetAt)) c = 1, p = 0;
+  else if (gen == genericref(gputAt)) c = 2, p = 1;
+  else cos_abort("invalid generic '%s' for properties", gen->name);
+
+  if ((U32)rnk > (U32)r) rnk = r;
+
+  while (r >= rnk && !cls_isClass(cls))
+    --r, cls = cls->spr;
+
+  while (r >= rnk) {
+    if (cls->ref.prp[p]) {
+      U32 j = cls_decodePropIdx(cls->ref.prp[p]);
+      U32 n = cls_decodePropCnt(cls->ref.prp[p],YES)+j;
+
+      for (; i < n_prp && j < n    ; i++, j++)
+        prp[i] = mth[j]->cls[c]->ref.cls;
+
+      for (; i < n_prp && j < n_mth; i++, j++) {
+        if (cls !=         mth[j]->cls[0]  ||
+           !cls_isPropMeta(mth[j]->cls[c]) || 
+           !cls_isProperty(mth[j]->cls[c]->ref.cls))
+          break;
+
+        prp[i] = mth[j]->cls[c]->ref.cls;
+      }
+    }
+
+    --r, cls = cls->spr;
+  }
+
+  return i;
+}
+
+static void
+cls_setClassProp(const struct Generic *gen)
+{
+  struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
+  U32 n_mth = COS_GEN_NMTH(gen);
+  U32 i, j, c=0, p=0;
+
+       if (gen == genericref(ggetAt)) c = 1, p = 0;
+  else if (gen == genericref(gputAt)) c = 2, p = 1;
+  else cos_abort("invalid generic '%s' for properties", gen->name);
+
+  for (i = 0; i < n_mth;) {
+
+    if (!cls_isClass(   mth[i]->cls[0]) ||
+        !cls_isPropMeta(mth[i]->cls[c]) ||
+        !cls_isProperty(mth[i]->cls[c]->ref.cls)) {
+        ++i; continue;
+    } 
+
+    for (j = i++; i < n_mth; i++)
+      if (mth[j]->cls[0]!=mth[i]->cls[0]  ||
+          !cls_isPropMeta(mth[i]->cls[c]) || 
+          !cls_isProperty(mth[i]->cls[c]->ref.cls))
+        break;
+
+    mth[j]->cls[0]->ref.prp[p] = cls_encodeProp(j, i-j);
+  }
+}
+
+static void
+cls_unsetClassProp(void)
+{
+  U32 i;
+  
+  for (i = 0; i < sym.n_cls; i++)
+    sym.cls[i]->ref.cls = 0;
 }
 
 static inline void
@@ -279,18 +439,24 @@ nxt_clear(void)
 }
 
 static inline BOOL
-mth_isSubOf(struct Class* const*cls, struct Class* const* ref, U32 n_cls)
+cls_isSubOf(const struct Class *cls, const struct Class *ref)
 {
-  BOOL yes = YES;
+  U32 rnk = COS_ID_URK(cos_class_id(ref));
 
-  switch(n_cls) {
-   case 5: yes = yes && cos_class_isSubclassOf(cls[4],ref[4]);
-   case 4: yes = yes && cos_class_isSubclassOf(cls[3],ref[3]);
-   case 3: yes = yes && cos_class_isSubclassOf(cls[2],ref[2]);
-   case 2: yes = yes && cos_class_isSubclassOf(cls[1],ref[1]);
-   case 1: yes = yes && cos_class_isSubclassOf(cls[0],ref[0]);
-  }
-  return yes;
+  while (cos_class_id(cls) > rnk)
+    cls = cls->spr;
+
+  return cls == ref;
+}
+
+static inline BOOL
+mth_isSubOf(struct Class* const*cls, struct Class* const* ref, U32 n)
+{
+  while (--n)
+    if (!cls_isSubOf(cls[n],ref[n]))
+      return NO;
+
+  return cls_isSubOf(cls[0],ref[0]);
 }
 
 static inline void
@@ -439,11 +605,17 @@ sym_init(void)
 
   // set property classes
   cls_setProp();
+
+  // set class properties
+  cls_setClassProp(genericref(ggetAt));
+  cls_setClassProp(genericref(gputAt));
 }
 
 static void
 sym_deinit(void)
 {
+  cls_unsetClassProp();
+  
   free(sym.bhv), sym.bhv = 0, sym.  msk = 0;
   free(sym.cls), sym.cls = 0, sym.n_cls = 0;
                  sym.prp = 0, sym.n_prp = 0;
@@ -464,15 +636,8 @@ cls_init(void)
   for (i = n_mth; i-- > 0; ) {
     struct Class *cls = ini[i]->cls[0];
 
-    if (cls_isMeta(cls)) {
-      cls = cos_class_getWithStr(cls->name+1);
-      ginitialize((OBJ)cls);
-    } else
-
-    if (cls_isPropMeta(cls)) {
-      cls = cos_class_getWithStr(cls->name+2);
-      ginitialize((OBJ)cls);
-    }
+    if (!cls_isClass(cls))
+      ginitialize((OBJ)cls->ref.cls);
   }
 }
 
@@ -488,15 +653,8 @@ cls_deinit(void)
   for (i = 0; i < n_mth; i++) {
     struct Class *cls = dei[i]->cls[0];
 
-    if (cls_isMeta(cls)) {
-      cls = cos_class_getWithStr(cls->name+1);
-      gdeinitialize((OBJ)cls);
-    } else
-
-    if (cls_isPropMeta(cls)) {
-      cls = cos_class_getWithStr(cls->name+2);
-      gdeinitialize((OBJ)cls);
-    }
+    if (!cls_isClass(cls))
+      gdeinitialize((OBJ)cls->ref.cls);
   }
 }
 
@@ -520,7 +678,6 @@ cos_init(void)
 
     init_done = YES;
     cos_symbol_init();
-    // cos_trace("cos_init");
 
     t0 = clock();
     sym_init();
@@ -540,7 +697,6 @@ cos_deinit(void)
     double t0, t1;
 
     init_done = NO;
-    // cos_trace("cos_deinit");
 
     t0 = clock();
     cls_deinit();
@@ -642,21 +798,22 @@ cos_class_getWithStr(STR str)
   cls = *(struct Class**)cls;
 
   switch(p-str) {
-  case 1:
-    cls = cos_class_get(cls->Behavior.id)->spr;
+  case 0: // normal class
+    test_assert( cls_isClass(cls),
+                 "classes not starting by 'm' or 'pm' should be a normal Class" );
+    break;
+
+  case 1: // meta class
+    cls = cos_any_superClass((OBJ)cls);
     test_assert( cls_isMeta(cls),
-                 "class starting by 'm' should be a instance of MetaClass" );
+                 "class starting by 'm' should be instance of MetaClass" );
     break;
 
-  case 2:
-    cls = cos_class_get(cls->Behavior.id);
+  case 2: // property meta class
+    cls = cos_any_class((OBJ)cls);
     test_assert( cls_isPropMeta(cls),
-                 "class starting by 'pm' should be a instance of PropMetaClass" );
+                 "class starting by 'pm' should be instance of PropMetaClass" );
     break;
-
-  default:
-    test_assert( !cls_isMeta(cls) && !cls_isPropMeta(cls),
-                 "class not starting by 'm' or 'pm' should be a instance of Class" );
   }
 
   return cls;
@@ -665,12 +822,7 @@ cos_class_getWithStr(STR str)
 BOOL
 cos_class_isSubclassOf(const struct Class *cls, const struct Class *ref)
 {
-  U32 rnk = COS_ID_URK(ref->Behavior.id);
-
-  while (cls->Behavior.id > rnk)
-    cls = cls->spr;
-
-  return cls == ref;
+  return cls_isSubOf(cls, ref);
 }
 
 // ----- properties
@@ -682,9 +834,25 @@ cos_property_getWithStr(STR str)
 
   prp = bsearch(str, sym.prp, sym.n_prp, sizeof *sym.prp, prp_strcmp);
 
-  if (!prp) return 0;
-  
   return prp ? *(struct Class**)prp : 0;
+}
+
+U32
+cos_class_readProperties(const struct Class  *cls, U32 rnk,
+                         const struct Class **prp, U32 n_prp)
+{
+  return prp
+    ? cls_classPropLst(genericref(ggetAt),cls,rnk,prp,n_prp)
+    : cls_classPropCnt(genericref(ggetAt),cls,rnk);
+}
+
+U32
+cos_class_writeProperties(const struct Class  *cls, U32 rnk,
+                          const struct Class **prp, U32 n_prp)
+{
+  return prp
+    ? cls_classPropLst(genericref(gputAt),cls,rnk,prp,n_prp)
+    : cls_classPropCnt(genericref(gputAt),cls,rnk);
 }
 
 // ----- any
@@ -692,19 +860,21 @@ cos_property_getWithStr(STR str)
 BOOL
 cos_any_isKindOf(OBJ _1, const struct Class *ref)
 {
-  return cos_class_isSubclassOf(cos_any_class(_1),ref);
+  return cls_isSubOf(cos_any_class(_1),ref);
 }
 
 BOOL
 cos_any_changeClass(OBJ _1, const struct Class *new)
 {
-  struct Any *obj = STATIC_CAST(struct Any*, _1);
-  struct Class *cls = cos_class_get(obj->id);
+  struct Class *cls = cos_any_class(_1);
+  struct Any *obj;
 
-  if (cls->isz != new->isz || !cos_class_isSubclassOf(cls,new))
+  if (cls->isz != new->isz || !cls_isSubOf(cls,new))
     return NO;
 
-  obj->id = new->Behavior.id;
+  obj = STATIC_CAST(struct Any*,_1);
+  obj->id = cos_class_id(new);
+  
   return YES;
 }
 
@@ -712,14 +882,15 @@ BOOL
 cos_any_unsafeChangeClass(OBJ _1, const struct Class *new,
                                   const struct Class *base)
 {
-  struct Any *obj = STATIC_CAST(struct Any*, _1);
-  struct Class *cls = cos_class_get(obj->id);
+  struct Class *cls = cos_any_class(_1);
+  struct Any *obj;
 
-  if (cls->isz < new->isz || !cos_class_isSubclassOf(cls,base)
-                          || !cos_class_isSubclassOf(new,base))
+  if (cls->isz < new->isz || !cls_isSubOf(cls,base) || !cls_isSubOf(new,base))
     return NO;
 
-  obj->id = new->Behavior.id;
+  obj = STATIC_CAST(struct Any*,_1);
+  obj->id = cos_class_id(new);
+  
   return YES;
 }
 
@@ -730,13 +901,18 @@ cos_method_get1(SEL gen, U32 id1)
 {
   struct Method1 **mth = STATIC_CAST(struct Method1**, sym.mth)+gen->mth;
   struct Class *cls[1];
-  U32 n_mth = COS_GEN_NMTH(gen);
-  U32 i = 0;
+  U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),0,0,0,0,0);
+  enum { n = 5 };
 
   cls[0] = cos_class_get(id1);
 
-  for (; i < n_mth; i++)
+  for (i = 0; i < n_mth; i += n)
+    if (info >= mth[i]->Method.info)
+      break;
+
+  if (i)
+  for (i -= n-1; i < n_mth; i++)
     if (info >= mth[i]->Method.info)
       break;
 
@@ -752,14 +928,19 @@ cos_method_get2(SEL gen, U32 id1, U32 id2)
 {
   struct Method2 **mth = STATIC_CAST(struct Method2**, sym.mth)+gen->mth;
   struct Class *cls[2];
-  U32 n_mth = COS_GEN_NMTH(gen);
-  U32 i = 0;
+  U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),COS_ID_RNK(id2),0,0,0,0);
+  enum { n = 5 };
 
   cls[0] = cos_class_get(id1);
   cls[1] = cos_class_get(id2);
 
-  for (; i < n_mth; i++)
+  for (i = 0; i < n_mth; i += n)
+    if (info >= mth[i]->Method.info)
+      break;
+
+  if (i)
+  for (i -= n-1; i < n_mth; i++)
     if (info >= mth[i]->Method.info)
       break;
 
@@ -775,17 +956,22 @@ cos_method_get3(SEL gen, U32 id1, U32 id2, U32 id3)
 {
   struct Method3 **mth = STATIC_CAST(struct Method3**, sym.mth)+gen->mth;
   struct Class *cls[3];
-  U32 n_mth = COS_GEN_NMTH(gen);
-  U32 i = 0;
+  U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),
                           COS_ID_RNK(id2),
                           COS_ID_RNK(id3),0,0,0);
+  enum { n = 5 };
 
   cls[0] = cos_class_get(id1);
   cls[1] = cos_class_get(id2);
   cls[2] = cos_class_get(id3);
 
-  for (; i < n_mth; i++)
+  for (i = 0; i < n_mth; i += n)
+    if (info >= mth[i]->Method.info)
+      break;
+
+  if (i)
+  for (i -= n-1; i < n_mth; i++)
     if (info >= mth[i]->Method.info)
       break;
 
@@ -801,19 +987,24 @@ cos_method_get4(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4)
 {
   struct Method4 **mth = STATIC_CAST(struct Method4**, sym.mth)+gen->mth;
   struct Class *cls[4];
-  U32 n_mth = COS_GEN_NMTH(gen);
-  U32 i = 0;
+  U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),
                           COS_ID_RNK(id2),
                           COS_ID_RNK(id3),
                           COS_ID_RNK(id4),0,0);
+  enum { n = 5 };
 
   cls[0] = cos_class_get(id1);
   cls[1] = cos_class_get(id2);
   cls[2] = cos_class_get(id3);
   cls[3] = cos_class_get(id4);
 
-  for (; i < n_mth; i++)
+  for (i = 0; i < n_mth; i += n)
+    if (info >= mth[i]->Method.info)
+      break;
+
+  if (i)
+  for (i -= n-1; i < n_mth; i++)
     if (info >= mth[i]->Method.info)
       break;
 
@@ -829,13 +1020,13 @@ cos_method_get5(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
   struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
   struct Class *cls[5];
-  U32 n_mth = COS_GEN_NMTH(gen);
-  U32 i = 0;
+  U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),
                           COS_ID_RNK(id2),
                           COS_ID_RNK(id3),
                           COS_ID_RNK(id4),
                           COS_ID_RNK(id5),0);
+  enum { n = 5 };
 
   cls[0] = cos_class_get(id1);
   cls[1] = cos_class_get(id2);
@@ -843,7 +1034,12 @@ cos_method_get5(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
   cls[3] = cos_class_get(id4);
   cls[4] = cos_class_get(id5);
 
-  for (; i < n_mth; i++)
+  for (i = 0; i < n_mth; i += n)
+    if (info >= mth[i]->Method.info)
+      break;
+
+  if (i)
+  for (i -= n-1; i < n_mth; i++)
     if (info >= mth[i]->Method.info)
       break;
 
@@ -1032,7 +1228,7 @@ cos_symbol_showClasses(FILE *fp)
 
     fprintf(fp, "cls[%3u] = %-40s : %-40s [%2u,%9u->%3u]%c\n",
             i,
-            sym.cls[i]->name+2,
+            sym.cls[i]->name,
             sym.cls[i]->spr ? sym.cls[i]->spr->name : "NIL",
             COS_CLS_RNK(sym.cls[i]),
             COS_CLS_TAG(sym.cls[i]),
@@ -1055,12 +1251,44 @@ cos_symbol_showProperties(FILE *fp)
 
     fprintf(fp, "prp[%3u] = %-40s : %-40s [%2u,%9u->%3u]%c\n",
             i,
-            sym.prp[i]->name,
+            sym.prp[i]->name+2,
             sym.prp[i]->spr ? sym.prp[i]->spr->name : "NIL",
             COS_CLS_RNK(sym.prp[i]),
             COS_CLS_TAG(sym.prp[i]),
             j,
             (OBJ)sym.bhv[j] == (OBJ)sym.prp[i] ? '=' : 'x');
+  }
+}
+
+void
+cos_symbol_showClassProperties(FILE *fp, int spr)
+{
+  const struct Class *r_prp[256];
+  const struct Class *w_prp[256];
+  U32 i, j, k, r, w, n_prp = COS_ARRLEN(r_prp);
+
+  if (!fp) fp = stderr;
+
+  fprintf(fp, "classes properties:\n");
+
+  for (i = 0; i < sym.n_cls; i++) {
+    if (!sym.cls[i]->ref.cls) continue;
+    
+    k = spr ? 0 : COS_CLS_RNK(sym.cls[i]);
+    r = cos_class_readProperties (sym.cls[i],k,r_prp,n_prp);
+    w = cos_class_writeProperties(sym.cls[i],k,w_prp,n_prp);
+
+    fprintf(fp, "cls[%3u] = %-25s (%5u,%3u) / (%5u,%3u)\n",
+            i,
+            sym.cls[i]->name,
+            cls_decodePropIdx(sym.cls[i]->ref.prp[0]), r,
+            cls_decodePropIdx(sym.cls[i]->ref.prp[1]), w);
+
+    for (j = 0; j < r || j < w; j++)
+      fprintf(fp, "           prp[%3u] : %-26s / %-26s\n",
+              j,
+              j >= r ? "-" : r_prp[j]->name+2,
+              j >= w ? "-" : w_prp[j]->name+2);
   }
 }
 

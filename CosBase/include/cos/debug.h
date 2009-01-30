@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: debug.h,v 1.4 2009/01/26 14:30:40 ldeniau Exp $
+ | $Id: debug.h,v 1.5 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
@@ -46,11 +46,12 @@ extern FILE *cos_logmsg_out;
 void cos_showCallStack(FILE*);
 
 // in cos/cos_symbol.c
-void cos_symbol_showSummary   (FILE*);
-void cos_symbol_showClasses   (FILE*);
-void cos_symbol_showProperties(FILE*);
-void cos_symbol_showGenerics  (FILE*);
-void cos_symbol_showMethods   (FILE*);
+void cos_symbol_showSummary        (FILE*);
+void cos_symbol_showClasses        (FILE*);
+void cos_symbol_showProperties     (FILE*);
+void cos_symbol_showClassProperties(FILE*,int);
+void cos_symbol_showGenerics       (FILE*);
+void cos_symbol_showMethods        (FILE*);
 
 // in cos/cos_dispatch{1..5}.c
 void cos_method_showCache1(FILE*);

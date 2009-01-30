@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.11 2009/01/26 14:30:41 ldeniau Exp $
+ | $Id: base.h,v 1.12 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
@@ -146,7 +146,7 @@
 #define COS_ID_URK(id)  ((U32)(id) |  COS_ID_TAGMSK)
 #define COS_ID_TAG(id)  ((U32)(id) &  COS_ID_TAGMSK)
 #define COS_ID_TAGMSK   ((U32)0x07FFFFFF) // 2^(32-5)-1
-#define COS_ID_RNKSHT   27                // 32 - 5
+#define COS_ID_RNKSHT   27                //    32-5
 
 // reference counting
 #define COS_RC_STATIC   ((I32)-1)

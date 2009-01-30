@@ -29,11 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.5 2009/01/26 16:54:04 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.6 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
+#include <cos/Property.h>
 #include <cos/Proxy.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
@@ -43,6 +44,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include "generics.h"
+#include "properties.h"
 
 enum { MAX_LEN = 50 };
 
@@ -62,6 +64,78 @@ makclass(C,A);
 makclass(D,C);
 makclass(E,D);
 makclass(PA,Proxy);
+
+// properties
+
+static OBJ get(char *str) {
+  return Nil; COS_UNUSED(str);
+}
+
+defproperty(A, (str)p00, get);
+defproperty(A, (str)p01, get);
+defproperty(A, (str)p02, get);
+defproperty(A, (str)p03, get);
+defproperty(A, (str)p04, get);
+defproperty(A, (str)p05, get);
+defproperty(A, (str)p06, get);
+defproperty(A, (str)p07, get);
+defproperty(A, (str)p08, get);
+defproperty(A, (str)p09, get);
+defproperty(A, (str)p10, get);
+defproperty(A, (str)p11, get);
+defproperty(A, (str)p12, get);
+defproperty(A, (str)p13, get);
+defproperty(A, (str)p14, get);
+defproperty(A, (str)p15, get);
+defproperty(A, (str)p16, get);
+defproperty(A, (str)p17, get);
+defproperty(A, (str)p18, get);
+defproperty(A, (str)p19, get);
+defproperty(A, (str)p20, get);
+defproperty(A, (str)p21, get);
+defproperty(A, (str)p22, get);
+defproperty(A, (str)p23, get);
+defproperty(A, (str)p24, get);
+defproperty(A, (str)p25, get);
+defproperty(A, (str)p26, get);
+defproperty(A, (str)p27, get);
+defproperty(A, (str)p28, get);
+defproperty(A, (str)p29, get);
+defproperty(A, (str)p30, get);
+defproperty(A, (str)p31, get);
+defproperty(A, (str)p32, get);
+defproperty(A, (str)p33, get);
+defproperty(A, (str)p34, get);
+defproperty(A, (str)p35, get);
+defproperty(A, (str)p36, get);
+defproperty(A, (str)p37, get);
+defproperty(A, (str)p38, get);
+defproperty(A, (str)p39, get);
+defproperty(A, (str)p40, get);
+defproperty(A, (str)p41, get);
+defproperty(A, (str)p42, get);
+defproperty(A, (str)p43, get);
+defproperty(A, (str)p44, get);
+defproperty(A, (str)p45, get);
+defproperty(A, (str)p46, get);
+defproperty(A, (str)p47, get);
+defproperty(A, (str)p48, get);
+defproperty(A, (str)p49, get);
+defproperty(A, (str)p50, get);
+defproperty(A, (str)p51, get);
+defproperty(A, (str)p52, get);
+defproperty(A, (str)p53, get);
+defproperty(A, (str)p54, get);
+defproperty(A, (str)p55, get);
+defproperty(A, (str)p56, get);
+defproperty(A, (str)p57, get);
+defproperty(A, (str)p58, get);
+defproperty(A, (str)p59, get);
+defproperty(A, (str)p60, get);
+defproperty(A, (str)p61, get);
+defproperty(A, (str)p62, get);
+defproperty(A, (str)p63, get);
+//defproperty(A, (str)p64, get);
 
 // ---- constructors
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.19 2009/01/26 14:30:41 ldeniau Exp $
+ | $Id: cosapi.h,v 1.20 2009/01/30 12:12:56 ldeniau Exp $
  |
 */
 
@@ -49,17 +49,17 @@ double cos_deinitDuration(void); // in second.
 
 BOOL   cos_any_isKindOf(OBJ,const struct Class*);
 BOOL   cos_any_changeClass(OBJ,const struct Class*);
-BOOL   cos_any_unsafeChangeClass(OBJ,const struct Class *new,
-                                     const struct Class *base);
-
-struct Class* cos_class_get(U32);
-struct Class* cos_class_getWithStr(STR);
-BOOL          cos_class_isSubclassOf(const struct Class*,const struct Class*);
-
-struct Class* cos_property_getWithStr(STR);
+BOOL   cos_any_unsafeChangeClass(OBJ,const struct Class*,const struct Class*);
 
 struct Generic* cos_generic_get(U32);
 struct Generic* cos_generic_getWithStr(STR);
+struct Class*   cos_class_get(U32);
+struct Class*   cos_class_getWithStr(STR);
+struct Class*   cos_property_getWithStr(STR);
+
+BOOL cos_class_isSubclassOf   (const struct Class*,    const struct Class*);
+U32  cos_class_readProperties (const struct Class*,U32,const struct Class**,U32);
+U32  cos_class_writeProperties(const struct Class*,U32,const struct Class**,U32);
 
 IMP1   cos_method_get1(SEL,U32);
 IMP2   cos_method_get2(SEL,U32,U32);
@@ -300,14 +300,14 @@ cos_any_rc(OBJ obj)
   COS_UNUSED(cos_any_rc);
 }
 
-static inline const struct Class*
+static inline struct Class*
 cos_any_class(OBJ obj)
 {
   return cos_class_get(cos_any_id(obj));
   COS_UNUSED(cos_any_class);
 }
 
-static inline const struct Class*
+static inline struct Class*
 cos_any_superClass(OBJ obj)
 {
   return cos_any_class(obj)->spr;
