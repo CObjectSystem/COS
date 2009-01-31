@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.6 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.7 2009/01/31 00:51:19 ldeniau Exp $
  |
 */
 
@@ -374,9 +374,21 @@ defmethod(void, gdoY, A, C)
   if (next_method_p) next_method(self1,self2);
 endmethod
 
+defmethod(void, (gdoY), A, C) // around method
+  gcat2Str(_1,_2,"-[AC");
+  if (next_method_p) next_method(self1,self2);
+  gcat2Str(_1,_2,"-AC]");
+endmethod
+
 defmethod(void, gdoY, B, A)
   gcat2Str(_1,_2,"-BA");
   if (next_method_p) next_method(self1,self2);
+endmethod
+
+defmethod(void, (gdoY), B, A) // around method
+  gcat2Str(_1,_2,"-[BA");
+  if (next_method_p) next_method(self1,self2);
+  gcat2Str(_1,_2,"-BA]");
 endmethod
 
 defmethod(void, gdoY, C, A)
@@ -398,6 +410,12 @@ endmethod
 defmethod(void, gdoY, B, C)
   gcat2Str(_1,_2,"-BC");
   if (next_method_p) next_method(self1,self2);
+endmethod
+
+defmethod(void, (gdoY), B, C) // around method
+  gcat2Str(_1,_2,"-[BC");
+  if (next_method_p) next_method(self1,self2);
+  gcat2Str(_1,_2,"-BC]");
 endmethod
 
 defmethod(void, gdoY, C, B)

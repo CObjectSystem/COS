@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.24 2009/01/30 17:40:13 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.25 2009/01/31 00:51:19 ldeniau Exp $
  |
 */
 
@@ -129,25 +129,21 @@ mth_cmp(const void *_mth1, const void *_mth2)
   if (mth1->Method.gen != mth2->Method.gen)
     return strcmp(mth1->Method.gen->name, mth2->Method.gen->name);
 
-  // descending rank order
+  // descending method rank order
   if ((res = (mth1->Method.info < mth2->Method.info) -
              (mth1->Method.info > mth2->Method.info)))
-    return res;
-
-  // normal vs around rank order (descending)
-  if ((res = (mth1->Method.arnd < mth2->Method.arnd) -
-             (mth1->Method.arnd > mth2->Method.arnd)))
     return res;
 
   // ascending classes name
   n = COS_GEN_RNK(mth1->Method.gen);
   
-  for (i = 0; i < n; i++) {
+  for (i = 0; i < n; i++)
     if (mth1->cls[i] != mth2->cls[i])
       return strcmp(mth1->cls[i]->name, mth2->cls[i]->name);
-  }
 
-  return 0; // should never be reached
+  // descending around rank order
+  return (mth1->Method.arnd < mth2->Method.arnd) -
+         (mth1->Method.arnd > mth2->Method.arnd);
 }
 
 static int // qsort
@@ -462,22 +458,38 @@ mth_isSubOf(struct Class* const*cls, struct Class* const* ref, U32 n)
 }
 
 static inline FUNC
-nxt_init(SEL gen, U32 info, struct Class *const *cls)
+nxt_init(SEL gen, U32 info, U32 arnd, struct Class *const *cls)
 {
   struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
   U32 n_cls = COS_GEN_RNK (gen);
   enum { n = 5 };
-  U32 i;
+  U32 i = 0;
 
-  for (i = 0; i < n_mth; i += n)
-    if (info > mth[i]->Method.info)
-      break;
+  if (arnd) {
+    for (; i < n_mth; i += n)
+      if (info >= mth[i]->Method.info)
+        break;
 
-  if (i)
-  for (i -= n-1; i < n_mth; i++)
-    if (info > mth[i]->Method.info)
-      break;
+    if (i) i -= n-1;
+    
+    for (; i < n_mth; i++)
+      if (arnd == mth[i]->Method.arnd)
+        break;
+        
+    ++i;
+  }
+  else {
+    for (; i < n_mth; i += n)
+      if (info > mth[i]->Method.info)
+        break;
+
+    if (i) i -= n-1;
+    
+    for (; i < n_mth; i++)
+      if (info > mth[i]->Method.info)
+        break;
+  }
 
   for (; i < n_mth; i++)
     if (mth_isSubOf(cls, mth[i]->cls, n_cls))
@@ -511,7 +523,7 @@ static void
 sym_init(void)
 {
   U32 n_cls=0, n_mcl=0, n_pcl=0, n_gen=0, n_mth=0;
-  U32 t, s;
+  U32 t, s, r=0;
 
   // count symbols
   for (t = 0; t < MAX_TBL && tbl[t]; t++) {
@@ -589,6 +601,7 @@ sym_init(void)
         gen_incMth(mth->gen);
         sym.mth[sym.n_mth++] = mth;
         mth->Object.Any.rc = COS_RC_STATIC;
+        if (mth->arnd) mth->arnd = --r;
         switch(COS_GEN_RNK(mth->gen)) {
         case 1: mth->Object.Any.id = cos_class_id(classref(Method1)); break;
         case 2: mth->Object.Any.id = cos_class_id(classref(Method2)); break;
@@ -1069,11 +1082,11 @@ cos_method_get5(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 static pthread_mutex_t nxt_lock = PTHREAD_MUTEX_INITIALIZER;
 
 void
-cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
+cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, U32 rnd, struct Class* const* cls)
 {
   pthread_mutex_lock(&nxt_lock);
   if (*fct == (FUNC)YES) {
-    *fct = nxt_init(gen,rnk,cls);
+    *fct = nxt_init(gen,rnk,rnd,cls);
     nxt_add(fct);
   }
   pthread_mutex_unlock(&nxt_lock);
@@ -1090,9 +1103,9 @@ cos_method_nextClear(void)
 #else
 
 void
-cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, struct Class* const* cls)
+cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, U32 rnd, struct Class* const* cls)
 {
-  *fct = nxt_init(gen,rnk,cls);
+  *fct = nxt_init(gen,rnk,rnd,cls);
   nxt_add(fct);
 }
 

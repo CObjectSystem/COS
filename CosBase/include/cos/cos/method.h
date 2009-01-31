@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.17 2009/01/30 17:40:12 ldeniau Exp $
+ | $Id: method.h,v 1.18 2009/01/31 00:51:19 ldeniau Exp $
  |
 */
 
@@ -130,23 +130,26 @@
 /* method definition and instantiation
  */
 #define COS_MTH_DEF(  RET,NAME,...) \
-        COS_MTH_DEF_0(RET,NAME,(__VA_ARGS__), \
+        COS_MTH_DEF_0(RET, \
+          COS_DCL_GNAME(NAME),COS_DCL_LNAME(NAME), \
+          (__VA_ARGS__), \
           COS_PP_FILTER((__VA_ARGS__),COS_PP_ISNTUPLE), \
-          COS_PP_FILTER((__VA_ARGS__),COS_PP_ISTUPLE ) )
+          COS_PP_FILTER((__VA_ARGS__),COS_PP_ISTUPLE ), \
+          COS_PP_ISTUPLE(NAME))
 
-#define COS_MTH_DEF_0(RET,NAME,PS,CS,AS) \
-        COS_MTH_DEF_1(RET,NAME,PS,CS,AS, \
+#define COS_MTH_DEF_0(RET,NAME,TAG,PS,CS,AS,T) \
+        COS_MTH_DEF_1(RET,NAME,TAG,PS,CS,AS, \
           COS_PP_LEN(CS), \
           COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
-          COS_PP_NOT(COS_TOK_ISVOID(RET)) )
+          COS_PP_NOT(COS_TOK_ISVOID(RET)), T)
 
-#define COS_MTH_DEF_1(RET,NAME,PS,CS,AS,C,A,R) \
-COS_MTH_MSPECHK(    NAME,   CS         ) \
-COS_MTH_RANKCHK(    NAME,   CS,   C    ) \
-COS_MTH_NAMECHK(    NAME,   CS         ) \
-COS_MTH_TYPECHK(RET,NAME,PS,CS         ) \
-COS_MTH_COMPMAK(    NAME,   CS,   C    ) \
-COS_MTH_FUNCDEF(RET,NAME,PS,CS,AS,C,A,R) \
+#define COS_MTH_DEF_1(RET,NAME,TAG,PS,CS,AS,C,A,R,T) \
+COS_MTH_MSPECHK(    NAME,TAG,   CS,         T) \
+COS_MTH_RANKCHK(    NAME,TAG,   CS,   C,    T) \
+COS_MTH_NAMECHK(    NAME,TAG,   CS,         T) \
+COS_MTH_TYPECHK(RET,NAME,    PS,CS           ) \
+COS_MTH_COMPMAK(    NAME,TAG,   CS,   C,    T) \
+COS_MTH_FUNCDEF(RET,NAME,TAG,PS,CS,AS,C,A,R,T) \
 COS_CTR_BEGCTR
 
 #define COS_MTH_END   \
@@ -163,7 +166,7 @@ COS_CTR_BEGCTR
 
 #define COS_MTH_DEFN_0(RET,NAME,PS,CS) \
 /* next_method definition */ \
-COS_MTH_NEXTDEF(RET,NAME,PS,CS,COS_PP_LEN(CS)) \
+COS_MTH_NEXTDEF(RET,NAME,TAG,PS,CS,COS_PP_LEN(CS),0) \
 /* next_method classes */ \
 static struct Class* const _cos_mth_nxt_cls[] = \
   { COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_REF_1))}
@@ -173,25 +176,26 @@ static struct Class* const _cos_mth_nxt_cls[] = \
  */
 
 // method specialization check
-#define COS_MTH_MSPECHK(NAME,CS) \
+#define COS_MTH_MSPECHK(NAME,TAG,CS,T) \
   COS_STATIC_ASSERT( \
-    COS_PP_CAT(COS_SYM_NAME(NAME,CS), \
+    COS_PP_CAT(COS_MTH_MNAME(COS_SYM_NAME(NAME,CS),TAG,T), \
       __method_cannot_be_specialized_for_class_predicate_INSTANCE), \
     COS_PP_SEPWITH(COS_PP_MAP(CS,COS_CLS_MSPE),&&));
 
 // method rank check
-#define COS_MTH_RANKCHK(NAME,CS,C) \
+#define COS_MTH_RANKCHK(NAME,TAG,CS,C,T) \
 COS_PP_IF(COS_PP_GE(C,5))( \
   COS_STATIC_ASSERT( \
-    COS_PP_CAT3(COS_SYM_NAME(NAME,CS), \
+    COS_PP_CAT3(COS_MTH_MNAME(COS_SYM_NAME(NAME,CS),TAG,T), \
                 __method_rank_greater_than_,COS_MTH_RNKMAX), \
     COS_PP_SEPWITH(COS_PP_MAP(CS,COS_CLS_RANK),+) < COS_MTH_RNKMAX); \
 ,/* always true */)
 
 // method name check
-#define COS_MTH_NAMECHK(NAME,CS) \
+#define COS_MTH_NAMECHK(NAME,TAG,CS,T) \
 COS_STATIC_ASSERT( \
-  COS_PP_CAT(COS_SYM_NAME(NAME,CS),__name_is_longer_than_256_chars), \
+  COS_PP_CAT(COS_MTH_MNAME(COS_SYM_NAME(NAME,CS),TAG,T), \
+             __name_is_longer_than_256_chars), \
   sizeof(COS_PP_STR(COS_SYM_NAME(NAME,CS))) <= 256);
 
 // method type check
@@ -202,9 +206,29 @@ extern RET (* \
   COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defmethod_vs_defgeneric) ) \
                                             COS_PP_MAP(PS,COS_SIG_GEN);
 
+// component intantiation (see cos/cos/coscls.h)
+#define COS_MTH_COMPMAK(NAME,TAG,CS,C,T) \
+static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
+(SEL _sel, COS_PP_SEQ(COS_SEL_TYPE(C)), void* _arg, void* _ret); \
+ \
+struct COS_PP_CAT(Method,C) COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T) = { \
+   /* encode tag into rc */ \
+  {{{ 0, cos_tag_method }}, \
+   /* reference to generic */ \
+   &COS_GEN_NAME(NAME), \
+   /* method rank */ \
+   COS_MTH_INFO(COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_RANK)),0,0,0,0,0), \
+   /* around method rank */ \
+   T }, \
+   /* reference to function */ \
+   COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T), \
+   /* references to classes of specialization */ \
+   { COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_REF_1)) } \
+};
+
 // method definition
-#define COS_MTH_FUNCDEF(RET,NAME,PS,CS,AS,C,A,R) \
-static void COS_FCT_NAME(NAME,CS) \
+#define COS_MTH_FUNCDEF(RET,NAME,TAG,PS,CS,AS,C,A,R,T) \
+static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 (SEL const restrict _sel, COS_PP_SEQ(COS_SEL_DECL(C)), \
    void* const restrict _arg, void* const restrict _ret) \
 { \
@@ -214,10 +238,10 @@ static void COS_FCT_NAME(NAME,CS) \
   /* selfs types (i.e. _cos_mth_slfn) */ \
   COS_PP_SEP(COS_PP_MAP2(CS,COS_MTH_SLF_TYP(C),COS_MTH_SLF_DEF)) \
   /* next_method definition */ \
-  COS_MTH_NEXTDEF(RET,NAME,PS,CS,C) \
+  COS_MTH_NEXTDEF(RET,NAME,TAG,PS,CS,C,T) \
   /* next_method classes */ \
   static struct Class* const* const restrict _cos_mth_nxt_cls = \
-    COS_MTH_NAME(NAME,CS).cls; \
+    COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T).cls; \
   /* selfs variables */ \
   _cos_mth_slf1* const restrict self = (_cos_mth_slf1*)_1; \
   COS_PP_SEP(COS_MTH_SLF_INI(C)) \
@@ -226,7 +250,7 @@ static void COS_FCT_NAME(NAME,CS) \
   /* trace variables (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)( \
   static const struct Method* const restrict _mth = \
-    (struct Method*)&COS_MTH_NAME(NAME,CS); \
+    (struct Method*)&COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T); \
   OBJ _cos_mth_objs[C]; \
   int _cos_mth_line;,/* no trace */) \
   /* arguments variables initialization (if any) */ \
@@ -246,32 +270,13 @@ static void COS_FCT_NAME(NAME,CS) \
   /* avoid compiler warning for unused identifiers */ \
   COS_PP_IF(R)(/* use ret */,COS_UNUSED(_ret);) \
   COS_UNUSED(_sel,_arg,self,next_method, \
-    _cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_cls,_cos_mth_nxt_p); \
+    _cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_rnd,\
+    _cos_mth_nxt_cls,_cos_mth_nxt_p); \
   /* method user code */ \
   _cos_mth_body:
 
-// component intantiation (see cos/cos/coscls.h)
-#define COS_MTH_COMPMAK(NAME,CS,C) \
-static void COS_FCT_NAME(NAME,CS) \
-(SEL _sel, COS_PP_SEQ(COS_SEL_TYPE(C)), void* _arg, void* _ret); \
- \
-struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
-   /* encode tag into rc */ \
-  {{{ 0, cos_tag_method }}, \
-   /* reference to generic */ \
-   &COS_GEN_NAME(NAME), \
-   /* method rank */ \
-   COS_MTH_INFO(COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_RANK)),0,0,0,0,0), \
-   /* around method rank */ \
-   0 }, \
-   /* reference to function */ \
-   COS_FCT_NAME(NAME,CS), \
-   /* references to classes of specialization */ \
-   { COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_REF_1)) } \
-};
-
 // next_method definition
-#define COS_MTH_NEXTDEF(RET,NAME,PS,CS,C) \
+#define COS_MTH_NEXTDEF(RET,NAME,TAG,PS,CS,C,T) \
   /* next_method type */ \
   typedef void (*const _cos_mth_nxt) COS_PP_MAP(PS,COS_SIG_NXTM); \
   /* next_method type (direct case) */ \
@@ -285,9 +290,12 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
   static _cos_mth_nxt_t _cos_mth_nxt_p = (_cos_mth_nxt_t)COS_YES; \
   /* next_method selector */ \
   static SEL const _cos_mth_nxt_sel = &COS_GEN_NAME(NAME); \
-  /* next_method rank */ \
+  /* next_method method rank */ \
   static U32 const _cos_mth_nxt_rnk = \
     COS_MTH_INFO(COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_RANK)),0,0,0,0,0); \
+  /* next_method around rank */ \
+  U32 _cos_mth_nxt_rnd = \
+    COS_PP_IF(T)(COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T).Method.arnd,0); \
   /* generic next_method pointer */ \
   void (*const next_method) (COS_PP_SEQ(COS_PP_MAP(PS,COS_SIG_NXT)), \
                              SEL, RET*, _cos_mth_nxt_t) = COS_NXT_NAME(NAME);
@@ -338,7 +346,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
   /* next_method initialization */ \
   (_cos_mth_nxt_p != (_cos_mth_nxt_t)COS_YES ? (void)0 : \
    cos_method_nextInit((FUNC*)(void*)&_cos_mth_nxt_p, \
-                       _cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_cls))
+      _cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_rnd,_cos_mth_nxt_cls))
 
 // forward_message
 #define COS_MTH_FWD(...) \
@@ -392,6 +400,10 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS) = { \
 #define COS_MTH_RK4(mth) ((mth)->info >>  5 & 0x1F)
 #define COS_MTH_RK5(mth) ((mth)->info       & 0x1F)
 
+// method mangled names
+#define COS_MTH_MNAME(NAME,TAG,T) \
+  COS_PP_IF(T)(COS_PP_CAT3(NAME,__a_,TAG),NAME)
+                           
 // some constant tuples
 #define COS_MTH_SLF_TYP(N) \
   COS_PP_TAKE(N, (_cos_mth_slf1, \

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.20 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: cosapi.h,v 1.21 2009/01/31 00:51:18 ldeniau Exp $
  |
 */
 
@@ -155,7 +155,7 @@ void cos_symbol_register(struct Object**);
 
 // next-method
 void cos_method_nextClear(void);
-void cos_method_nextInit(FUNC*,SEL,U32,struct Class* const*);
+void cos_method_nextInit(FUNC*,SEL,U32,U32,struct Class* const*);
 
 // 2nd and 3rd levels dispatch
 IMP1 cos_method_fastLookup1_(struct cos_method_slot1*restrict*restrict,SEL,U32);
