@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_nextmethod.c,v 1.2 2009/01/31 00:51:19 ldeniau Exp $
+ | $Id: ut_nextmethod.c,v 1.3 2009/02/02 08:48:47 ldeniau Exp $
  |
 */
 
@@ -85,27 +85,27 @@ ut_nextmethod(void)
     // rnk 3
     UTEST( check_nxt('Y', A,B,"AB-AA") );
     UTEST( check_nxt('Y', A,C,"[AC-AC-AA-AC]") );
-    UTEST( check_nxt('Y', B,A,"[BA-BA-AA-BA]") );
+    UTEST( check_nxt('Y', B,A,"[BA-[1BA-BA-AA-BA1]-BA]") );
     UTEST( check_nxt('Y', C,A,"CA-AA") );
 
     // rnk 4
     UTEST( check_nxt('Y', A,D,"AD-[AC-AC-AA-AC]") );
-    UTEST( check_nxt('Y', B,B,"BB-[BA-BA-AA-BA]") );
-    UTEST( check_nxt('Y', B,C,"[BC-BC-[BA-BA-AA-BA]-BC]") );
+    UTEST( check_nxt('Y', B,B,"BB-[BA-[1BA-BA-AA-BA1]-BA]") );
+    UTEST( check_nxt('Y', B,C,"[BC-BC-[BA-[1BA-BA-AA-BA1]-BA]-BC]") );
     UTEST( check_nxt('Y', C,B,"CB-CA-AA") );
     UTEST( check_nxt('Y', C,C,"CC-CA-AA") );
     UTEST( check_nxt('Y', D,A,"DA-CA-AA") );
 
     // rnk 5
     UTEST( check_nxt('Y', A,E,"AE-AD-[AC-AC-AA-AC]") );
-    UTEST( check_nxt('Y', B,D,"BD-[BC-BC-[BA-BA-AA-BA]-BC]") );
+    UTEST( check_nxt('Y', B,D,"BD-[BC-BC-[BA-[1BA-BA-AA-BA1]-BA]-BC]") );
     UTEST( check_nxt('Y', C,D,"CD-CC-CA-AA") );
     UTEST( check_nxt('Y', D,B,"DB-DA-CA-AA") );
     UTEST( check_nxt('Y', D,C,"DC-DA-CA-AA") );
     UTEST( check_nxt('Y', E,A,"EA-DA-CA-AA") );
 
     // rnk 6
-    UTEST( check_nxt('Y', B,E,"BE-BD-[BC-BC-[BA-BA-AA-BA]-BC]") );
+    UTEST( check_nxt('Y', B,E,"BE-BD-[BC-BC-[BA-[1BA-BA-AA-BA1]-BA]-BC]") );
     UTEST( check_nxt('Y', C,E,"CE-CD-CC-CA-AA") );
     UTEST( check_nxt('Y', D,D,"DD-DC-DA-CA-AA") );
     UTEST( check_nxt('Y', E,B,"EB-EA-DA-CA-AA") );

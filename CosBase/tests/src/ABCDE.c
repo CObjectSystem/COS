@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.7 2009/01/31 00:51:19 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.8 2009/02/02 08:48:47 ldeniau Exp $
  |
 */
 
@@ -46,7 +46,7 @@
 #include "generics.h"
 #include "properties.h"
 
-enum { MAX_LEN = 50 };
+enum { MAX_LEN = 100 };
 
 defclass(A,Object)
   char str[MAX_LEN];
@@ -383,6 +383,12 @@ endmethod
 defmethod(void, gdoY, B, A)
   gcat2Str(_1,_2,"-BA");
   if (next_method_p) next_method(self1,self2);
+endmethod
+
+defmethod(void, (gdoY)1, B, A) // around method
+  gcat2Str(_1,_2,"-[1BA");
+  if (next_method_p) next_method(self1,self2);
+  gcat2Str(_1,_2,"-BA1]");
 endmethod
 
 defmethod(void, (gdoY), B, A) // around method

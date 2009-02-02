@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.25 2009/01/31 00:51:19 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.26 2009/02/02 08:43:57 ldeniau Exp $
  |
 */
 
@@ -472,7 +472,7 @@ nxt_init(SEL gen, U32 info, U32 arnd, struct Class *const *cls)
         break;
 
     if (i) i -= n-1;
-    
+
     for (; i < n_mth; i++)
       if (arnd == mth[i]->Method.arnd)
         break;

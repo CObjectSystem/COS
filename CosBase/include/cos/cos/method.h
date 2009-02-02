@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.18 2009/01/31 00:51:19 ldeniau Exp $
+ | $Id: method.h,v 1.19 2009/02/02 08:43:57 ldeniau Exp $
  |
 */
 
@@ -240,7 +240,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   /* next_method definition */ \
   COS_MTH_NEXTDEF(RET,NAME,TAG,PS,CS,C,T) \
   /* next_method classes */ \
-  static struct Class* const* const restrict _cos_mth_nxt_cls = \
+  struct Class* const* const restrict _cos_mth_nxt_cls = \
     COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T).cls; \
   /* selfs variables */ \
   _cos_mth_slf1* const restrict self = (_cos_mth_slf1*)_1; \
@@ -249,7 +249,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   COS_CTR_DCL \
   /* trace variables (if requested) */ \
   COS_PP_IFDEF(COS_METHOD_TRACE)( \
-  static const struct Method* const restrict _mth = \
+  const struct Method* const restrict _mth = \
     (struct Method*)&COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T); \
   OBJ _cos_mth_objs[C]; \
   int _cos_mth_line;,/* no trace */) \
@@ -289,9 +289,9 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   /* next_method pointer */ \
   static _cos_mth_nxt_t _cos_mth_nxt_p = (_cos_mth_nxt_t)COS_YES; \
   /* next_method selector */ \
-  static SEL const _cos_mth_nxt_sel = &COS_GEN_NAME(NAME); \
+  SEL const _cos_mth_nxt_sel = &COS_GEN_NAME(NAME); \
   /* next_method method rank */ \
-  static U32 const _cos_mth_nxt_rnk = \
+  U32 const _cos_mth_nxt_rnk = \
     COS_MTH_INFO(COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_RANK)),0,0,0,0,0); \
   /* next_method around rank */ \
   U32 _cos_mth_nxt_rnd = \
