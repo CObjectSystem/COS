@@ -27,9 +27,9 @@
  |
  | See <http://www.gnu.org/licenses> for more details.
  |
- o---------------------------------------------------------------------o
+ o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.9 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: st_methods.c,v 1.10 2009/02/03 14:49:44 ldeniau Exp $
  |
 */
 
@@ -52,12 +52,12 @@ st_methods(void)
 
   OBJ cnt = gnew(Counter);
 
-  STEST( "method (0 argument )", N, N, gincr(cnt) );
-  STEST( "method (1 argument )", N, N, gincrBy1(cnt,1) );
-  STEST( "method (2 arguments)", N, N, gincrBy2(cnt,1,1) );
-  STEST( "method (3 arguments)", N, N, gincrBy3(cnt,1,1,1) );
-  STEST( "method (4 arguments)", N, N, gincrBy4(cnt,1,1,1,1) );
-  STEST( "method (5 arguments)", N, N, gincrBy5(cnt,1,1,1,1,1) );
+  STEST( "method (0 argument )", N, gincr(cnt) );
+  STEST( "method (1 argument )", N, gincrBy1(cnt,1) );
+  STEST( "method (2 arguments)", N, gincrBy2(cnt,1,1) );
+  STEST( "method (3 arguments)", N, gincrBy3(cnt,1,1,1) );
+  STEST( "method (4 arguments)", N, gincrBy4(cnt,1,1,1,1) );
+  STEST( "method (5 arguments)", N, gincrBy5(cnt,1,1,1,1,1) );
   
   test_assert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
 
@@ -72,12 +72,12 @@ st_nextmethods(void)
 
   OBJ cnt = gnew(MilliCounter);
 
-  STEST( "next method (0 argument )", P, P, gincr(cnt) );
-  STEST( "next method (1 argument )", P, P, gincrBy1(cnt,1) );
-  STEST( "next method (2 arguments)", P, P, gincrBy2(cnt,1,1) );
-  STEST( "next method (3 arguments)", P, P, gincrBy3(cnt,1,1,1) );
-  STEST( "next method (4 arguments)", P, P, gincrBy4(cnt,1,1,1,1) );
-  STEST( "next method (5 arguments)", P, P, gincrBy5(cnt,1,1,1,1,1) );
+  STEST( "next method (0 argument )", P, gincr(cnt) );
+  STEST( "next method (1 argument )", P, gincrBy1(cnt,1) );
+  STEST( "next method (2 arguments)", P, gincrBy2(cnt,1,1) );
+  STEST( "next method (3 arguments)", P, gincrBy3(cnt,1,1,1) );
+  STEST( "next method (4 arguments)", P, gincrBy4(cnt,1,1,1,1) );
+  STEST( "next method (5 arguments)", P, gincrBy5(cnt,1,1,1,1,1) );
   
   test_assert( gint(cnt) == P+P+2*P+3*P+4*P+5*P );
   grelease(cnt);
@@ -91,10 +91,10 @@ st_multimethods(void)
   OBJ cnt = gnew(Counter);
   OBJ one = gincr(gnew(Counter));
 
-  STEST( "multimethod (rank 2)", N, N, gaddTo1(cnt,one) );
-  STEST( "multimethod (rank 3)", N, N, gaddTo2(cnt,one,one) );
-  STEST( "multimethod (rank 4)", N, N, gaddTo3(cnt,one,one,one) );
-  STEST( "multimethod (rank 5)", N, N, gaddTo4(cnt,one,one,one,one) );
+  STEST( "multimethod (rank 2)", N, gaddTo1(cnt,one) );
+  STEST( "multimethod (rank 3)", N, gaddTo2(cnt,one,one) );
+  STEST( "multimethod (rank 4)", N, gaddTo3(cnt,one,one,one) );
+  STEST( "multimethod (rank 5)", N, gaddTo4(cnt,one,one,one,one) );
   
   test_assert( gint(cnt) == N+2*N+3*N+4*N );
   grelease(cnt);
@@ -125,12 +125,12 @@ st_methods_ptr(void)
   gincrBy4_arg_t arg4 = { 1,1,1,1 };
   gincrBy5_arg_t arg5 = { 1,1,1,1,1 };
 
-  STEST( "method pointer (0 argument )", N, N, gincr_p   ((SEL)gincr_s   ,cnt,0    ,&ret) );
-  STEST( "method pointer (1 argument )", N, N, gincrBy1_p((SEL)gincrBy1_s,cnt,&arg1,&ret) );
-  STEST( "method pointer (2 arguments)", N, N, gincrBy2_p((SEL)gincrBy2_s,cnt,&arg2,&ret) );
-  STEST( "method pointer (3 arguments)", N, N, gincrBy3_p((SEL)gincrBy3_s,cnt,&arg3,&ret) );
-  STEST( "method pointer (4 arguments)", N, N, gincrBy4_p((SEL)gincrBy4_s,cnt,&arg4,&ret) );
-  STEST( "method pointer (5 arguments)", N, N, gincrBy5_p((SEL)gincrBy5_s,cnt,&arg5,&ret) );
+  STEST( "method pointer (0 argument )", N, gincr_p   ((SEL)gincr_s   ,cnt,0    ,&ret) );
+  STEST( "method pointer (1 argument )", N, gincrBy1_p((SEL)gincrBy1_s,cnt,&arg1,&ret) );
+  STEST( "method pointer (2 arguments)", N, gincrBy2_p((SEL)gincrBy2_s,cnt,&arg2,&ret) );
+  STEST( "method pointer (3 arguments)", N, gincrBy3_p((SEL)gincrBy3_s,cnt,&arg3,&ret) );
+  STEST( "method pointer (4 arguments)", N, gincrBy4_p((SEL)gincrBy4_s,cnt,&arg4,&ret) );
+  STEST( "method pointer (5 arguments)", N, gincrBy5_p((SEL)gincrBy5_s,cnt,&arg5,&ret) );
   
   test_assert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
 
@@ -156,10 +156,10 @@ st_multimethods_ptr(void)
   IMP4 gaddTo3_p = cos_method_lookup4((SEL)gaddTo3_s, cid, oid, oid, oid);
   IMP5 gaddTo4_p = cos_method_lookup5((SEL)gaddTo4_s, cid, oid, oid, oid, oid);
 
-  STEST( "multimethod pointer (rank 2)", N, N, gaddTo1_p((SEL)gaddTo1_s,cnt,one,0,&ret) );
-  STEST( "multimethod pointer (rank 3)", N, N, gaddTo2_p((SEL)gaddTo2_s,cnt,one,one,0,&ret) );
-  STEST( "multimethod pointer (rank 4)", N, N, gaddTo3_p((SEL)gaddTo3_s,cnt,one,one,one,0,&ret) );
-  STEST( "multimethod pointer (rank 5)", N, N, gaddTo4_p((SEL)gaddTo4_s,cnt,one,one,one,one,0,&ret) );
+  STEST( "multimethod pointer (rank 2)", N, gaddTo1_p((SEL)gaddTo1_s,cnt,one,0,&ret) );
+  STEST( "multimethod pointer (rank 3)", N, gaddTo2_p((SEL)gaddTo2_s,cnt,one,one,0,&ret) );
+  STEST( "multimethod pointer (rank 4)", N, gaddTo3_p((SEL)gaddTo3_s,cnt,one,one,one,0,&ret) );
+  STEST( "multimethod pointer (rank 5)", N, gaddTo4_p((SEL)gaddTo4_s,cnt,one,one,one,one,0,&ret) );
   
   test_assert( gint(cnt) == N+2*N+3*N+4*N );
 
@@ -183,31 +183,31 @@ st_memory(void)
   for (i=P; i>0; i--) grelease(arr[i-1]);
   
   i = 0;
-  STEST( "new (galloc+ginit)", P, P, arr[i++] = gnew(Counter) );
+  STEST( "new (galloc+ginit)", P, arr[i++] = gnew(Counter) );
 
   i = 0;
-  STEST( "retain", P, P, gretain(arr[i++]) );
+  STEST( "retain", P, gretain(arr[i++]) );
 
   i = 0;
   lvl = cos_logmsg_set(COS_LOGMSG_WARN);
-  STEST( "autoRelease", P, P, gautoRelease(arr[i++]) );
+  STEST( "autoRelease", P, gautoRelease(arr[i++]) );
   cos_logmsg_set(lvl);
 
   i = 0;
-  STEST( "discard", P, P, gdiscard(arr[i++]) ); // does nothing since refcnt == 2
+  STEST( "discard", P, gdiscard(arr[i++]) ); // does nothing since refcnt == 2
 
   i = 0;
-  STEST( "release", P, P, grelease(arr[i++]) );
+  STEST( "release", P, grelease(arr[i++]) );
 
   i = 0;
-  STEST( "release (gdeinit+dealloc)", P, 1, grelease(ar) );
+  STEST( "release (gdeinit+dealloc)", P, grelease(ar) );
 
   i = 0;
-  STEST( "new + release", P, P, grelease(gnew(Counter)) );
+  STEST( "new + release", P, grelease(gnew(Counter)) );
 }
 
 void
 st_exception(void)
 {
-  STEST( "try-endtry", N/100, N/100, TRY ENDTRY );
+  STEST( "try-endtry", N/100, TRY ENDTRY );
 }

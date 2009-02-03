@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_proxy.c,v 1.4 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: st_proxy.c,v 1.5 2009/02/03 14:49:44 ldeniau Exp $
  |
 */
 
@@ -55,12 +55,12 @@ st_pxymethods(void)
 
   grelease(cnt);
 
-  STEST( "method through proxy (0 argument )", N, N, gincr(pxy) );
-  STEST( "method through proxy (1 argument )", N, N, gincrBy1(pxy,1) );
-  STEST( "method through proxy (2 arguments)", N, N, gincrBy2(pxy,1,1) );
-  STEST( "method through proxy (3 arguments)", N, N, gincrBy3(pxy,1,1,1) );
-  STEST( "method through proxy (4 arguments)", N, N, gincrBy4(pxy,1,1,1,1) );
-  STEST( "method through proxy (5 arguments)", N, N, gincrBy5(pxy,1,1,1,1,1) );
+  STEST( "method through proxy (0 argument )", N, gincr(pxy) );
+  STEST( "method through proxy (1 argument )", N, gincrBy1(pxy,1) );
+  STEST( "method through proxy (2 arguments)", N, gincrBy2(pxy,1,1) );
+  STEST( "method through proxy (3 arguments)", N, gincrBy3(pxy,1,1,1) );
+  STEST( "method through proxy (4 arguments)", N, gincrBy4(pxy,1,1,1,1) );
+  STEST( "method through proxy (5 arguments)", N, gincrBy5(pxy,1,1,1,1,1) );
 
   test_assert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
   
@@ -85,12 +85,12 @@ st_pxynextmethods(void)
 
   grelease(cnt);
 
-  STEST( "next method through proxy (0 argument )", N, N, gincr(pxy) );
-  STEST( "next method through proxy (1 argument )", N, N, gincrBy1(pxy,1) );
-  STEST( "next method through proxy (2 arguments)", N, N, gincrBy2(pxy,1,1) );
-  STEST( "next method through proxy (3 arguments)", N, N, gincrBy3(pxy,1,1,1) );
-  STEST( "next method through proxy (4 arguments)", N, N, gincrBy4(pxy,1,1,1,1) );
-  STEST( "next method through proxy (5 arguments)", N, N, gincrBy5(pxy,1,1,1,1,1) );
+  STEST( "next method through proxy (0 argument )", N, gincr(pxy) );
+  STEST( "next method through proxy (1 argument )", N, gincrBy1(pxy,1) );
+  STEST( "next method through proxy (2 arguments)", N, gincrBy2(pxy,1,1) );
+  STEST( "next method through proxy (3 arguments)", N, gincrBy3(pxy,1,1,1) );
+  STEST( "next method through proxy (4 arguments)", N, gincrBy4(pxy,1,1,1,1) );
+  STEST( "next method through proxy (5 arguments)", N, gincrBy5(pxy,1,1,1,1,1) );
 
   test_assert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
   
@@ -108,10 +108,10 @@ st_pxymultimethods(void)
 
   grelease(cnt);
 
-  STEST( "multimethod through proxy (rank 2)", N, N, gaddTo1(pxy,one) );
-  STEST( "multimethod through proxy (rank 3)", N, N, gaddTo2(pxy,one,one) );
-  STEST( "multimethod through proxy (rank 4)", N, N, gaddTo3(pxy,one,one,one) );
-  STEST( "multimethod through proxy (rank 5)", N, N, gaddTo4(pxy,one,one,one,one) );
+  STEST( "multimethod through proxy (rank 2)", N, gaddTo1(pxy,one) );
+  STEST( "multimethod through proxy (rank 3)", N, gaddTo2(pxy,one,one) );
+  STEST( "multimethod through proxy (rank 4)", N, gaddTo3(pxy,one,one,one) );
+  STEST( "multimethod through proxy (rank 5)", N, gaddTo4(pxy,one,one,one,one) );
   
   test_assert( gint(pxy) == N+2*N+3*N+4*N );
   grelease(pxy);
