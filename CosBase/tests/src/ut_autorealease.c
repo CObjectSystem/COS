@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.8 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.9 2009/02/03 14:40:48 ldeniau Exp $
  |
 */
 
@@ -37,10 +37,10 @@
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 #include <cos/signal.h>
+#include <cos/utest.h>
 
 #include <string.h>
 
-#include "utest.h"
 #include "tests.h"
 #include "generics.h"
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.15 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: tests.c,v 1.16 2009/02/03 14:40:48 ldeniau Exp $
  |
 */
 
@@ -37,7 +37,8 @@
 #include <cos/debug.h>
 #include <cos/signal.h>
 #include <cos/gen/object.h>
-#include "utest.h"
+#include <cos/utest.h>
+
 #include "tests.h"
 
 #include <string.h>
@@ -106,7 +107,7 @@ int main(int argc, char *argv[])
   ut_contract();
   ut_autorelease();
 
-  utest_stat();
+  cos_utest_stat();
 
   // speed testsuites
   if (!speed_test) return EXIT_SUCCESS;
@@ -127,7 +128,7 @@ int main(int argc, char *argv[])
   st_memory();
   st_exception();
 
-  stest_stat();
+  cos_stest_stat();
 
   return EXIT_SUCCESS;
 }

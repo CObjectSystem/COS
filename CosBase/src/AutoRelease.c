@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.27 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.28 2009/02/03 14:40:48 ldeniau Exp $
  |
 */
 
@@ -48,8 +48,8 @@
  * objects autoreleased in a single pool (during expansion only).
  */
 #define COS_AUTORELEASE_INIT 500
-#define COS_AUTORELEASE_RATE 1.8
-#define COS_AUTORELEASE_WARN 1000000 // 0 = *never*
+#define COS_AUTORELEASE_RATE 1.618034 // golden ratio
+#define COS_AUTORELEASE_WARN 10000000 // 0 = *never*
 
 // private class
 defclass(AutoRelease,Object)

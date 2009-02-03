@@ -29,14 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_methods.c,v 1.2 2008/07/15 10:12:36 ldeniau Exp $
+ | $Id: ut_methods.c,v 1.3 2009/02/03 14:40:48 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/message.h>
+#include <cos/utest.h>
 
-#include "utest.h"
 #include "tests.h"
 
 void

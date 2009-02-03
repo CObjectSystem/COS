@@ -29,15 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_unrecognized.c,v 1.2 2008/10/24 21:08:39 ldeniau Exp $
+ | $Id: ut_unrecognized.c,v 1.3 2009/02/03 14:40:48 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
+#include <cos/utest.h>
 
-#include "utest.h"
 #include "tests.h"
 
 #include <string.h>

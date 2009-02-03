@@ -29,15 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_properties.c,v 1.2 2009/01/26 16:50:03 ldeniau Exp $
+ | $Id: ut_properties.c,v 1.3 2009/02/03 14:40:48 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/prp/object.h>
 #include <cos/gen/object.h>
+#include <cos/utest.h>
 
-#include "utest.h"
 #include "tests.h"
 
 static BOOL

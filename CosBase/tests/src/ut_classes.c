@@ -29,14 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_classes.c,v 1.1 2008/06/27 16:17:19 ldeniau Exp $
+ | $Id: ut_classes.c,v 1.2 2009/02/03 14:40:48 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
+#include <cos/utest.h>
 
-#include "utest.h"
 #include "tests.h"
 
 void

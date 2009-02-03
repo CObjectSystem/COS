@@ -29,17 +29,17 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.c,v 1.8 2008/10/24 16:20:09 ldeniau Exp $
+ | $Id: st_methods.c,v 1.9 2009/02/03 14:40:48 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
+#include <cos/utest.h>
 
 #include <string.h>
 
-#include "utest.h"
 #include "tests.h"
 #include "generics.h"
 

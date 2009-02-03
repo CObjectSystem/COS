@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_contract.c,v 1.3 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: ut_contract.c,v 1.4 2009/02/03 14:40:48 ldeniau Exp $
  |
 */
 
@@ -37,10 +37,10 @@
 #include <cos/signal.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
+#include <cos/utest.h>
 
 #include <string.h>
 
-#include "utest.h"
 #include "tests.h"
 #include "generics.h"
 
