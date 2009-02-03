@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS testsuites - basic unit test
+ | COS - basic unit test
  |
  o---------------------------------------------------------------------o
  |
@@ -29,14 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utest.c,v 1.3 2008/10/24 21:44:22 ldeniau Exp $
+ | $Id: cos_utest.c,v 1.1 2009/02/03 14:52:26 ldeniau Exp $
  |
 */
 
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include "utest.h"
+#include <cos/utest.h>
 
 static const char *const fail_str = "\033[31mFAIL\033[0m";
 static const char *const pass_str = "\033[32mPASS\033[0m";
@@ -47,16 +47,16 @@ static int    total_fail = 0;
 
 // -----
 
-FILE *utest_out = 0;
+static FILE *utest_out = 0;
 
 // -----
 
 void
-utest_check(struct utest_info *uti, int pass, const char *cond, int line)
+cos_utest_check(struct cos_utest_info *uti, int pass, const char *cond, int line)
 {
   ++uti->test_cnt;
   if (!pass) {
-    if (uti->fail_cnt < MAX_KEEP_FAIL) {
+    if (uti->fail_cnt < uti->keep_max) {
       uti->fail_cond[uti->fail_cnt] = cond;
       uti->fail_line[uti->fail_cnt] = line;
     }
@@ -67,13 +67,14 @@ utest_check(struct utest_info *uti, int pass, const char *cond, int line)
 // -----
 
 void
-utest_init(struct utest_info *uti, const char *name, const char *file)
+cos_utest_init(struct cos_utest_info *uti, int keep, const char *name, const char *file)
 {
   const char *p = strrchr(file, '/');
 
   if (!utest_out) utest_out = stdout;
   
   fprintf(utest_out, " + %-50s ", name);
+  uti->keep_max  = keep;
   uti->test_file = p ? p+1: file;
   uti->fail_cnt  = 0;
   uti->test_cnt  = 0;
@@ -81,7 +82,7 @@ utest_init(struct utest_info *uti, const char *name, const char *file)
 }
 
 void
-stest_init (struct stest_info *sti, const char *name, int itr)
+cos_stest_init (struct cos_stest_info *sti, const char *name, int itr)
 {
   if (!utest_out) utest_out = stdout;
 
@@ -94,7 +95,7 @@ stest_init (struct stest_info *sti, const char *name, int itr)
 // -----
 
 void
-utest_fini(struct utest_info *uti)
+cos_utest_fini(struct cos_utest_info *uti)
 {
   double t1 = clock();
   double t = (t1 - uti->test_t0) / CLOCKS_PER_SEC;
@@ -108,7 +109,7 @@ utest_fini(struct utest_info *uti)
           uti->test_cnt,
           uti->fail_cnt ? fail_str: pass_str);
 
-  for (i = 0; i < uti->fail_cnt && i < MAX_KEEP_FAIL; i++)
+  for (i = 0; i < uti->fail_cnt && i < uti->keep_max; i++)
     fprintf(utest_out, "   - (%s,%d) %s\n",
             uti->test_file,
             uti->fail_line[i],
@@ -120,7 +121,7 @@ utest_fini(struct utest_info *uti)
 }
 
 void
-stest_fini (struct stest_info *sti)
+cos_stest_fini (struct cos_stest_info *sti)
 {
   double t1 = clock();
   double t = (t1 - sti->t0) / CLOCKS_PER_SEC;
@@ -137,7 +138,7 @@ stest_fini (struct stest_info *sti)
 // -----
 
 void
-utest_clear(void)
+cos_utest_clear(void)
 {
   total_time = 0;
   total_pass = 0;
@@ -145,15 +146,15 @@ utest_clear(void)
 }
 
 void
-stest_clear(void)
+cos_stest_clear(void)
 {
-  utest_clear();
+  cos_utest_clear();
 }
 
 // -----
 
 void
-utest_stat(void)
+cos_utest_stat(void)
 {
   if (!utest_out) utest_out = stdout;
 
@@ -164,11 +165,11 @@ utest_stat(void)
                      total_fail,
                      total_time,
                      total_fail ? fail_str : pass_str);
-  utest_clear();
+  cos_utest_clear();
 }
 
 void
-stest_stat(void)
+cos_stest_stat(void)
 {
   if (!utest_out) utest_out = stdout;
 
@@ -176,5 +177,5 @@ stest_stat(void)
                      "                (%.2f s)\n",
                      total_pass,
                      total_time);
-  stest_clear();
+  cos_stest_clear();
 }
