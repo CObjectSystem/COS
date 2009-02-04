@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.14 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: generic.h,v 1.15 2009/02/04 13:57:26 ldeniau Exp $
  |
 */
 
@@ -189,9 +189,9 @@
 
 #define COS_GEN_DEF_1(RET,NAME,PS,AS,IS,C,A,R) \
 extern struct Generic COS_GEN_NAME(NAME); \
-COS_GEN_TYPEDEF(RET,NAME,PS,AS,   C,A  ) \
-COS_GEN_FUNCDEF(RET,NAME,PS,AS,IS,C,A,R) \
-COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R) \
+COS_GEN_TYPEDEF(RET,NAME,PS,AS,   C,A    ) \
+COS_GEN_FUNCDEF(RET,NAME,PS,AS,IS,C,A,R  ) \
+COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,0) \
 COS_SCP_END
 
 /* generic instantiation
@@ -234,9 +234,9 @@ COS_GEN_COMPMAK(RET,NAME,PS,C,A,R,COS_NO)
 
 #define COS_GEN_DEFV_2(RET,NAME,VPS,PS,AS,IS,C,A,R) \
 extern struct Generic COS_GEN_NAME(NAME); \
-COS_GEN_TYPEDEF(RET,NAME,PS,AS,   C,A  ) \
-COS_GEN_FUNCDCL(RET,NAME,VPS  ,IS      ) \
-COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R) \
+COS_GEN_TYPEDEF(RET,NAME,PS,AS,   C,A    ) \
+COS_GEN_FUNCDCL(RET,NAME,VPS  ,IS        ) \
+COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,1) \
 COS_SCP_END
 
 /* variadic generic instantiation
@@ -364,8 +364,8 @@ RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
 }
 
 // generic next function definition
-#define COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R) \
-static \
+#define COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,V) \
+static COS_PP_IF(V)(,inline) \
 void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
                          SEL _sel, RET* _ret, COS_PP_CAT(IMP,C) _nxt) \
 { \
