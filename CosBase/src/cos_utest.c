@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_utest.c,v 1.1 2009/02/03 14:52:26 ldeniau Exp $
+ | $Id: cos_utest.c,v 1.2 2009/02/05 15:47:52 ldeniau Exp $
  |
 */
 
@@ -82,7 +82,7 @@ cos_utest_init(struct cos_utest_info *uti, int keep, const char *name, const cha
 }
 
 void
-cos_stest_init (struct cos_stest_info *sti, const char *name, int itr)
+cos_stest_init (struct cos_stest_info *sti, const char *name, long itr)
 {
   if (!utest_out) utest_out = stdout;
 

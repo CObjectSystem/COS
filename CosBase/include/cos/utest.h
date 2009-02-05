@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utest.h,v 1.1 2009/02/03 14:52:26 ldeniau Exp $
+ | $Id: utest.h,v 1.2 2009/02/05 15:47:52 ldeniau Exp $
  |
 */
 
@@ -53,7 +53,7 @@
 #define STEST(name,itr,...) \
   do { \
     struct cos_stest_info _stst_info[1]; \
-    cos_stest_init(_stst_info, name, N); \
+    cos_stest_init(_stst_info, name, itr); \
     while (_stst_info->i++ < (itr)) { \
       __VA_ARGS__; \
     }  \
@@ -76,7 +76,7 @@ struct cos_utest_info {
 };
 
 struct cos_stest_info {
-  int    i, itr;
+  long   i, itr;
   double t0;
 };
 
@@ -86,7 +86,7 @@ void cos_utest_fini (struct cos_utest_info*);
 void cos_utest_stat (void);
 void cos_utest_clear(void);
 
-void cos_stest_init (struct cos_stest_info*, const char*, int);
+void cos_stest_init (struct cos_stest_info*, const char*, long);
 void cos_stest_fini (struct cos_stest_info*);
 void cos_stest_stat (void);
 void cos_stest_clear(void);

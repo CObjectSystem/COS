@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.10 2009/02/03 14:49:44 ldeniau Exp $
+ | $Id: st_methods.c,v 1.11 2009/02/05 15:47:52 ldeniau Exp $
  |
 */
 
@@ -199,11 +199,9 @@ st_memory(void)
   i = 0;
   STEST( "release", P, grelease(arr[i++]) );
 
-  i = 0;
-  STEST( "release (gdeinit+dealloc)", P, grelease(ar) );
-
-  i = 0;
   STEST( "new + release", P, grelease(gnew(Counter)) );
+
+  grelease(ar);
 }
 
 void
