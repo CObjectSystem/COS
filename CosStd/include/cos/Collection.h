@@ -32,25 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Collection.h,v 1.2 2008/10/21 15:43:42 ldeniau Exp $
+ | $Id: Collection.h,v 1.3 2009/02/09 13:20:44 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
-#endif 
+#include <cos/Container.h>
 
-/* Collection subclasses:
-
-<- Collection
-   <- Array
-   <- List
-   <- KeyMap
-   <- OrdMap
-   <- Queue
-*/
-
-defclass(Collection)
+defclass(Collection,Container)
 endclass
 
 #endif // COS_COLLECTION_H
+

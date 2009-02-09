@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.5 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Value.h,v 1.6 2009/02/09 13:20:44 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
+#include <cos/Object.h>
 #endif 
 
 /* Values subclasses:
@@ -53,19 +53,19 @@
          <- Float
          <- Complex
 
-   <- Range       (1-5 dim)
-   <- Slice       (1-5 dim)
-   <- Sequence    (1-5 dim)
+   <- Range  (1-5 dim)
+   <- Slice  (1-5 dim)
 */
 
 defclass(Value)
 endclass
 
 /* NOTE-USER: indexing policy
-   indexing starts at zero
-   negative indexes mean starting from the end
-   e.g. 0 is the first element, -1 is the last element
- */
+   - starts at zero
+     (index 0 is the first element)
+   - negative indexe starts from the end
+     (index -1 is the last element)
+*/
 static inline U32
 index_abs(I32 index, U32 size) {
   return index + (index < 0) * size;

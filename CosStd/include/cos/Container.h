@@ -1,5 +1,5 @@
-#ifndef COS_SEQUENCE_H
-#define COS_SEQUENCE_H
+#ifndef COS_CONTAINER_H
+#define COS_CONTAINER_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,17 +32,43 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.5 2009/02/09 13:20:44 ldeniau Exp $
+ | $Id: Container.h,v 1.1 2009/02/09 13:20:44 ldeniau Exp $
  |
 */
 
-#include <cos/Container.h>
+#ifndef COS_OBJECT_H
+#include <cos/Object.h>
+#endif 
 
-defclass(Sequence,Container)
+/* Container subclasses:
+
+<- Container
+  <- Collection
+    <- Map    (hash+equal keys  )
+    <- OrdMap (compare    keys  )
+    <- Set    (hash+equal values)
+    <- OrdSet (compare    values)
+  <- Sequence
+    <- Array
+    <- Queue  (circular Array)
+    <- List
+    <- Ring   (circular List )
+    <- ValueSequence
+      <- String
+      <- WString
+      <- Vector
+        <- BitVector
+        <- ChrVector
+        <- ShtVector
+        <- IntVector
+        <- LngVector
+        <- FltVector
+        <- CpxVector
+        <- ObjVector
+*/
+
+defclass(Container)
 endclass
 
-defclass(ValueSequence,Sequence)
-endclass
-
-#endif // COS_SEQUENCE_H
+#endif // COS_CONTAINER_H
 
