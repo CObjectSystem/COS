@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fct.c,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Array_fct.c,v 1.3 2009/02/10 16:57:09 ldeniau Exp $
  |
 */
 
@@ -372,11 +372,7 @@ quicksort_fct(OBJ a[], I32 r, OBJFCT2 fct)
   quicksort_fct(l,q,fct); // tail recursion
 }
 
-defmethod(void, gsort, Array)
-  quicksort_fct(self->object, self->size-1, gcompare);
-endmethod
-
-defmethod(void, gsortBy, Array, Function2)
+defmethod(void, gsort, Array, Function2)
   quicksort_fct(self->object, self->size-1, self2->fct);
 endmethod
 

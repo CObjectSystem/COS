@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.9 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Array.h,v 1.10 2009/02/10 16:57:08 ldeniau Exp $
  |
 */
 
@@ -99,7 +99,7 @@ defclass(DynamicArrayN, Array)
 endclass
 
 defclass(DynamicArray, DynamicArrayN)
-  U32  capacity;
+  U32 capacity;
 endclass
 
 // ----- Fixed size array
@@ -124,7 +124,7 @@ struct Array* ArrayView_alloc     (struct Array*,U32,U32);
 struct Array* ArrayView_init      (struct ArrayView*,I32);
 struct Array* DynamicArray_alloc  (U32);
 void          DynamicArray_adjust (struct DynamicArray*);
-void          DynamicArray_enlarge(struct DynamicArray*,float);
+void          DynamicArray_enlarge(struct DynamicArray*,F64);
 
 // ----- automatic constructors
 

@@ -29,69 +29,61 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.1 2009/02/10 13:04:50 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.2 2009/02/10 16:57:09 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/Array.h>
-#include <cos/Value.h>
-#include <cos/Slice.h>
-#include <cos/Number.h>
-#include <cos/Vector.h>
-#include <cos/Functor.h>
-#include <cos/gen/algorithm.h>
-#include <cos/gen/container.h>
-#include <cos/gen/functor.h>
-#include <cos/gen/object.h>
-#include <cos/gen/value.h>
-#include <cos/gen/init.h>
 
-#include <stdlib.h>
+#include <cos/gen/object.h>
+#include <cos/gen/container.h>
 
 // -----
 
+#define ARRAY_GROWTH_RATE 1.618034 // golden ratio
+
 useclass(Array);
 
-// ----- accessors
+// ----- removing
+
+defalias (void, (gdrop)gpop   , DynamicArray);
+defalias (void, (gdrop)gremove, DynamicArray);
+defmethod(void,  gdrop        , DynamicArray)
+  struct Array *arr = &self->DynamicArrayN.Array;
+
+  if (arr->size) grelease(arr->object[--arr->size]);
+endmethod
+
+// ----- getting
+
+defalias (OBJ, (gget)gtop , DynamicArray);
+defmethod(OBJ,  gget      , DynamicArray)
+  struct Array *arr = &self->DynamicArrayN.Array;
+
+  retmethod( arr->size ? arr->object[arr->size-1] : 0 );
+endmethod
+
+// ----- adding
 
 defalias (void, (gput)gappend, DynamicArray, Any);
 defalias (void, (gput)gpush  , DynamicArray, Any);
 defmethod(void,  gput        , DynamicArray, Any)
-  struct DynamicArrayN *dynn = &self->DynamicArrayN;
-  struct Array         *arr  = &dynn->Array;
+  struct Array *arr = &self->DynamicArrayN.Array;
 
   if (arr->size == self->capacity)
-    DynamicArray_enlarge(self, 1.8);
+    DynamicArray_enlarge(self, ARRAY_GROWTH_RATE);
     
   arr->object[arr->size++] = gretain(_2);
 endmethod
 
-defalias (OBJ, (gget)glast, DynamicArray);
-defalias (OBJ, (gget)gtop , DynamicArray);
-defmethod(OBJ,  gget      , DynamicArray)
-  struct Array *arr = &self->DynamicArrayN.Array;
-  
-  retmethod( arr->size ? arr->object[arr->size-1] : 0 );
-endmethod
-
-defalias (void, (gdrop)gpop, DynamicArray);
-defmethod(void,  gdrop     , DynamicArray)
-  struct DynamicArrayN *dynn = &self->DynamicArrayN;
-  struct Array         *arr  = &dynn->Array;
-
-  if (arr->size)
-    grelease(arr->object[--arr->size]);
-endmethod
-
 defmethod(void, gappend, DynamicArray, Array)
-  struct DynamicArrayN *dynn = &self->DynamicArrayN;
-  struct Array         *arr  = &dynn->Array;
+  struct Array *arr = &self->DynamicArrayN.Array;
 
-  if (self->capacity - arr->size < self2->size) { // enlarge first
-    FLOAT size = arr->size;
+  if (self->capacity - arr->size < self2->size) {
+    F64 size = arr->size;
 
-    do size *= 1.8;
+    do
+      size *= ARRAY_GROWTH_RATE;
     while (self->capacity - size < self2->size);
 
     DynamicArray_enlarge(self, size);

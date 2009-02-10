@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.3 2009/02/10 16:57:09 ldeniau Exp $
  |
 */
 
@@ -360,7 +360,7 @@ quicksort_fun(OBJ a[], I32 r, OBJ fun)
   quicksort_fun(l,q,fun); // tail recursion
 }
 
-defmethod(void, gsortBy, Array, Functor)
+defmethod(void, gsort, Array, Functor)
   quicksort_fun(self->object, self->size-1, _2);
 endmethod
 

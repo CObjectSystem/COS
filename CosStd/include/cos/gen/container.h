@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.6 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: container.h,v 1.7 2009/02/10 16:57:09 ldeniau Exp $
  |
 */
 
@@ -50,8 +50,8 @@ defgeneric(OBJ , gtop       , _1);        // alias for gget
 defgeneric(void, gpop       , _1);        // alias for gdrop
 
 // seq-like accessor
-defgeneric(void, gappend    , _1, what);
 defgeneric(void, ginsert    , _1, what);
+defgeneric(void, gappend    , _1, what);
 defgeneric(OBJ , gfirst     , _1);
 defgeneric(OBJ , glast      , _1);
 
@@ -59,7 +59,9 @@ defgeneric(OBJ , glast      , _1);
 defgeneric(void, ggetValue  , _1, what);
 defgeneric(void, ggetValueAt, _1, what, at);
 
-// drop element
+// remove element
+defgeneric(void, gremove    , _1);
+defgeneric(void, gremoveAt  , _1, at);
 defgeneric(void, gdrop      , _1);
 defgeneric(void, gdropAt    , _1, at);
 

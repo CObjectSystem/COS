@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.21 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Array.c,v 1.22 2009/02/10 16:57:09 ldeniau Exp $
  |
 */
 
@@ -45,6 +45,7 @@
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 #include <cos/gen/init.h>
+#include <cos/prp/object.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -67,12 +68,27 @@ makclass(ArrayView    , Array);
 makclass(DynamicArrayN, Array);
 makclass(DynamicArray , DynamicArrayN);
 
+// NOTE-TODO: TO REMOVE
 makclass(Vector, ValueSequence);
 makclass(IntVector, Vector);
 
 // -----
 
 useclass(Array, ExBadAlloc);
+
+// ----- properties
+
+#define size_to_OBJ(size) gautoRelease(aInt(size))
+
+defproperty(Array, size, size_to_OBJ);
+
+defmethod(U32, gsize, Array)
+  retmethod(self->size);
+endmethod
+
+defmethod(OBJ, gisEmpty, Array)
+  retmethod(self->size ? False : True);
+endmethod
 
 // ----- allocators and initializers
 
@@ -106,8 +122,7 @@ Array_alloc(U32 size)
 struct Array*
 Array_init(struct Array *arr)
 {
-  test_assert( arr->object,
-               "Array does not accept null pointer as buffer" );
+  test_assert( arr->object, "Array got null pointer as buffer" );
   return arr;
 }
 
@@ -135,7 +150,7 @@ ArrayView_init(struct ArrayView *view, I32 idx)
 {
   test_assert( cos_any_isKindOf(view->array, classref(Array)),
                "ArrayView accepts only arrays" );
-  test_assert( cos_any_isa(view->array, classref(DynamicArray)),
+  test_assert( !cos_any_isa(view->array, classref(DynamicArray)),
                "ArrayView accepts only fixed size array" );
 
   struct Array* arr = &view->Array;
@@ -196,7 +211,7 @@ DynamicArray_adjust(struct DynamicArray *dyna)
 }
 
 void
-DynamicArray_enlarge(struct DynamicArray *dyna, float factor)
+DynamicArray_enlarge(struct DynamicArray *dyna, F64 factor)
 {
   if (factor <= 1.0) return;
 
@@ -242,7 +257,7 @@ defmethod(OBJ, ginitWith, Array, Array) // copy
   OBJ *end = self1->object+self1->size;
   OBJ *src = self2->object;
 
-  while(obj < end)
+  while (obj < end)
     *obj++ = gretain(*src++);
 
   retmethod(_1);
@@ -256,7 +271,7 @@ defmethod(OBJ, ginitWith2, pmArray, Any, Int) // element
   OBJ *obj = arr->object;
   OBJ *end = arr->object+arr->size;
   
-  while(obj < end)
+  while (obj < end)
     *obj++ = gretain(_2);
 
   UNPRT(_arr);
@@ -272,13 +287,13 @@ defmethod(OBJ, ginitWith2, pmArray, Functor, Int) // generator
   OBJ *end = arr->object+arr->size;
   int argc = gsize(_2);
 
-  if (!argc)
-    while(obj < end)
-      *obj++ = gretain(geval(_2));
-
-  else
+  if (argc)
     for (I32 i = 0; obj < end; i++)
       *obj++ = gretain(geval1(_2, aInt(i)));
+
+  else
+    while (obj < end)
+      *obj++ = gretain(geval (_2));
 
   UNPRT(_arr);
   retmethod(_arr);
@@ -286,7 +301,6 @@ endmethod
 
 defmethod(OBJ, ginitWith2, pmArray, Array, Range1) // sub array
   OBJ slice = Slice1_range(atSlice(0,0), self3, self2->size);
-
   retmethod( ginitWith2(_1,_2,slice) );  
 endmethod
 
@@ -317,7 +331,7 @@ defmethod(OBJ, ginitWith2, pmArray, Array, IntVector) // sequence
   U32 size = self2->size;
   I32 *idx = self3->value;
 
-  while(obj < end) {
+  while (obj < end) {
     U32 i = index_abs(*idx++, size);
     test_assert( i < size, "index out of range" );
     *obj++ = gretain(src[i]);
@@ -337,7 +351,7 @@ defmethod(OBJ, ginitWith2, pmView, Array, Range1) // array view
 endmethod
 
 defmethod(OBJ, ginitWith2, pmView, Array, Slice1) // array view
-  test_assert( cos_any_isa(_2, classref(DynamicArray)),
+  test_assert( !cos_any_isa(_2, classref(DynamicArray)),
                "ArrayView accepts only fixed size Array" );
   test_assert( Slice1_iscontiguous(self3),
                "ArrayView slice must be contiguous");
@@ -390,6 +404,20 @@ defmethod(void, ginvariant, Array, (STR)func, (STR)file, (int)line)
 
   test_assert( obj == end,
                "Array contains null elements", func, file, line);
+endmethod
+
+defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
+  test_assert( cos_any_isKindOf(self->array, classref(Array)),
+               "ArrayView points to something not an array", func, file, line);
+  test_assert( !cos_any_isa(self->array, classref(DynamicArray)),
+               "ArrayView points to a dynamic array", func, file, line);
+
+  struct Array *arr = STATIC_CAST(struct Array*, self->array);
+
+  test_assert( self->Array.object                  >= arr->object &&
+               self->Array.object+self->Array.size <= arr->object+arr->size,
+               "ArrayView is out of range", func, file, line);
+  next_method(self, func, file, line);
 endmethod
 
 defmethod(void, ginvariant, DynamicArray, (STR)func, (STR)file, (int)line)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.6 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: algorithm.h,v 1.7 2009/02/10 16:57:09 ldeniau Exp $
  |
 */
 
@@ -41,19 +41,19 @@
 #endif 
 
 // in place (returned value is discarded if any)
-defgeneric(void, gapply  , fun, _1);
+defgeneric(void, gapply  , _1, fun);
 defgeneric(void, greverse, _1);
 
 // map
-defgeneric(OBJ, gmap   , fun, _1);
-defgeneric(OBJ, gmap2  , fun, _1, _2);
-defgeneric(OBJ, gmap3  , fun, _1, _2, _3);
-defgeneric(OBJ, gmap4  , fun, _1, _2, _3, _4);
+defgeneric(OBJ, gmap , fun, _1);
+defgeneric(OBJ, gmap2, fun, _1, _2);
+defgeneric(OBJ, gmap3, fun, _1, _2, _3);
+defgeneric(OBJ, gmap4, fun, _1, _2, _3, _4);
 
 // filter, reduce
-defgeneric(OBJ, gfilter    , fun, _1);
-defgeneric(OBJ, greduce    , fun, res, _1);
-defgeneric(OBJ, gaccumulate, fun, acc, _1);
+defgeneric(OBJ, gfilter    , _1, fun);
+defgeneric(OBJ, greduce    , _1, fun, res);
+defgeneric(OBJ, gaccumulate, _1, fun, acc);
 
 // zip
 defgeneric(OBJ, gzip , _1, _2);
@@ -68,29 +68,28 @@ defgeneric(OBJ, gcat4, _1, _2, _3, _4);
 defgeneric(OBJ, gcatn, _1);
 
 // all, any, min, max
-defgeneric(OBJ, gall, fun, _1);
-defgeneric(OBJ, gany, fun, _1);
+defgeneric(OBJ, gall, _1, fun);
+defgeneric(OBJ, gany, _1, fun);
 defgeneric(OBJ, gmin, _1);
 defgeneric(OBJ, gmax, _1);
 
 // sorting (in place, fun must return Ordered)
-defgeneric(void, gsort    , _1);
-defgeneric(void, gsortBy  , _1, fun);
+defgeneric(void, gsort    , _1, fun);
 defgeneric(OBJ , gisSorted, _1); // return True or False
 
 // linear      find if fun returns TrueFalse
 // logarithmic find if fun returns Ordered
-defgeneric(OBJ, gfind, fun, obj, _1);
+defgeneric(OBJ, gfind, _1, obj, fun);
 
-// bag-like algorithms - TODO
-defgeneric(OBJ, gunique, _1);
-defgeneric(OBJ, ggroup , _1);
-defgeneric(OBJ, gsplit , _1);
+// bag-like algorithms
+defgeneric(OBJ, gunique, _1, fun);
+defgeneric(OBJ, ggroup , _1, fun);
+defgeneric(OBJ, gsplit , _1, fun);
 
-// set-like algorithms - TODO
-defgeneric(OBJ, gdiff     , _1, _2);
-defgeneric(OBJ, gunion    , _1, _2);
-defgeneric(OBJ, gintersect, _1, _2);
+// set-like algorithms
+defgeneric(OBJ, gdiff     , _1, _2, fun);
+defgeneric(OBJ, gunion    , _1, _2, fun);
+defgeneric(OBJ, gintersect, _1, _2, fun);
 
 #endif // COS_GEN_ALGORITHM_H
 

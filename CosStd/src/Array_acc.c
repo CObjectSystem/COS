@@ -29,25 +29,20 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.1 2009/02/10 13:04:50 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.2 2009/02/10 16:57:09 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/Array.h>
-#include <cos/Value.h>
-#include <cos/Slice.h>
-#include <cos/Number.h>
-#include <cos/Vector.h>
 #include <cos/Functor.h>
-#include <cos/gen/algorithm.h>
+#include <cos/Number.h>
+#include <cos/Slice.h>
+#include <cos/Vector.h>
+
 #include <cos/gen/container.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
-#include <cos/gen/init.h>
-
-#include <stdlib.h>
 
 // -----
 
@@ -67,7 +62,6 @@ endmethod
 
 defmethod(void, gputAt, Array, Array, Range1)
   OBJ slice = Slice1_range(atSlice(0,0), self3, self->size);
-
   gputAt(_1,_2,slice);
 endmethod
 
@@ -80,16 +74,15 @@ defmethod(void, gputAt, Array, Array, Slice1)
   OBJ *end = self2->object+self2->size;
   I32 step = self3->stride;
 
-  for (; src < end; src++, obj += step) {
+  for (; src < end; obj += step) {
     OBJ old = *obj;
-    *obj = gretain(*src);
+    *obj = gretain(*src++);
     grelease(old);
   }
 endmethod
 
 defmethod(void, gputAt, Array, Array, IntVector)
-  test_assert( self2->size >= self3->size,
-               "incompatible array sizes" );
+  test_assert( self2->size >= self3->size, "incompatible array sizes" );
 
   OBJ *obj = self1->object;
   OBJ *src = self2->object;
@@ -97,26 +90,29 @@ defmethod(void, gputAt, Array, Array, IntVector)
   I32 *idx = self3->value;
   I32 *end = self3->value+self3->size;
 
-  for(; idx < end; idx++, src++) {
-    U32 i = index_abs(*idx, size);
+  while (idx < end) {
+    U32 i = index_abs(*idx++, size);
     test_assert( i < size, "index out of range" );
+
     OBJ old = obj[i];
-    obj[i] = gretain(*src);
+    obj[i] = gretain(*src++);
     grelease(old);
   }
 endmethod
 
 // ----- getters
 
-defmethod(U32, gsize, Array)
-  retmethod(self->size);
+defmethod(OBJ, gfirst, Array)
+  retmethod( self->size ? self->object[0] : 0 );
+endmethod
+
+defmethod(OBJ, glast, Array)
+  retmethod( self->size ? self->object[self->size-1] : 0 );
 endmethod
 
 defmethod(OBJ, ggetAt, Array, Int)
   U32 i = index_abs(self2->value, self->size);
-  test_assert( i < self->size, "index out of range" );
-
-  retmethod( self->object[i] );
+  retmethod( i < self->size ? self->object[i] : 0);
 endmethod
 
 defmethod(OBJ, ggetAt, Array, Range1)
