@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.14 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: object.h,v 1.15 2009/02/10 10:08:03 ldeniau Exp $
  |
 */
 
@@ -61,13 +61,15 @@ defgeneric(void, gdiscard      , _1);
 defgeneric(OBJ , gautoRelease  , _1);
 defgeneric(U32 , gretainCount  , _1);
 
-// identity, conversion, coercion
+// properties
+defgeneric(OBJ , ggetAt        , _1, at);
+defgeneric(void, gputAt        , _1, what, at);
+
+// identity, conversion, coercion, inheritance
 defgeneric(OBJ , gisKindOf     , _1, _2); // returns True or False
 defgeneric(OBJ , gisInstanceOf , _1, _2); // returns True or False
 defgeneric(OBJ , gclass        , _1);
 defgeneric(STR , gclassName    , _1);
-
-// inheritance
 defgeneric(OBJ , gsuperClass   , _1);
 
 // comparison

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Property.h,v 1.1 2009/01/23 15:12:28 ldeniau Exp $
+ | $Id: Property.h,v 1.2 2009/02/10 10:08:03 ldeniau Exp $
  |
 */
 
@@ -56,10 +56,6 @@ endclass
 
 #ifndef COS_GEN_OBJECT_H
 #include <cos/gen/object.h>
-#endif
-
-#ifndef COS_GEN_ACCESSOR_H
-#include <cos/gen/accessor.h>
 #endif
 
 #endif // COS_PROPERTY_H

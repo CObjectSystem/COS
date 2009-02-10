@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.21 2009/02/09 13:28:10 ldeniau Exp $
+ | $Id: method.h,v 1.22 2009/02/10 10:08:03 ldeniau Exp $
  |
 */
 
@@ -233,18 +233,19 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
    void* const restrict _arg, void* const restrict _ret) \
 { \
   /* return and arguments type */ \
-  typedef COS_RET_TYPE(NAME)* const restrict _cos_mth_ret; \
-  typedef COS_ARG_TYPE(NAME)* const restrict _cos_mth_arg; \
-  /* selfs types (i.e. _cos_mth_slfn) */ \
+  typedef COS_RET_TYPE(NAME)* const restrict _ret_t; \
+  typedef COS_ARG_TYPE(NAME)* const restrict _arg_t; \
+  /* selfs types (i.e. selfn_t) */ \
   COS_PP_SEP(COS_PP_MAP2(CS,COS_MTH_SLF_TYP(C),COS_MTH_SLF_DEF)) \
+  typedef self1_t self_t; \
   /* next_method definition */ \
   COS_MTH_NEXTDEF(RET,NAME,TAG,PS,CS,C,T) \
   /* next_method classes */ \
   struct Class* const* const restrict _cos_mth_nxt_cls = \
     COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T).cls; \
   /* selfs variables */ \
-  _cos_mth_slf1* const restrict self = (_cos_mth_slf1*)_1; \
   COS_PP_SEP(COS_MTH_SLF_INI(C)) \
+  self_t *const restrict self = self1; \
   /* contract variable */ \
   COS_CTR_DCL \
   /* trace variables (if requested) */ \
@@ -294,7 +295,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   U32 const _cos_mth_nxt_rnk = \
     COS_MTH_INFO(COS_PP_SEQ(COS_PP_MAP(CS,COS_CLS_RANK)),0,0,0,0,0); \
   /* next_method around rank */ \
-  U32 _cos_mth_nxt_rnd = \
+  U32 const _cos_mth_nxt_rnd = \
     COS_PP_IF(T)(COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T).Method.arnd,0); \
   /* generic next_method pointer */ \
   void (*const next_method) (COS_PP_SEQ(COS_PP_MAP(PS,COS_SIG_NXT)), \
@@ -309,8 +310,8 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   COS_PP_IF(COS_PP_ISBLANK(COS_PRM_NAME(a)))(/* unused */, \
   COS_PRM_TYPE(a) COS_PRM_NAME(a) /* declaration */ \
   COS_PP_IF(COS_TOK_ISVALIST(COS_PRM_TYPE(a)))( /* va_list */ \
-    ; va_copy(COS_PRM_NAME(a),((_cos_mth_arg)_arg)->COS_PRM_NAME(a)), \
-    =                         ((_cos_mth_arg)_arg)->COS_PRM_NAME(a) ); )
+    ; va_copy(COS_PRM_NAME(a),((_arg_t)_arg)->COS_PRM_NAME(a)), \
+    =                         ((_arg_t)_arg)->COS_PRM_NAME(a) ); )
 
 // argument deinitialization
 #define COS_MTH_DEARG(a) \
@@ -326,7 +327,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
     goto _cos_ctr_end; \
   } while(0)
 
-#define COS_MTH_RETVAL (*(_cos_mth_ret)_ret)
+#define COS_MTH_RETVAL (*(_ret_t)_ret)
 
 // next_method
 #define COS_MTH_NXT(...) \
@@ -410,19 +411,15 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
                            
 // some constant tuples
 #define COS_MTH_SLF_TYP(N) \
-  COS_PP_TAKE(N, (_cos_mth_slf1, \
-                  _cos_mth_slf2, \
-                  _cos_mth_slf3, \
-                  _cos_mth_slf4, \
-                  _cos_mth_slf5) )
+  COS_PP_TAKE(N,(self1_t,self2_t,self3_t,self4_t,self5_t))
 
 #define COS_MTH_SLF_INI(N) \
   COS_PP_TAKE(N, \
-(_cos_mth_slf1* const restrict self1 = (COS_UNUSED(self1),(_cos_mth_slf1*)_1);, \
- _cos_mth_slf2* const restrict self2 = (COS_UNUSED(self2),(_cos_mth_slf2*)_2);, \
- _cos_mth_slf3* const restrict self3 = (COS_UNUSED(self3),(_cos_mth_slf3*)_3);, \
- _cos_mth_slf4* const restrict self4 = (COS_UNUSED(self4),(_cos_mth_slf4*)_4);, \
- _cos_mth_slf5* const restrict self5 = (COS_UNUSED(self5),(_cos_mth_slf5*)_5);) )
+  (self1_t *const restrict self1 = (COS_UNUSED(self1),(self1_t*)_1);, \
+   self2_t *const restrict self2 = (COS_UNUSED(self2),(self2_t*)_2);, \
+   self3_t *const restrict self3 = (COS_UNUSED(self3),(self3_t*)_3);, \
+   self4_t *const restrict self4 = (COS_UNUSED(self4),(self4_t*)_4);, \
+   self5_t *const restrict self5 = (COS_UNUSED(self5),(self5_t*)_5);) )
 
 #define COS_MTH_FWD_INI(N) \
   COS_PP_TAKE(N, (OBJ _cos_mth_fwd_1 =, \

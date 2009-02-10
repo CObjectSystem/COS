@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.9 2009/01/26 14:30:41 ldeniau Exp $
+ | $Id: init.h,v 1.10 2009/02/10 10:08:03 ldeniau Exp $
  |
 */
 
@@ -50,20 +50,20 @@ defgeneric(OBJ , ginitWithObj7 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6
 defgeneric(OBJ , ginitWithObj8 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7, (OBJ)_8, (OBJ)_9);
 defgeneric(OBJ , ginitWithObj9 , _1, (OBJ)_2, (OBJ)_3, (OBJ)_4, (OBJ)_5, (OBJ)_6, (OBJ)_7, (OBJ)_8, (OBJ)_9, (OBJ)_10);
 
-defgeneric(OBJ, ginitWithChr , _1, (I32)val);
-defgeneric(OBJ, ginitWithSht , _1, (I32)val);
-defgeneric(OBJ, ginitWithInt , _1, (I32)val);
-defgeneric(OBJ, ginitWithLng , _1, (I64)val);
-defgeneric(OBJ, ginitWithFlt , _1, (F64)val);
-defgeneric(OBJ, ginitWithCpx , _1, (C64)val);
+defgeneric(OBJ, ginitWithChr   , _1, (I32)val);
+defgeneric(OBJ, ginitWithSht   , _1, (I32)val);
+defgeneric(OBJ, ginitWithInt   , _1, (I32)val);
+defgeneric(OBJ, ginitWithLng   , _1, (I64)val);
+defgeneric(OBJ, ginitWithFlt   , _1, (F64)val);
+defgeneric(OBJ, ginitWithCpx   , _1, (C64)val);
 
-defgeneric(OBJ, ginitWithChrPtr , _1, (U32)n, (I8 *)val);
-defgeneric(OBJ, ginitWithShtPtr , _1, (U32)n, (I16*)val);
-defgeneric(OBJ, ginitWithIntPtr , _1, (U32)n, (I32*)val);
-defgeneric(OBJ, ginitWithLngPtr , _1, (U32)n, (I64*)val);
-defgeneric(OBJ, ginitWithFltPtr , _1, (U32)n, (F64*)val);
-defgeneric(OBJ, ginitWithCpxPtr , _1, (U32)n, (C64*)val);
-defgeneric(OBJ, ginitWithObjPtr , _1, (U32)n, (OBJ*)obj);
+defgeneric(OBJ, ginitWithChrPtr, _1, (I8 *)val, (U32)n);
+defgeneric(OBJ, ginitWithShtPtr, _1, (I16*)val, (U32)n);
+defgeneric(OBJ, ginitWithIntPtr, _1, (I32*)val, (U32)n);
+defgeneric(OBJ, ginitWithLngPtr, _1, (I64*)val, (U32)n);
+defgeneric(OBJ, ginitWithFltPtr, _1, (F64*)val, (U32)n);
+defgeneric(OBJ, ginitWithCpxPtr, _1, (C64*)val, (U32)n);
+defgeneric(OBJ, ginitWithObjPtr, _1, (OBJ*)obj, (U32)n);
 
 // newXXX (= alloc+initXXX)
 
@@ -145,38 +145,38 @@ gnewWithCpx(OBJ _1, C64 val) {
 // newXXXPtr (= alloc+initXXXPtr)
 
 static inline OBJ
-gnewWithChrPtr(OBJ _1, U32 n, I8 *val) {
-  return ginitWithChrPtr(galloc(_1),n,val); COS_UNUSED(gnewWithChrPtr);
+gnewWithChrPtr(OBJ _1, I8 *val, U32 n) {
+  return ginitWithChrPtr(galloc(_1),val,n); COS_UNUSED(gnewWithChrPtr);
 }
 
 static inline OBJ
-gnewWithShtPtr(OBJ _1, U32 n, I16 *val) {
-  return ginitWithShtPtr(galloc(_1),n,val); COS_UNUSED(gnewWithShtPtr);
+gnewWithShtPtr(OBJ _1, I16 *val, U32 n) {
+  return ginitWithShtPtr(galloc(_1),val,n); COS_UNUSED(gnewWithShtPtr);
 }
 
 static inline OBJ
-gnewWithIntPtr(OBJ _1, U32 n, I32 *val) {
-  return ginitWithIntPtr(galloc(_1),n,val); COS_UNUSED(gnewWithIntPtr);
+gnewWithIntPtr(OBJ _1, I32 *val, U32 n) {
+  return ginitWithIntPtr(galloc(_1),val,n); COS_UNUSED(gnewWithIntPtr);
 }
 
 static inline OBJ
-gnewWithLngPtr(OBJ _1, U32 n, I64 *val) {
-  return ginitWithLngPtr(galloc(_1),n,val); COS_UNUSED(gnewWithLngPtr);
+gnewWithLngPtr(OBJ _1, I64 *val, U32 n) {
+  return ginitWithLngPtr(galloc(_1),val,n); COS_UNUSED(gnewWithLngPtr);
 }
 
 static inline OBJ
-gnewWithFltPtr(OBJ _1, U32 n, F64 *val) {
-  return ginitWithFltPtr(galloc(_1),n,val); COS_UNUSED(gnewWithFltPtr);
+gnewWithFltPtr(OBJ _1, F64 *val, U32 n) {
+  return ginitWithFltPtr(galloc(_1),val,n); COS_UNUSED(gnewWithFltPtr);
 }
 
 static inline OBJ
-gnewWithCpxPtr(OBJ _1, U32 n, C64 *val) {
-  return ginitWithCpxPtr(galloc(_1),n,val); COS_UNUSED(gnewWithCpxPtr);
+gnewWithCpxPtr(OBJ _1, C64 *val, U32 n) {
+  return ginitWithCpxPtr(galloc(_1),val,n); COS_UNUSED(gnewWithCpxPtr);
 }
 
 static inline OBJ
-gnewWithObjPtr(OBJ _1, U32 n, OBJ *obj) {
-  return ginitWithObjPtr(galloc(_1),n,obj); COS_UNUSED(gnewWithObjPtr);
+gnewWithObjPtr(OBJ _1, OBJ *obj, U32 n) {
+  return ginitWithObjPtr(galloc(_1),obj,n); COS_UNUSED(gnewWithObjPtr);
 }
 
 #endif // COS_GEN_INIT_H
