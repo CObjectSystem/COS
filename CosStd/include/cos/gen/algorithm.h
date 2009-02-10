@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.5 2009/01/23 16:13:21 ldeniau Exp $
+ | $Id: algorithm.h,v 1.6 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
+#include <cos/Object.h>
 #endif 
 
 // in place (returned value is discarded if any)

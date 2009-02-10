@@ -29,119 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.4 2009/01/22 16:45:08 ldeniau Exp $
+ | $Id: Sequence.c,v 1.5 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
-#include <cos/Number.h>
 #include <cos/Sequence.h>
-#include <cos/gen/object.h>
 
-makclass(Sequence , Value   );
-makclass(Sequence1, Sequence);
-makclass(Sequence2, Sequence);
-makclass(Sequence3, Sequence);
-makclass(Sequence4, Sequence);
-makclass(Sequence5, Sequence);
+// -----
 
-// ----- copy
+makclass(Sequence,Container);
+makclass(ValueSequence,Sequence);
 
-defmethod(OBJ, ginitWith, Sequence1, Sequence1)
-  self1->start  = self2->start ,
-  self1->size   = self2->size  ,
-  self1->stride = self2->stride;
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Sequence2, Sequence2)
-  self1->start = self2->start;
-
-  for (int i = 0; i < 2; i++)
-    self1->size  [i] = self2->size  [i],
-    self1->stride[i] = self2->stride[i];
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Sequence3, Sequence3)
-  self1->start = self2->start;
-
-  for (int i = 0; i < 3; i++)
-    self1->size  [i] = self2->size  [i],
-    self1->stride[i] = self2->stride[i];
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Sequence4, Sequence4)
-  self1->start = self2->start;
-
-  for (int i = 0; i < 4; i++)
-    self1->size  [i] = self2->size  [i],
-    self1->stride[i] = self2->stride[i];
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Sequence5, Sequence5)
-  self1->start = self2->start;
-
-  for (int i = 0; i < 5; i++)
-    self1->size  [i] = self2->size  [i],
-    self1->stride[i] = self2->stride[i];
-
-  retmethod(_1);
-endmethod
-
-// ----- equality
-
-defmethod(OBJ, gisEqual, Sequence1, Sequence1)
-  BOOL res = float_equal(self1->start , self2->start )
-          &&             self1->size == self2->size
-          && float_equal(self1->stride, self2->stride);
-
-  retmethod( res ? True : False );
-endmethod
-
-defmethod(OBJ, gisEqual, Sequence2, Sequence2)
-  BOOL res = float_equal(self1->start, self2->start);
-
-  for (int i = 0; res && i < 2; i++)
-    res = res &&             self1->size  [i] == self2->size  [i]
-              && float_equal(self1->stride[i] ,  self2->stride[i]);
-
-  retmethod( res ? True : False );
-endmethod
-
-defmethod(OBJ, gisEqual, Sequence3, Sequence3)
-  BOOL res = float_equal(self1->start, self2->start);
-
-  for (int i = 0; res && i < 3; i++)
-    res = res &&             self1->size  [i] == self2->size  [i]
-              && float_equal(self1->stride[i] ,  self2->stride[i]);
-
-  retmethod( res ? True : False );
-endmethod
-
-defmethod(OBJ, gisEqual, Sequence4, Sequence4)
-  BOOL res = float_equal(self1->start, self2->start);
-
-  for (int i = 0; res && i < 4; i++)
-    res = res &&             self1->size  [i] == self2->size  [i]
-              && float_equal(self1->stride[i] ,  self2->stride[i]);
-
-  retmethod( res ? True : False );
-endmethod
-
-defmethod(OBJ, gisEqual, Sequence5, Sequence5)
-  BOOL res = float_equal(self1->start, self2->start);
-
-  for (int i = 0; res && i < 5; i++)
-    res = res &&             self1->size  [i] == self2->size  [i]
-              && float_equal(self1->stride[i] ,  self2->stride[i]);
-
-  retmethod( res ? True : False );
-endmethod
 

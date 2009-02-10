@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Container.h,v 1.1 2009/02/09 13:20:44 ldeniau Exp $
+ | $Id: Container.h,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,7 @@
 #include <cos/Object.h>
 #endif 
 
-/* Container subclasses:
+/* NOTE-USER: Container subclasses
 
 <- Container
   <- Collection
@@ -65,6 +65,8 @@
         <- FltVector
         <- CpxVector
         <- ObjVector
+        
+  - All containers own (gretain) their elements (and keys if any)
 */
 
 defclass(Container)

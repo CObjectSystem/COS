@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fct.c,v 1.1 2009/02/03 17:44:52 ldeniau Exp $
+ | $Id: Array_fct.c,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
@@ -42,17 +42,12 @@
 #include <cos/Functor.h>
 #include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
-#include <cos/gen/accessor.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 #include <cos/gen/init.h>
 
 #include <stdlib.h>
-
-// ----- shared private implementation
-
-#include "./Array_p.h"
 
 // ----- apply (in place)
 
@@ -67,7 +62,7 @@ endmethod
 // ----- map, map2, map3, map4
 
 defmethod(OBJ, gmap, Function1, Array)
-  struct Array* arr = array_alloc(self2->size);
+  struct Array* arr = Array_alloc(self2->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr  ->object;
   OBJ *end = arr  ->object+arr->size; 
@@ -83,7 +78,7 @@ endmethod
 
 defmethod(OBJ, gmap2, Function2, Array, Array)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
-  struct Array* arr = array_alloc(size);
+  struct Array* arr = Array_alloc(size);
   OBJ _arr  = (OBJ)arr; PRT(_arr);
   OBJ *obj  = arr  ->object;
   OBJ *end  = arr  ->object+arr->size; 
@@ -101,7 +96,7 @@ endmethod
 defmethod(OBJ, gmap3, Function3, Array, Array, Array)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
   if (size > self4->size) size = self4->size;
-  struct Array* arr = array_alloc(size);
+  struct Array* arr = Array_alloc(size);
   OBJ _arr  = (OBJ)arr; PRT(_arr);
   OBJ *obj  = arr  ->object;
   OBJ *end  = arr  ->object+arr->size; 
@@ -121,7 +116,7 @@ defmethod(OBJ, gmap4, Function4, Array, Array, Array, Array)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
   if (size > self4->size) size = self4->size;
   if (size > self5->size) size = self5->size;
-  struct Array* arr = array_alloc(size);
+  struct Array* arr = Array_alloc(size);
   OBJ _arr  = (OBJ)arr; PRT(_arr);
   OBJ *obj  = arr  ->object;
   OBJ *end  = arr  ->object+arr->size; 
@@ -167,7 +162,7 @@ endmethod
 // ----- filter, reduce, accumulate
 
 defmethod(OBJ, gfilter, Function1, Array)
-  struct Array* arr = dynarray_alloc(self2->size);
+  struct Array* arr = DynamicArray_alloc(self2->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr  ->object;
   OBJ *src = self2->object;
@@ -196,7 +191,7 @@ defmethod(OBJ, greduce, Function2, Any, Array)
 endmethod
 
 defmethod(OBJ, gaccumulate, Function2, Any, Array)
-  struct Array* arr = array_alloc(self3->size+1);
+  struct Array* arr = Array_alloc(self3->size+1);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr  ->object;
   OBJ *end = arr  ->object+arr->size;

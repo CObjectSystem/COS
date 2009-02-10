@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.8 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Functor.h,v 1.9 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
+#include <cos/Object.h>
 #endif 
 
 // ----- definitions

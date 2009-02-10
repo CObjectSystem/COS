@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array
+ | COS Array - basics
  |
  o---------------------------------------------------------------------o
  |
@@ -29,67 +29,214 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.20 2009/02/03 17:44:52 ldeniau Exp $
+ | $Id: Array.c,v 1.21 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/Array.h>
-#include <cos/Value.h>
-#include <cos/Slice.h>
-#include <cos/Number.h>
-#include <cos/Vector.h>
 #include <cos/Functor.h>
-#include <cos/gen/algorithm.h>
+#include <cos/Number.h>
+#include <cos/Slice.h>
+#include <cos/Vector.h>
+#include <cos/View.h>
+
 #include <cos/gen/container.h>
-#include <cos/gen/accessor.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 #include <cos/gen/init.h>
 
 #include <stdlib.h>
+#include <string.h>
 
-useclass(Array);
+// -----
 
-makclass(Array    , Collection);
-makclass(Array0   , Array);
-makclass(Array1   , Array);
-makclass(Array2   , Array);
-makclass(Array3   , Array);
-makclass(Array4   , Array);
-makclass(Array5   , Array);
-makclass(Array6   , Array);
-makclass(Array7   , Array);
-makclass(Array8   , Array);
-makclass(Array9   , Array);
-makclass(ArrayN   , Array);
-makclass(SubArray , Array);
-makclass(DynArrayN, Array);
-makclass(DynArray , DynArrayN);
+makclass(Array        , Sequence);
+makclass(Array0       , Array);
+makclass(Array1       , Array);
+makclass(Array2       , Array);
+makclass(Array3       , Array);
+makclass(Array4       , Array);
+makclass(Array5       , Array);
+makclass(Array6       , Array);
+makclass(Array7       , Array);
+makclass(Array8       , Array);
+makclass(Array9       , Array);
+makclass(ArrayN       , Array);
+makclass(ArrayView    , Array);
+makclass(DynamicArrayN, Array);
+makclass(DynamicArray , DynamicArrayN);
 
-// ----- shared private implementation
+makclass(Vector, ValueSequence);
+makclass(IntVector, Vector);
 
-#include "./Array_p.h"
+// -----
 
-// ----- ctor/dtor of a (dynamic) array
+useclass(Array, ExBadAlloc);
 
-defmethod(OBJ, galloc, mArray)
-  retmethod(_1); // lazy alloc
+// ----- allocators and initializers
+
+defmethod(OBJ, galloc, pmArray) // lazy alloc
+  retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginit, mArray)
-  retmethod( (OBJ)dynarray_alloc(10) );
-endmethod
+struct Array*
+Array_alloc(U32 size)
+{
+  enum { N = 10 };
+  static struct Class* cls[N] = {
+    classref(Array0,Array1,Array2,Array3,Array4,
+             Array5,Array6,Array7,Array8,Array9)
+  };
 
-defmethod(OBJ, ginitWith, mArray, Int)
-  test_assert(self2->value >= 0, "negative array size");
+  useclass(ArrayN);
+
+  OBJ _cls = size >= N ? ArrayN : (OBJ)cls[size];
+  OBJ _arr = gallocWithSize(_cls, size * sizeof(OBJ));
+
+  struct ArrayN *arrn = STATIC_CAST(struct ArrayN*, _arr);
+  struct Array  *arr  = &arrn->Array;
+
+  arr->size   = size;
+  arr->object = arrn->base;
+
+  return arr;
+}
+
+struct Array*
+Array_init(struct Array *arr)
+{
+  test_assert( arr->object,
+               "Array does not accept null pointer as buffer" );
+  return arr;
+}
+
+struct Array*
+ArrayView_alloc(struct Array *ref, U32 start, U32 size)
+{
+  useclass(ArrayView);
+
+  OBJ _view = galloc(ArrayView); PRT(_view);
+  OBJ _ref  = gretain((OBJ)ref);
   
-  retmethod( (OBJ)dynarray_alloc(self2->value) );
+  struct ArrayView *view = STATIC_CAST(struct ArrayView*, _view);
+  struct Array     * arr = &view->Array;
+
+  view->array  = _ref;
+  arr ->size   = size;
+  arr ->object = STATIC_CAST(struct Array*, _ref)->object + start;
+
+  UNPRT(_view);
+  return arr;
+}
+
+struct Array*
+ArrayView_init(struct ArrayView *view, I32 idx)
+{
+  test_assert( cos_any_isKindOf(view->array, classref(Array)),
+               "ArrayView accepts only arrays" );
+  test_assert( cos_any_isa(view->array, classref(DynamicArray)),
+               "ArrayView accepts only fixed size array" );
+
+  struct Array* arr = &view->Array;
+  struct Array* ref = STATIC_CAST(struct Array*, view->array);
+
+  U32 start = index_abs(idx, ref->size);
+  
+  test_assert( start + arr->size <= ref->size,
+               "ArrayView out of range" );
+
+  arr->object = ref->object + start;
+
+  return arr;
+}
+
+struct Array*
+DynamicArray_alloc(U32 size)
+{
+  useclass(DynamicArray);
+
+  OBJ _dyna = galloc(DynamicArray);
+
+  struct DynamicArray  *dyna = STATIC_CAST(struct DynamicArray*, _dyna);
+  struct DynamicArrayN *dynn = &dyna->DynamicArrayN;
+  struct Array         * arr = &dynn->Array;
+
+  dynn->base = malloc(size * sizeof *dynn->base);
+  
+  if (!dynn->base) {
+    gdealloc(_dyna);
+    THROW(ExBadAlloc);
+  }
+
+  dyna->capacity = size;
+  arr ->size     = 0;
+  arr ->object   = dynn->base;
+
+  return arr;
+}
+
+void
+DynamicArray_adjust(struct DynamicArray *dyna)
+{
+  struct DynamicArrayN *dynn = &dyna->DynamicArrayN;
+  struct Array         * arr = &dynn->Array;
+
+  if (dynn->base != arr->object)
+    arr->object =
+      memmove(dynn->base, arr->object, arr->size * sizeof *dynn->base);
+
+  OBJ *base = realloc(dynn->base, arr->size * sizeof *dynn->base);
+
+  if (!base) return;
+
+  dynn->base     = base;
+  dyna->capacity = arr->size;
+  arr ->object   = base;
+}
+
+void
+DynamicArray_enlarge(struct DynamicArray *dyna, float factor)
+{
+  if (factor <= 1.0) return;
+
+  struct DynamicArrayN *dynn = &dyna->DynamicArrayN;
+  struct Array         * arr = &dynn->Array;
+
+  ptrdiff_t offset = arr->object - dynn->base;
+
+  U32  size = dyna->capacity * factor;
+  OBJ *base = realloc(dynn->base, size * sizeof *dynn->base);
+
+  if (!base) THROW(ExBadAlloc);
+
+  dynn->base     = base;
+  dyna->capacity = size;
+  arr ->object   = base + offset;
+}
+
+// ----- constructors
+
+defmethod(OBJ, ginit, pmArray) // dynamic array
+  retmethod( (OBJ)DynamicArray_alloc(0) );
+endmethod
+
+defmethod(OBJ, ginitWith, pmArray, Int) // dynarray with capacity
+  test_assert(self2->value >= 0, "negative array size");
+
+  retmethod( (OBJ)DynamicArray_alloc(self2->value) );
+endmethod
+
+defmethod(OBJ, ginitWith, pmArray, Array) // clone
+  struct Array* arr = Array_alloc(self2->size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+  _arr = ginitWith(_arr,_2);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, ginitWith, Array, Array) // copy
-  test_assert(self1->size <= self2->size, "incompatible array sizes");
+  test_assert( self1->size <= self2->size, "incompatible array sizes");
 
   OBJ *obj = self1->object;
   OBJ *end = self1->object+self1->size;
@@ -101,24 +248,10 @@ defmethod(OBJ, ginitWith, Array, Array) // copy
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, mArray, Array) // clone
-  struct Array* arr = array_alloc(self2->size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+arr->size;
-  OBJ *src = self2->object;
-
-  while(obj < end)
-    *obj++ = gretain(*src++);
-
-  UNPRT(_arr);
-  retmethod(_arr);
-endmethod
-
-defmethod(OBJ, ginitWith2, mArray, Any, Int) // singleton
+defmethod(OBJ, ginitWith2, pmArray, Any, Int) // element
   test_assert(self3->value >= 0, "negative array size");
 
-  struct Array* arr = array_alloc(self3->value);
+  struct Array* arr = Array_alloc(self3->value);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr->object;
   OBJ *end = arr->object+arr->size;
@@ -130,10 +263,10 @@ defmethod(OBJ, ginitWith2, mArray, Any, Int) // singleton
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, mArray, Functor, Int) // generator
+defmethod(OBJ, ginitWith2, pmArray, Functor, Int) // generator
   test_assert(self3->value >= 0, "negative array size");
 
-  struct Array* arr = array_alloc(self3->value);
+  struct Array* arr = Array_alloc(self3->value);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr->object;
   OBJ *end = arr->object+arr->size;
@@ -151,18 +284,17 @@ defmethod(OBJ, ginitWith2, mArray, Functor, Int) // generator
   retmethod(_arr);
 endmethod
 
-
-defmethod(OBJ, ginitWith2, mArray, Array, Range1)
+defmethod(OBJ, ginitWith2, pmArray, Array, Range1) // sub array
   OBJ slice = Slice1_range(atSlice(0,0), self3, self2->size);
 
   retmethod( ginitWith2(_1,_2,slice) );  
 endmethod
 
-defmethod(OBJ, ginitWith2, mArray, Array, Slice1)
+defmethod(OBJ, ginitWith2, pmArray, Array, Slice1)  // sub array
   test_assert( self3->start < self2->size && Slice1_last(self3) < self2->size,
                "slice out of range" );
 
-  struct Array* arr = array_alloc(self3->size);
+  struct Array* arr = Array_alloc(self3->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr  ->object;
   OBJ *end = arr  ->object+arr->size;
@@ -176,8 +308,8 @@ defmethod(OBJ, ginitWith2, mArray, Array, Slice1)
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, mArray, Array, IntVector)
-  struct Array* arr = array_alloc(self3->size);
+defmethod(OBJ, ginitWith2, pmArray, Array, IntVector) // sequence
+  struct Array* arr = Array_alloc(self3->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr  ->object;
   OBJ *end = arr  ->object+arr->size;
@@ -195,9 +327,27 @@ defmethod(OBJ, ginitWith2, mArray, Array, IntVector)
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWithObjPtr, mArray, (U32)n, (OBJ*)obj)
-  retmethod( ginitWith(_1, aArrayRef(n,obj)) ); // clone
+defmethod(OBJ, ginitWithObjPtr, pmArray, (OBJ*)obj, (U32)n) // clone buffer
+  retmethod( ginitWith(_1, aArrayRef(obj,n)) );
 endmethod
+
+defmethod(OBJ, ginitWith2, pmView, Array, Range1) // array view
+  OBJ slice = Slice1_range(atSlice(0,0), self3, self2->size);
+  retmethod( ginitWith2(_1,_2,slice) );
+endmethod
+
+defmethod(OBJ, ginitWith2, pmView, Array, Slice1) // array view
+  test_assert( cos_any_isa(_2, classref(DynamicArray)),
+               "ArrayView accepts only fixed size Array" );
+  test_assert( Slice1_iscontiguous(self3),
+               "ArrayView slice must be contiguous");
+  test_assert( Slice1_last(self3) < self2->size,
+               "ArrayView slice out of range" );
+
+  retmethod( (OBJ)ArrayView_alloc(self2, self3->start, self3->size) );
+endmethod
+
+// ----- destructors
 
 defmethod(OBJ, gdeinit, Array)
   OBJ *obj = self1->object;
@@ -209,466 +359,42 @@ defmethod(OBJ, gdeinit, Array)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdeinit, DynArrayN)
+defmethod(OBJ, gdeinit, ArrayView)
+  if (self->array) // take care of protection cases
+    grelease(self->array);
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gdeinit, DynamicArrayN)
   next_method(self);
-  free(self->Array.object);
-  
+  free(self->base);
   retmethod(_1);
 endmethod
 
-// ----- ctor/dtor of a subarray
+// ----- adjustment (capacity -> size)
 
-defmethod(OBJ, ginitWith2, mSubArray, Array, Range1)
-  OBJ slice = Slice1_range(atSlice(0,0), self3, self2->size);
+defmethod(void, gadjust, DynamicArray)
+  DynamicArray_adjust(self);
 
-  retmethod( ginitWith2(_1,_2,slice) );
-endmethod
-
-defmethod(OBJ, ginitWith2, mSubArray, Array, Slice1)
-  OBJ arr = gretain(_2);
- 
-  test_assert( cos_any_isa(arr, classref(DynArray)),
-               "subarray accepts only fixed size Array" );
-  test_assert( Slice1_iscontiguous(self3),
-               "subarray slice must be contiguous");
-  test_assert( Slice1_last(self3) < self2->size,
-               "subarray slice out of range" );
-
-  struct Array *ref = STATIC_CAST(struct Array*, arr);
-
-  retmethod( (OBJ)subarray_alloc(ref, self3->start, self3->size) );
-endmethod
-
-defmethod(OBJ, gdeinit, SubArray)
-  grelease(self->array);
-  
-  retmethod(_1);
-endmethod
- 
-// ----- setters
-
-defmethod(void, gputAt, Array, Any, Int)
-  U32 i = index_abs(self3->value, self->size);
-  test_assert( i < self->size, "index out of range" );
-
-  OBJ *obj = self->object+i;
-  OBJ  old = *obj;
-  *obj = gretain(_2);
-  grelease(old);
-endmethod
-
-defmethod(void, gputAt, Array, Array, Range1)
-  OBJ slice = Slice1_range(atSlice(0,0), self3, self->size);
-
-  gputAt(_1,_2,slice);
-endmethod
-
-defmethod(void, gputAt, Array, Array, Slice1)
-  test_assert( self3->start < self->size && Slice1_last(self3) < self->size,
-               "slice out of range" );
-
-  OBJ *obj = self1->object+self3->start;
-  OBJ *src = self2->object;
-  OBJ *end = self2->object+self2->size;
-  I32 step = self3->stride;
-
-  for (; src < end; src++, obj += step) {
-    OBJ old = *obj;
-    *obj = gretain(*src);
-    grelease(old);
-  }
-endmethod
-
-defmethod(void, gputAt, Array, Array, IntVector)
-  test_assert( self2->size >= self3->size,
-               "incompatible array sizes" );
-
-  OBJ *obj = self1->object;
-  OBJ *src = self2->object;
-  U32 size = self1->size;
-  I32 *idx = self3->value;
-  I32 *end = self3->value+self3->size;
-
-  for(; idx < end; idx++, src++) {
-    U32 i = index_abs(*idx, size);
-    test_assert( i < size, "index out of range" );
-    OBJ old = obj[i];
-    obj[i] = gretain(*src);
-    grelease(old);
-  }
-endmethod
-
-// ----- getters
-
-defmethod(U32, gsize, Array)
-  retmethod(self->size);
-endmethod
-
-defmethod(OBJ, ggetAt, Array, Int)
-  U32 i = index_abs(self2->value, self->size);
-  test_assert( i < self->size, "index out of range" );
-
-  retmethod( self->object[i] );
-endmethod
-
-defmethod(OBJ, ggetAt, Array, Range1)
-  retmethod( gautoRelease(ginitWith2(Array,_1,_2)) );
-endmethod
-
-defmethod(OBJ, ggetAt, Array, Slice1)
-  retmethod( gautoRelease(ginitWith2(Array,_1,_2)) );
-endmethod
-
-defmethod(OBJ, ggetAt, Array, IntVector)
-  retmethod( gautoRelease(ginitWith2(Array,_1,_2)) );
-endmethod
-
-// ----- accessors and adjustment
-
-defalias (void, (gput)gappend, DynArray, Any);
-defalias (void, (gput)gpush  , DynArray, Any);
-defmethod(void,  gput        , DynArray, Any)
-  struct Array *arr = &self->DynArrayN.Array;
-
-  if (arr->size == self->capacity)
-    dynarray_resizeBy(self, 1.8);
-    
-  arr->object[arr->size++] = gretain(_2);
-endmethod
-
-defalias (OBJ, (gget)glast, DynArray);
-defalias (OBJ, (gget)gtop , DynArray);
-defmethod(OBJ,  gget      , DynArray)
-  struct Array *arr = &self->DynArrayN.Array;
-  
-  retmethod( arr->size ? arr->object[arr->size-1] : 0 );
-endmethod
-
-defalias (void, (gdrop)gpop, DynArray);
-defmethod(void,  gdrop     , DynArray)
-  struct Array *arr = &self->DynArrayN.Array;
-
-  if (arr->size)
-    grelease(arr->object[--arr->size]);
-endmethod
-
-defmethod(void, gadjust, DynArray)
-  if (self->DynArrayN.Array.size < self->capacity)
-    dynarray_resizeBy(self, 1.0);
-
-  test_assert( cos_any_changeClass(_1, classref(DynArrayN)),
+  test_assert( cos_any_changeClass(_1, classref(DynamicArrayN)),
                "unable to change dynamic array to fixed size array" );
 endmethod
 
-defmethod(void, gappend, DynArray, Array)
-  struct Array *arr = &self->DynArrayN.Array;
+// ----- invariants
 
-  if (self->capacity - arr->size < self2->size) { // enlarge first
-    FLOAT size = arr->size;
-
-    do size *= 1.8;
-    while (self->capacity - size < self2->size);
-
-    dynarray_resizeBy(self, size);
-  }
-
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+self2->size;
-  OBJ *src = self2->object;
-
-  while (obj < end)
-    *obj++ = gretain(*src++);
-
-  arr->size += self2->size;
-endmethod
-
-// ----- clear (in place) 
-
-defmethod(void, gclear, Array)
-  OBJ *obj = self1->object;
-  OBJ *end = self1->object+self1->size;
-
-  while (obj < end)
-    grelease(*obj), *obj++ = Nil; 
-endmethod
-
-// ----- reverse (in place)
-
-defmethod(void, greverse, Array)
-  OBJ *obj = self->object;
-  OBJ *end = self->object+self->size-1;
-  OBJ  tmp;
-  
-  while (obj < end)
-    tmp = *obj, *obj++ = *end, *end-- = tmp;
-endmethod
-
-// ----- zip, zip3, zip4, zip5, zipn
-
-defmethod(OBJ, gzip, Array, Array)
-  U32 size = self1->size+self2->size;
-  struct Array* arr = array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj  = arr  ->object, *end  = obj +arr  ->size;
-  OBJ *src1 = self1->object, *end1 = src1+self1->size;
-  OBJ *src2 = self2->object, *end2 = src2+self2->size;
-
-  if (self1->size < self2->size) {
-    while(src1 < end1) {
-      *obj++ = gretain( *src1++ );
-      *obj++ = gretain( *src2++ );
-    }
-    while(obj  < end )
-      *obj++ = gretain( *src2++ );
-  } else {
-    while(src2 < end2) {
-      *obj++ = gretain( *src1++ );
-      *obj++ = gretain( *src2++ );
-    }
-    while(obj  < end )
-      *obj++ = gretain( *src1++ );
-  }
-
-  UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
-endmethod
-
-defmethod(OBJ, gzip3, Array, Array, Array)
-  U32 size = self1->size+self2->size+self3->size;
-  struct Array* arr = array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj  = arr  ->object, *end  = obj +arr  ->size;
-  OBJ *src1 = self1->object, *end1 = src1+self1->size;
-  OBJ *src2 = self2->object, *end2 = src2+self2->size;
-  OBJ *src3 = self3->object, *end3 = src3+self3->size;
-
-  while(obj < end) {
-    if (src1 < end1) *obj++ = gretain( *src1++ );
-    if (src2 < end2) *obj++ = gretain( *src2++ );
-    if (src3 < end3) *obj++ = gretain( *src3++ );
-  }
-
-  UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
-endmethod
-
-defmethod(OBJ, gzip4, Array, Array, Array, Array)
-  U32 size = self1->size+self2->size+self3->size+self4->size;
-  struct Array* arr = array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj  = arr  ->object, *end  = obj +arr  ->size;
-  OBJ *src1 = self1->object, *end1 = src1+self1->size;
-  OBJ *src2 = self2->object, *end2 = src2+self2->size;
-  OBJ *src3 = self3->object, *end3 = src3+self3->size;
-  OBJ *src4 = self4->object, *end4 = src4+self4->size;
-
-  while(obj < end) {
-    if (src1 < end1) *obj++ = gretain( *src1++ );
-    if (src2 < end2) *obj++ = gretain( *src2++ );
-    if (src3 < end3) *obj++ = gretain( *src3++ );
-    if (src4 < end4) *obj++ = gretain( *src4++ );
-  }
-
-  UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
-endmethod
-
-defmethod(OBJ, gzipn, Array)
-  U32 size = 0;
+defmethod(void, ginvariant, Array, (STR)func, (STR)file, (int)line)
   OBJ *obj = self->object;
   OBJ *end = self->object+self->size;
 
-  for (; obj < end; obj++) {
-    test_assert( array_isa(*obj),
-                 "invalid array element (should be an Array)" );
-    size += gsize(*obj);
-  }
+  while (obj < end && *obj) ;
 
-  struct Array* arr = array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-
-  obj = arr->object;
-  end = arr->object+arr->size;
-
-  for (U32 i = 0; obj < end; i++) {
-    OBJ *src = self->object;
-    OBJ *end = self->object+self->size;
-    
-    for (; src < end; src++) {
-       struct Array* arr = STATIC_CAST(struct Array*, *src);
-       if (i < arr->size) *obj++ = gretain( arr->object[i] );
-    }
-  }
-
-  UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  test_assert( obj == end,
+               "Array contains null elements", func, file, line);
 endmethod
 
-// ----- cat, cat3, cat4, catn
-
-defmethod(OBJ, gcat, Array, Array)
-  U32 size = self1->size+self2->size;
-  struct Array *arr = array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+self1->size;
-  OBJ *src = self1->object;
-
-  while (obj < end)
-    *obj++ = gretain(*src++);
-  
-  src  = self2->object;
-  end += self2->size;
-  
-  while (obj < end)
-    *obj++ = gretain(*src++);
-
-  UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+defmethod(void, ginvariant, DynamicArray, (STR)func, (STR)file, (int)line)
+  test_assert( self->capacity >= self->DynamicArrayN.Array.size,
+               "DynamicArray has capacity < size", func, file, line);
+  next_method(self, func, file, line);
 endmethod
-
-defmethod(OBJ, gcat3, Array, Array, Array)
-  U32 size = self1->size+self2->size+self3->size;
-  struct Array *arr = array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+self1->size;
-  OBJ *src = self1->object;
-
-  while (obj < end)
-    *obj++ = gretain(*src++);
-  
-  src  = self2->object;
-  end += self2->size;
-  
-  while (obj < end)
-    *obj++ = gretain(*src++);
-
-  src  = self3->object;
-  end += self3->size;
-  
-  while (obj < end)
-    *obj++ = gretain(*src++);
-
-  UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
-endmethod
-
-defmethod(OBJ, gcat4, Array, Array, Array, Array)
-  U32 size = self1->size+self2->size+self3->size+self4->size;
-  struct Array *arr = array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+self1->size;
-  OBJ *src = self1->object;
-
-  while (obj < end)
-    *obj++ = gretain(*src++);
-  
-  src  = self2->object;
-  end += self2->size;
-  
-  while (obj < end)
-    *obj++ = gretain(*src++);
-
-  src  = self3->object;
-  end += self3->size;
-  
-  while (obj < end)
-    *obj++ = gretain(*src++);
-
-  src  = self4->object;
-  end += self4->size;
-  
-  while (obj < end)
-    *obj++ = gretain(*src++);
-
-  UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
-endmethod
-
-defmethod(OBJ, gcatn, Array)
-  U32 size = 0;
-  OBJ *obj = self->object;
-  OBJ *end = self->object+self->size;
-
-  for (; obj < end; obj++) {
-    test_assert( array_isa(*obj),
-                 "invalid array element (should be an Array)" );
-    size += gsize(*obj);
-  }
-
-  struct Array* arr = array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-  
-  obj = arr->object;
-
-  for (U32 i = 0; i < self->size; i++) {
-    struct Array *arr = STATIC_CAST(struct Array*, self->object[i]);
-    OBJ *src = arr->object;
-    OBJ *end = arr->object+arr->size;
-
-    while (src < end)
-      *obj++ = gretain(*src++);
-  }  
-
-  UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
-endmethod
-
-// ----- isEqual, min, max
-
-defmethod(OBJ, gisEqual, Array, Array)
-  if (self1 == self2)
-    retmethod(True);
-    
-  if (self1->size != self2->size)
-    retmethod(False);
-  
-  OBJ *obj1 = self1->object;
-  OBJ *end1 = self1->object+self1->size;
-  OBJ *obj2 = self2->object;
-
-  for (; obj1 < end1; obj1++, obj2++)
-    if (gisEqual(*obj1, *obj2) == False)
-      retmethod(False);
-      
-  retmethod(True);
-endmethod
-
-defmethod(OBJ, gmin, Array)
-  useclass(Greater);
-  
-  if (self->size == 0)
-    retmethod(0);
-
-  OBJ  min = self->object[0];
-  OBJ *obj = self->object+1;
-  OBJ *end = self->object+self->size;
-
-  for (; obj < end; obj++)
-    if (gcompare(min, *obj) == Greater)
-      min = *obj;
-      
-  retmethod(min);
-endmethod
-
-defmethod(OBJ, gmax, Array)
-  useclass(Lesser);
-  
-  if (self->size == 0)
-    retmethod(0);
-
-  OBJ  max = self->object[0];
-  OBJ *obj = self->object+1;
-  OBJ *end = self->object+self->size;
-
-  for (; obj < end; obj++)
-    if (gcompare(max, *obj) == Lesser)
-      max = *obj;
-      
-  retmethod(max);
-endmethod
-
-
 

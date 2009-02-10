@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.1 2008/10/24 22:03:30 ldeniau Exp $
+ | $Id: functor.h,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
+#include <cos/Object.h>
 #endif 
 
 defgeneric(OBJ, geval , fun);

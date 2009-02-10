@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Container
+ | COS Sequence
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.5 2009/02/09 13:20:44 ldeniau Exp $
+ | $Id: Sequence.h,v 1.6 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
@@ -43,6 +43,17 @@ endclass
 
 defclass(ValueSequence,Sequence)
 endclass
+
+/* NOTE-USER: Sequence indexing policy
+   - starts at zero
+     (index 0 is the first element)
+   - negative indexe starts from the end
+     (index -1 is the last element)
+*/
+static inline U32
+index_abs(I32 index, U32 size) {
+  return index + (index < 0) * size;
+}
 
 #endif // COS_SEQUENCE_H
 

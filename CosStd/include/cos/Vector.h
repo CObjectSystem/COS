@@ -32,9 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.8 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: Vector.h,v 1.9 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
+
+#include <cos/Sequence.h>
 
 /* Vector subclasses:
 <- Vector
@@ -52,7 +54,7 @@
                  <- CpxSubVector
 */
 
-defclass(Vector)
+defclass(Vector,ValueSequence)
 endclass
 
 // ----- Vectors

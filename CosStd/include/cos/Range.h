@@ -32,18 +32,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.3 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Range.h,v 1.4 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
 #include <cos/Value.h>
 
 /* NOTE-USER: indexing policy
-   indexing starts at zero
-   negative indexes mean starting from the end
-   bounds are included
-   e.g. 0 is the first element, -1 is the last element
- */
+   - starts at zero
+     (index 0 is the first element)
+   - negative indexe starts from the end
+     (index -1 is the last element)
+*/
 
 defclass(Range, Value)
 endclass

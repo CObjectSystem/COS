@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: operator.h,v 1.3 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: operator.h,v 1.4 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
 #ifndef COS_OBJECT_H
-#error "COS: missing #include <cos/Object.h>"
+#include <cos/Object.h>
 #endif 
 
 /* NOTE-USER: operators policy

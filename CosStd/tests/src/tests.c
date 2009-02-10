@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.4 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: tests.c,v 1.5 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     cos_init(); // explicit initialization for measurement
     printf("** COS init duration: %.3f s\n", cos_initDuration());
   }
-    
+   
   // convert signal to exception
   cos_signal_std();
 

@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Value
+ | COS View
  |
  o---------------------------------------------------------------------o
  |
@@ -29,19 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.c,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: View.c,v 1.1 2009/02/10 13:04:50 ldeniau Exp $
  |
 */
 
-#include <cos/Value.h>
-#include <cos/gen/object.h>
+#include <cos/View.h>
 
 // -----
 
-makclass(Value);
+makclass(View);
 
-// -----
-
-defmethod(OBJ, gdeinit, Value)
-  retmethod(_1);
-endmethod

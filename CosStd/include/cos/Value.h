@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.6 2009/02/09 13:20:44 ldeniau Exp $
+ | $Id: Value.h,v 1.7 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,7 @@
 #include <cos/Object.h>
 #endif 
 
-/* Values subclasses:
+/* NOTE-USER: Values subclasses
 
 <- Value
    <- Number
@@ -49,9 +49,11 @@
             <- Char
             <- Short
          <- Long
+         <- BigInt     (gmp)
       <- Floating
          <- Float
          <- Complex
+         <- BigFloat   (gmp)
 
    <- Range  (1-5 dim)
    <- Slice  (1-5 dim)
@@ -59,17 +61,6 @@
 
 defclass(Value)
 endclass
-
-/* NOTE-USER: indexing policy
-   - starts at zero
-     (index 0 is the first element)
-   - negative indexe starts from the end
-     (index -1 is the last element)
-*/
-static inline U32
-index_abs(I32 index, U32 size) {
-  return index + (index < 0) * size;
-}
 
 #endif // COS_VALUE_H
 

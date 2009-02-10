@@ -1,7 +1,10 @@
+#ifndef COS_VIEW_H
+#define COS_VIEW_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Value
+ | COS View
  |
  o---------------------------------------------------------------------o
  |
@@ -29,19 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.c,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: View.h,v 1.1 2009/02/10 13:04:50 ldeniau Exp $
  |
 */
 
-#include <cos/Value.h>
-#include <cos/gen/object.h>
+#ifndef COS_OBJECT_H
+#include <cos/Object.h>
+#endif 
 
-// -----
+defclass(View)
+endclass
 
-makclass(Value);
+#endif // COS_VIEW_H
 
-// -----
-
-defmethod(OBJ, gdeinit, Value)
-  retmethod(_1);
-endmethod

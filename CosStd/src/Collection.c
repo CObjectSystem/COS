@@ -29,15 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Collection.c,v 1.1 2008/10/10 16:38:00 ldeniau Exp $
+ | $Id: Collection.c,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
+
 #include <cos/Collection.h>
 
 // -----
 
-makclass(Collection);
+makclass(Collection,Container);
 
 

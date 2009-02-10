@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.6 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Slice.h,v 1.7 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
@@ -227,6 +227,10 @@ Slice5_iscontiguous(struct Slice5 *s) {
 }
 
 // ----- conversion
+
+#ifndef COS_SEQUENCE_H
+#include <cos/Sequence.h>
+#endif
 
 static inline OBJ
 Slice1_range(struct Slice1 *s, struct Range1 *r, U32 size) {

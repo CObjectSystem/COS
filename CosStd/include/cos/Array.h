@@ -32,98 +32,118 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.8 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Array.h,v 1.9 2009/02/10 13:03:22 ldeniau Exp $
  |
 */
 
-#include <cos/Collection.h>
+#include <cos/Sequence.h>
 
-/* Array subclasses:
-<- Collection
-   <- Array <- ArrayN (0..9)
-            <- DynArrayN <- DynArray
-            <- SubArray
+/* NOTE-USER: Array class cluster constructors
+
+   aArray    (obj,...)                -> Fixed size array (automatic)
+   aArrayRef (buffer,size)            -> Array            (automatic)
+   aArrayView(array,start,size)       -> Array view       (automatic)
+
+   gnew      (Array)                  -> Dynamic array
+   gnewWith  (Array,capacity)         -> Dynamic array    (pre-allocated)
+
+   gnewWith  (Array,array)            -> Fixed size array (clone)
+
+   gnewWith2 (Array,obj,size)         -> Fixed size array (element)
+   gnewWith2 (Array,fun,size)         -> Fixed size array (generator)
+   gnewWith2 (Array,array,range)      -> Fixed size array (subarray)
+   gnewWith2 (Array,array,slice)      -> Fixed size array (subarray)
+   gnewWith2 (Array,array,intvec)     -> Fixed size array (sequence)
+   
+   gnewWith2 (View,array,range)       -> Array view       (view)
+   gnewWith2 (View,array,slice)       -> Array view       (view)
+
+   gnewWithObjPtr(Array,buffer,size)  -> Fixed size array (copy)
+
+   where:
+   - All arrays are mutable
+   - All arrays can shrink from either sides
+   - All arrays own their elements (gretain) except automatic arrays
+   - Fixed size arrays will be one of Array0 to Array9 if size is < 10.
+   - Dynamic arrays can grow (gput, gcat, ...)
+   - Dynamic arrays can be converted to fixed size array (gadjust)
+   - Array views require non-dynamic array and contiguous range and slice
+   - Array views clone are fixed size arrays (copy), not views
 */
 
-defclass(Array, Collection)
+defclass(Array, Sequence)
   OBJ *object;
   U32  size;
 endclass
 
-// ----- Dynamic array
+// ----- automatic constructors
 
-defclass(DynArrayN, Array)
-endclass
+#define aArray(...)                  ( (OBJ)atArray    (__VA_ARGS__)      )
+#define aArrayRef(buffer,size)       ( (OBJ)atArrayRef (buffer,size)      )
+#define aArrayView(array,start,size) ( (OBJ)atArrayView(array,start,size) )
 
-defclass(DynArray, DynArrayN)
-  U32 capacity;
-endclass
+/***********************************************************
+ * Implementation (private)
+ */
 
-// ----- Sub array
+// ----- Array view
 
-defclass(SubArray, Array)
+defclass(ArrayView, Array)
   OBJ array;
 endclass
 
-// ----- Fixed size arrays
+// ----- Dynamic array
 
-defclass(Array0, Array) OBJ _object[]; endclass
-defclass(Array1, Array) OBJ _object[]; endclass
-defclass(Array2, Array) OBJ _object[]; endclass
-defclass(Array3, Array) OBJ _object[]; endclass
-defclass(Array4, Array) OBJ _object[]; endclass
-defclass(Array5, Array) OBJ _object[]; endclass
-defclass(Array6, Array) OBJ _object[]; endclass
-defclass(Array7, Array) OBJ _object[]; endclass
-defclass(Array8, Array) OBJ _object[]; endclass
-defclass(Array9, Array) OBJ _object[]; endclass
-defclass(ArrayN, Array) OBJ _object[]; endclass
+defclass(DynamicArrayN, Array)
+  OBJ *base;
+endclass
+
+defclass(DynamicArray, DynamicArrayN)
+  U32  capacity;
+endclass
+
+// ----- Fixed size array
+
+defclass(Array0, Array) OBJ base[]; endclass
+defclass(Array1, Array) OBJ base[]; endclass
+defclass(Array2, Array) OBJ base[]; endclass
+defclass(Array3, Array) OBJ base[]; endclass
+defclass(Array4, Array) OBJ base[]; endclass
+defclass(Array5, Array) OBJ base[]; endclass
+defclass(Array6, Array) OBJ base[]; endclass
+defclass(Array7, Array) OBJ base[]; endclass
+defclass(Array8, Array) OBJ base[]; endclass
+defclass(Array9, Array) OBJ base[]; endclass
+defclass(ArrayN, Array) OBJ base[]; endclass
+
+// ----- allocators and initializers
+
+struct Array* Array_alloc         (U32);
+struct Array* Array_init          (struct Array*);
+struct Array* ArrayView_alloc     (struct Array*,U32,U32);
+struct Array* ArrayView_init      (struct ArrayView*,I32);
+struct Array* DynamicArray_alloc  (U32);
+void          DynamicArray_adjust (struct DynamicArray*);
+void          DynamicArray_enlarge(struct DynamicArray*,float);
 
 // ----- automatic constructors
 
-#define aArray(...)                 ( (OBJ)atArray   (__VA_ARGS__     ) )
-#define aArrayRef(size,array)       ( (OBJ)atArrayRef(size,array      ) )
-#define aSubArray(array,start,size) ( (OBJ)atSubArray(array,start,size) )
-
 #define atArray(...) \
         atArrayN(COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),10)) \
-                 (N,COS_PP_NARG(__VA_ARGS__)),__VA_ARGS__)
-#define atArrayN(N,...) \
-        ( (struct Array*)&(struct COS_PP_CAT(Array,N)) {{ \
-          {{{ COS_CLS_NAME(COS_PP_CAT(Array,N)).Behavior.id, COS_RC_AUTO }}}, \
+                 (ArrayN,COS_PP_CAT_NARG(Array,__VA_ARGS__)),__VA_ARGS__)
+#define atArrayN(T,...) \
+        ( (struct Array*)&(struct T) {{ \
+          {{{{ COS_CLS_NAME(T).Behavior.id, COS_RC_AUTO }}}}, \
           (OBJ[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__) }} )
 
-#define atArrayRef(size,array) \
-        ( &(struct Array) { \
-          {{{ COS_CLS_NAME(Array).Behavior.id, COS_RC_AUTO }}}, \
-          (array), (size) } )
+#define atArrayRef(buffer,size) \
+        ( Array_init(&(struct Array) { \
+          {{{{ COS_CLS_NAME(Array).Behavior.id, COS_RC_AUTO }}}}, \
+          (buffer), (size) }) )
 
-#define atSubArray(array,start,size) \
-        ( SubArray_init(&(struct SubArray) {{ \
-          {{{{ COS_CLS_NAME(SubArray).Behavior.id, COS_RC_AUTO }}}}, \
-          (size), 0 }, (array) }, (start)) )
-
-// ----- automatic sub-arrays init/checker
-
-#ifndef COS_VALUE_H
-#include <cos/Value.h>
-#endif
-
-static inline struct Array*
-SubArray_init(struct SubArray *subarr, I32 substart)
-{
-  test_assert( cos_any_superClass(subarr->array) == classref(Array),
-               "subarray accepts only fixed size array" );
-
-  struct Array *sarr = &subarr->Array;
-  struct Array * arr = STATIC_CAST(struct Array*, subarr->array);
-
-  U32 start = index_abs(substart, arr->size);
-  test_assert( start + sarr->size <= arr->size, "subarray out of range" );
-
-  sarr->object = arr->object + start;
-
-  return sarr;
-}
+#define atArrayView(array,start,size) \
+        ( ArrayView_init(&(struct ArrayView) {{ \
+          {{{{ COS_CLS_NAME(ArrayView).Behavior.id, COS_RC_AUTO }}}}, \
+          0, (size) }, (array) }, (start)) )
 
 #endif // COS_ARRAY_H

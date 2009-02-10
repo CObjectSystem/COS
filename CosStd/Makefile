@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.6 2008/12/13 00:50:03 ldeniau Exp $
+# | $Id: Makefile,v 1.7 2009/02/10 13:03:22 ldeniau Exp $
 # |
 #
 
@@ -44,6 +44,7 @@ include $(cos)/prologue
 library := CosStd
 version := 0.1
 moddeps := CosBase
+targets := debug
 
 include $(cos)/epilogue
 
