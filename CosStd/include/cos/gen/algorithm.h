@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.8 2009/02/11 11:48:47 ldeniau Exp $
+ | $Id: algorithm.h,v 1.9 2009/02/11 20:44:40 ldeniau Exp $
  |
 */
 
@@ -42,6 +42,7 @@
 
 // in place (returned value of fun is discarded if any)
 defgeneric(void, gapply  , _1, fun);
+defgeneric(void, gpermute, _1, vec);
 defgeneric(void, greverse, _1);
 
 // map

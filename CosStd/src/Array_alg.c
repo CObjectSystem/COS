@@ -29,31 +29,27 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.3 2009/02/11 11:48:47 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.4 2009/02/11 20:45:00 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
 #include <cos/Number.h>
+#include <cos/Vector.h>
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 // -----
 
-useclass(Array);
+useclass(Array, ExBadAlloc);
 
 // ----- in place
-
-defmethod(void, gclear, Array)
-  OBJ *obj = self->object;
-  OBJ *end = self->object+self->size;
-
-  while (obj < end)
-    grelease(*obj), *obj++ = Nil;
-endmethod
 
 defmethod(void, greverse, Array)
   if (self->size < 2)
@@ -65,6 +61,48 @@ defmethod(void, greverse, Array)
 
   while (obj < end)
     tmp = *obj, *obj++ = *end, *end-- = tmp;
+endmethod
+
+defmethod(void, gpermute, Array, IntVector)
+  test_assert( self->size == self2->size, "incompatible array sizes" );
+
+  if (self->size < 2)
+    retmethod();
+
+  enum { N = 1000 };
+  U32 size = self1->size;
+  OBJ *obj = self1->object;
+  I32 *idx = self2->value;
+  OBJ _buf[size > N ? 1 : size];
+  OBJ *buf, *cur, *end;
+
+  if (size > N) {
+    buf = calloc(size, sizeof *buf);
+    if (!buf) THROW(ExBadAlloc);
+  } else {
+    buf = _buf;
+    memset(buf, 0, size * sizeof *buf);
+  }
+
+  cur = buf;
+  end = buf + size;
+
+  while (cur < end) {
+    U32 i = index_abs(*idx++, size);
+    if (i >= size || *cur) break;
+    *cur++ = obj[i];
+  }
+
+  if (cur != end) {
+    BOOL perm = !*cur;
+
+    if (buf != _buf) free(buf);
+    test_assert( perm      , "invalid permutation" );
+    test_assert( cur == end, "index out of range"  );    
+  }
+  
+  memcpy(obj, buf, size * sizeof *obj); 
+  if (buf != _buf) free(buf);
 endmethod
 
 // ----- equality

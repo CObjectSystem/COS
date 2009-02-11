@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.3 2009/02/11 11:48:47 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.4 2009/02/11 20:45:00 ldeniau Exp $
  |
 */
 
@@ -96,6 +96,22 @@ defmethod(void, gadjust, DynamicArray)
 
   test_assert( cos_any_changeClass(_1, classref(DynamicArrayN)),
                "unable to change dynamic array to fixed size array" );
+endmethod
+
+// ----- clear (size -> 0)
+
+defmethod(void, gclear, DynamicArray)
+  struct DynamicArrayN *dynn = &self->DynamicArrayN;
+  struct Array         *arr  = &dynn->Array;
+
+  OBJ *obj = arr->object;
+  OBJ *end = arr->object+arr->size;
+
+  while (obj < end)
+    grelease(*obj++);
+
+  arr->object = dynn->base;
+  arr->size   = 0;
 endmethod
 
 // ----- getters, setters
