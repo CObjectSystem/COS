@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.4 2009/02/11 20:45:00 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.5 2009/02/11 21:34:40 ldeniau Exp $
  |
 */
 
@@ -69,7 +69,7 @@ defmethod(void, gpermute, Array, IntVector)
   if (self->size < 2)
     retmethod();
 
-  enum { N = 1000 };
+  enum { N = 1024 };
   U32 size = self1->size;
   OBJ *obj = self1->object;
   I32 *idx = self2->value;
