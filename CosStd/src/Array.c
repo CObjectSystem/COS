@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.22 2009/02/10 16:57:09 ldeniau Exp $
+ | $Id: Array.c,v 1.23 2009/02/11 11:48:47 ldeniau Exp $
  |
 */
 
@@ -191,45 +191,6 @@ DynamicArray_alloc(U32 size)
   return arr;
 }
 
-void
-DynamicArray_adjust(struct DynamicArray *dyna)
-{
-  struct DynamicArrayN *dynn = &dyna->DynamicArrayN;
-  struct Array         * arr = &dynn->Array;
-
-  if (dynn->base != arr->object)
-    arr->object =
-      memmove(dynn->base, arr->object, arr->size * sizeof *dynn->base);
-
-  OBJ *base = realloc(dynn->base, arr->size * sizeof *dynn->base);
-
-  if (!base) return;
-
-  dynn->base     = base;
-  dyna->capacity = arr->size;
-  arr ->object   = base;
-}
-
-void
-DynamicArray_enlarge(struct DynamicArray *dyna, F64 factor)
-{
-  if (factor <= 1.0) return;
-
-  struct DynamicArrayN *dynn = &dyna->DynamicArrayN;
-  struct Array         * arr = &dynn->Array;
-
-  ptrdiff_t offset = arr->object - dynn->base;
-
-  U32  size = dyna->capacity * factor;
-  OBJ *base = realloc(dynn->base, size * sizeof *dynn->base);
-
-  if (!base) THROW(ExBadAlloc);
-
-  dynn->base     = base;
-  dyna->capacity = size;
-  arr ->object   = base + offset;
-}
-
 // ----- constructors
 
 defmethod(OBJ, ginit, pmArray) // dynamic array
@@ -263,37 +224,37 @@ defmethod(OBJ, ginitWith, Array, Array) // copy
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Any, Int) // element
-  test_assert(self3->value >= 0, "negative array size");
+defmethod(OBJ, ginitWith2, pmArray, Int, Any) // element
+  test_assert(self2->value >= 0, "negative array size");
 
-  struct Array* arr = Array_alloc(self3->value);
+  struct Array* arr = Array_alloc(self2->value);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr->object;
   OBJ *end = arr->object+arr->size;
   
   while (obj < end)
-    *obj++ = gretain(_2);
+    *obj++ = gretain(_3);
 
   UNPRT(_arr);
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Functor, Int) // generator
-  test_assert(self3->value >= 0, "negative array size");
+defmethod(OBJ, ginitWith2, pmArray, Int, Functor) // generator
+  test_assert(self2->value >= 0, "negative array size");
 
-  struct Array* arr = Array_alloc(self3->value);
+  struct Array* arr = Array_alloc(self2->value);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr->object;
   OBJ *end = arr->object+arr->size;
-  int argc = gsize(_2);
+  int argc = gsize(_3);
 
   if (argc)
     for (I32 i = 0; obj < end; i++)
-      *obj++ = gretain(geval1(_2, aInt(i)));
+      *obj++ = gretain(geval1(_3, aInt(i)));
 
   else
     while (obj < end)
-      *obj++ = gretain(geval (_2));
+      *obj++ = gretain(geval (_3));
 
   UNPRT(_arr);
   retmethod(_arr);
@@ -383,15 +344,6 @@ defmethod(OBJ, gdeinit, DynamicArrayN)
   next_method(self);
   free(self->base);
   retmethod(_1);
-endmethod
-
-// ----- adjustment (capacity -> size)
-
-defmethod(void, gadjust, DynamicArray)
-  DynamicArray_adjust(self);
-
-  test_assert( cos_any_changeClass(_1, classref(DynamicArrayN)),
-               "unable to change dynamic array to fixed size array" );
 endmethod
 
 // ----- invariants

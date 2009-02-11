@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.10 2009/02/10 16:57:08 ldeniau Exp $
+ | $Id: Array.h,v 1.11 2009/02/11 11:48:19 ldeniau Exp $
  |
 */
 
@@ -49,8 +49,8 @@
 
    gnewWith  (Array,array)            -> Fixed size array (clone)
 
-   gnewWith2 (Array,obj,size)         -> Fixed size array (element)
-   gnewWith2 (Array,fun,size)         -> Fixed size array (generator)
+   gnewWith2 (Array,size,obj)         -> Fixed size array (element)
+   gnewWith2 (Array,size,fun)         -> Fixed size array (generator)
    gnewWith2 (Array,array,range)      -> Fixed size array (subarray)
    gnewWith2 (Array,array,slice)      -> Fixed size array (subarray)
    gnewWith2 (Array,array,intvec)     -> Fixed size array (sequence)

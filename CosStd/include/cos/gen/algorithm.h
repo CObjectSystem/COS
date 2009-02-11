@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.7 2009/02/10 16:57:09 ldeniau Exp $
+ | $Id: algorithm.h,v 1.8 2009/02/11 11:48:47 ldeniau Exp $
  |
 */
 
@@ -40,56 +40,57 @@
 #include <cos/Object.h>
 #endif 
 
-// in place (returned value is discarded if any)
+// in place (returned value of fun is discarded if any)
 defgeneric(void, gapply  , _1, fun);
 defgeneric(void, greverse, _1);
 
 // map
-defgeneric(OBJ, gmap , fun, _1);
-defgeneric(OBJ, gmap2, fun, _1, _2);
-defgeneric(OBJ, gmap3, fun, _1, _2, _3);
-defgeneric(OBJ, gmap4, fun, _1, _2, _3, _4);
+defgeneric(OBJ , gmap , fun, _1);
+defgeneric(OBJ , gmap2, fun, _1, _2);
+defgeneric(OBJ , gmap3, fun, _1, _2, _3);
+defgeneric(OBJ , gmap4, fun, _1, _2, _3, _4);
 
 // filter, reduce
-defgeneric(OBJ, gfilter    , _1, fun);
-defgeneric(OBJ, greduce    , _1, fun, res);
-defgeneric(OBJ, gaccumulate, _1, fun, acc);
+defgeneric(OBJ , gfilter    , _1, fun);
+defgeneric(OBJ , greduce    , _1, fun, res);
+defgeneric(OBJ , gaccumulate, _1, fun, acc);
 
 // zip
-defgeneric(OBJ, gzip , _1, _2);
-defgeneric(OBJ, gzip3, _1, _2, _3);
-defgeneric(OBJ, gzip4, _1, _2, _3, _4);
-defgeneric(OBJ, gzipn, _1);
+defgeneric(OBJ , gzip , _1, _2);
+defgeneric(OBJ , gzip3, _1, _2, _3);
+defgeneric(OBJ , gzip4, _1, _2, _3, _4);
+defgeneric(OBJ , gzipn, _1);
 
 // cat
-defgeneric(OBJ, gcat , _1, _2);
-defgeneric(OBJ, gcat3, _1, _2, _3);
-defgeneric(OBJ, gcat4, _1, _2, _3, _4);
-defgeneric(OBJ, gcatn, _1);
+defgeneric(OBJ , gcat , _1, _2);
+defgeneric(OBJ , gcat3, _1, _2, _3);
+defgeneric(OBJ , gcat4, _1, _2, _3, _4);
+defgeneric(OBJ , gcatn, _1);
 
 // all, any, min, max
-defgeneric(OBJ, gall, _1, fun);
-defgeneric(OBJ, gany, _1, fun);
-defgeneric(OBJ, gmin, _1);
-defgeneric(OBJ, gmax, _1);
+defgeneric(OBJ , gall, _1, fun);
+defgeneric(OBJ , gany, _1, fun);
+defgeneric(OBJ , gmin, _1);
+defgeneric(OBJ , gmax, _1);
 
-// sorting (in place, fun must return Ordered)
-defgeneric(void, gsort    , _1, fun);
-defgeneric(OBJ , gisSorted, _1); // return True or False
+// sorting (fun must return Ordered)
+defgeneric(void, gsort    , _1, fun); // in place
+defgeneric(OBJ , gisort   , _1, fun); // return an Array of indexes
+defgeneric(OBJ , gisSorted, _1, fun); // return True or False
 
 // linear      find if fun returns TrueFalse
 // logarithmic find if fun returns Ordered
-defgeneric(OBJ, gfind, _1, obj, fun);
+defgeneric(OBJ , gfind, _1, obj, fun);
 
 // bag-like algorithms
-defgeneric(OBJ, gunique, _1, fun);
-defgeneric(OBJ, ggroup , _1, fun);
-defgeneric(OBJ, gsplit , _1, fun);
+defgeneric(OBJ , gunique, _1, fun);
+defgeneric(OBJ , ggroup , _1, fun);
+defgeneric(OBJ , gsplit , _1, fun);
 
 // set-like algorithms
-defgeneric(OBJ, gdiff     , _1, _2, fun);
-defgeneric(OBJ, gunion    , _1, _2, fun);
-defgeneric(OBJ, gintersect, _1, _2, fun);
+defgeneric(OBJ , gdiff     , _1, _2, fun);
+defgeneric(OBJ , gunion    , _1, _2, fun);
+defgeneric(OBJ , gintersect, _1, _2, fun);
 
 #endif // COS_GEN_ALGORITHM_H
 

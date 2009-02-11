@@ -29,13 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.2 2009/02/10 16:57:09 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.3 2009/02/11 11:48:47 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
+#include <cos/Number.h>
 
 #include <cos/gen/algorithm.h>
+#include <cos/gen/container.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 
@@ -54,7 +56,8 @@ defmethod(void, gclear, Array)
 endmethod
 
 defmethod(void, greverse, Array)
-  if (self->size < 2) retmethod();
+  if (self->size < 2)
+    retmethod();
 
   OBJ *obj = self->object;
   OBJ *end = self->object+self->size-1;
@@ -64,7 +67,7 @@ defmethod(void, greverse, Array)
     tmp = *obj, *obj++ = *end, *end-- = tmp;
 endmethod
 
-// ----- test
+// ----- equality
 
 defmethod(OBJ, gisEqual, Array, Array)
   if (self1 == self2)
@@ -89,7 +92,7 @@ endmethod
 defmethod(OBJ, gmin, Array)
   useclass(Greater);
   
-  if (self->size == 0)
+  if (!self->size)
     retmethod(0);
 
   OBJ  min = self->object[0];
@@ -120,7 +123,7 @@ defmethod(OBJ, gmax, Array)
   retmethod(max);
 endmethod
 
-// ----- zip, zip3, zip4, zip5, zipn
+// ----- zip, zip3, zip4, zipn
 
 defmethod(OBJ, gzip, Array, Array)
   U32 size = self1->size+self2->size;
@@ -305,31 +308,23 @@ defmethod(OBJ, gcat4, Array, Array, Array, Array)
 endmethod
 
 defmethod(OBJ, gcatn, Array)
-  U32 size = 0;
   OBJ *obj = self->object;
   OBJ *end = self->object+self->size;
+  U32 size = 0;
 
-  for (; obj < end; obj++) {
-    test_assert( cos_any_isKindOf(*obj, classref(Array)),
-                 "invalid array element (should be an Array)" );
-    size += gsize(*obj);
-  }
+  while (obj < end)
+    size += gsize(*obj++);
 
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  OBJ arr = gnewWith(Array,aInt(size)); PRT(arr);
   
-  obj = arr->object;
+  obj = self->object;
+  end = self->object+self->size;
 
-  for (U32 i = 0; i < self->size; i++) {
-    struct Array *arr = STATIC_CAST(struct Array*, self->object[i]);
-    OBJ *src = arr->object;
-    OBJ *end = arr->object+arr->size;
+  while (obj < end)
+    gappend(arr, *obj++);
 
-    while (src < end)
-      *obj++ = gretain(*src++);
-  }  
-
-  UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  gadjust(arr);
+  UNPRT(arr);
+  retmethod(gautoRelease(arr));
 endmethod
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.7 2009/02/10 16:57:09 ldeniau Exp $
+ | $Id: container.h,v 1.8 2009/02/11 11:48:47 ldeniau Exp $
  |
 */
 
@@ -60,8 +60,6 @@ defgeneric(void, ggetValue  , _1, what);
 defgeneric(void, ggetValueAt, _1, what, at);
 
 // remove element
-defgeneric(void, gremove    , _1);
-defgeneric(void, gremoveAt  , _1, at);
 defgeneric(void, gdrop      , _1);
 defgeneric(void, gdropAt    , _1, at);
 

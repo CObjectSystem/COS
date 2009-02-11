@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.5 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: property.h,v 1.6 2009/02/11 11:48:33 ldeniau Exp $
  |
 */
 
@@ -203,10 +203,9 @@
 
 #define COS_PRP_DEF_PUT(NAME,PROP,ATTR) \
    COS_MTH_DEF(void, gputAt, NAME, Any, COS_PPR_NAME(PROP)) \
-     if (self->ATTR != _2) { \
-       grelease(self->ATTR); \
-       self->ATTR = gretain(_2); \
-     } \
+     OBJ old = self->ATTR; \
+     self->ATTR = gretain(_2); \
+     grelease(old); \
    COS_MTH_END
 
 /* property instantiation
