@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.5 2009/02/12 08:48:08 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.6 2009/02/12 09:03:06 ldeniau Exp $
  |
 */
 
@@ -72,6 +72,8 @@ DynamicArray_adjust(struct DynamicArray *dyna)
 void
 DynamicArray_enlarge(struct DynamicArray *dyna, F64 factor)
 {
+  enum { N = 10 };
+  
   if (factor <= 1.0) return;
 
   struct DynamicArrayN *dynn = &dyna->DynamicArrayN;
@@ -79,7 +81,7 @@ DynamicArray_enlarge(struct DynamicArray *dyna, F64 factor)
 
   ptrdiff_t offset = arr->object - dynn->base;
 
-  U32  size = dyna->capacity * factor;
+  U32  size = dyna->capacity < N ? N : dyna->capacity * factor;
   OBJ *base = realloc(dynn->base, size * sizeof *dynn->base);
 
   if (!base) THROW(ExBadAlloc);
