@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.5 2009/02/11 21:34:40 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.6 2009/02/12 08:48:08 ldeniau Exp $
  |
 */
 
@@ -69,36 +69,41 @@ defmethod(void, gpermute, Array, IntVector)
   if (self->size < 2)
     retmethod();
 
-  enum { N = 1024 };
+  enum { N = 256 };
   U32 size = self1->size;
   OBJ *obj = self1->object;
   I32 *idx = self2->value;
   OBJ _buf[size > N ? 1 : size];
   OBJ *buf, *cur, *end;
+  U32  i = 0;
 
   if (size > N) {
-    buf = calloc(size, sizeof *buf);
+    buf = malloc(size * sizeof *buf);
     if (!buf) THROW(ExBadAlloc);
-  } else {
+  } else
     buf = _buf;
-    memset(buf, 0, size * sizeof *buf);
-  }
 
   cur = buf;
   end = buf + size;
 
   while (cur < end) {
-    U32 i = index_abs(*idx++, size);
-    if (i >= size || *cur) break;
-    *cur++ = obj[i];
+    i = index_abs(*idx++, size);
+    if (i >= size || !obj[i]) break;
+    *cur++ = obj[i], obj[i] = 0;
   }
 
   if (cur != end) {
-    BOOL perm = !*cur;
+    BOOL perm = i >= size;
 
+    while (cur > buf) { // rollback
+      i = index_abs(*--idx, size);
+      obj[i] = *--cur;
+    }
+    
     if (buf != _buf) free(buf);
-    test_assert( perm      , "invalid permutation" );
-    test_assert( cur == end, "index out of range"  );    
+    
+    test_assert(  perm, "invalid permutation" );
+    test_assert( !perm, "index out of range"  );    
   }
   
   memcpy(obj, buf, size * sizeof *obj); 

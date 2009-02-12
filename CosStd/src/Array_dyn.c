@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.4 2009/02/11 20:45:00 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.5 2009/02/12 08:48:08 ldeniau Exp $
  |
 */
 
@@ -141,9 +141,9 @@ defmethod(void,  gdrop     , DynamicArray)
     grelease(arr->object[--arr->size]);
 endmethod
 
-// ----- insert, append
+// ----- prepend, append
 
-defmethod(void, ginsert, DynamicArray, Array)
+defmethod(void, gprepend, DynamicArray, Array)
   struct Array *arr = &self->DynamicArrayN.Array;
 
   if (self->capacity - arr->size < self2->size) {

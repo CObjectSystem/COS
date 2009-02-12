@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.8 2009/02/11 11:48:47 ldeniau Exp $
+ | $Id: container.h,v 1.9 2009/02/12 08:47:53 ldeniau Exp $
  |
 */
 
@@ -43,14 +43,19 @@
 // stream-like accessors
 defgeneric(OBJ , gget       , _1);
 defgeneric(void, gput       , _1, what);
+defgeneric(void, gdrop      , _1);
 
 // stack-like accessors
 defgeneric(void, gpush      , _1, what);  // alias for gput
 defgeneric(OBJ , gtop       , _1);        // alias for gget
 defgeneric(void, gpop       , _1);        // alias for gdrop
 
+// list-like accessor
+defgeneric(void, ginsert    , _1, what, at);
+defgeneric(void, gremove    , _1, at);
+
 // seq-like accessor
-defgeneric(void, ginsert    , _1, what);
+defgeneric(void, gprepend   , _1, what);
 defgeneric(void, gappend    , _1, what);
 defgeneric(OBJ , gfirst     , _1);
 defgeneric(OBJ , glast      , _1);
@@ -59,12 +64,10 @@ defgeneric(OBJ , glast      , _1);
 defgeneric(void, ggetValue  , _1, what);
 defgeneric(void, ggetValueAt, _1, what, at);
 
-// remove element
-defgeneric(void, gdrop      , _1);
-defgeneric(void, gdropAt    , _1, at);
-
-// check for element
+// check for elements
 defgeneric(OBJ , gisEmpty   , _1);
+defgeneric(OBJ , gisPrefixOf, _1, _2);
+defgeneric(OBJ , gisSuffixOf, _1, _2);
 
 // adjust object (e.g. capacity to size)
 defgeneric(void, gadjust    , _1);

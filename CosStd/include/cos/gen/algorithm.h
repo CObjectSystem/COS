@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.9 2009/02/11 20:44:40 ldeniau Exp $
+ | $Id: algorithm.h,v 1.10 2009/02/12 08:47:52 ldeniau Exp $
  |
 */
 
@@ -68,6 +68,9 @@ defgeneric(OBJ , gcat3, _1, _2, _3);
 defgeneric(OBJ , gcat4, _1, _2, _3, _4);
 defgeneric(OBJ , gcatn, _1);
 
+// cut
+defgeneric(OBJ , gcut , _1, at);
+
 // all, any, min, max
 defgeneric(OBJ , gall, _1, fun);
 defgeneric(OBJ , gany, _1, fun);
@@ -81,7 +84,8 @@ defgeneric(OBJ , gisSorted, _1, fun); // return True or False
 
 // linear      find if fun returns TrueFalse
 // logarithmic find if fun returns Ordered
-defgeneric(OBJ , gfind, _1, obj, fun);
+defgeneric(OBJ , gfind , _1, obj, fun);
+defgeneric(OBJ , gifind, _1, obj, fun); // return an index or a key
 
 // bag-like algorithms
 defgeneric(OBJ , gunique, _1, fun);
