@@ -29,15 +29,41 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.5 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Sequence.c,v 1.6 2009/02/12 11:06:02 ldeniau Exp $
  |
 */
 
 #include <cos/Sequence.h>
+#include <cos/Slice.h>
+#include <cos/View.h>
+
+#include <cos/gen/object.h>
+#include <cos/gen/value.h>
 
 // -----
 
 makclass(Sequence,Container);
 makclass(ValueSequence,Sequence);
 
+// -----
+
+defmethod(OBJ, ginitWith2, mSequence, Sequence, Range1)
+  OBJ slice = Slice1_range(atSlice(0,0), self3, gsize(_2));
+  retmethod( ginitWith2(_1,_2,slice) );  
+endmethod
+
+defmethod(OBJ, ginitWith2, pmView, Sequence, Range1)
+  OBJ slice = Slice1_range(atSlice(0,0), self3, gsize(_2));
+  retmethod( ginitWith2(_1,_2,slice) );
+endmethod
+
+defmethod(void, gputAt, Sequence, Sequence, Range1)
+  OBJ slice = Slice1_range(atSlice(0,0), self3, gsize(_1));
+  gputAt(_1,_2,slice);
+endmethod
+
+defmethod(OBJ, ggetAt, Sequence, Range1)
+  OBJ slice = Slice1_range(atSlice(0,0), self2, gsize(_1));
+  retmethod( ggetAt(_1,slice) );
+endmethod
 

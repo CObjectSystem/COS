@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.23 2009/02/11 11:48:47 ldeniau Exp $
+ | $Id: Array.c,v 1.24 2009/02/12 11:06:02 ldeniau Exp $
  |
 */
 
@@ -260,11 +260,6 @@ defmethod(OBJ, ginitWith2, pmArray, Int, Functor) // generator
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Array, Range1) // sub array
-  OBJ slice = Slice1_range(atSlice(0,0), self3, self2->size);
-  retmethod( ginitWith2(_1,_2,slice) );  
-endmethod
-
 defmethod(OBJ, ginitWith2, pmArray, Array, Slice1)  // sub array
   test_assert( self3->start < self2->size && Slice1_last(self3) < self2->size,
                "slice out of range" );
@@ -304,11 +299,6 @@ endmethod
 
 defmethod(OBJ, ginitWithObjPtr, pmArray, (OBJ*)obj, (U32)n) // clone buffer
   retmethod( ginitWith(_1, aArrayRef(obj,n)) );
-endmethod
-
-defmethod(OBJ, ginitWith2, pmView, Array, Range1) // array view
-  OBJ slice = Slice1_range(atSlice(0,0), self3, self2->size);
-  retmethod( ginitWith2(_1,_2,slice) );
 endmethod
 
 defmethod(OBJ, ginitWith2, pmView, Array, Slice1) // array view

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.2 2009/02/10 16:57:09 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.3 2009/02/12 11:06:02 ldeniau Exp $
  |
 */
 
@@ -58,11 +58,6 @@ defmethod(void, gputAt, Array, Any, Int)
   OBJ  old = *obj;
   *obj = gretain(_2);
   grelease(old);
-endmethod
-
-defmethod(void, gputAt, Array, Array, Range1)
-  OBJ slice = Slice1_range(atSlice(0,0), self3, self->size);
-  gputAt(_1,_2,slice);
 endmethod
 
 defmethod(void, gputAt, Array, Array, Slice1)
@@ -113,10 +108,6 @@ endmethod
 defmethod(OBJ, ggetAt, Array, Int)
   U32 i = index_abs(self2->value, self->size);
   retmethod( i < self->size ? self->object[i] : 0);
-endmethod
-
-defmethod(OBJ, ggetAt, Array, Range1)
-  retmethod( gautoRelease(ginitWith2(Array,_1,_2)) );
 endmethod
 
 defmethod(OBJ, ggetAt, Array, Slice1)
