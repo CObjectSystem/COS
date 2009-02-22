@@ -32,12 +32,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.16 2009/01/23 10:34:58 ldeniau Exp $
+ | $Id: cosdef.h,v 1.17 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
 #ifndef COS_COS_COS_H
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/cosdef.h>"
+#endif
+
+#if __STDC_VERSION__ >= 199901L
+typedef _Bool                     BOOL;
+#else
+typedef unsigned char             BOOL;
 #endif
 
 typedef signed   char        I8 , BYTE;
@@ -78,7 +84,6 @@ typedef _ComplexDouble       C64, COMPLEX;
 typedef struct { F64 _[2]; } C64, COMPLEX;
 #endif
 
-typedef _Bool                BOOL;
 typedef const char*           STR; // string literal
 typedef struct OBJ*           OBJ; // object ADT, never defined
 typedef const struct Generic* SEL; // message selector

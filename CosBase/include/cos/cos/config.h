@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.13 2009/01/23 10:33:48 ldeniau Exp $
+ | $Id: config.h,v 1.14 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
@@ -79,10 +79,6 @@
 
 #ifndef va_copy
 #define va_copy(d,s) ((d) = (s)) // __va_copy(d,s)
-#endif
-
-#ifndef _Bool
-#define _Bool unsigned char
 #endif
 
 /*

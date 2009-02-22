@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.15 2009/02/04 13:57:26 ldeniau Exp $
+ | $Id: generic.h,v 1.16 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
@@ -69,7 +69,11 @@
      makgenericv( generic-specifier , ... );
 
    generic-specifier:
-     return-type , generic-name , param-list
+     return-type , generic-def , param-list
+
+   generic-def:
+     generic-name
+     ( class-name ) generic-name
 
    param-list:
      param-decl
@@ -98,10 +102,13 @@
      defgeneric(OBJ, ggetAt   , _1, at);                     // rank 2
      defgeneric(OBJ, ggetAtIdx, _1, (U32)idx);               // rank 1
      defgeneric(OBJ, gprint   , stream, _2);                 // rank 2
+     
+     defgeneric(OBJ, (Operator)gadd, _1, _2);                // rank 2
 
      defgenericv(OBJ, vprintFmt, stream, (STR)fmt, ...);     // rank 1
 
      makgeneric(OBJ, gprint, _1, _2); // instantiate generic gprint (in .c file)
+     makgeneric(OBJ, (Operator)gadd, _1, _2); // gadd is an instance of Operator
 */
 
 /* generic keywords:
@@ -176,7 +183,7 @@
 /* generic definition
  */
 #define COS_GEN_DEF(  RET,NAME,...) \
-        COS_GEN_DEF_0(RET,NAME,(__VA_ARGS__), \
+        COS_GEN_DEF_0(RET,COS_DCL_LNAME(NAME),(__VA_ARGS__), \
           COS_PP_FILTER((__VA_ARGS__),COS_PP_ISNTUPLE), \
           COS_PP_FILTER((__VA_ARGS__),COS_PP_ISTUPLE ) )
 
@@ -197,26 +204,28 @@ COS_SCP_END
 /* generic instantiation
  */
 #define COS_GEN_MAK(  RET,NAME,...) \
-        COS_GEN_MAK_0(RET,NAME,(__VA_ARGS__), \
+        COS_GEN_MAK_0(RET,COS_DCL_LNAME(NAME),COS_DCL_GCLASS(NAME), \
+          (__VA_ARGS__), \
           COS_PP_FILTER((__VA_ARGS__),COS_PP_ISNTUPLE), \
           COS_PP_FILTER((__VA_ARGS__),COS_PP_ISTUPLE ) )
 
-#define COS_GEN_MAK_0(RET,NAME,PS,CS,AS) \
-        COS_GEN_MAK_1(RET,NAME,PS,COS_PP_LEN(CS), \
+#define COS_GEN_MAK_0(RET,NAME,CLS,PS,CS,AS) \
+        COS_GEN_MAK_1(RET,NAME,CLS,PS,COS_PP_LEN(CS), \
                       COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
                       COS_PP_NOT(COS_TOK_ISVOID(RET)))
 
-#define COS_GEN_MAK_1(RET,NAME,PS,C,A,R) \
-COS_GEN_TYPECHK(RET,NAME,PS      ) \
-COS_GEN_RANKCHK(    NAME,   C    ) \
-COS_GEN_NAMECHK(    NAME         ) \
-COS_GEN_SIZECHK(    NAME,     A,R) \
-COS_GEN_COMPMAK(RET,NAME,PS,C,A,R,COS_NO)
+#define COS_GEN_MAK_1(RET,NAME,CLS,PS,C,A,R) \
+COS_GEN_TYPECHK(RET,NAME,    PS             ) \
+COS_GEN_GCLSCHK(    NAME,CLS                ) \
+COS_GEN_RANKCHK(    NAME,       C           ) \
+COS_GEN_NAMECHK(    NAME                    ) \
+COS_GEN_SIZECHK(    NAME,         A,R       ) \
+COS_GEN_COMPMAK(RET,NAME,CLS,PS,C,A,R,COS_NO)
 
 /* variadic generic definition
  */
 #define COS_GEN_DEFV(  RET,NAME,...) \
-        COS_GEN_DEFV_0(RET,NAME, \
+        COS_GEN_DEFV_0(RET,COS_DCL_LNAME(NAME), \
           (COS_PP_SEQ(COS_PP_RDROP(1,(__VA_ARGS__))),(...)), \
           (COS_PP_SEQ(COS_PP_RDROP(1,(__VA_ARGS__))),(va_list)va) )
 
@@ -242,29 +251,30 @@ COS_SCP_END
 /* variadic generic instantiation
  */
 #define COS_GEN_MAKV(  RET,NAME,...) \
-        COS_GEN_MAKV_0(RET,NAME, \
+        COS_GEN_MAKV_0(RET,COS_DCL_LNAME(NAME),COS_DCL_GCLASS(NAME), \
           (COS_PP_SEQ(COS_PP_RDROP(1,(__VA_ARGS__))),(...)), \
           (COS_PP_SEQ(COS_PP_RDROP(1,(__VA_ARGS__))),(va_list)va) )
 
-#define COS_GEN_MAKV_0(RET,NAME,VPS,PS) \
-        COS_GEN_MAKV_1(RET,NAME,VPS,PS, \
+#define COS_GEN_MAKV_0(RET,NAME,CLS,VPS,PS) \
+        COS_GEN_MAKV_1(RET,NAME,CLS,VPS,PS, \
           COS_PP_FILTER(PS,COS_PP_ISNTUPLE), \
           COS_PP_FILTER(PS,COS_PP_ISTUPLE ) )
 
-#define COS_GEN_MAKV_1(RET,NAME,VPS,PS,CS,AS) \
-        COS_GEN_MAKV_2(RET,NAME,VPS,PS,   AS, \
+#define COS_GEN_MAKV_1(RET,NAME,CLS,VPS,PS,CS,AS) \
+        COS_GEN_MAKV_2(RET,NAME,CLS,VPS,PS,   AS, \
           COS_PP_DROP(1,COS_PP_SCANL(PS,0,COS_PRM_IDX)), \
           COS_PP_LEN(CS), \
           COS_PP_GE(COS_PP_LEN(AS),2), \
           COS_PP_NOT(COS_TOK_ISVOID(RET)) )
 
-#define COS_GEN_MAKV_2(RET,NAME,VPS,PS,AS,IS,C,A,R) \
-COS_GEN_TYPECHK(RET,NAME,PS             ) \
-COS_GEN_RANKCHK(    NAME,          C    ) \
-COS_GEN_NAMECHK(    NAME                ) \
-COS_GEN_SIZECHK(    NAME,            A,R) \
-COS_GEN_VFUNDEF(RET,NAME,VPS,AS,IS,C,A,R) \
-COS_GEN_COMPMAK(RET,NAME,PS,       C,A,R,COS_YES)
+#define COS_GEN_MAKV_2(RET,NAME,CLS,VPS,PS,AS,IS,C,A,R) \
+COS_GEN_TYPECHK(RET,NAME,    PS                    ) \
+COS_GEN_GCLSCHK(    NAME,CLS                       ) \
+COS_GEN_RANKCHK(    NAME,             C            ) \
+COS_GEN_NAMECHK(    NAME                           ) \
+COS_GEN_SIZECHK(    NAME,               A,R        ) \
+COS_GEN_VFUNDEF(RET,NAME,   VPS,AS,IS,C,A,R        ) \
+COS_GEN_COMPMAK(RET,NAME,CLS,PS,      C,A,R,COS_YES)
 
 /*
  * Low-level implementation
@@ -285,6 +295,12 @@ extern COS_GEN_TYPE(NAME) \
 extern RET (* \
   COS_PP_CAT(NAME,__invalid_makgeneric_vs_defgeneric) ) \
                             COS_PP_MAP(PS,COS_SIG_GEN);
+
+// generic class check
+#define COS_GEN_GCLSCHK(NAME,CLS) \
+COS_STATIC_ASSERT( \
+  COS_PP_CAT(NAME,__generic_class_must_derive_from_Generic), \
+  COS_CLS_MSPE(CLS) & 4);
 
 // generic rank check
 #define COS_GEN_RANKCHK(NAME,C) \
@@ -382,18 +398,20 @@ void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
 }
 
 // component instantiation (see cos/cos/coscls.h)
-#define COS_GEN_COMPMAK(RET,NAME,PS,C,A,R,V) \
+#define COS_GEN_COMPMAK(RET,NAME,CLS,PS,C,A,R,V) \
 struct Generic COS_GEN_NAME(NAME) = { \
   /* encode rank into Any.id (temporally) and tag into rc */ \
   {{{ (U32)C << COS_ID_RNKSHT, cos_tag_generic }}, \
   /* id must be zero (init) */ \
    0 }, \
-  /* array of methods */ \
+  /* index for array of methods */ \
   0, \
   /* name (STR) */ \
-  COS_PP_STR(NAME), \
+  COS_PP_STR(NAME) "\0" \
   /* signature (STR) */ \
   COS_PP_SEPWITH(COS_PP_MAP(((RET),COS_PP_SEQ(PS)),COS_GEN_STR),"\0"), \
+  /* link to generic class */ \
+  (void*)&COS_CLS_NAME(CLS), \
   /* size of monomorphic arguments struct */ \
   COS_PP_IF(A)(sizeof(COS_ARG_TYPE(NAME)),0), \
   /* size of returned value */ \
@@ -436,7 +454,7 @@ struct Generic COS_GEN_NAME(NAME) = { \
 // return-type is void or OBJ
 #define COS_GEN_RET(RET) \
   COS_PP_IF(COS_TOK_ISVOID(RET))(1, \
-    COS_PP_IF(COS_TOK_ISOBJ(RET))(2,0))
+  COS_PP_IF(COS_TOK_ISOBJ (RET))(2,0))
 
 /* generic id getters
  */
@@ -452,14 +470,14 @@ struct Generic COS_GEN_NAME(NAME) = { \
    ((U32)(narg) & 0x3F) << 22 | \
    ((U32)(nmth) & COS_GEN_MTHMSK))
 
+#define COS_GEN_ORET(gen)  ((gen)->info & ((U32)0x01 << 31))  // ret is OBJ   {0,>0}
+#define COS_GEN_VRET(gen)  ((gen)->info & ((U32)0x01 << 30))  // ret is void  {0,>0}
+#define COS_GEN_VARG(gen)  ((gen)->info & ((U32)0x01 << 29))  // is variadic  {0,>0}
+#define COS_GEN_OARG(gen)  ((gen)->info & ((U32)0x01 << 28))  // args are OBJ {0,>0}
+#define COS_GEN_NARG(gen) (((gen)->info >> 22) & ((U32)0x3F)) // num args     {0..63}
+#define COS_GEN_NMTH(gen)  ((gen)->info &  COS_GEN_MTHMSK  )  // num mths     {0..4194303}
+
 #define COS_GEN_MTHMSK ((U32)0x003FFFFF) // 2^(32-10)-1
 #define COS_GEN_MTHSHT 22                //    32-10
-
-#define COS_GEN_NMTH(gen) ((gen)->info &  COS_GEN_MTHMSK  ) // num mths     {0..4194303}
-#define COS_GEN_NARG(gen) ((gen)->info & ((U32)0x3F << 22)) // num args     {0..63}
-#define COS_GEN_OARG(gen) ((gen)->info & ((U32)0x01 << 28)) // args are OBJ {0,>0}
-#define COS_GEN_VARG(gen) ((gen)->info & ((U32)0x01 << 29)) // is variadic  {0,>0}
-#define COS_GEN_VRET(gen) ((gen)->info & ((U32)0x01 << 30)) // ret is void  {0,>0}
-#define COS_GEN_ORET(gen) ((gen)->info & ((U32)0x01 << 31)) // ret is OBJ   {0,>0}
 
 #endif // COS_COS_GENERIC_H

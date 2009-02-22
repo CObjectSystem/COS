@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.27 2009/02/10 10:08:03 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.28 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
@@ -170,6 +170,16 @@ gen_strcmp(const void *str, const void *_gen)
 }
 
 static inline BOOL
+cls_isSubOf(const struct Class *cls, const struct Class *ref)
+{
+  // a class is a subclass of itself
+  while (cos_class_id(cls) > COS_ID_URK(cos_class_id(ref)))
+    cls = cls->spr;
+
+  return cls == ref;
+}
+
+static inline BOOL
 cls_isMeta(const struct Class *cls)
 {
   return cls->Behavior.Object.Any.id == classref(MetaClass)->Behavior.id;
@@ -182,16 +192,21 @@ cls_isPropMeta(const struct Class *cls)
 }
 
 static inline BOOL
+cls_isMetaClass(const struct Class *cls)
+{
+  return cls_isMeta(cls) || cls_isPropMeta(cls);
+}
+
+static inline BOOL
 cls_isClass(const struct Class *cls)
 {
-  return !cls_isMeta(cls) && !cls_isPropMeta(cls);
+  return !cls_isMetaClass(cls);
 }
 
 static inline BOOL
 cls_isProperty(const struct Class *cls)
 {
-  return cls->spr == classref(Property)
-      && cls->name[0] == 'P' && cls->name[1] == '_';
+  return cls_isSubOf(cls, classref(Property));
 }
 
 static inline void
@@ -317,7 +332,7 @@ cls_classPropCnt(const struct Generic *gen, const struct Class *cls, I32 rnk)
 
   if ((U32)rnk > (U32)r) rnk = r;
 
-  while (r >= rnk && !cls_isClass(cls))
+  while (r >= rnk && cls_isMetaClass(cls))
     --r, cls = cls->spr;
 
   while (r >= rnk) {
@@ -344,7 +359,7 @@ cls_classPropLst(const struct Generic *gen,
 
   if ((U32)rnk > (U32)r) rnk = r;
 
-  while (r >= rnk && !cls_isClass(cls))
+  while (r >= rnk && cls_isMetaClass(cls))
     --r, cls = cls->spr;
 
   while (r >= rnk) {
@@ -356,9 +371,9 @@ cls_classPropLst(const struct Generic *gen,
         prp[i] = mth[j]->cls[c]->ref.cls;
 
       for (; i < n_prp && j < n_mth; i++, j++) {
-        if (cls !=         mth[j]->cls[0]  ||
-           !cls_isPropMeta(mth[j]->cls[c]) || 
-           !cls_isProperty(mth[j]->cls[c]->ref.cls))
+        if (cls !=          mth[j]->cls[0]  ||
+           !cls_isMetaClass(mth[j]->cls[c]) || 
+           !cls_isProperty (mth[j]->cls[c]->ref.cls))
           break;
 
         prp[i] = mth[j]->cls[c]->ref.cls;
@@ -384,16 +399,15 @@ cls_setClassProp(const struct Generic *gen)
 
   for (i = 0; i < n_mth;) {
 
-    if (!cls_isClass(   mth[i]->cls[0]) ||
-        !cls_isPropMeta(mth[i]->cls[c]) ||
-        !cls_isProperty(mth[i]->cls[c]->ref.cls)) {
+    if (!cls_isMetaClass(mth[i]->cls[c]) ||
+        !cls_isProperty (mth[i]->cls[c]->ref.cls)) {
         ++i; continue;
     } 
 
     for (j = i++; i < n_mth; i++)
-      if (mth[j]->cls[0]!=mth[i]->cls[0]  ||
-          !cls_isPropMeta(mth[i]->cls[c]) || 
-          !cls_isProperty(mth[i]->cls[c]->ref.cls))
+      if (mth[j]->cls[0] != mth[i]->cls[0]  ||
+          !cls_isMetaClass (mth[i]->cls[c]) || 
+          !cls_isProperty  (mth[i]->cls[c]->ref.cls))
         break;
 
     mth[j]->cls[0]->ref.prp[p] = cls_encodeProp(j, i-j);
@@ -436,16 +450,6 @@ nxt_clear(void)
 {
   while (sym.n_nxt)
     *sym.nxt[--sym.n_nxt] = (FUNC)YES;
-}
-
-static inline BOOL
-cls_isSubOf(const struct Class *cls, const struct Class *ref)
-{
-  // a class is a subclass of itself
-  while (cos_class_id(cls) > COS_ID_URK(cos_class_id(ref)))
-    cls = cls->spr;
-
-  return cls == ref;
 }
 
 static inline BOOL
@@ -590,8 +594,10 @@ sym_init(void)
 
       case cos_tag_generic: {
         struct Generic *gen = STATIC_CAST(struct Generic*, tbl[t][s]);
+        const struct Class *cls = STATIC_CAST(const struct Class*, gen->sig);
         sym.gen[sym.n_gen++] = gen;
-        gen->Behavior.Object.Any.id = cos_class_id(classref(Generic));
+        gen->sig = gen->name + strlen(gen->name) + 1;
+        gen->Behavior.Object.Any.id = cos_class_id(cls);
         gen->Behavior.Object.Any.rc = COS_RC_STATIC;
       } break;
 
@@ -654,7 +660,7 @@ cls_init(void)
   for (i = n_mth; i-- > 0; ) {
     struct Class *cls = ini[i]->cls[0];
 
-    if (!cls_isClass(cls))
+    if (cls_isMetaClass(cls))
       ginitialize((OBJ)cls->ref.cls);
   }
 }
@@ -671,7 +677,7 @@ cls_deinit(void)
   for (i = 0; i < n_mth; i++) {
     struct Class *cls = dei[i]->cls[0];
 
-    if (!cls_isClass(cls))
+    if (cls_isMetaClass(cls))
       gdeinitialize((OBJ)cls->ref.cls);
   }
 }
@@ -765,9 +771,7 @@ cos_generic_get(U32 id)
 {
   struct Generic *gen = STATIC_CAST(struct Generic*, sym.bhv[id & sym.msk]);
 
-  if (!gen
-   ||  cos_generic_id(gen) != id
-   || !cos_any_isa((OBJ)gen, classref(Generic)))
+  if (!gen || cos_generic_id(gen) != id)
     cos_abort("invalid generic id %d", id);
 
   return gen;
@@ -791,11 +795,9 @@ cos_class_get(U32 id)
   struct Class *cls = STATIC_CAST(struct Class*, sym.bhv[id & sym.msk]);
 
   if (!COS_ID_TAG(id))
-    cos_abort("automatic or static objects used _before_ initialization");
+    cos_abort("automatic or static objects used *before* initialization");
 
-  if (!cls
-    || cos_class_id(cls) != id
-    || cos_any_isa((OBJ)cls, classref(Generic)))
+  if (!cls || cos_class_id(cls) != id)
     cos_abort("invalid class id %d", id);
 
   return cls;
@@ -1134,6 +1136,19 @@ cpyStr(char *dst, char *end, const char *src)
 }
 
 static inline char*
+cpyGenName(char *dst, char *end, const struct Method *mth)
+{
+  if (dst < end && mth->arnd) *dst++ = '(';
+
+  dst = cpyStr(dst, end, mth->gen->name);
+  
+  if (dst < end && mth->arnd) *dst++ = ')';
+  if (dst < end             ) *dst   =  0 ;
+
+  return dst;
+}
+
+static inline char*
 cpyClsName(char *dst, char *end, struct Class *const *cls, U32 ncls)
 {
   U32 i;
@@ -1176,7 +1191,7 @@ cos_method_name(const struct Method *mth, char *str, U32 sz)
   U32  ncls = COS_GEN_RNK(mth->gen);
   char *end = str+sz;
 
-  cpyClsName(cpyStr(str,end,mth->gen->name), end,cls,ncls);
+  cpyClsName(cpyGenName(str,end,mth), end,cls,ncls);
 
   if (sz > 0) str[sz-1] = 0;
   
@@ -1203,7 +1218,7 @@ cos_method_callName(const struct Method *mth, OBJ obj[], char *str, U32 sz)
   U32  ncls = COS_GEN_RNK(mth->gen);
   char *end = str+sz;
 
-  cpyObjClsName(cpyClsName(cpyStr(str,end,mth->gen->name), end,cls,ncls), end,obj,ncls);
+  cpyObjClsName(cpyClsName(cpyGenName(str,end,mth), end,cls,ncls), end,obj,ncls);
 
   if (sz > 0) str[sz-1] = 0;
 
@@ -1250,7 +1265,7 @@ cos_symbol_showClasses(FILE *fp)
     fprintf(fp, "cls[%3u] = %-40s : %-40s [%2u,%9u->%3u]%c\n",
             i,
             sym.cls[i]->name,
-            sym.cls[i]->spr ? sym.cls[i]->spr->name : "NIL",
+            sym.cls[i]->spr ? sym.cls[i]->spr->name : "-",
             COS_CLS_RNK(sym.cls[i]),
             COS_CLS_TAG(sym.cls[i]),
             j,
@@ -1325,8 +1340,8 @@ cos_symbol_showGenerics(FILE *fp)
   for (i = 0; i < sym.n_gen; i++) {
     j = sym.gen[i]->Behavior.id & sym.msk;
 
-    fprintf(fp, "gen[%3u] = %-40s (%3u,%3u,%2u,%c%c%c)"
-            "                           [%2u,%9u->%3u]%c\n",
+    fprintf(fp, "gen[%3u] = %-40s (%5u,%5u,%2u,%c%c%c)"
+            "                       [%2u,%9u->%3u]%c\n",
             i,
             sym.gen[i]->name,
             sym.gen[i]->mth,

@@ -32,11 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.15 2009/02/10 10:08:03 ldeniau Exp $
+ | $Id: object.h,v 1.16 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
+#include <cos/Generic.h>
 
 // allocator, deallocator
 defgeneric(OBJ , galloc        , _1);
@@ -61,21 +62,21 @@ defgeneric(void, gdiscard      , _1);
 defgeneric(OBJ , gautoRelease  , _1);
 defgeneric(U32 , gretainCount  , _1);
 
-// properties
-defgeneric(OBJ , ggetAt        , _1, at);
-defgeneric(void, gputAt        , _1, what, at);
-
-// identity, conversion, coercion, inheritance
+// identity, conversion, coercion
 defgeneric(OBJ , gisKindOf     , _1, _2); // returns True or False
 defgeneric(OBJ , gisInstanceOf , _1, _2); // returns True or False
 defgeneric(OBJ , gclass        , _1);
 defgeneric(STR , gclassName    , _1);
 defgeneric(OBJ , gsuperClass   , _1);
+defgeneric(U32 , ghash         , _1);
+
+// properties, keys
+defgeneric(OBJ , (GenAccessor)ggetAt, _1, at);
+defgeneric(void, (GenAccessor)gputAt, _1, what, at);
 
 // comparison
-defgeneric(OBJ , gisEqual      , _1, _2); // return True or False
-defgeneric(OBJ , gcompare      , _1, _2); // return Equal, Lesser or Greater
-defgeneric(U32 , ghash         , _1);
+defgeneric(OBJ , (GenOperator)gisEqual, _1, _2); // return True or False
+defgeneric(OBJ , (GenOperator)gcompare, _1, _2); // return Equal,Lesser,Greater
 
 // contract
 defgeneric(void, ginvariant    , _1, (STR)func, (STR)file, (int)line);

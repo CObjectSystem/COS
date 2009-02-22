@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.12 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: base.h,v 1.13 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
@@ -178,8 +178,18 @@
         COS_PP_IF(COS_PP_ISTUPLE(a))(COS_PP_EAT a,a)
 
 // declaration of property name: (class)property
-#define COS_DCL_PNAME(NAME) \
-        (COS_PRP_NAME(COS_DCL_GNAME(NAME)))COS_DCL_LNAME(NAME)
+#define COS_DCL_PNAME(a) \
+        (COS_PRP_NAME(COS_DCL_GNAME(a)))COS_DCL_LNAME(a)
+
+// declaration of generic name: (class)generic
+#define COS_DCL_GCLASS(a) \
+        COS_PP_IF(COS_PP_ISTUPLE(a)) \
+          (COS_PP_SWAP((COS_PP_PART a),COS_PP_ARG1),Generic)
+
+// declaration of property name: (super-property)property
+#define COS_DCL_PCLASS(a) \
+        COS_PP_IF(COS_PP_ISTUPLE(a)) \
+          (COS_PRP_NAME(COS_PP_SWAP((COS_PP_PART a),COS_PP_ARG1)),Property)
 
 // parameters parsing: (type)name -> <type name> | <type> | <name>
 #define COS_PRM_DECL(a) \
@@ -226,10 +236,16 @@
           (COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_VALISTF_,a)()),0)
 #define COS_TOK_ISNIL(a) \
         COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_NIL_,a))
+#define COS_TOK_ISGEN(a) \
+        COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_GEN_,a))
+#define COS_TOK_ISPRP(a) \
+        COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_PRP_,a))
 #define COS_TOK_ISGUM(a) \
         COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_GUM_,a))
 
 #define COS_TOK_NIL_Nil           ()
+#define COS_TOK_GEN_Generic       ()
+#define COS_TOK_PRP_Property      ()
 #define COS_TOK_OBJ_OBJ           ()
 #define COS_TOK_OBJF_OBJ()        ()
 #define COS_TOK_VOID_void         ()

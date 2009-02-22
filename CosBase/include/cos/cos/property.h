@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.6 2009/02/11 11:48:33 ldeniau Exp $
+ | $Id: property.h,v 1.7 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
@@ -57,12 +57,16 @@
      ( property-name ) local-name
 
    property-definition:
-     defproperty( property-name );
+     defproperty( property-def );
 
    property-instantiation:
-     makproperty( property-name );
+     makproperty( property-def );
 
-   {property,local}-name:
+   property-def:
+     property-name
+     ( super-property-name ) property-name
+
+   {property,super-property,local}-name:
      identifier                                      // C99 6.4.2.1
 
    - properties are predicate classes deriving from the class Property
@@ -75,8 +79,11 @@
    examples:
      useproperty(firstname, (fullname)name); // declare properties (classes)
 
-     defproperty(firstname);   // define      property firstname (class P_firstname)
-     makproperty(firstname);   // instantiate property firstname (in .c files)
+     defproperty(name);           // define property name (class P_name)
+     defproperty((name)lastname); // define property lastname from name
+
+     makproperty(name);           // instantiate property name     (in .c files)
+     makproperty((name)lastname); // instantiate property lastname (in .c files)
 */
 
 /* NOTE-USER: class-property definition
@@ -113,20 +120,20 @@
      defproperty(Person, age, I32toOBJ, gint);
 
      // hand-written read-write property size
-     defmethod(OBJ, ggetAt, Array, pmP_size)
+     defmethod(OBJ, ggetAt, Array, mP_size)
        retmethod( gautoRelease(aInt(self->size)) );
      endmethod
 
-     defmethod(void, gputAt, Array, Any, pmP_size)
+     defmethod(void, gputAt, Array, Any, mP_size)
        self->size = gint(_2);
      endmethod
 
-     defmethod(void, gputAt, Array, Int, pmP_size) // faster specialization
+     defmethod(void, gputAt, Array, Int, mP_size) // faster specialization
        self->size = self2->value;
      endmethod
 
      // hand-written read-only property fullname with dynamically built attribute
-     defmethod(OBJ, ggetAt, Person, pmP_fullname)
+     defmethod(OBJ, ggetAt, Person, mP_fullname)
        retmethod( gautoRelease(gcat(self->firstname, self->lastname)) );
      endmethod
 */
@@ -163,54 +170,61 @@
 /* property reference
  */
 #define COS_PRP_REF(...) \
-        COS_CLS_REF(COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_PRP_NAME)))
+  COS_CLS_REF(COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_PRP_NAME)))
 
 /* property declaration
  */
 #define COS_PRP_USE(...) \
-        COS_CLS_USE(COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_DCL_PNAME)))
+  COS_CLS_USE(COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_DCL_PNAME)))
 
 /* property definition
  */
 #define COS_PRP_DEF(...) \
-        COS_PP_CAT_NARG(COS_PRP_DEF_,__VA_ARGS__)(__VA_ARGS__) \
-        COS_SCP_END
+  COS_PP_CAT_NARG(COS_PRP_DEF_,__VA_ARGS__)(__VA_ARGS__) \
+  COS_SCP_END
         
 #define COS_PRP_DEF_1(NAME) \
-        COS_CLS_DEF_2(COS_PRP_NAME(NAME),Property) \
-        COS_CLS_END
+  COS_CLS_DEF_2(COS_PRP_NAME(COS_DCL_LNAME(NAME)),COS_DCL_PCLASS(NAME)) \
+  COS_CLS_END
 
 #define COS_PRP_DEF_2(NAME,PROP) \
-        COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),) \
-        COS_PRP_DEF_PUT(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP))
+  COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),) \
+  COS_PRP_DEF_PUT(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP))
 
 #define COS_PRP_DEF_3(NAME,PROP,BOX) \
-        COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX)
+  COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX)
 
 #define COS_PRP_DEF_4(NAME,PROP,BOX,UNBOX) \
-        COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX  ) \
-        COS_PRP_DEF_SET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),UNBOX)
+  COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX  ) \
+  COS_PRP_DEF_SET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),UNBOX)
 
 #define COS_PRP_DEF_GET(NAME,PROP,ATTR,BOX) \
-   COS_MTH_DEF(OBJ, ggetAt, NAME, COS_PPR_NAME(PROP)) \
-     COS_MTH_RET(BOX(self->ATTR)); \
-   COS_MTH_END
+  COS_MTH_DEF(OBJ, ggetAt, NAME, COS_MPR_NAME(PROP)) \
+    COS_MTH_RET(BOX(self->ATTR)); \
+  COS_MTH_END
 
 #define COS_PRP_DEF_SET(NAME,PROP,ATTR,UNBOX) \
-   COS_MTH_DEF(void, gputAt, NAME, Any, COS_PPR_NAME(PROP)) \
-     UNBOX(&self->ATTR, _2); \
-   COS_MTH_END
+  COS_MTH_DEF(void, gputAt, NAME, Any, COS_MPR_NAME(PROP)) \
+    UNBOX(&self->ATTR, _2); \
+  COS_MTH_END
 
 #define COS_PRP_DEF_PUT(NAME,PROP,ATTR) \
-   COS_MTH_DEF(void, gputAt, NAME, Any, COS_PPR_NAME(PROP)) \
-     OBJ old = self->ATTR; \
-     self->ATTR = gretain(_2); \
-     grelease(old); \
-   COS_MTH_END
+  COS_MTH_DEF(void, gputAt, NAME, Any, COS_MPR_NAME(PROP)) \
+    OBJ old = self->ATTR; \
+    self->ATTR = gretain(_2); \
+    grelease(old); \
+  COS_MTH_END
 
 /* property instantiation
  */
 #define COS_PRP_MAK(NAME) \
-        COS_CLS_MAK_2(COS_PRP_NAME(NAME),Property)
+  COS_PRP_PCLSCHK(COS_DCL_LNAME(NAME),COS_DCL_PCLASS(NAME)) \
+  COS_CLS_MAK_2(COS_PRP_NAME(COS_DCL_LNAME(NAME)),COS_DCL_PCLASS(NAME))
+
+// property class check
+#define COS_PRP_PCLSCHK(NAME,CLS) \
+COS_STATIC_ASSERT( \
+  COS_PP_CAT(NAME,__property_must_derive_from_Property), \
+  COS_CLS_MSPE(CLS) & 2);
 
 #endif // COS_COS_PROPERTY_H

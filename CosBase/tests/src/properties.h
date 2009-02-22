@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: properties.h,v 1.1 2009/01/30 12:13:38 ldeniau Exp $
+ | $Id: properties.h,v 1.2 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
@@ -101,5 +101,8 @@ defproperty(p61);
 defproperty(p62);
 defproperty(p63);
 defproperty(p64);
+
+defproperty (prop);
+defproperty((prop)subprop);
 
 #endif // COS_TESTS_PROPERTY_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.8 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: class.h,v 1.9 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
@@ -152,9 +152,9 @@
         enum { COS_CLS_RANK(NAME) = 0, \
                COS_MCL_RANK(NAME) = 4, /* 1+rankOf Class */ \
                COS_PCL_RANK(NAME) = 1+COS_MCL_RANK(NAME) }; \
-        enum { COS_CLS_MSPE(NAME) = 1, \
-               COS_MCL_MSPE(NAME) = 1, \
-               COS_PCL_MSPE(NAME) = 1 }; \
+        enum { COS_CLS_MSPE(NAME) = 0, \
+               COS_MCL_MSPE(NAME) = 0, \
+               COS_PCL_MSPE(NAME) = 0 }; \
         struct NAME {
 
 #define COS_CLS_DEF_N(NAME,SUPER) \
@@ -163,7 +163,9 @@
                COS_MCL_RANK(NAME) = 1+COS_MCL_RANK(SUPER), \
                COS_PCL_RANK(NAME) = 1+COS_MCL_RANK(NAME) }; \
         enum { COS_CLS_MSPE(NAME) = \
-                 COS_PP_IF(COS_TOK_ISNIL(NAME))(0,COS_CLS_MSPE(SUPER)), \
+                 COS_PP_IF(COS_TOK_ISNIL(NAME))(1, \
+                 COS_PP_IF(COS_TOK_ISPRP(NAME))(3, \
+                 COS_PP_IF(COS_TOK_ISGEN(NAME))(4,COS_CLS_MSPE(SUPER)))), \
                COS_MCL_MSPE(NAME) = COS_MCL_MSPE(SUPER), \
                COS_PCL_MSPE(NAME) = COS_PCL_MSPE(SUPER) }; \
         struct NAME { \
@@ -244,7 +246,7 @@ struct Class COS_CLS_NAME(NAME) = { /* class */ \
   /* instances size */ \
   sizeof(struct NAME), \
   /* hack: pre-init link to property metaclasses */ \
-  COS_STATIC_CAST(STR, (void*)&COS_PCL_NAME(NAME)), \
+  (void*)&COS_PCL_NAME(NAME), \
   /* class derives from super class */ \
   SUPER_REF, \
   /* reference to its read/write properties */ \

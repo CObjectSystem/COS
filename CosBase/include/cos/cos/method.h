@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.22 2009/02/10 10:08:03 ldeniau Exp $
+ | $Id: method.h,v 1.23 2009/02/22 23:32:50 ldeniau Exp $
  |
 */
 
@@ -180,7 +180,7 @@ static struct Class* const _cos_mth_nxt_cls[] = \
   COS_STATIC_ASSERT( \
     COS_PP_CAT(COS_MTH_MNAME(COS_SYM_NAME(NAME,CS),TAG,T), \
       __method_cannot_be_specialized_for_class_predicate_INSTANCE), \
-    COS_PP_SEPWITH(COS_PP_MAP(CS,COS_CLS_MSPE),&&));
+    !((COS_PP_SEPWITH(COS_PP_MAP(CS,COS_CLS_MSPE),|)) & 1));
 
 // method rank check
 #define COS_MTH_RANKCHK(NAME,TAG,CS,C,T) \
