@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.2 2008/10/16 10:46:45 ldeniau Exp $
+ | $Id: logic.h,v 1.3 2009/02/23 09:59:15 ldeniau Exp $
  |
  o
 */
@@ -49,6 +49,9 @@
         COS_PP_CAT_(COS_PP_IF_,b)
 
 #define COS_PP_IFDEF(m) \
+        COS_PP_IF(COS_PP_NOT(COS_PP_ISBLANK(m)))
+
+#define COS_PP_IFNDEF(m) \
         COS_PP_IF(COS_PP_ISBLANK(m))
 
 #define COS_PP_NOT(b) \
@@ -107,9 +110,6 @@
 // return 1 if 'a' is blank (empty), 0 otherwise
 #define COS_PP_ISBLANK(a) \
         COS_PP_ISTUPLE(COS_PP_CAT_(COS_PP_ISBLANK_,a))
-
-#define COS_PP_ISNTBLANK(a) \
-        COS_PP_NOT(COS_PP_ISBLANK(a))
 
 // return 1 if 'a' is 0, 0 otherwise
 #define COS_PP_ISZERO(a) \

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.7 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: property.h,v 1.8 2009/02/23 09:59:15 ldeniau Exp $
  |
 */
 
@@ -95,7 +95,7 @@
      
    property-specifier:
      property-name
-     ( attribute-name ) property-name
+     ( attribute-name_opt ) property-name
 
    {read,write}-action:
      function-name
@@ -106,6 +106,8 @@
                                                      
    {action,attribute,function}-name:
      identifier                                      // C99 6.4.2.1
+
+   - if the attribute name is empty, then the entire object is passed (i.e. self)
 
    examples:
      defproperty(Person, name);             // read-write property-attribute name
@@ -188,24 +190,27 @@
   COS_CLS_END
 
 #define COS_PRP_DEF_2(NAME,PROP) \
+  COS_PRP_TYPECHK(NAME,COS_DCL_LNAME(PROP)) \
   COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),) \
   COS_PRP_DEF_PUT(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP))
 
 #define COS_PRP_DEF_3(NAME,PROP,BOX) \
+  COS_PRP_TYPECHK(NAME,COS_DCL_LNAME(PROP)) \
   COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX)
 
 #define COS_PRP_DEF_4(NAME,PROP,BOX,UNBOX) \
+  COS_PRP_TYPECHK(NAME,COS_DCL_LNAME(PROP)) \
   COS_PRP_DEF_GET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),BOX  ) \
   COS_PRP_DEF_SET(NAME,COS_DCL_LNAME(PROP),COS_DCL_GNAME(PROP),UNBOX)
 
 #define COS_PRP_DEF_GET(NAME,PROP,ATTR,BOX) \
   COS_MTH_DEF(OBJ, ggetAt, NAME, COS_MPR_NAME(PROP)) \
-    COS_MTH_RET(BOX(self->ATTR)); \
+    COS_MTH_RET(BOX(COS_PP_IFDEF(ATTR)(self->ATTR,self))); \
   COS_MTH_END
 
 #define COS_PRP_DEF_SET(NAME,PROP,ATTR,UNBOX) \
   COS_MTH_DEF(void, gputAt, NAME, Any, COS_MPR_NAME(PROP)) \
-    UNBOX(&self->ATTR, _2); \
+    UNBOX(COS_PP_IFDEF(ATTR)(&self->ATTR,self), _2); \
   COS_MTH_END
 
 #define COS_PRP_DEF_PUT(NAME,PROP,ATTR) \
@@ -218,13 +223,19 @@
 /* property instantiation
  */
 #define COS_PRP_MAK(NAME) \
-  COS_PRP_PCLSCHK(COS_DCL_LNAME(NAME),COS_DCL_PCLASS(NAME)) \
+  COS_PRP_PCLSCHK(COS_DCL_LNAME(NAME)) \
   COS_CLS_MAK_2(COS_PRP_NAME(COS_DCL_LNAME(NAME)),COS_DCL_PCLASS(NAME))
 
 // property class check
-#define COS_PRP_PCLSCHK(NAME,CLS) \
+#define COS_PRP_PCLSCHK(NAME) \
 COS_STATIC_ASSERT( \
   COS_PP_CAT(NAME,__property_must_derive_from_Property), \
-  COS_CLS_MSPE(CLS) & 2);
+  COS_CLS_MSPE(COS_PRP_NAME(NAME)) & 2);
+
+// property type check
+#define COS_PRP_TYPECHK(NAME,PRP) \
+COS_STATIC_ASSERT( \
+  COS_PP_CAT4(NAME,__class_property__,PRP,__must_derive_from_Property), \
+  COS_CLS_MSPE(COS_PRP_NAME(PRP)) & 2);
 
 #endif // COS_COS_PROPERTY_H

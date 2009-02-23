@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.18 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: Makefile,v 1.19 2009/02/23 09:59:15 ldeniau Exp $
 # |
 #
 
@@ -50,7 +50,7 @@ release := 200801
 # the following (empty) variables are mentioned for example
 
 package := # default
-targets := # default
+targets := debug # default
 headers := # default
 sources := # default
 defgens := # default

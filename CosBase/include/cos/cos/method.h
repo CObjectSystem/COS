@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.23 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: method.h,v 1.24 2009/02/23 09:59:15 ldeniau Exp $
  |
 */
 
@@ -153,7 +153,7 @@ COS_MTH_FUNCDEF(RET,NAME,TAG,PS,CS,AS,C,A,R,T) \
 COS_CTR_BEGCTR
 
 #define COS_MTH_END   \
-  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC_LOC,/* no trace */) \
+  COS_PP_IFNDEF(COS_METHOD_TRACE)(COS_MTH_TRC_LOC,/* no trace */) \
   COS_CTR_ENDCTR      \
   goto _cos_mth_fini; \
 }
@@ -249,7 +249,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   /* contract variable */ \
   COS_CTR_DCL \
   /* trace variables (if requested) */ \
-  COS_PP_IFDEF(COS_METHOD_TRACE)( \
+  COS_PP_IFNDEF(COS_METHOD_TRACE)( \
   const struct Method* const restrict _mth = \
     (struct Method*)&COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T); \
   OBJ _cos_mth_objs[C]; \
@@ -257,7 +257,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   /* arguments variables initialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_MTH_ARG)),/* no arg */) \
   /* trace entering the method (if requested) */ \
-  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(1,C),/* no trace */) \
+  COS_PP_IFNDEF(COS_METHOD_TRACE)(COS_MTH_TRC(1,C),/* no trace */) \
   goto _cos_mth_body; \
   /* exit point */ \
   _cos_mth_fini: \
@@ -266,7 +266,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   /* check invariant (if requested) */ \
   COS_CTR_INVARIANT(C) \
   /* trace exiting the method (if requested) */ \
-  COS_PP_IFDEF(COS_METHOD_TRACE)(COS_MTH_TRC(0,C),/* no trace */) \
+  COS_PP_IFNDEF(COS_METHOD_TRACE)(COS_MTH_TRC(0,C),/* no trace */) \
   return; \
   /* avoid compiler warning for unused identifiers */ \
   COS_PP_IF(R)(/* use ret */,COS_UNUSED(_ret);) \
@@ -323,7 +323,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 #define COS_MTH_RET(...) \
   do { \
     COS_PP_IF(COS_PP_NOARG(__VA_ARGS__))(,COS_MTH_RETVAL = (__VA_ARGS__);) \
-    COS_PP_IFDEF(COS_METHOD_TRACE)(_cos_mth_line = __LINE__;,/* no trace */) \
+    COS_PP_IFNDEF(COS_METHOD_TRACE)(_cos_mth_line = __LINE__;,/* no trace */) \
     goto _cos_ctr_end; \
   } while(0)
 
@@ -405,8 +405,8 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 #define COS_MTH_MNAME(NAME,TAG,T) \
   COS_PP_IF(T)( \
     COS_PP_IFDEF(TAG)( \
-       COS_PP_CAT3(NAME,__a__,__LINE__), \
-       COS_PP_CAT3(NAME,__a__,TAG)), \
+       COS_PP_CAT3(NAME,__a__,TAG), \
+       COS_PP_CAT3(NAME,__a__,__LINE__)), \
     NAME)
                            
 // some constant tuples
