@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.11 2009/02/11 11:48:19 ldeniau Exp $
+ | $Id: Array.h,v 1.12 2009/02/24 14:44:34 ldeniau Exp $
  |
 */
 
@@ -40,25 +40,27 @@
 
 /* NOTE-USER: Array class cluster constructors
 
-   aArray    (obj,...)                -> Fixed size array (automatic)
-   aArrayRef (buffer,size)            -> Array            (automatic)
-   aArrayView(array,start,size)       -> Array view       (automatic)
+   aArray    (obj,...)                    -> Fixed size array (automatic)
+   aArrayRef (buffer,size)                -> Array            (automatic)
+   aArrayView(array,start,size)           -> Array view       (automatic)
 
-   gnew      (Array)                  -> Dynamic array
-   gnewWith  (Array,capacity)         -> Dynamic array    (pre-allocated)
+   gnew      (Array)                      -> Dynamic array
+   gnewWith  (Array,capacity)             -> Dynamic array    (pre-allocated)
 
-   gnewWith  (Array,array)            -> Fixed size array (clone)
+   gnewWith  (Array,array)                -> Fixed size array (clone)
 
-   gnewWith2 (Array,size,obj)         -> Fixed size array (element)
-   gnewWith2 (Array,size,fun)         -> Fixed size array (generator)
-   gnewWith2 (Array,array,range)      -> Fixed size array (subarray)
-   gnewWith2 (Array,array,slice)      -> Fixed size array (subarray)
-   gnewWith2 (Array,array,intvec)     -> Fixed size array (sequence)
+   gnewWith2 (Array,size,obj)             -> Fixed size array (element)
+   gnewWith2 (Array,size,fun)             -> Fixed size array (generator)
+   gnewWith2 (Array,array,range)          -> Fixed size array (subarray)
+   gnewWith2 (Array,array,slice)          -> Fixed size array (subarray)
+   gnewWith2 (Array,array,intvec)         -> Fixed size array (sequence)
    
-   gnewWith2 (View,array,range)       -> Array view       (view)
-   gnewWith2 (View,array,slice)       -> Array view       (view)
+   gnewWith2 (View,array,range)           -> Array view       (view)
+   gnewWith2 (View,array,slice)           -> Array view       (view)
 
-   gnewWithObjPtr(Array,buffer,size)  -> Fixed size array (copy)
+   gnewWithObjPtr(Array,buffer,size,copy) -> Fixed size array (copy)
+                                          -> Dynamic array   (!copy)
+                                          -> Array   (!free & !copy)
 
    where:
    - All arrays are mutable

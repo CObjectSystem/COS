@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.9 2009/02/12 08:47:53 ldeniau Exp $
+ | $Id: container.h,v 1.10 2009/02/24 14:44:34 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,8 @@
 defgeneric(OBJ , gget       , _1);
 defgeneric(void, gput       , _1, what);
 defgeneric(void, gdrop      , _1);
+defgeneric(void, ginsert    , _1, what);
+defgeneric(void, gremove    , _1);
 
 // stack-like accessors
 defgeneric(void, gpush      , _1, what);  // alias for gput
@@ -51,8 +53,8 @@ defgeneric(OBJ , gtop       , _1);        // alias for gget
 defgeneric(void, gpop       , _1);        // alias for gdrop
 
 // list-like accessor
-defgeneric(void, ginsert    , _1, what, at);
-defgeneric(void, gremove    , _1, at);
+defgeneric(void, ginsertAt  , _1, what, at);
+defgeneric(void, gremoveAt  , _1, at);
 
 // seq-like accessor
 defgeneric(void, gprepend   , _1, what);

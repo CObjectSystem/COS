@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.24 2009/02/12 11:06:02 ldeniau Exp $
+ | $Id: Array.c,v 1.25 2009/02/24 14:44:34 ldeniau Exp $
  |
 */
 
@@ -79,8 +79,13 @@ useclass(Array, ExBadAlloc);
 // ----- properties
 
 #define size_to_OBJ(size) gautoRelease(aInt(size))
+#define array_class(array) Array
 
-defproperty(Array, size, size_to_OBJ);
+defproperty(Array, size   , size_to_OBJ);
+defproperty(Array, ()class, array_class);
+
+#undef size_to_OBJ
+#undef array_class
 
 defmethod(U32, gsize, Array)
   retmethod(self->size);
@@ -88,6 +93,10 @@ endmethod
 
 defmethod(OBJ, gisEmpty, Array)
   retmethod(self->size ? False : True);
+endmethod
+
+defmethod(OBJ, gclass, Array)
+  retmethod(Array);
 endmethod
 
 // ----- allocators and initializers
@@ -206,22 +215,16 @@ endmethod
 defmethod(OBJ, ginitWith, pmArray, Array) // clone
   struct Array* arr = Array_alloc(self2->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
-  _arr = ginitWith(_arr,_2);
-  UNPRT(_arr);
-  retmethod(_arr);
-endmethod
-
-defmethod(OBJ, ginitWith, Array, Array) // copy
-  test_assert( self1->size <= self2->size, "incompatible array sizes");
-
-  OBJ *obj = self1->object;
-  OBJ *end = self1->object+self1->size;
+  
+  OBJ *obj = arr  ->object;
+  OBJ *end = arr  ->object+arr->size;
   OBJ *src = self2->object;
 
   while (obj < end)
     *obj++ = gretain(*src++);
 
-  retmethod(_1);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, ginitWith2, pmArray, Int, Any) // element
