@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Behavior.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Behavior.c,v 1.2 2009/02/25 23:22:10 ldeniau Exp $
  |
 */
 
@@ -38,4 +38,4 @@
 
 // ----- 
 
-makclass(Behavior,Object);
+makclass(Behavior);

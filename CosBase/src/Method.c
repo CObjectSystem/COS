@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Method.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: Method.c,v 1.2 2009/02/25 23:22:10 ldeniau Exp $
  |
 */
 
@@ -38,12 +38,13 @@
 
 // ----- 
 
-makclass(Method ,Object);
-makclass(Method1,Method);
-makclass(Method2,Method);
-makclass(Method3,Method);
-makclass(Method4,Method);
-makclass(Method5,Method);
+makclass(Method);
+
+makclass(Method1, Method);
+makclass(Method2, Method);
+makclass(Method3, Method);
+makclass(Method4, Method);
+makclass(Method5, Method);
 
 // ----- 
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.8 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: Exception.c,v 1.9 2009/02/25 23:22:10 ldeniau Exp $
  |
 */
 
@@ -45,7 +45,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-makclass(Exception       ,Object);
+makclass(Exception);
+
 makclass(ExErrno         ,Exception);
 makclass(ExSignal        ,Exception);
 

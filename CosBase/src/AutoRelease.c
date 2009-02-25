@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.29 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.30 2009/02/25 23:22:10 ldeniau Exp $
  |
 */
 
@@ -52,7 +52,7 @@
 #define COS_AUTORELEASE_WARN 10000000 // 0 = *never*
 
 // private class
-defclass(AutoRelease,Object)
+defclass(AutoRelease)
   struct AutoRelease *prv;
   OBJ *stk;
   OBJ *top;
@@ -61,7 +61,7 @@ defclass(AutoRelease,Object)
   OBJ _stk[16];
 endclass
 
-makclass(AutoRelease,Object);
+makclass(AutoRelease);
 
 // -----
 
