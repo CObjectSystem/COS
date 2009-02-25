@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.9 2009/01/23 10:34:58 ldeniau Exp $
+# | $Id: Linux,v 1.10 2009/02/25 14:44:15 ldeniau Exp $
 # |
 #
 
@@ -44,7 +44,7 @@ LIBSHEXT    := .so
 #
 # tools specific
 #
-CC          := gcc
+CC          := gcc-4.2
 CPP         := $(CC) -E
 DEP         := $(CC) -M
 LD          := $(CC)
@@ -97,10 +97,11 @@ SYSPATH     := PATH
 #
 # compiler specific (linux+gcc are the reference)
 #
-CCFLAGS     += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
+CCFLAGS     += --param large-function-growth=400 --param inline-unit-growth=200
+
+DEBUG_CC    += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
                -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
                -Wpointer-arith -Wbad-function-cast -Wcast-align -Wcast-qual \
-               -Wfloat-equal -Wconversion -Wno-conversion -Winline \
-               --param large-function-growth=500 --param inline-unit-growth=200
+               -Wfloat-equal -Wconversion -Wno-conversion -Winline
 
 # end of makefile

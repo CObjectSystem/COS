@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.22 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: default,v 1.23 2009/02/25 14:45:03 ldeniau Exp $
 # |
 #
 
@@ -145,8 +145,9 @@ INSEXCMD := $(wordlist 2,99,$(addprefix -o -name ,$(INSEXPAT) $(insexpat)))
 #
 # standard flags
 #
-CPPFLAGS    += $(SYSFLAGS)
-CCFLAGS     += $(SYSFLAGS)
+CPPFLAGS    += $(SYSFLAGS) $(EXTRA_CPPFLAGS)
+CCFLAGS     += $(SYSFLAGS) $(EXTRA_CCFLAGS)
+LDFLAGS     += $(SYSFLAGS) $(EXTRA_LDFLAGS)
 DEBUG_CPP   += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
 DEBUG_CC    += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
 PROFILE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRACT_PRE
