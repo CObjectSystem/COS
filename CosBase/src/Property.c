@@ -29,11 +29,10 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Property.c,v 1.1 2009/01/23 15:12:28 ldeniau Exp $
+ | $Id: Property.c,v 1.2 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/Property.h>
 
 // -----

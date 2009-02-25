@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.11 2009/02/05 15:47:52 ldeniau Exp $
+ | $Id: st_methods.c,v 1.12 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -112,12 +112,12 @@ st_methods_ptr(void)
   OBJ cnt = gnew(Counter);
   OBJ ret;
 
-  IMP1 gincr_p    = cos_method_lookup1((SEL)gincr_s   , cos_any_id(cnt));
-  IMP1 gincrBy1_p = cos_method_lookup1((SEL)gincrBy1_s, cos_any_id(cnt));
-  IMP1 gincrBy2_p = cos_method_lookup1((SEL)gincrBy2_s, cos_any_id(cnt));
-  IMP1 gincrBy3_p = cos_method_lookup1((SEL)gincrBy3_s, cos_any_id(cnt));
-  IMP1 gincrBy4_p = cos_method_lookup1((SEL)gincrBy4_s, cos_any_id(cnt));
-  IMP1 gincrBy5_p = cos_method_lookup1((SEL)gincrBy5_s, cos_any_id(cnt));
+  IMP1 gincr_p    = cos_method_lookup1((SEL)gincr_s   , cos_object_id(cnt));
+  IMP1 gincrBy1_p = cos_method_lookup1((SEL)gincrBy1_s, cos_object_id(cnt));
+  IMP1 gincrBy2_p = cos_method_lookup1((SEL)gincrBy2_s, cos_object_id(cnt));
+  IMP1 gincrBy3_p = cos_method_lookup1((SEL)gincrBy3_s, cos_object_id(cnt));
+  IMP1 gincrBy4_p = cos_method_lookup1((SEL)gincrBy4_s, cos_object_id(cnt));
+  IMP1 gincrBy5_p = cos_method_lookup1((SEL)gincrBy5_s, cos_object_id(cnt));
 
   gincrBy1_arg_t arg1 = { 1 };
   gincrBy2_arg_t arg2 = { 1,1 };
@@ -148,8 +148,8 @@ st_multimethods_ptr(void)
   OBJ one = gincr(gnew(Counter));
   OBJ ret;
 
-  U32 cid = cos_any_id(cnt);
-  U32 oid = cos_any_id(one);
+  U32 cid = cos_object_id(cnt);
+  U32 oid = cos_object_id(one);
 
   IMP2 gaddTo1_p = cos_method_lookup2((SEL)gaddTo1_s, cid, oid);
   IMP3 gaddTo2_p = cos_method_lookup3((SEL)gaddTo2_s, cid, oid, oid);

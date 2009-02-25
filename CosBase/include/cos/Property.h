@@ -32,30 +32,28 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Property.h,v 1.2 2009/02/10 10:08:03 ldeniau Exp $
+ | $Id: Property.h,v 1.3 2009/02/25 23:06:08 ldeniau Exp $
  |
 */
 
 #include <cos/Nil.h>
 
+#ifndef COS_GEN_OBJECT_H
+#include <cos/gen/object.h>
+#endif
+
 /* NOTE-USER: Property
 
-   Property is the root class of all properties. Properties are classes
-   deriving from the class Property with name prefixed by P_. Using the
-   property 'name' is equivalent to use the class 'P_name'.
+   Property is the "root" class of all properties. Properties are classes
+   deriving from the class Property usually with name prefixed by P_.
+   Using the property 'name' is equivalent to use the class 'P_name'.
    
-   Properties are useful for KVC (Key-Value Coding) which allow to use
+   Properties are useful for KVC (Key-Value Coding) which allows to use
    any object as an associative collection, as well as for serialization,
-   attribute introspection and scripting.
+   attributes introspection and scripting.
 */
 
 defclass(Property,Nil)
 endclass
-
-// class-property define getters/setters
-
-#ifndef COS_GEN_OBJECT_H
-#include <cos/gen/object.h>
-#endif
 
 #endif // COS_PROPERTY_H

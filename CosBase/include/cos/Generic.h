@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.h,v 1.3 2009/02/22 23:32:49 ldeniau Exp $
+ | $Id: Generic.h,v 1.4 2009/02/25 23:06:08 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,10 @@
 // Generic is a core class, see cos/cos/coscls.h
 
 // generics classification
-defclass(GenAccessor, Generic) endclass
-defclass(GenOperator, Generic) endclass
+defclass(GenAccessor, Generic)
+endclass
+
+defclass(GenOperator, Generic)
+endclass
 
 #endif // COS_GENERIC_H

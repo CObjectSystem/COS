@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.7 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Exception.c,v 1.8 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -94,7 +94,7 @@ void cos_exception_assert(STR reason, STR func, STR file, int line)
 {
   useclass(ExBadAssert);
   
-  if (cos_any_id(ExBadAssert) == 0)
+  if (cos_object_id(ExBadAssert) == 0)
     cos_logmsg(COS_LOGMSG_ABORT,func,file,line,"%s",reason);
 
   THROW(gnewWithStr(ExBadAssert,reason),func,file,line);
@@ -106,7 +106,7 @@ void cos_exception_errno(int err, STR func, STR file, int line)
 {
   useclass(ExErrno);
 
-  if (cos_any_id(ExErrno) == 0)
+  if (cos_object_id(ExErrno) == 0)
     cos_logmsg(COS_LOGMSG_ABORT,func,file,line, "[%d] %s", err, strerror(err));
 
   THROW(gnewWithInt(ExErrno,err),func,file,line);
@@ -171,7 +171,7 @@ ex_signal(int sig)
   case SIGSEGV: cos_showCallStack(0);
   }
 
-  if (cos_any_id(ExSignal) == 0) {
+  if (cos_object_id(ExSignal) == 0) {
     if (sig == SIGABRT) signal(sig, SIG_DFL);
     cos_abort("[%d] %s", sig, strsignal(sig));
   }

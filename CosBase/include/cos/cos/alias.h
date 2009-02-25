@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: alias.h,v 1.4 2009/01/30 17:40:12 ldeniau Exp $
+ | $Id: alias.h,v 1.5 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -63,11 +63,11 @@
      defgeneric(OBJ, gtop , _1);
      defgeneric(OBJ, gpop , _1);
 
-     defmethod(OBJ, gput , Stack, Any) .. endmethod
-     defmethod(OBJ, gtop , Stack)      .. endmethod
-     defmethod(OBJ, gdrop, Stack)      .. endmethod
+     defmethod(OBJ, gput , Stack, Object) .. endmethod
+     defmethod(OBJ, gtop , Stack)         .. endmethod
+     defmethod(OBJ, gdrop, Stack)         .. endmethod
 
-     defalias(OBJ, (gput )gpush, Stack, Any);
+     defalias(OBJ, (gput )gpush, Stack, Object);
      defalias(OBJ, (gget )gtop , Stack);
      defalias(OBJ, (gdrop)gpop , Stack);
 */
@@ -127,7 +127,7 @@ COS_PP_SEP(COS_PP_MAP(CS,COS_ALS_CLS)) \
 extern struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS); \
 struct COS_PP_CAT(Method,C) COS_MTH_NAME(ALIAS,CS) = { \
    /* encode tag into rc */ \
-  {{{ 0, cos_tag_alias }}, \
+  {{ 0, cos_tag_alias }, \
    /* reference to generic */ \
    &COS_GEN_NAME(ALIAS), \
    /* method rank */ \

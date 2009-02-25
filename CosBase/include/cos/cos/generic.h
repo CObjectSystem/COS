@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.16 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: generic.h,v 1.17 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -400,8 +400,8 @@ void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
 // component instantiation (see cos/cos/coscls.h)
 #define COS_GEN_COMPMAK(RET,NAME,CLS,PS,C,A,R,V) \
 struct Generic COS_GEN_NAME(NAME) = { \
-  /* encode rank into Any.id (temporally) and tag into rc */ \
-  {{{ (U32)C << COS_ID_RNKSHT, cos_tag_generic }}, \
+  /* encode rank into id (temporally) and tag into rc */ \
+  {{ (U32)C << COS_ID_RNKSHT, cos_tag_generic }, \
   /* id must be zero (init) */ \
    0 }, \
   /* index for array of methods */ \

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: dispatch.h,v 1.4 2008/11/18 08:34:25 ldeniau Exp $
+ | $Id: dispatch.h,v 1.5 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -53,7 +53,7 @@ cos_method_fastLookup1(SEL restrict _sel, U32 id1)
 {
   U32 key = cos_method_hkey1(_sel->Behavior.id,id1);
   struct cos_method_cache1 *restrict cache = cos_method_cache1();
-  struct cos_method_slot1 *restrict *restrict slot = cache->slot + (key & cache->msk);
+  struct cos_method_slot1 *restrict*restrict slot = cache->slot + (key & cache->msk);
 
   return
     _sel->Behavior.id  == (*slot)->idg &&

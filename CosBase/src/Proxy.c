@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Proxy (root class)
+ | COS Proxy (root class of proxies)
  |
  o---------------------------------------------------------------------o
  |
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.6 2008/10/24 21:08:39 ldeniau Exp $
+ | $Id: Proxy.c,v 1.7 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -40,17 +40,13 @@
 
 #include <stdlib.h>
 
-// ----- shared private implementation
-
-#include "./Object_p.h"
-
 // -----
 
-makclass(Proxy,Any);
+makclass(Proxy);
 
 // ----- constructor, destructor
 
-defmethod(OBJ, ginitWith, Proxy, Any)
+defmethod(OBJ, ginitWith, Proxy, Object)
   self->obj = gretain(_2);
   retmethod(_1);
 endmethod
@@ -58,12 +54,6 @@ endmethod
 defmethod(OBJ, gdeinit, Proxy)
   if (self->obj) grelease(self->obj);
   retmethod(_1);
-endmethod
-
-// ----- allocator
-
-defmethod(OBJ, galloc, mProxy)
-  retmethod( object_alloc(_1, 0) );
 endmethod
 
 // ----- understanding
@@ -75,12 +65,12 @@ defmethod(OBJ, gunderstandMessage1, Proxy, (SEL)msg)
 endmethod
 
 // rank 2
-defmethod(OBJ, gunderstandMessage2, Proxy, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage2, Proxy, Object, (SEL)msg)
   next_method(self1,self2,msg);
   if (RETVAL == False) forward_message(self1->obj,_2);
 endmethod
 
-defmethod(OBJ, gunderstandMessage2, Any, Proxy, (SEL)msg)
+defmethod(OBJ, gunderstandMessage2, Object, Proxy, (SEL)msg)
   next_method(self1,self2,msg);
   if (RETVAL == False) forward_message(_1,self2->obj);
 endmethod
@@ -91,32 +81,32 @@ defmethod(OBJ, gunderstandMessage2, Proxy, Proxy, (SEL)msg)
 endmethod
 
 // rank 3
-defmethod(OBJ, gunderstandMessage3, Proxy, Any, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage3, Proxy, Object, Object, (SEL)msg)
   next_method(self1,self2,self3,msg);
   if (RETVAL == False) forward_message(self1->obj,_2,_3);
 endmethod
 
-defmethod(OBJ, gunderstandMessage3, Any, Proxy, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage3, Object, Proxy, Object, (SEL)msg)
   next_method(self1,self2,self3,msg);
   if (RETVAL == False) forward_message(_1,self2->obj,_3);
 endmethod
 
-defmethod(OBJ, gunderstandMessage3, Any, Any, Proxy, (SEL)msg)
+defmethod(OBJ, gunderstandMessage3, Object, Object, Proxy, (SEL)msg)
   next_method(self1,self2,self3,msg);
   if (RETVAL == False) forward_message(_1,_2,self3->obj);
 endmethod
 
-defmethod(OBJ, gunderstandMessage3, Proxy, Proxy, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage3, Proxy, Proxy, Object, (SEL)msg)
   next_method(self1,self2,self3,msg);
   if (RETVAL == False) forward_message(self1->obj,self2->obj,_3);
 endmethod
 
-defmethod(OBJ, gunderstandMessage3, Proxy, Any, Proxy, (SEL)msg)
+defmethod(OBJ, gunderstandMessage3, Proxy, Object, Proxy, (SEL)msg)
   next_method(self1,self2,self3,msg);
   if (RETVAL == False) forward_message(self1->obj,_2,self3->obj);
 endmethod
 
-defmethod(OBJ, gunderstandMessage3, Any, Proxy, Proxy, (SEL)msg)
+defmethod(OBJ, gunderstandMessage3, Object, Proxy, Proxy, (SEL)msg)
   next_method(self1,self2,self3,msg);
   if (RETVAL == False) forward_message(_1,self2->obj,self3->obj);
 endmethod
@@ -127,48 +117,48 @@ defmethod(OBJ, gunderstandMessage3, Proxy, Proxy, Proxy, (SEL)msg)
 endmethod
 
 // rank 4
-defmethod(OBJ, gunderstandMessage4, Proxy, Any, Any, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage4, Proxy, Object, Object, Object, (SEL)msg)
   next_method(self1,self2,self3,self4,msg);
   if (RETVAL == False) forward_message(self1->obj,_2,_3,_4);
 endmethod
 
-defmethod(OBJ, gunderstandMessage4, Any, Proxy, Any, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage4, Object, Proxy, Object, Object, (SEL)msg)
   next_method(self1,self2,self3,self4,msg);
   if (RETVAL == False) forward_message(_1,self2->obj,_3,_4);
 endmethod
 
-defmethod(OBJ, gunderstandMessage4, Any, Any, Proxy, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage4, Object, Object, Proxy, Object, (SEL)msg)
   next_method(self1,self2,self3,self4,msg);
   if (RETVAL == False) forward_message(_1,_2,self3->obj,_4);
 endmethod
 
-defmethod(OBJ, gunderstandMessage4, Any, Any, Any, Proxy, (SEL)msg)
+defmethod(OBJ, gunderstandMessage4, Object, Object, Object, Proxy, (SEL)msg)
   next_method(self1,self2,self3,self4,msg);
   if (RETVAL == False) forward_message(_1,_2,_3,self4->obj);
 endmethod
 
 // rank 5
-defmethod(OBJ, gunderstandMessage5, Proxy, Any, Any, Any, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage5, Proxy, Object, Object, Object, Object, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
   if (RETVAL == False) forward_message(self1->obj,_2,_3,_4,_5);
 endmethod
 
-defmethod(OBJ, gunderstandMessage5, Any, Proxy, Any, Any, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage5, Object, Proxy, Object, Object, Object, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
   if (RETVAL == False) forward_message(_1,self2->obj,_3,_4,_5);
 endmethod
 
-defmethod(OBJ, gunderstandMessage5, Any, Any, Proxy, Any, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage5, Object, Object, Proxy, Object, Object, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
   if (RETVAL == False) forward_message(_1,_2,self3->obj,_4,_5);
 endmethod
 
-defmethod(OBJ, gunderstandMessage5, Any, Any, Any, Proxy, Any, (SEL)msg)
+defmethod(OBJ, gunderstandMessage5, Object, Object, Object, Proxy, Object, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
   if (RETVAL == False) forward_message(_1,_2,_3,self4->obj,_5);
 endmethod
 
-defmethod(OBJ, gunderstandMessage5, Any, Any, Any, Any, Proxy, (SEL)msg)
+defmethod(OBJ, gunderstandMessage5, Object, Object, Object, Object, Proxy, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
   if (RETVAL == False) forward_message(_1,_2,_3,_4,self5->obj);
 endmethod
@@ -213,12 +203,12 @@ defmethod(void, gunrecognizedMessage1, Proxy)
 endmethod
 
 // rank 2
-defmethod(void, gunrecognizedMessage2, Proxy, Any)
+defmethod(void, gunrecognizedMessage2, Proxy, Object)
   forward_message(self1->obj,_2);
   chkret(_sel,_ret,self1);
 endmethod
 
-defmethod(void, gunrecognizedMessage2, Any, Proxy)
+defmethod(void, gunrecognizedMessage2, Object, Proxy)
   forward_message(_1,self2->obj);
   chkret(_sel,_ret,self2);
 endmethod
@@ -229,32 +219,32 @@ defmethod(void, gunrecognizedMessage2, Proxy, Proxy)
 endmethod
 
 // rank 3
-defmethod(void, gunrecognizedMessage3, Proxy, Any, Any)
+defmethod(void, gunrecognizedMessage3, Proxy, Object, Object)
   forward_message(self1->obj,_2,_3);
   chkret(_sel,_ret,self1);
 endmethod
 
-defmethod(void, gunrecognizedMessage3, Any, Proxy, Any)
+defmethod(void, gunrecognizedMessage3, Object, Proxy, Object)
   forward_message(_1,self2->obj,_3);
   chkret(_sel,_ret,self2);
 endmethod
 
-defmethod(void, gunrecognizedMessage3, Any, Any, Proxy)
+defmethod(void, gunrecognizedMessage3, Object, Object, Proxy)
   forward_message(_1,_2,self3->obj);
   chkret(_sel,_ret,self3);
 endmethod
 
-defmethod(void, gunrecognizedMessage3, Proxy, Proxy, Any)
+defmethod(void, gunrecognizedMessage3, Proxy, Proxy, Object)
   forward_message(self1->obj,self2->obj,_3);
   chkret2(_sel,_ret,self1,self2);
 endmethod
 
-defmethod(void, gunrecognizedMessage3, Proxy, Any, Proxy)
+defmethod(void, gunrecognizedMessage3, Proxy, Object, Proxy)
   forward_message(self1->obj,_2,self3->obj);
   chkret2(_sel,_ret,self1,self3);
 endmethod
 
-defmethod(void, gunrecognizedMessage3, Any, Proxy, Proxy)
+defmethod(void, gunrecognizedMessage3, Object, Proxy, Proxy)
   forward_message(_1,self2->obj,self3->obj);
   chkret2(_sel,_ret,self2,self3);
 endmethod
@@ -265,48 +255,48 @@ defmethod(void, gunrecognizedMessage3, Proxy, Proxy, Proxy)
 endmethod
 
 // rank 4
-defmethod(void, gunrecognizedMessage4, Proxy, Any, Any, Any)
+defmethod(void, gunrecognizedMessage4, Proxy, Object, Object, Object)
   forward_message(self1->obj,_2,_3,_4);
   chkret(_sel,_ret,self1);
 endmethod
 
-defmethod(void, gunrecognizedMessage4, Any, Proxy, Any, Any)
+defmethod(void, gunrecognizedMessage4, Object, Proxy, Object, Object)
   forward_message(_1,self2->obj,_3,_4);
   chkret(_sel,_ret,self2);
 endmethod
 
-defmethod(void, gunrecognizedMessage4, Any, Any, Proxy, Any)
+defmethod(void, gunrecognizedMessage4, Object, Object, Proxy, Object)
   forward_message(_1,_2,self3->obj,_4);
   chkret(_sel,_ret,self3);
 endmethod
 
-defmethod(void, gunrecognizedMessage4, Any, Any, Any, Proxy)
+defmethod(void, gunrecognizedMessage4, Object, Object, Object, Proxy)
   forward_message(_1,_2,_3,self4->obj);
   chkret(_sel,_ret,self4);
 endmethod
 
 // rank 5
-defmethod(void, gunrecognizedMessage5, Proxy, Any, Any, Any, Any)
+defmethod(void, gunrecognizedMessage5, Proxy, Object, Object, Object, Object)
   forward_message(self1->obj,_2,_3,_4,_5);
   chkret(_sel,_ret,self1);
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Any, Proxy, Any, Any, Any)
+defmethod(void, gunrecognizedMessage5, Object, Proxy, Object, Object, Object)
   forward_message(_1,self2->obj,_3,_4,_5);
   chkret(_sel,_ret,self2);
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Any, Any, Proxy, Any, Any)
+defmethod(void, gunrecognizedMessage5, Object, Object, Proxy, Object, Object)
   forward_message(_1,_2,self3->obj,_4,_5);
   chkret(_sel,_ret,self3);
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Any, Any, Any, Proxy, Any)
+defmethod(void, gunrecognizedMessage5, Object, Object, Object, Proxy, Object)
   forward_message(_1,_2,_3,self4->obj,_5);
   chkret(_sel,_ret,self4);
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Any, Any, Any, Any, Proxy)
+defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Proxy)
   forward_message(_1,_2,_3,_4,self5->obj);
   chkret(_sel,_ret,self5);
 endmethod

@@ -29,16 +29,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: TrueFalse.c,v 1.3 2008/10/24 21:08:39 ldeniau Exp $
+ | $Id: TrueFalse.c,v 1.4 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/TrueFalse.h>
 
 // -----
 
-makclass(TrueFalse,Nil);
-makclass(True,TrueFalse);
-makclass(False,TrueFalse);
+makclass(TrueFalse, Predicate);
+
+makclass(True , TrueFalse);
+makclass(False, TrueFalse);
 

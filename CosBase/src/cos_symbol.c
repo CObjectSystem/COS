@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.28 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.29 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -90,11 +90,11 @@ bhv_tag(void)
 static inline void
 bhv_setTag(struct Behavior *bhv)
 {
-  if (bhv->Object.Any.id) { // generics case
+  if (bhv->Object.id) { // generics case
     if (bhv->id) cos_abort("behavior has already an id");
 
-    bhv->id = bhv->Object.Any.id | bhv_tag();
-    bhv->Object.Any.id = 0;
+    bhv->id = bhv->Object.id | bhv_tag();
+    bhv->Object.id = 0;
   } else                    // classes case
     bhv->id |= bhv_tag();
 }
@@ -182,13 +182,13 @@ cls_isSubOf(const struct Class *cls, const struct Class *ref)
 static inline BOOL
 cls_isMeta(const struct Class *cls)
 {
-  return cls->Behavior.Object.Any.id == classref(MetaClass)->Behavior.id;
+  return cls->Behavior.Object.id == classref(MetaClass)->Behavior.id;
 }
 
 static inline BOOL
 cls_isPropMeta(const struct Class *cls)
 {
-  return cls->Behavior.Object.Any.id == classref(PropMetaClass)->Behavior.id;
+  return cls->Behavior.Object.id == classref(PropMetaClass)->Behavior.id;
 }
 
 static inline BOOL
@@ -218,7 +218,7 @@ mth_initAlias(struct Method1 *ali)
   ali->fct = mth->fct;
   ali->cls[0] = mth->cls[0];
   ali->Method.info = mth->Method.info;
-  ali->Method.Object.Any.rc = cos_tag_method; // convert alias to method
+  ali->Method.Object.rc = cos_tag_method; // convert alias to method
 }
 
 static inline void
@@ -533,7 +533,7 @@ sym_init(void)
     for (s = 0; tbl[t][s]; s++) {
 
       // count symbols
-      switch(tbl[t][s]->Any.rc) {
+      switch(tbl[t][s]->rc) {
       case cos_tag_class  : ++n_cls; break;
       case cos_tag_mclass : ++n_mcl; break;
       case cos_tag_pclass : ++n_pcl; break;
@@ -544,7 +544,7 @@ sym_init(void)
       }
 
       // set behavior tag
-      if (tbl[t][s]->Any.rc != cos_tag_method)
+      if (tbl[t][s]->rc != cos_tag_method)
         bhv_setTag(STATIC_CAST(struct Behavior*, tbl[t][s]));
     }
   }
@@ -561,7 +561,7 @@ sym_init(void)
     for (s = 0; tbl[t][s]; s++) {
 
       // add behavior symbol to behavior table
-      if (tbl[t][s]->Any.rc != cos_tag_method) {
+      if (tbl[t][s]->rc != cos_tag_method) {
         struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl[t][s]);
         U32 i = bhv->id & sym.msk;
         if (sym.bhv[i]) cos_abort("behavior slot %u already assigned", i);
@@ -569,27 +569,27 @@ sym_init(void)
       }
 
       // finalize symbol information and store it
-      switch(tbl[t][s]->Any.rc) {
+      switch(tbl[t][s]->rc) {
       case cos_tag_class: {
         struct Class *cls = STATIC_CAST(struct Class*, tbl[t][s]);
         const struct Class *pcl = STATIC_CAST(const struct Class*, cls->name);
         sym.cls[sym.n_cls++] = cls; // hack: meta-link
         cls->name = pcl->name+2;    // hack: name is shared
-        cls->Behavior.Object.Any.id = cos_class_id(pcl);
-        cls->Behavior.Object.Any.rc = COS_RC_STATIC;
+        cls->Behavior.Object.id = cos_class_id(pcl);
+        cls->Behavior.Object.rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_pclass: {
         struct Class *pcl = STATIC_CAST(struct Class*, tbl[t][s]);
         pcl->spr->name = pcl->name+1; // hack: name is shared
-        pcl->Behavior.Object.Any.id = cos_class_id(classref(PropMetaClass));
-        pcl->Behavior.Object.Any.rc = COS_RC_STATIC;
+        pcl->Behavior.Object.id = cos_class_id(classref(PropMetaClass));
+        pcl->Behavior.Object.rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_mclass: {
         struct Class *mcl = STATIC_CAST(struct Class*, tbl[t][s]);
-        mcl->Behavior.Object.Any.id = cos_class_id(classref(MetaClass));
-        mcl->Behavior.Object.Any.rc = COS_RC_STATIC;
+        mcl->Behavior.Object.id = cos_class_id(classref(MetaClass));
+        mcl->Behavior.Object.rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_generic: {
@@ -597,22 +597,22 @@ sym_init(void)
         const struct Class *cls = STATIC_CAST(const struct Class*, gen->sig);
         sym.gen[sym.n_gen++] = gen;
         gen->sig = gen->name + strlen(gen->name) + 1;
-        gen->Behavior.Object.Any.id = cos_class_id(cls);
-        gen->Behavior.Object.Any.rc = COS_RC_STATIC;
+        gen->Behavior.Object.id = cos_class_id(cls);
+        gen->Behavior.Object.rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_method: {
         struct Method *mth = STATIC_CAST(struct Method*, tbl[t][s]);
         gen_incMth(mth->gen);
         sym.mth[sym.n_mth++] = mth;
-        mth->Object.Any.rc = COS_RC_STATIC;
+        mth->Object.rc = COS_RC_STATIC;
         if (mth->arnd) mth->arnd = --r;
         switch(COS_GEN_RNK(mth->gen)) {
-        case 1: mth->Object.Any.id = cos_class_id(classref(Method1)); break;
-        case 2: mth->Object.Any.id = cos_class_id(classref(Method2)); break;
-        case 3: mth->Object.Any.id = cos_class_id(classref(Method3)); break;
-        case 4: mth->Object.Any.id = cos_class_id(classref(Method4)); break;
-        case 5: mth->Object.Any.id = cos_class_id(classref(Method5)); break;
+        case 1: mth->Object.id = cos_class_id(classref(Method1)); break;
+        case 2: mth->Object.id = cos_class_id(classref(Method2)); break;
+        case 3: mth->Object.id = cos_class_id(classref(Method3)); break;
+        case 4: mth->Object.id = cos_class_id(classref(Method4)); break;
+        case 5: mth->Object.id = cos_class_id(classref(Method5)); break;
         }
       }}
     }
@@ -824,13 +824,13 @@ cos_class_getWithStr(STR str)
     break;
 
   case 1: // meta class
-    cls = cos_any_superClass((OBJ)cls);
+    cls = cos_object_superClass((OBJ)cls);
     test_assert( cls_isMeta(cls),
                  "class starting by 'm' should be instance of MetaClass" );
     break;
 
   case 2: // property meta class
-    cls = cos_any_class((OBJ)cls);
+    cls = cos_object_class((OBJ)cls);
     test_assert( cls_isPropMeta(cls),
                  "class starting by 'pm' should be instance of PropMetaClass" );
     break;
@@ -875,40 +875,40 @@ cos_class_writeProperties(const struct Class  *cls, U32 rnk,
     : cls_classPropCnt(genericref(gputAt),cls,rnk);
 }
 
-// ----- any
+// ----- object
 
 BOOL
-cos_any_isKindOf(OBJ _1, const struct Class *ref)
+cos_object_isKindOf(OBJ _1, const struct Class *ref)
 {
-  return cls_isSubOf(cos_any_class(_1),ref);
+  return cls_isSubOf(cos_object_class(_1),ref);
 }
 
 BOOL
-cos_any_changeClass(OBJ _1, const struct Class *new)
+cos_object_changeClass(OBJ _1, const struct Class *new)
 {
-  struct Class *cls = cos_any_class(_1);
-  struct Any *obj;
+  struct Class *cls = cos_object_class(_1);
+  struct Object *obj;
 
   if (cls->isz != new->isz || !cls_isSubOf(cls,new))
     return NO;
 
-  obj = STATIC_CAST(struct Any*,_1);
+  obj = STATIC_CAST(struct Object*,_1);
   obj->id = cos_class_id(new);
   
   return YES;
 }
 
 BOOL
-cos_any_unsafeChangeClass(OBJ _1, const struct Class *new,
-                                  const struct Class *base)
+cos_object_unsafeChangeClass(OBJ _1, const struct Class *new,
+                                     const struct Class *base)
 {
-  struct Class *cls = cos_any_class(_1);
-  struct Any *obj;
+  struct Class *cls = cos_object_class(_1);
+  struct Object *obj;
 
   if (cls->isz < new->isz || !cls_isSubOf(cls,base) || !cls_isSubOf(new,base))
     return NO;
 
-  obj = STATIC_CAST(struct Any*,_1);
+  obj = STATIC_CAST(struct Object*,_1);
   obj->id = cos_class_id(new);
   
   return YES;
@@ -1174,7 +1174,7 @@ cpyObjClsName(char *dst, char *end, OBJ obj[], U32 nobj)
   if (dst < end) *dst++ = '(';
 
   for (i = 0; i < nobj && dst < end; i++) {
-    dst = cpyStr(dst, end, cos_any_className(obj[i]));
+    dst = cpyStr(dst, end, cos_object_className(obj[i]));
     if (i < nobj-1 && dst < end) *dst++ = ',';
   }
 

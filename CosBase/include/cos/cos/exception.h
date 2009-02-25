@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.8 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: exception.h,v 1.9 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -88,7 +88,7 @@
 			e.g. raised by THROW(ExBadAlloc)
 
     CATCH_ANY([ex])
-      almost equivalent to CATCH(Any [,ex]).
+      almost equivalent to CATCH(Object [, ex]).
 
     FINALLY
       cleanup code (always executed)

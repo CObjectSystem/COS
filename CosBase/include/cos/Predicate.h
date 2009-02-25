@@ -1,10 +1,10 @@
-#ifndef COS_SRC_OBJECT_H
-#define COS_SRC_OBJECT_H
+#ifndef COS_PREDICATE_H
+#define COS_PREDICATE_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS object private header
+ | COS Predicate
  |
  o---------------------------------------------------------------------o
  |
@@ -32,24 +32,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object_p.h,v 1.3 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: Predicate.h,v 1.1 2009/02/25 23:06:08 ldeniau Exp $
  |
 */
 
-static inline void*
-object_alloc(OBJ _cls, size_t extra)
-{
-  useclass(ExBadAlloc);
-  struct Class *cls = STATIC_CAST(struct Class*, _cls);
-  struct Object *obj = calloc(1, cls->isz + extra);
+#include <cos/Nil.h>
 
-  if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
+/* NOTE-USER: Predicate
 
-  obj->Any.id = cos_class_id(cls);
-  obj->Any.rc = COS_RC_UNIT;
+   Predicate is the "root" class of all predicate classes.
+      
+   Predicate classes are useful for dispatching on result of predicates
+   like gisKindOf, gisEqual or gcompare. This allow automatic branching
+   of execution flow based on results as well as storing predicates
+   results as objects.
+*/
 
-  return obj;
-}
+defclass(Predicate,Nil)
+endclass
 
-#endif // COS_SRC_OBJECT_H
-
+#endif // COS_PREDICATE_H

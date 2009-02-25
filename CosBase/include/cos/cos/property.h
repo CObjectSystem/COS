@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.8 2009/02/23 09:59:15 ldeniau Exp $
+ | $Id: property.h,v 1.9 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -126,7 +126,7 @@
        retmethod( gautoRelease(aInt(self->size)) );
      endmethod
 
-     defmethod(void, gputAt, Array, Any, mP_size)
+     defmethod(void, gputAt, Array, Object, mP_size)
        self->size = gint(_2);
      endmethod
 
@@ -209,12 +209,12 @@
   COS_MTH_END
 
 #define COS_PRP_DEF_SET(NAME,PROP,ATTR,UNBOX) \
-  COS_MTH_DEF(void, gputAt, NAME, Any, COS_MPR_NAME(PROP)) \
+  COS_MTH_DEF(void, gputAt, NAME, Object, COS_MPR_NAME(PROP)) \
     UNBOX(COS_PP_IFDEF(ATTR)(&self->ATTR,self), _2); \
   COS_MTH_END
 
 #define COS_PRP_DEF_PUT(NAME,PROP,ATTR) \
-  COS_MTH_DEF(void, gputAt, NAME, Any, COS_MPR_NAME(PROP)) \
+  COS_MTH_DEF(void, gputAt, NAME, Object, COS_MPR_NAME(PROP)) \
     OBJ old = self->ATTR; \
     self->ATTR = gretain(_2); \
     grelease(old); \

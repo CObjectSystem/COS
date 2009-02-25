@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.24 2009/02/23 09:59:15 ldeniau Exp $
+ | $Id: method.h,v 1.25 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -213,7 +213,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
  \
 struct COS_PP_CAT(Method,C) COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T) = { \
    /* encode tag into rc */ \
-  {{{ 0, cos_tag_method }}, \
+  {{ 0, cos_tag_method }, \
    /* reference to generic */ \
    &COS_GEN_NAME(NAME), \
    /* method rank */ \
@@ -361,7 +361,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
     /* method lookup */ \
     COS_PP_CAT(cos_method_fastLookup,N) \
     /* lookup selectors */ \
-    (_sel,COS_PP_SEQ(COS_PP_MAP(COS_MTH_FWD_USE(N),cos_any_id))) \
+    (_sel,COS_PP_SEQ(COS_PP_MAP(COS_MTH_FWD_USE(N),cos_object_id))) \
     /* method invocation */ \
     (_sel,COS_PP_SEQ(COS_MTH_FWD_USE(N)),_arg,_ret); \
   } while (0)

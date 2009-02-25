@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_methods.c,v 1.3 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: ut_methods.c,v 1.4 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,7 @@
 void
 ut_methods(void)
 {
-  useclass(Any, Object, Class, MetaClass, PropMetaClass);
+  useclass(Object, Class, MetaClass, PropMetaClass);
 
   usegeneric((gunderstandMessage1)gum1);
   usegeneric((ginstancesUnderstandMessage1)gium1);
@@ -52,37 +52,6 @@ ut_methods(void)
   usegeneric(gisKindOf);
 
   UTEST_START("method invocation & knowledge")
-
-    // Any
-    UTEST(          gunderstandMessage1(Any, (SEL)gum1)       == True  );
-    UTEST( ginstancesUnderstandMessage1(Any, (SEL)gum1)       == True  );
-
-    UTEST(          gunderstandMessage1(Any, (SEL)gium1)      == True  );
-    UTEST( ginstancesUnderstandMessage1(Any, (SEL)gium1)      == False );
-
-    UTEST(          gunderstandMessage1(Any, (SEL)galloc)     == False );
-    UTEST( ginstancesUnderstandMessage1(Any, (SEL)galloc)     == False );
-
-    UTEST(          gunderstandMessage1(Any, (SEL)gdealloc)   == True  );
-    UTEST( ginstancesUnderstandMessage1(Any, (SEL)gdealloc)   == True  );
-
-    UTEST(          gunderstandMessage1(Any, (SEL)gclass)     == True  );
-    UTEST( ginstancesUnderstandMessage1(Any, (SEL)gclass)     == True  );
-
-    UTEST(          gunderstandMessage1(Any, (SEL)gclassName) == True  );
-    UTEST( ginstancesUnderstandMessage1(Any, (SEL)gclassName) == True  );
-    
-    UTEST(          gunderstandMessage1(Any, (SEL)gretain)    == True  );
-    UTEST( ginstancesUnderstandMessage1(Any, (SEL)gretain)    == True  );
-
-    UTEST(          gunderstandMessage1(Any, (SEL)grelease)   == True  );
-    UTEST( ginstancesUnderstandMessage1(Any, (SEL)grelease)   == True  );
-
-    UTEST(          gunderstandMessage2(Any, Any, (SEL)gisKindOf)   == True  );
-    UTEST( ginstancesUnderstandMessage2(Any, Any, (SEL)gisKindOf)   == False );
-    
-    UTEST(          gunderstandMessage2(Any, Class, (SEL)gisKindOf) == True  );
-    UTEST( ginstancesUnderstandMessage2(Any, Class, (SEL)gisKindOf) == True  );
 
     // Object
     UTEST(          gunderstandMessage1(Object, (SEL)gum1)       == True  );

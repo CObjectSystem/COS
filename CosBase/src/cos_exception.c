@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.12 2008/11/10 08:41:47 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.13 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -115,15 +115,15 @@ unwind_stack(struct cos_exception_context *cxt)
 static void
 terminate_default(OBJ ex, STR func, STR file, int line)
 {
-  STR reason = cos_any_isKindOf(ex, classref(Exception)) ? gstr(ex) : ".";
+  STR reason = cos_object_isKindOf(ex, classref(Exception)) ? gstr(ex) : ".";
 
   if (cos_exception_uncaught() == YES)
     cos_abort("exception %s (%s) thrown at (%s:%d:%s) during stack unwinding "
               "leading to an undefined behavior",
-              cos_any_className(ex), reason, file, line, func);
+              cos_object_className(ex), reason, file, line, func);
   else
     cos_info ("exiting with uncaught exception %s (%s) thrown at (%s:%d:%s)",
-              cos_any_className(ex), reason, file, line, func);
+              cos_object_className(ex), reason, file, line, func);
 }
 
 static cos_exception_handler handler = terminate_default;
@@ -196,7 +196,7 @@ cos_exception_setTerminate(cos_exception_handler new)
 
 // ----- methods
 
-defmethod(void, gthrow, Any, (STR)func, (STR)file, (int)line)
+defmethod(void, gthrow, Object, (STR)func, (STR)file, (int)line)
 
   struct cos_exception_context *cxt = cos_exception_context();
 
@@ -245,7 +245,7 @@ cos_exception_showStack(FILE *fp)
 
   while (p) {
     fprintf(fp, "prt[%4u] = %-25s\n",
-            i, *p->obj ? cos_any_className(*p->obj) : "NIL");
+            i, *p->obj ? cos_object_className(*p->obj) : "NIL");
     ++i, p = p->prv;
   }
 }

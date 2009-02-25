@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.21 2009/01/31 00:51:18 ldeniau Exp $
+ | $Id: cosapi.h,v 1.22 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -47,9 +47,9 @@ void   cos_deinit(void);
 double cos_initDuration(void);   // in second.
 double cos_deinitDuration(void); // in second.
 
-BOOL   cos_any_isKindOf(OBJ,const struct Class*);
-BOOL   cos_any_changeClass(OBJ,const struct Class*);
-BOOL   cos_any_unsafeChangeClass(OBJ,const struct Class*,const struct Class*);
+BOOL cos_object_isKindOf(OBJ,const struct Class*);
+BOOL cos_object_changeClass(OBJ,const struct Class*);
+BOOL cos_object_unsafeChangeClass(OBJ,const struct Class*,const struct Class*);
 
 struct Generic* cos_generic_get(U32);
 struct Generic* cos_generic_getWithStr(STR);
@@ -287,38 +287,38 @@ cos_method_cache5(void)
 #endif // ------------------------------------------------
 
 static inline U32
-cos_any_id(OBJ obj)
+cos_object_id(OBJ obj)
 {
-  return COS_STATIC_CAST(struct Any*, obj)->id;
-  COS_UNUSED(cos_any_id);
+  return COS_STATIC_CAST(struct Object*, obj)->id;
+  COS_UNUSED(cos_object_id);
 }
 
 static inline U32
-cos_any_rc(OBJ obj)
+cos_object_rc(OBJ obj)
 {
-  return COS_STATIC_CAST(struct Any*, obj)->rc;
-  COS_UNUSED(cos_any_rc);
+  return COS_STATIC_CAST(struct Object*, obj)->rc;
+  COS_UNUSED(cos_object_rc);
 }
 
 static inline struct Class*
-cos_any_class(OBJ obj)
+cos_object_class(OBJ obj)
 {
-  return cos_class_get(cos_any_id(obj));
-  COS_UNUSED(cos_any_class);
+  return cos_class_get(cos_object_id(obj));
+  COS_UNUSED(cos_object_class);
 }
 
 static inline struct Class*
-cos_any_superClass(OBJ obj)
+cos_object_superClass(OBJ obj)
 {
-  return cos_any_class(obj)->spr;
-  COS_UNUSED(cos_any_superClass);
+  return cos_object_class(obj)->spr;
+  COS_UNUSED(cos_object_superClass);
 }
 
 static inline STR
-cos_any_className(OBJ obj)
+cos_object_className(OBJ obj)
 {
-  return cos_any_class(obj)->name;
-  COS_UNUSED(cos_any_className);
+  return cos_object_class(obj)->name;
+  COS_UNUSED(cos_object_className);
 }
 
 static inline U32
@@ -336,10 +336,10 @@ cos_generic_id(SEL sel)
 }
 
 static inline BOOL
-cos_any_isa(OBJ obj, const struct Class *cls)
+cos_object_isa(OBJ obj, const struct Class *cls)
 {
-  return cos_any_id(obj) == cos_class_id(cls);
-  COS_UNUSED(cos_any_isa);
+  return cos_object_id(obj) == cos_class_id(cls);
+  COS_UNUSED(cos_object_isa);
 }
 
 static inline struct cos_exception_protect

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_classes.c,v 1.2 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: ut_classes.c,v 1.3 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -42,9 +42,9 @@
 void
 ut_classes(void)
 {
-  useclass(Any  , Object  , Class  , MetaClass  , PropMetaClass  );
-  useclass(mAny , mObject , mClass , mMetaClass , mPropMetaClass );
-  useclass(pmAny, pmObject, pmClass, pmMetaClass, pmPropMetaClass);
+  useclass(Object  , Class  , MetaClass  , PropMetaClass  );
+  useclass(mObject , mClass , mMetaClass , mPropMetaClass );
+  useclass(pmObject, pmClass, pmMetaClass, pmPropMetaClass);
   useclass(Behavior, mBehavior, pmBehavior);
   useclass(Generic, mGeneric);
   useclass(Proxy);
@@ -52,71 +52,16 @@ ut_classes(void)
   UTEST_START("class definition & inheritance")
   
     // root classes
-    UTEST( gisKindOf(Any, Proxy)        == False );
-    UTEST( gisKindOf(Any, Nil)          == False );
-
     UTEST( gisKindOf(Object, Proxy)     == False );
     UTEST( gisKindOf(Object, Nil)       == False );
-
-    UTEST( gisKindOf(Proxy, Object)     == True  );
-    UTEST( gisKindOf(Proxy, Nil)        == False );
 
     UTEST( gisKindOf(Nil, Object)       == True  );
     UTEST( gisKindOf(Nil, Proxy)        == False );
 
-    // Any
-    UTEST( gisKindOf(Any, Any)             == True  );
-    UTEST( gisKindOf(Any, mAny)            == True  );
-    UTEST( gisKindOf(Any, pmAny)           == True  );  
-    UTEST( gisKindOf(Any, Object)          == True  );
-    UTEST( gisKindOf(Any, mObject)         == False );
-    UTEST( gisKindOf(Any, pmObject)        == False );
-    UTEST( gisKindOf(Any, Class )          == True  );
-    UTEST( gisKindOf(Any, mClass )         == False );
-    UTEST( gisKindOf(Any, pmClass )        == False );
-    UTEST( gisKindOf(Any, MetaClass)       == False );
-    UTEST( gisKindOf(Any, mMetaClass)      == False );
-    UTEST( gisKindOf(Any, pmMetaClass)     == False );
-    UTEST( gisKindOf(Any, PropMetaClass)   == False );
-    UTEST( gisKindOf(Any, mPropMetaClass)  == False );
-    UTEST( gisKindOf(Any, pmPropMetaClass) == False );
-
-    UTEST( gisKindOf(mAny, Any)             == True  );
-    UTEST( gisKindOf(mAny, mAny)            == False );
-    UTEST( gisKindOf(mAny, pmAny)           == False );
-    UTEST( gisKindOf(mAny, Object)          == True  );
-    UTEST( gisKindOf(mAny, mObject)         == False );
-    UTEST( gisKindOf(mAny, pmObject)        == False );
-    UTEST( gisKindOf(mAny, Class )          == True  );
-    UTEST( gisKindOf(mAny, mClass )         == False );
-    UTEST( gisKindOf(mAny, pmClass )        == False );
-    UTEST( gisKindOf(mAny, MetaClass)       == True  );
-    UTEST( gisKindOf(mAny, mMetaClass)      == False );
-    UTEST( gisKindOf(mAny, pmMetaClass)     == False );
-    UTEST( gisKindOf(mAny, PropMetaClass)   == False );
-    UTEST( gisKindOf(mAny, mPropMetaClass)  == False );
-    UTEST( gisKindOf(mAny, pmPropMetaClass) == False );
-
-    UTEST( gisKindOf(pmAny, Any)             == True  );
-    UTEST( gisKindOf(pmAny, mAny)            == False );
-    UTEST( gisKindOf(pmAny, pmAny)           == False );
-    UTEST( gisKindOf(pmAny, Object)          == True  );
-    UTEST( gisKindOf(pmAny, mObject)         == False );
-    UTEST( gisKindOf(pmAny, pmObject)        == False );
-    UTEST( gisKindOf(pmAny, Class )          == True  );
-    UTEST( gisKindOf(pmAny, mClass )         == False );
-    UTEST( gisKindOf(pmAny, pmClass )        == False );
-    UTEST( gisKindOf(pmAny, MetaClass)       == True  );
-    UTEST( gisKindOf(pmAny, mMetaClass)      == False );
-    UTEST( gisKindOf(pmAny, pmMetaClass)     == False );
-    UTEST( gisKindOf(pmAny, PropMetaClass)   == True  );
-    UTEST( gisKindOf(pmAny, mPropMetaClass)  == False );
-    UTEST( gisKindOf(pmAny, pmPropMetaClass) == False );
+    UTEST( gisKindOf(Proxy, Object)     == True  );
+    UTEST( gisKindOf(Proxy, Nil)        == False );
 
     // Object
-    UTEST( gisKindOf(Object, Any)             == True  );
-    UTEST( gisKindOf(Object, mAny)            == True  );
-    UTEST( gisKindOf(Object, pmAny)           == False );  
     UTEST( gisKindOf(Object, Object)          == True  );
     UTEST( gisKindOf(Object, mObject)         == True  );
     UTEST( gisKindOf(Object, pmObject)        == True  );
@@ -130,9 +75,6 @@ ut_classes(void)
     UTEST( gisKindOf(Object, mPropMetaClass)  == False );
     UTEST( gisKindOf(Object, pmPropMetaClass) == False );
 
-    UTEST( gisKindOf(mObject, Any)             == True  );
-    UTEST( gisKindOf(mObject, mAny)            == False );
-    UTEST( gisKindOf(mObject, pmAny)           == False );
     UTEST( gisKindOf(mObject, Object)          == True  );
     UTEST( gisKindOf(mObject, mObject)         == False );
     UTEST( gisKindOf(mObject, pmObject)        == False );
@@ -146,9 +88,6 @@ ut_classes(void)
     UTEST( gisKindOf(mObject, mPropMetaClass)  == False );
     UTEST( gisKindOf(mObject, pmPropMetaClass) == False );
 
-    UTEST( gisKindOf(pmObject, Any)             == True  );
-    UTEST( gisKindOf(pmObject, mAny)            == False );
-    UTEST( gisKindOf(pmObject, pmAny)           == False );
     UTEST( gisKindOf(pmObject, Object)          == True  );
     UTEST( gisKindOf(pmObject, mObject)         == False );
     UTEST( gisKindOf(pmObject, pmObject)        == False );
@@ -163,9 +102,6 @@ ut_classes(void)
     UTEST( gisKindOf(pmObject, pmPropMetaClass) == False );
 
     // Class
-    UTEST( gisKindOf(Class, Any)             == True  );
-    UTEST( gisKindOf(Class, mAny)            == True  );
-    UTEST( gisKindOf(Class, pmAny)           == False );  
     UTEST( gisKindOf(Class, Object)          == True  );
     UTEST( gisKindOf(Class, mObject)         == True  );
     UTEST( gisKindOf(Class, pmObject)        == False );
@@ -179,9 +115,6 @@ ut_classes(void)
     UTEST( gisKindOf(Class, mPropMetaClass)  == False );
     UTEST( gisKindOf(Class, pmPropMetaClass) == False );
 
-    UTEST( gisKindOf(mClass, Any)             == True  );
-    UTEST( gisKindOf(mClass, mAny)            == False );
-    UTEST( gisKindOf(mClass, pmAny)           == False );
     UTEST( gisKindOf(mClass, Object)          == True  );
     UTEST( gisKindOf(mClass, mObject)         == False );
     UTEST( gisKindOf(mClass, pmObject)        == False );
@@ -195,9 +128,6 @@ ut_classes(void)
     UTEST( gisKindOf(mClass, mPropMetaClass)  == False );
     UTEST( gisKindOf(mClass, pmPropMetaClass) == False );
 
-    UTEST( gisKindOf(pmClass, Any)             == True  );
-    UTEST( gisKindOf(pmClass, mAny)            == False );
-    UTEST( gisKindOf(pmClass, pmAny)           == False );
     UTEST( gisKindOf(pmClass, Object)          == True  );
     UTEST( gisKindOf(pmClass, mObject)         == False );
     UTEST( gisKindOf(pmClass, pmObject)        == False );

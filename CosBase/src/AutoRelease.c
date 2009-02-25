@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.28 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.29 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -189,7 +189,7 @@ push(OBJ obj)
 }
 
 static inline OBJ
-pop_or_retain(struct Any *obj)
+pop_or_retain(struct Object *obj)
 {
   struct AutoRelease *pool = pool_get();
 
@@ -200,7 +200,7 @@ pop_or_retain(struct Any *obj)
 }
 
 static inline void
-pop_and_release(struct Any *obj)
+pop_and_release(struct Object *obj)
 {
   struct AutoRelease *pool = pool_get();
 
@@ -245,8 +245,8 @@ endmethod
 defmethod(void, ginitialize, pmAutoRelease)
   if (!_pool0.prv) {
     // cos_trace("ginitialize(pmAutoRelease)");
-    _pool0.Object.Any.id = cos_class_id(classref(AutoRelease));
-    _pool0.Object.Any.rc = COS_RC_STATIC;
+    _pool0.Object.id = cos_class_id(classref(AutoRelease));
+    _pool0.Object.rc = COS_RC_STATIC;
     _pool0.prv = &_pool0;
 	  _pool_init();
     ginit((void*)&_pool0);
@@ -277,7 +277,7 @@ endmethod
 
 // ----- ownership
 
-defmethod(OBJ, gretain, Any)
+defmethod(OBJ, gretain, Object)
   useclass(ExBadValue);
 
   if (self->rc > COS_RC_UNIT)
@@ -296,7 +296,7 @@ defmethod(OBJ, gretain, Any)
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
-defmethod(void, grelease, Any)
+defmethod(void, grelease, Object)
   useclass(ExBadValue);
 
   if (self->rc > COS_RC_UNIT) {
@@ -316,12 +316,12 @@ defmethod(void, grelease, Any)
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
-defmethod(void, gdiscard, Any)
+defmethod(void, gdiscard, Object)
   if (self->rc == COS_RC_UNIT)
     pop_and_release(self);
 endmethod
 
-defmethod(OBJ, gautoRelease, Any)
+defmethod(OBJ, gautoRelease, Object)
   useclass(ExBadValue);
 
   if (self->rc >= COS_RC_UNIT)

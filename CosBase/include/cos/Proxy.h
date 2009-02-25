@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Proxy.h,v 1.3 2009/02/25 23:06:08 ldeniau Exp $
  |
 */
 
@@ -43,15 +43,13 @@
 /* NOTE-USER: Proxy behavior
 
    A proxy is an object which aims to be as 'transparent' as possible
-   while behaving on behalf of its delegate. One way to know that an
-   instance is a Proxy is through the use of the low-level api of
-   cos_any_isKindOf().
+   while behaving on behalf of its delegate.
 
    Derive your own proxy from the Proxy class to implement your
-   specific behaviors.
+   specific behaviors or hide its true nature.
 */
 
-defclass(Proxy,Any)
+defclass(Proxy)
   OBJ obj;
 endclass
 

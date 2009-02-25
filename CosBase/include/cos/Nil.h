@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Nil.h,v 1.3 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Nil.h,v 1.4 2009/02/25 23:06:08 ldeniau Exp $
  |
 */
 
@@ -42,19 +42,15 @@
 
 /* NOTE-USER: Nil behavior
 
-   Nil is a class-object which aims to be as 'absorbant' as possible,
-   that is any message sent to it is absorbed and nothing is executed.
-   Nil can also be used as class-predicate to select specific behaviors.
-   This 'absorbant' behavior is inherited by other class-predicates.
-
+   Nil and classes deriving from Nil cannot have instance, also called
+   class-objects from which properties and predicates derive.
+   
    Use Nil instead to set an object reference to a no-object state.
-   This will save your application from crash and trace the actions
-   performed on Nil. But this may also delay the rise of hidden bugs.
-
    Remember, message cannot be sent to (OBJ)0, but it can to Nil.
 */
 
-defclass(Nil,Any)
+defclass(Nil,_)
+  char _;
 endclass
 
 #endif // COS_NIL_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.13 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: base.h,v 1.14 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -221,8 +221,8 @@
 #define COS_SEL_NAME(N) /* */ COS_PP_TAKE(N, \
         (_1, _2, _3, _4, _5) )
 #define COS_SEL_ID(N)   /* */ COS_PP_TAKE(N, \
-        (cos_any_id(_1), cos_any_id(_2), cos_any_id(_3), cos_any_id(_4), \
-         cos_any_id(_5)) )
+        (cos_object_id(_1), cos_object_id(_2), cos_object_id(_3), \
+         cos_object_id(_4), cos_object_id(_5)) )
 
 // token identification: OBJ, void, va_list and gunrecognizedMessage{1..5}
 #define COS_TOK_ISOBJ(a) \

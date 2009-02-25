@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.9 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: class.h,v 1.10 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
@@ -150,7 +150,7 @@
 #define COS_CLS_DEF_R(NAME) \
         COS_CLS_DEF_DCL(NAME); \
         enum { COS_CLS_RANK(NAME) = 0, \
-               COS_MCL_RANK(NAME) = 4, /* 1+rankOf Class */ \
+               COS_MCL_RANK(NAME) = 3, /* 1+rankOf Class */ \
                COS_PCL_RANK(NAME) = 1+COS_MCL_RANK(NAME) }; \
         enum { COS_CLS_MSPE(NAME) = 0, \
                COS_MCL_MSPE(NAME) = 0, \
@@ -213,8 +213,8 @@ COS_CLS_COMPMAK(NAME,&COS_CLS_NAME(SUPER),&COS_MCL_NAME(SUPER))
 // components instantiation (see cos/cos/coscls.h)
 #define COS_CLS_COMPMAK(NAME,SUPER_REF,META_SUPER_REF) \
 struct Class COS_MCL_NAME(NAME) = { /* metaclass */ \
-  /* Any.id must be zero (init), encode tag into Any.rc */ \
-  {{{ 0, cos_tag_mclass }}, \
+  /* Object id must be zero (init) => encode tag into rc */ \
+  {{ 0, cos_tag_mclass }, \
   /* encode rank into id */ \
    (U32)COS_MCL_RANK(NAME) << COS_ID_RNKSHT }, \
   sizeof(struct Class), \
@@ -226,8 +226,8 @@ struct Class COS_MCL_NAME(NAME) = { /* metaclass */ \
   { &COS_CLS_NAME(NAME) } \
 }; \
 struct Class COS_PCL_NAME(NAME) = { /* property metaclass */ \
-  /* Any.id must be zero (init), encode tag into Any.rc */ \
-  {{{ 0, cos_tag_pclass }}, \
+  /* Object id must be zero (init) => encode tag into rc */ \
+  {{ 0, cos_tag_pclass }, \
   /* encode rank into id */ \
    (U32)COS_PCL_RANK(NAME) << COS_ID_RNKSHT }, \
   sizeof(struct Class), \
@@ -239,8 +239,8 @@ struct Class COS_PCL_NAME(NAME) = { /* property metaclass */ \
   { &COS_CLS_NAME(NAME) } \
 }; \
 struct Class COS_CLS_NAME(NAME) = { /* class */ \
-  /* Any.id must be zero (init), encode tag into Any.rc */ \
-  {{{ 0, cos_tag_class }}, \
+  /* Object id must be zero (init) => encode tag into rc */ \
+  {{ 0, cos_tag_class }, \
   /* encode rank into id */ \
    (U32)COS_CLS_RANK(NAME) << COS_ID_RNKSHT }, \
   /* instances size */ \

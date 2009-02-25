@@ -1,10 +1,7 @@
-#ifndef COS_ANY_H
-#define COS_ANY_H
-
 /*
  o---------------------------------------------------------------------o
  |
- | COS Any (root class of all (root) classes)
+ | COS Predicate
  |
  o---------------------------------------------------------------------o
  |
@@ -32,14 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Predicate.c,v 1.1 2009/02/25 23:06:39 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#include <cos/Object.h>
-#endif
+#include <cos/Predicate.h>
 
-// Any is a core class, see cos/cos/coscls.h
+// -----
 
-#endif // COS_ANY_H
+makclass(Predicate,Nil);
+

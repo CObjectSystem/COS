@@ -32,19 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: TrueFalse.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: TrueFalse.h,v 1.3 2009/02/25 23:06:08 ldeniau Exp $
  |
 */
 
-#include <cos/Nil.h>
+#include <cos/Predicate.h>
 
-defclass(TrueFalse,Nil)
+defclass(TrueFalse, Predicate)
 endclass
 
-defclass(True,TrueFalse)
-endclass
-
-defclass(False,TrueFalse)
-endclass
+defclass(True , TrueFalse) endclass
+defclass(False, TrueFalse) endclass
 
 #endif // COS_TRUEFALSE_H
