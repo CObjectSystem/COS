@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.h,v 1.1 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: FltVector.h,v 1.2 2009/02/27 23:28:53 ldeniau Exp $
  |
 */
 
@@ -51,17 +51,19 @@ endclass
 
 // ----- automatic constructors
 
-#define aFltVector(...)     ( (OBJ)atFltVector    (__VA_ARGS__) )
-#define aFltVectorRef(...)  ( (OBJ)atFltVectorRef (__VA_ARGS__) )
-#define aFltVectorView(...) ( (OBJ)atFltVectorView(__VA_ARGS__) )
+#define aFltVector(...)        ( (OBJ)atFltVector       (__VA_ARGS__) )
+#define aFltVectorRef(...)     ( (OBJ)atFltVectorRef    (__VA_ARGS__) )
+#define aFltVectorView(...)    ( (OBJ)atFltVectorView   (__VA_ARGS__) )
+#define aFltVectorSubview(...) ( (OBJ)atFltVectorSubview(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
 
-#define aFltVec(...)      aFltVector    (__VA_ARGS__)
-#define aFltVecRef(...)   aFltVectorRef (__VA_ARGS__)
-#define aFltVecView(...)  aFltVectorView(__VA_ARGS__)
+#define aFltVec(...)         aFltVector       (__VA_ARGS__)
+#define aFltVecRef(...)      aFltVectorRef    (__VA_ARGS__)
+#define aFltVecView(...)     aFltVectorView   (__VA_ARGS__)
+#define aFltVecSubview(...)  aFltVectorSubview(__VA_ARGS__)
 
 #endif
 
@@ -106,14 +108,16 @@ defclass(FltVectorN, FltVector) F64 _value[]; endclass
 struct FltVector* FltVector_alloc         (U32);
 struct FltVector* FltVectorView_alloc     (struct FltVector*,U32,U32,U32);
 struct FltVector* FltVectorView_init      (struct FltVectorView*,I32);
+struct FltVector* FltVectorSubview_init   (struct FltVectorView*,I32);
 struct FltVector* FltVectorDynamic_alloc  (U32);
 void              FltVectorDynamic_adjust (struct FltVectorDynamic*);
 void              FltVectorDynamic_enlarge(struct FltVectorDynamic*,F64);
 
 // ----- automatic constructors
 
-#define atFltVector(...)      atVector    (Flt,F64,__VA_ARGS__)
-#define atFltVectorRef(...)   atVectorRef (Flt,F64,__VA_ARGS__)
-#define atFltVectorView(...)  atVectorView(Flt,F64,__VA_ARGS__)
+#define atFltVector(...)         atVector       (Flt,F64,__VA_ARGS__)
+#define atFltVectorRef(...)      atVectorRef    (Flt,F64,__VA_ARGS__)
+#define atFltVectorView(...)     atVectorView   (Flt,F64,__VA_ARGS__)
+#define atFltVectorSubview(...)  atVectorSubview(Flt,F64,__VA_ARGS__)
 
 #endif // COS_FLTVECTOR_H

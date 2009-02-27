@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.10 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Vector.h,v 1.11 2009/02/27 23:28:53 ldeniau Exp $
  |
 */
 
@@ -113,14 +113,21 @@ endclass
 // ---
 
 #define atVectorView(P,E,...) \
-  COS_PP_CAT_NARG(atVectorView,__VA_ARGS__)(COS_PP_CAT(P,VectorView),__VA_ARGS__)
+  COS_PP_CAT(P,VectorView_init)( \
+    COS_PP_CAT_NARG(atVectorView,__VA_ARGS__) \
+      (COS_PP_CAT(P,VectorView),__VA_ARGS__) )
+
+#define atVectorSubview(P,E,...) \
+  COS_PP_CAT(P,VectorSubview_init)( \
+    COS_PP_CAT_NARG(atVectorView,__VA_ARGS__) \
+      (COS_PP_CAT(P,VectorView),__VA_ARGS__) )
 
 #define atVectorView3(T,vector,start,size) \
         atVectorView4(T,vector,start,size,1)
 
 #define atVectorView4(T,vector,start,size,stride) \
-  ( COS_PP_CAT(T,_init)(&(struct T) {{ \
+  &(struct T) {{ \
     {{{{ COS_CLS_NAME(T).Behavior.id, COS_RC_AUTO }}}}, \
-    (size), (stride), 0 }, (vector) }, (start)) )
+    (size), (stride), 0 }, (vector) }, (start)
 
 #endif // COS_VECTOR_H

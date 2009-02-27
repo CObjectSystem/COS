@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.h,v 1.1 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: LngVector.h,v 1.2 2009/02/27 23:28:53 ldeniau Exp $
  |
 */
 
@@ -51,17 +51,19 @@ endclass
 
 // ----- automatic constructors
 
-#define aLngVector(...)     ( (OBJ)atLngVector    (__VA_ARGS__) )
-#define aLngVectorRef(...)  ( (OBJ)atLngVectorRef (__VA_ARGS__) )
-#define aLngVectorView(...) ( (OBJ)atLngVectorView(__VA_ARGS__) )
+#define aLngVector(...)        ( (OBJ)atLngVector       (__VA_ARGS__) )
+#define aLngVectorRef(...)     ( (OBJ)atLngVectorRef    (__VA_ARGS__) )
+#define aLngVectorView(...)    ( (OBJ)atLngVectorView   (__VA_ARGS__) )
+#define aLngVectorSubview(...) ( (OBJ)atLngVectorSubview(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
 
-#define aLngVec(...)      aLngVector    (__VA_ARGS__)
-#define aLngVecRef(...)   aLngVectorRef (__VA_ARGS__)
-#define aLngVecView(...)  aLngVectorView(__VA_ARGS__)
+#define aLngVec(...)         aLngVector       (__VA_ARGS__)
+#define aLngVecRef(...)      aLngVectorRef    (__VA_ARGS__)
+#define aLngVecView(...)     aLngVectorView   (__VA_ARGS__)
+#define aLngVecSubview(...)  aLngVectorSubview(__VA_ARGS__)
 
 #endif
 
@@ -106,14 +108,16 @@ defclass(LngVectorN, LngVector) I64 _value[]; endclass
 struct LngVector* LngVector_alloc         (U32);
 struct LngVector* LngVectorView_alloc     (struct LngVector*,U32,U32,U32);
 struct LngVector* LngVectorView_init      (struct LngVectorView*,I32);
+struct LngVector* LngVectorSubview_init   (struct LngVectorView*,I32);
 struct LngVector* LngVectorDynamic_alloc  (U32);
 void              LngVectorDynamic_adjust (struct LngVectorDynamic*);
 void              LngVectorDynamic_enlarge(struct LngVectorDynamic*,F64);
 
 // ----- automatic constructors
 
-#define atLngVector(...)      atVector    (Lng,I64,__VA_ARGS__)
-#define atLngVectorRef(...)   atVectorRef (Lng,I64,__VA_ARGS__)
-#define atLngVectorView(...)  atVectorView(Lng,I64,__VA_ARGS__)
+#define atLngVector(...)         atVector       (Lng,I64,__VA_ARGS__)
+#define atLngVectorRef(...)      atVectorRef    (Lng,I64,__VA_ARGS__)
+#define atLngVectorView(...)     atVectorView   (Lng,I64,__VA_ARGS__)
+#define atLngVectorSubview(...)  atVectorSubview(Lng,I64,__VA_ARGS__)
 
 #endif // COS_LNGVECTOR_H

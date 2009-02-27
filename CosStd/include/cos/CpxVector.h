@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.h,v 1.1 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: CpxVector.h,v 1.2 2009/02/27 23:28:53 ldeniau Exp $
  |
 */
 
@@ -51,17 +51,19 @@ endclass
 
 // ----- automatic constructors
 
-#define aCpxVector(...)     ( (OBJ)atCpxVector    (__VA_ARGS__) )
-#define aCpxVectorRef(...)  ( (OBJ)atCpxVectorRef (__VA_ARGS__) )
-#define aCpxVectorView(...) ( (OBJ)atCpxVectorView(__VA_ARGS__) )
+#define aCpxVector(...)        ( (OBJ)atCpxVector       (__VA_ARGS__) )
+#define aCpxVectorRef(...)     ( (OBJ)atCpxVectorRef    (__VA_ARGS__) )
+#define aCpxVectorView(...)    ( (OBJ)atCpxVectorView   (__VA_ARGS__) )
+#define aCpxVectorSubview(...) ( (OBJ)atCpxVectorSubview(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
 
-#define aCpxVec(...)      aCpxVector    (__VA_ARGS__)
-#define aCpxVecRef(...)   aCpxVectorRef (__VA_ARGS__)
-#define aCpxVecView(...)  aCpxVectorView(__VA_ARGS__)
+#define aCpxVec(...)         aCpxVector       (__VA_ARGS__)
+#define aCpxVecRef(...)      aCpxVectorRef    (__VA_ARGS__)
+#define aCpxVecView(...)     aCpxVectorView   (__VA_ARGS__)
+#define aCpxVecSubview(...)  aCpxVectorSubview(__VA_ARGS__)
 
 #endif
 
@@ -106,14 +108,16 @@ defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
 struct CpxVector* CpxVector_alloc         (U32);
 struct CpxVector* CpxVectorView_alloc     (struct CpxVector*,U32,U32,U32);
 struct CpxVector* CpxVectorView_init      (struct CpxVectorView*,I32);
+struct CpxVector* CpxVectorSubview_init   (struct CpxVectorView*,I32);
 struct CpxVector* CpxVectorDynamic_alloc  (U32);
 void              CpxVectorDynamic_adjust (struct CpxVectorDynamic*);
 void              CpxVectorDynamic_enlarge(struct CpxVectorDynamic*,F64);
 
 // ----- automatic constructors
 
-#define atCpxVector(...)      atVector    (Cpx,C64,__VA_ARGS__)
-#define atCpxVectorRef(...)   atVectorRef (Cpx,C64,__VA_ARGS__)
-#define atCpxVectorView(...)  atVectorView(Cpx,C64,__VA_ARGS__)
+#define atCpxVector(...)         atVector       (Cpx,C64,__VA_ARGS__)
+#define atCpxVectorRef(...)      atVectorRef    (Cpx,C64,__VA_ARGS__)
+#define atCpxVectorView(...)     atVectorView   (Cpx,C64,__VA_ARGS__)
+#define atCpxVectorSubview(...)  atVectorSubview(Cpx,C64,__VA_ARGS__)
 
 #endif // COS_CPXVECTOR_H

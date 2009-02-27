@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.h,v 1.1 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: IntVector.h,v 1.2 2009/02/27 23:28:53 ldeniau Exp $
  |
 */
 
@@ -51,17 +51,19 @@ endclass
 
 // ----- automatic constructors
 
-#define aIntVector(...)     ( (OBJ)atIntVector    (__VA_ARGS__) )
-#define aIntVectorRef(...)  ( (OBJ)atIntVectorRef (__VA_ARGS__) )
-#define aIntVectorView(...) ( (OBJ)atIntVectorView(__VA_ARGS__) )
+#define aIntVector(...)        ( (OBJ)atIntVector       (__VA_ARGS__) )
+#define aIntVectorRef(...)     ( (OBJ)atIntVectorRef    (__VA_ARGS__) )
+#define aIntVectorView(...)    ( (OBJ)atIntVectorView   (__VA_ARGS__) )
+#define aIntVectorSubview(...) ( (OBJ)atIntVectorSubview(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
 
-#define aIntVec(...)      aIntVector    (__VA_ARGS__)
-#define aIntVecRef(...)   aIntVectorRef (__VA_ARGS__)
-#define aIntVecView(...)  aIntVectorView(__VA_ARGS__)
+#define aIntVec(...)        aIntVector       (__VA_ARGS__)
+#define aIntVecRef(...)     aIntVectorRef    (__VA_ARGS__)
+#define aIntVecView(...)    aIntVectorView   (__VA_ARGS__)
+#define aIntVecSubview(...) aIntVectorSubview(__VA_ARGS__)
 
 #endif
 
@@ -106,14 +108,16 @@ defclass(IntVectorN, IntVector) I32 _value[]; endclass
 struct IntVector* IntVector_alloc         (U32);
 struct IntVector* IntVectorView_alloc     (struct IntVector*,U32,U32,U32);
 struct IntVector* IntVectorView_init      (struct IntVectorView*,I32);
+struct IntVector* IntVectorSubview_init   (struct IntVectorView*,I32);
 struct IntVector* IntVectorDynamic_alloc  (U32);
 void              IntVectorDynamic_adjust (struct IntVectorDynamic*);
 void              IntVectorDynamic_enlarge(struct IntVectorDynamic*,F64);
 
 // ----- automatic constructors
 
-#define atIntVector(...)      atVector    (Int,I32,__VA_ARGS__)
-#define atIntVectorRef(...)   atVectorRef (Int,I32,__VA_ARGS__)
-#define atIntVectorView(...)  atVectorView(Int,I32,__VA_ARGS__)
+#define atIntVector(...)         atVector       (Int,I32,__VA_ARGS__)
+#define atIntVectorRef(...)      atVectorRef    (Int,I32,__VA_ARGS__)
+#define atIntVectorView(...)     atVectorView   (Int,I32,__VA_ARGS__)
+#define atIntVectorSubview(...)  atVectorSubview(Int,I32,__VA_ARGS__)
 
 #endif // COS_INTVECTOR_H

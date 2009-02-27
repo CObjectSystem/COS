@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.26 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Array.c,v 1.27 2009/02/27 23:28:53 ldeniau Exp $
  |
 */
 
@@ -118,6 +118,26 @@ ArrayView_init(struct ArrayView *view, I32 idx)
 
   arr->stride *= ref->stride;
   arr->object  = ref->object + ref->stride * start;
+
+  return arr;
+}
+
+struct Array*
+ArraySubview_init(struct ArrayView *view, I32 idx)
+{
+  test_assert( cos_object_isKindOf(view->array, classref(Array)),
+               "ArrayView accepts only arrays" );
+
+  struct Array* arr = &view->Array;
+  struct Array* ref = STATIC_CAST(struct Array*, view->array);
+
+  U32 start  = index_abs(idx, ref->size);
+
+  test_assert( start < ref->size && 
+               start + arr->stride*(arr->size-1) <= ref->stride*(ref->size-1),
+               "ArrayView out of range" );
+
+  arr->object = ref->object + ref->stride * start;
 
   return arr;
 }
