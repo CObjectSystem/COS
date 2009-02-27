@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.13 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.14 2009/02/27 20:11:46 ldeniau Exp $
  |
 */
 
@@ -94,17 +94,13 @@ unwind_stack(struct cos_exception_context *cxt)
   cxt->unstk = YES;
 
   for (; p; p = p->prv) {
-  
     if (p->obj == (OBJ*)YES) {
       struct cos_exception_extendedProtect *ep = (void*)p;
-      
+
       if (*ep->alt && ep->fct)
         ep->fct(*ep->alt);
-
-      continue;
     }
-    
-    if (*p->obj)
+    else if (*p->obj)
       grelease(*p->obj);
   }
 

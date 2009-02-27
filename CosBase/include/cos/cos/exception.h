@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.9 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: exception.h,v 1.10 2009/02/27 20:11:46 ldeniau Exp $
  |
 */
 
@@ -120,7 +120,8 @@
     PRT( object-name-list );
 
   extended-protection-decl:
-    EPRT( object-name , function );
+    OPRT( object-name  , function-for-object  );
+    EPRT( pointer-name , function-for-pointer );
 
   unprotection-decl:
     UNPRT( object-name );
@@ -129,33 +130,33 @@
     object-name
     object-name-list , object-name
 
-  object-name:
+  {object,pointer}-name:
     identifier                                     // C99 6.4.2.1
 
   example1:
     useclass(String);
 
     OBJ str = gnewWithStr(String,"hello"); PRT(str);
-    STR p   = malloc(10);
-    OBJ ap  = aAllocPointer(ap); PRT(ap);
-    EPTR(file, gclose); // file allocated somewhere else
+    OBJ file = Nil; OPTR(file, gclose);
 
-    file = gopen(file, "here.txt");
-    // code using str and s;
+    file = gnewWithStr(File,"file.txt");
 
-    grelease(ap), ap = 0;
-    grelease(str), str = 0;
+    // code using str and file;
+
+    grelease(file); // close the file
+    grelease(str);
     UNPRT(str); // unprotect str and all objects protected after
 
   example2:
     useclass(String);
 
-    OBJ str = 0;
-    OBJ ap  = 0;
-    STR p   = 0;
-    PRT(str,ap); // protect str *then* ap
-    str = gnewWithStr(String,"hello");
-    ap  = aAllocPointer(p=malloc(10),free);
+    OBJ str  = Nil;
+    OBJ file = Nil;
+    PRT(str,file); // protect str *then* file
+
+    str  = gnewWithStr(String,"hello");
+    file = gnewWithStr(File,"file.txt");
+
     // same as example1
 
   where:
@@ -164,8 +165,10 @@
     UNPRT(), the new object will be automatically protected. If o is not nul,
     grelease(o) will be invoked during stack unwinding. During stack unwinding,
     cos_exception_uncaught() returns a non-zero value, 0 otherwise.
-  - EPRT(o,f) works like PRT but specifies the function to call instead of
+  - OPRT(o,f) works like PRT but specifies the function to call instead of
     grelease as in PRT if an exception is raised.
+  - EPRT(p,f) works like PRT but specifies the function to call on the
+    non-OBJ pointer p as in PRT if an exception is raised.
   - UNPRT(o) unprotects o and all objects protected after.
   - (E)PRT()/UNPRT() work like a stack PUSH()/POP() of protected objects.
 */
@@ -217,8 +220,12 @@
 #define PRT(...) COS_EX_PRT(__VA_ARGS__)
 #endif
 
+#ifndef COS_DISABLE_OPRT
+#define OPRT(O,F) COS_EX_OPRT(O,F)
+#endif
+
 #ifndef COS_DISABLE_EPRT
-#define EPRT(O,F) COS_EX_EPRT(O,F)
+#define EPRT(P,F) COS_EX_EPRT(P,F)
 #endif
 
 #ifndef COS_DISABLE_UNPRT
@@ -291,9 +298,15 @@
         struct cos_exception_protect COS_PP_CAT3(_cos_ex_prt_,O,_) = \
           cos_exception_protect(&COS_PP_CAT3(_cos_ex_prt_,O,_), &O)
 
-#define COS_EX_EPRT(O,F) \
+#define COS_EX_OPRT(O,F) \
         struct cos_exception_extendedProtect COS_PP_CAT3(_cos_ex_prt_,O,_) = \
-          cos_exception_extendedProtect(&COS_PP_CAT3(_cos_ex_prt_,O,_), &O, F)
+          cos_exception_objectProtect(&COS_PP_CAT3(_cos_ex_prt_,O,_), \
+          &O, F)
+
+#define COS_EX_EPRT(P,F) \
+        struct cos_exception_extendedProtect COS_PP_CAT3(_cos_ex_prt_,P,_) = \
+          cos_exception_extendedProtect(&COS_PP_CAT3(_cos_ex_prt_,P,_), \
+          &P, F)
 
 #define COS_EX_UNPRT(O) \
         ((void)(cos_exception_context()->stk = COS_PP_CAT3(_cos_ex_prt_,O,_).prv))

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.17 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: cosdef.h,v 1.18 2009/02/27 20:11:46 ldeniau Exp $
  |
 */
 
@@ -89,8 +89,8 @@ typedef struct OBJ*           OBJ; // object ADT, never defined
 typedef const struct Generic* SEL; // message selector
 
 typedef void (*FUNC)(void);
-
-typedef void (*OBJFCT0)(OBJ);
+typedef void (*VPFUNC)(void*);
+typedef void (*VOFUNC)(OBJ);
 typedef OBJ  (*OBJFCT1)(OBJ);
 typedef OBJ  (*OBJFCT2)(OBJ,OBJ);
 typedef OBJ  (*OBJFCT3)(OBJ,OBJ,OBJ);
@@ -160,9 +160,9 @@ struct cos_exception_protect {
 
 struct cos_exception_extendedProtect {
   struct cos_exception_protect *prv;
-  OBJ const *obj;
-  OBJ const *alt;
-  OBJFCT0    fct;
+  OBJ   const *obj;
+  void *const *alt;
+  VPFUNC       fct;
 };
 
 // dispatch caches
