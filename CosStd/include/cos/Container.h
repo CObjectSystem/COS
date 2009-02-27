@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Container.h,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Container.h,v 1.3 2009/02/27 20:14:25 ldeniau Exp $
  |
 */
 
@@ -50,10 +50,9 @@
     <- OrdSet (compare    values)
   <- Sequence
     <- Array
-    <- Queue  (circular Array)
+    <- Deque
     <- List
-    <- Ring   (circular List )
-    <- ValueSequence
+    <- ValueSequence (elements are values)
       <- String
       <- WString
       <- Vector
@@ -65,7 +64,7 @@
         <- FltVector
         <- CpxVector
         <- ObjVector
-        
+
   - All containers own (gretain) their elements (and keys if any)
 */
 

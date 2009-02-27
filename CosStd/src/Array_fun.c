@@ -29,14 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.4 2009/02/11 11:48:47 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.5 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
 #include <cos/Functor.h>
+#include <cos/IntVector.h>
 #include <cos/Number.h>
-#include <cos/Vector.h>
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
@@ -150,7 +150,7 @@ endmethod
 // ----- filter, reduce, accumulate
 
 defmethod(OBJ, gfilter, Array, Functor)
-  struct Array* arr = DynamicArray_alloc(self->size);
+  struct Array* arr = ArrayDynamic_alloc(self->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *end = self->object+self->size;
   OBJ *obj = arr ->object;
@@ -165,7 +165,7 @@ defmethod(OBJ, gfilter, Array, Functor)
   retmethod(gautoRelease(_arr));
 endmethod
 
-defmethod(OBJ, greduce, Array, Functor, Any)
+defmethod(OBJ, greduce, Array, Functor, Object)
   OBJ  obj = _3;
   OBJ *src = self->object;
   OBJ *end = self->object+self->size;
@@ -176,7 +176,7 @@ defmethod(OBJ, greduce, Array, Functor, Any)
   retmethod(obj);
 endmethod
 
-defmethod(OBJ, gaccumulate, Array, Functor, Any)
+defmethod(OBJ, gaccumulate, Array, Functor, Object)
   struct Array* arr = Array_alloc(self->size+1);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr  ->object;
@@ -194,7 +194,7 @@ endmethod
 
 // ----- finding
 
-defmethod(OBJ, gfind, Array, Any, Functor)
+defmethod(OBJ, gfind, Array, Object, Functor)
   useclass(Lesser, Equal, Greater);
 
   if (self->size == 0)
@@ -214,12 +214,12 @@ defmethod(OBJ, gfind, Array, Any, Functor)
       if (geval2(_3, _2, *obj) == True) // found
         retmethod(*obj);
 
-    retmethod(0);
+    retmethod(Nil);
   }
 
   // binary search
   if (res == Lesser)
-    retmethod(0);
+    retmethod(Nil);
   
   test_assert( res == Greater,
     "gfind expects functor returning TrueFalse or Ordered predicates" );
@@ -239,7 +239,7 @@ defmethod(OBJ, gfind, Array, Any, Functor)
       lo = i+1;
   }
 
-  retmethod(0);  
+  retmethod(Nil);  
 endmethod
 
 // ----- sorting (in place)

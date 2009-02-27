@@ -32,22 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Ordered.h,v 1.3 2008/10/24 22:04:16 ldeniau Exp $
+ | $Id: Ordered.h,v 1.4 2009/02/27 20:14:25 ldeniau Exp $
  |
 */
 
-#include <cos/Nil.h>
+#include <cos/Predicate.h>
 
-defclass(Ordered,Nil)
-endclass
-
-defclass(Equal,Ordered)
-endclass
-
-defclass(Lesser,Ordered)
-endclass
-
-defclass(Greater,Ordered)
-endclass
+defclass(Ordered, Predicate)           endclass
+defclass(Equal  , Ordered  ) char _[]; endclass
+defclass(Lesser , Ordered  ) char _[]; endclass
+defclass(Greater, Ordered  ) char _[]; endclass
 
 #endif // COS_ORDERED_H

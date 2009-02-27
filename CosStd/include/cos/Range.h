@@ -32,107 +32,121 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.4 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Range.h,v 1.5 2009/02/27 20:14:25 ldeniau Exp $
  |
 */
 
 #include <cos/Value.h>
 
-/* NOTE-USER: indexing policy
-   - starts at zero
-     (index 0 is the first element)
-   - negative indexe starts from the end
-     (index -1 is the last element)
-*/
+#ifndef COS_SEQUENCE_H
+#include <cos/Sequence.h>
+#endif
 
 defclass(Range, Value)
-endclass
-
-defclass(Range1,Range)
   I32 start;
   I32 end;
   I32 stride;
 endclass
 
-defclass(Range2,Range)
-  I32 start [2];
-  I32 end   [2];
-  I32 stride[2];
-endclass
-
-defclass(Range3,Range)
-  I32 start [3];
-  I32 end   [3];
-  I32 stride[3];
-endclass
-
-defclass(Range4,Range)
-  I32 start [4];
-  I32 end   [4];
-  I32 stride[4];
-endclass
-
-defclass(Range5,Range)
-  I32 start [5];
-  I32 end   [5];
-  I32 stride[5];
+defclass(Slice, Value)
+  U32 start;
+  U32 size;
+  I32 stride;
 endclass
 
 // ----- automatic constructors
 
 #define aRange(...)  ( (OBJ)atRange(__VA_ARGS__) )
-#define atRange(...) COS_PP_CAT_NARG(atRange_, __VA_ARGS__)(__VA_ARGS__)
+#define aSlice(...)  ( (OBJ)atSlice(__VA_ARGS__) )
 
-#define atRange_2(starts,ends) \
-        atRange_3(starts,ends, \
-                 COS_PP_IF(COS_PP_ISTUPLE(starts))( \
-                  (COS_PP_DUPSEQ(COS_PP_LEN(starts),1)),1))
+#define atRange(...) COS_PP_CAT_NARG(atRange,__VA_ARGS__)(__VA_ARGS__)
+#define atSlice(...) COS_PP_CAT_NARG(atSlice,__VA_ARGS__)(__VA_ARGS__)
 
-#define atRange_3(starts,ends,strides) \
-        atRangeN(COS_PP_IF(COS_PP_ISTUPLE(starts))(COS_PP_LEN(starts),1), \
-                 starts,ends,strides)
+// ----- automatic constructors shortcuts
 
-#define atRangeN(N,starts,ends,strides) \
-        ( COS_PP_CAT3(Range,N,_init)(&(struct COS_PP_CAT(Range,N)) { \
-        {{{{ COS_CLS_NAME(COS_PP_CAT(Range,N)).Behavior.id, COS_RC_AUTO }}}}, \
-         COS_PP_IF(COS_PP_ISONE(N))(starts , { COS_PP_SEQ(starts ) }), \
-         COS_PP_IF(COS_PP_ISONE(N))(ends   , { COS_PP_SEQ(ends   ) }), \
-         COS_PP_IF(COS_PP_ISONE(N))(strides, { COS_PP_SEQ(strides) }) }) )
+#ifndef COS_NOSHORTCUT
 
-static inline struct Range1*
-Range1_init(struct Range1 *r) {
-  test_assert( r->stride,
-               "stride must be non-zero" );
-  return r;
+#define aRng(...)  aRange(__VA_ARGS__)
+#define aSlc(...)  aSlice(__VA_ARGS__)
+
+#endif
+
+/***********************************************************
+ * Implementation (private)
+ */
+
+#define atRange1(end) \
+        atRange2(0,end)
+
+#define atRange2(start,end) \
+        atRange3(start,end,1)
+
+#define atRange3(start,end,stride) \
+  ( &(struct Range){ \
+    {{ COS_CLS_NAME(Range).Behavior.id, COS_RC_AUTO }}, \
+    start, end, stride })
+
+// ---
+
+#define atSlice1(size) \
+        atSlice2(0,size)
+
+#define atSlice2(start,size) \
+        atSlice3(start,size,1)
+
+#define atSlice3(start,size,stride) \
+  ( &(struct Slice){ \
+    {{ COS_CLS_NAME(Slice).Behavior.id, COS_RC_AUTO }}, \
+    start, size, stride })
+
+// --- inliners
+
+static inline U32
+Slice_size(struct Slice *s) {
+  return s->size;
 }
 
-static inline struct Range2*
-Range2_init(struct Range2 *r) {
-  test_assert( r->stride[0] && r->stride[1],
-               "strides must be non-zero" );
-  return r;
+static inline U32
+Slice_eval(struct Slice *s, U32 i) {
+  return s->start + i * s->stride;
 }
 
-static inline struct Range3*
-Range3_init(struct Range3 *r) {
-  test_assert( r->stride[0] && r->stride[1] && r->stride[2],
-               "strides must be non-zero" );
-  return r;
+static inline U32
+Slice_first(struct Slice *s) {
+  return s->start;
 }
 
-static inline struct Range4*
-Range4_init(struct Range4 *r) {
-  test_assert( r->stride[0] && r->stride[1] && r->stride[2] && r->stride[3],
-               "strides must be non-zero" );
-  return r;
+static inline U32
+Slice_last(struct Slice *s) {
+  return Slice_eval(s, s->size-1);
 }
 
-static inline struct Range5*
-Range5_init(struct Range5 *r) {
-  test_assert( r->stride[0] && r->stride[1] && r->stride[2] &&
-               r->stride[3] && r->stride[4],
-               "strides must be non-zero" );
-  return r;
+static inline U32
+Slice_end(struct Slice *s) {
+  return Slice_eval(s, s->size);
+}
+
+static inline BOOL
+Slice_isValid(struct Slice *s) {
+  return s->stride != 0;
+}
+
+static inline BOOL
+Slice_isContiguous(struct Slice *s) {
+  return s->stride == 1;
+}
+
+static inline struct Slice*
+Slice_fromRange(struct Slice *s, struct Range *r, U32 size)
+{
+  U32 start = index_abs(r->start, size);
+  U32 end   = index_abs(r->end  , size);
+
+  s->size   = (end - start + r->stride) / r->stride;
+  s->stride = r->stride;
+  s->start  = start;
+
+  return s;  
 }
 
 #endif // COS_RANGE_H

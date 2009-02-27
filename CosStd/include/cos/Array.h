@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array, Dynamic Array and Sub Array
+ | COS Array, Dynamic Array and Array View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.12 2009/02/24 14:44:34 ldeniau Exp $
+ | $Id: Array.h,v 1.13 2009/02/27 20:14:25 ldeniau Exp $
  |
 */
 
@@ -41,8 +41,8 @@
 /* NOTE-USER: Array class cluster constructors
 
    aArray    (obj,...)                    -> Fixed size array (automatic)
-   aArrayRef (buffer,size)                -> Array            (automatic)
-   aArrayView(array,start,size)           -> Array view       (automatic)
+   aArrayRef (buffer,size[,stride])       -> Array view       (automatic)
+   aArrayView(array,start,size[,stride])  -> Array view       (automatic)
 
    gnew      (Array)                      -> Dynamic array
    gnewWith  (Array,capacity)             -> Dynamic array    (pre-allocated)
@@ -59,30 +59,39 @@
    gnewWith2 (View,array,slice)           -> Array view       (view)
 
    gnewWithObjPtr(Array,buffer,size,copy) -> Fixed size array (copy)
-                                          -> Dynamic array   (!copy)
-                                          -> Array   (!free & !copy)
+                                          -> Array           (!copy)
 
    where:
    - All arrays are mutable
-   - All arrays can shrink from either sides
    - All arrays own their elements (gretain) except automatic arrays
    - Fixed size arrays will be one of Array0 to Array9 if size is < 10.
-   - Dynamic arrays can grow (gput, gcat, ...)
+   - Dynamic arrays can shrink and grow (gput, gcat, ...)
    - Dynamic arrays can be converted to fixed size array (gadjust)
-   - Array views require non-dynamic array and contiguous range and slice
+   - Array views work only on arrays which do not resize (undefined behavior)
    - Array views clone are fixed size arrays (copy), not views
 */
 
 defclass(Array, Sequence)
-  OBJ *object;
   U32  size;
+  U32  stride;
+  OBJ *object;
 endclass
 
 // ----- automatic constructors
 
-#define aArray(...)                  ( (OBJ)atArray    (__VA_ARGS__)      )
-#define aArrayRef(buffer,size)       ( (OBJ)atArrayRef (buffer,size)      )
-#define aArrayView(array,start,size) ( (OBJ)atArrayView(array,start,size) )
+#define aArray(...)      ( (OBJ)atArray    (__VA_ARGS__) )
+#define aArrayRef(...)   ( (OBJ)atArrayRef (__VA_ARGS__) )
+#define aArrayView(...)  ( (OBJ)atArrayView(__VA_ARGS__) )
+
+// --- shortcuts
+
+#ifndef COS_NOSHORTCUT
+
+#define aArr(...)      aArray    (__VA_ARGS__)
+#define aArrRef(...)   aArrayRef (__VA_ARGS__)
+#define aArrView(...)  aArrayView(__VA_ARGS__)
+
+#endif
 
 /***********************************************************
  * Implementation (private)
@@ -96,11 +105,11 @@ endclass
 
 // ----- Dynamic array
 
-defclass(DynamicArrayN, Array)
+defclass(ArrayDynamicN, Array)
   OBJ *base;
 endclass
 
-defclass(DynamicArray, DynamicArrayN)
+defclass(ArrayDynamic, ArrayDynamicN)
   U32 capacity;
 endclass
 
@@ -118,34 +127,49 @@ defclass(Array8, Array) OBJ base[]; endclass
 defclass(Array9, Array) OBJ base[]; endclass
 defclass(ArrayN, Array) OBJ base[]; endclass
 
-// ----- allocators and initializers
+// ----- allocators and initializers (class cluster)
 
 struct Array* Array_alloc         (U32);
-struct Array* Array_init          (struct Array*);
-struct Array* ArrayView_alloc     (struct Array*,U32,U32);
+struct Array* ArrayView_alloc     (struct Array*,U32,U32,U32);
 struct Array* ArrayView_init      (struct ArrayView*,I32);
-struct Array* DynamicArray_alloc  (U32);
-void          DynamicArray_adjust (struct DynamicArray*);
-void          DynamicArray_enlarge(struct DynamicArray*,F64);
+struct Array* ArrayDynamic_alloc  (U32);
+void          ArrayDynamic_adjust (struct ArrayDynamic*);
+void          ArrayDynamic_enlarge(struct ArrayDynamic*,F64);
 
 // ----- automatic constructors
 
 #define atArray(...) \
-        atArrayN(COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),10)) \
-                 (ArrayN,COS_PP_CAT_NARG(Array,__VA_ARGS__)),__VA_ARGS__)
-#define atArrayN(T,...) \
-        ( (struct Array*)&(struct T) {{ \
-          {{{{ COS_CLS_NAME(T).Behavior.id, COS_RC_AUTO }}}}, \
-          (OBJ[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__) }} )
+  atArrayN(Sequence_FSName(Array,10,__VA_ARGS__),__VA_ARGS__)
 
-#define atArrayRef(buffer,size) \
-        ( Array_init(&(struct Array) { \
-          {{{{ COS_CLS_NAME(Array).Behavior.id, COS_RC_AUTO }}}}, \
-          (buffer), (size) }) )
+#define atArrayN(TN,...) \
+  ( (struct Array*)&(struct TN) {{ \
+    {{{ COS_CLS_NAME(TN).Behavior.id, COS_RC_AUTO }}}, \
+    COS_PP_NARG(__VA_ARGS__), 1, (OBJ[]){ __VA_ARGS__ } }} )
+          
+// ---
 
-#define atArrayView(array,start,size) \
-        ( ArrayView_init(&(struct ArrayView) {{ \
-          {{{{ COS_CLS_NAME(ArrayView).Behavior.id, COS_RC_AUTO }}}}, \
-          0, (size) }, (array) }, (start)) )
+#define atArrayRef(...) \
+  COS_PP_CAT_NARG(atArrayRef,__VA_ARGS__)(__VA_ARGS__)
+
+#define atArrayRef2(buffer,size) \
+        atArrayRef3(buffer,size,1)
+
+#define atArrayRef3(buffer,size,stride) \
+        ( &(struct Array) { \
+          {{{ COS_CLS_NAME(Array).Behavior.id, COS_RC_AUTO }}}, \
+          (size), (stride), (buffer) } )
+
+// ---
+
+#define atArrayView(...) \
+  COS_PP_CAT_NARG(atArrayView,__VA_ARGS__)(__VA_ARGS__)
+
+#define atArrayView3(array,start,size) \
+        atArrayView4(array,start,size,1)
+
+#define atArrayView4(array,start,size,stride) \
+  ( ArrayView_init(&(struct ArrayView) {{ \
+    {{{ COS_CLS_NAME(ArrayView).Behavior.id, COS_RC_AUTO }}}, \
+    (size), (stride), 0 }, (array) }, (start)) )
 
 #endif // COS_ARRAY_H

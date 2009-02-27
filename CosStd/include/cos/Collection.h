@@ -32,13 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Collection.h,v 1.3 2009/02/09 13:20:44 ldeniau Exp $
+ | $Id: Collection.h,v 1.4 2009/02/27 20:14:25 ldeniau Exp $
  |
 */
 
 #include <cos/Container.h>
 
-defclass(Collection,Container)
+defclass(Collection, Container)
 endclass
 
 #endif // COS_COLLECTION_H

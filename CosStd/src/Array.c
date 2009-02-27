@@ -29,15 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.25 2009/02/24 14:44:34 ldeniau Exp $
+ | $Id: Array.c,v 1.26 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
 #include <cos/Functor.h>
+#include <cos/IntVector.h>
 #include <cos/Number.h>
 #include <cos/Slice.h>
-#include <cos/Vector.h>
 #include <cos/View.h>
 
 #include <cos/gen/container.h>
@@ -65,8 +65,8 @@ makclass(Array8       , Array);
 makclass(Array9       , Array);
 makclass(ArrayN       , Array);
 makclass(ArrayView    , Array);
-makclass(DynamicArrayN, Array);
-makclass(DynamicArray , DynamicArrayN);
+makclass(ArrayDynamicN, Array);
+makclass(ArrayDynamic , ArrayDynamicN);
 
 // NOTE-TODO: TO REMOVE
 makclass(Vector, ValueSequence);
@@ -96,10 +96,33 @@ defmethod(OBJ, gisEmpty, Array)
 endmethod
 
 defmethod(OBJ, gclass, Array)
-  retmethod(Array);
+  retmethod(Array); // class cluster
 endmethod
 
-// ----- allocators and initializers
+// ----- initializers
+
+struct Array*
+ArrayView_init(struct ArrayView *view, I32 idx)
+{
+  test_assert( cos_object_isKindOf(view->array, classref(Array)),
+               "ArrayView accepts only arrays" );
+
+  struct Array* arr = &view->Array;
+  struct Array* ref = STATIC_CAST(struct Array*, view->array);
+
+  U32 start  = index_abs(idx, ref->size);
+
+  test_assert( start < ref->size && 
+               start + arr->stride*(arr->size-1) < ref->size,
+               "ArrayView out of range" );
+
+  arr->stride *= ref->stride;
+  arr->object  = ref->object + ref->stride * start;
+
+  return arr;
+}
+
+// ----- allocators
 
 defmethod(OBJ, galloc, pmArray) // lazy alloc
   retmethod(_1);
@@ -123,20 +146,14 @@ Array_alloc(U32 size)
   struct Array  *arr  = &arrn->Array;
 
   arr->size   = size;
+  arr->stride = 1;
   arr->object = arrn->base;
 
   return arr;
 }
 
 struct Array*
-Array_init(struct Array *arr)
-{
-  test_assert( arr->object, "Array got null pointer as buffer" );
-  return arr;
-}
-
-struct Array*
-ArrayView_alloc(struct Array *ref, U32 start, U32 size)
+ArrayView_alloc(struct Array *ref, U32 start, U32 size, U32 stride)
 {
   useclass(ArrayView);
 
@@ -148,6 +165,7 @@ ArrayView_alloc(struct Array *ref, U32 start, U32 size)
 
   view->array  = _ref;
   arr ->size   = size;
+  arr ->stride = stride;
   arr ->object = STATIC_CAST(struct Array*, _ref)->object + start;
 
   UNPRT(_view);
@@ -155,35 +173,14 @@ ArrayView_alloc(struct Array *ref, U32 start, U32 size)
 }
 
 struct Array*
-ArrayView_init(struct ArrayView *view, I32 idx)
+ArrayDynamic_alloc(U32 size)
 {
-  test_assert( cos_any_isKindOf(view->array, classref(Array)),
-               "ArrayView accepts only arrays" );
-  test_assert( !cos_any_isa(view->array, classref(DynamicArray)),
-               "ArrayView accepts only fixed size array" );
+  useclass(ArrayDynamic);
 
-  struct Array* arr = &view->Array;
-  struct Array* ref = STATIC_CAST(struct Array*, view->array);
+  OBJ _dyna = galloc(ArrayDynamic);
 
-  U32 start = index_abs(idx, ref->size);
-  
-  test_assert( start + arr->size <= ref->size,
-               "ArrayView out of range" );
-
-  arr->object = ref->object + start;
-
-  return arr;
-}
-
-struct Array*
-DynamicArray_alloc(U32 size)
-{
-  useclass(DynamicArray);
-
-  OBJ _dyna = galloc(DynamicArray);
-
-  struct DynamicArray  *dyna = STATIC_CAST(struct DynamicArray*, _dyna);
-  struct DynamicArrayN *dynn = &dyna->DynamicArrayN;
+  struct ArrayDynamic  *dyna = STATIC_CAST(struct ArrayDynamic*, _dyna);
+  struct ArrayDynamicN *dynn = &dyna->ArrayDynamicN;
   struct Array         * arr = &dynn->Array;
 
   dynn->base = malloc(size * sizeof *dynn->base);
@@ -203,13 +200,13 @@ DynamicArray_alloc(U32 size)
 // ----- constructors
 
 defmethod(OBJ, ginit, pmArray) // dynamic array
-  retmethod( (OBJ)DynamicArray_alloc(0) );
+  retmethod( (OBJ)ArrayDynamic_alloc(0) );
 endmethod
 
 defmethod(OBJ, ginitWith, pmArray, Int) // dynarray with capacity
   test_assert(self2->value >= 0, "negative array size");
 
-  retmethod( (OBJ)DynamicArray_alloc(self2->value) );
+  retmethod( (OBJ)ArrayDynamic_alloc(self2->value) );
 endmethod
 
 defmethod(OBJ, ginitWith, pmArray, Array) // clone
@@ -227,7 +224,7 @@ defmethod(OBJ, ginitWith, pmArray, Array) // clone
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Int, Any) // element
+defmethod(OBJ, ginitWith2, pmArray, Int, Object) // element
   test_assert(self2->value >= 0, "negative array size");
 
   struct Array* arr = Array_alloc(self2->value);
@@ -249,7 +246,7 @@ defmethod(OBJ, ginitWith2, pmArray, Int, Functor) // generator
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr->object;
   OBJ *end = arr->object+arr->size;
-  int argc = gsize(_3);
+  int argc = garity(_3);
 
   if (argc)
     for (I32 i = 0; obj < end; i++)
@@ -263,9 +260,9 @@ defmethod(OBJ, ginitWith2, pmArray, Int, Functor) // generator
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Array, Slice1)  // sub array
-  test_assert( self3->start < self2->size && Slice1_last(self3) < self2->size,
-               "slice out of range" );
+defmethod(OBJ, ginitWith2, pmArray, Array, Slice)  // sub array
+  test_assert( Slice_first(self3) < self2->size
+            && Slice_last (self3) < self2->size, "slice out of range" );
 
   struct Array* arr = Array_alloc(self3->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
@@ -304,15 +301,13 @@ defmethod(OBJ, ginitWithObjPtr, pmArray, (OBJ*)obj, (U32)n) // clone buffer
   retmethod( ginitWith(_1, aArrayRef(obj,n)) );
 endmethod
 
-defmethod(OBJ, ginitWith2, pmView, Array, Slice1) // array view
-  test_assert( !cos_any_isa(_2, classref(DynamicArray)),
+defmethod(OBJ, ginitWith2, pmView, Array, Slice) // array view
+  test_assert( !cos_object_isa(_2, classref(ArrayDynamic)),
                "ArrayView accepts only fixed size Array" );
-  test_assert( Slice1_iscontiguous(self3),
-               "ArrayView slice must be contiguous");
-  test_assert( Slice1_last(self3) < self2->size,
-               "ArrayView slice out of range" );
+  test_assert( Slice_first(self3) < self2->size
+            && Slice_last (self3) < self2->size, "ArrayView slice out of range" );
 
-  retmethod( (OBJ)ArrayView_alloc(self2, self3->start, self3->size) );
+  retmethod( (OBJ)ArrayView_alloc(self2, self3->start, self3->size, self3->stride) );
 endmethod
 
 // ----- destructors
@@ -333,7 +328,7 @@ defmethod(OBJ, gdeinit, ArrayView)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdeinit, DynamicArrayN)
+defmethod(OBJ, gdeinit, ArrayDynamicN)
   next_method(self);
   free(self->base);
   retmethod(_1);
@@ -352,9 +347,9 @@ defmethod(void, ginvariant, Array, (STR)func, (STR)file, (int)line)
 endmethod
 
 defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
-  test_assert( cos_any_isKindOf(self->array, classref(Array)),
+  test_assert( cos_object_isKindOf(self->array, classref(Array)),
                "ArrayView points to something not an array", func, file, line);
-  test_assert( !cos_any_isa(self->array, classref(DynamicArray)),
+  test_assert( !cos_object_isa(self->array, classref(ArrayDynamic)),
                "ArrayView points to a dynamic array", func, file, line);
 
   struct Array *arr = STATIC_CAST(struct Array*, self->array);
@@ -365,9 +360,9 @@ defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
   next_method(self, func, file, line);
 endmethod
 
-defmethod(void, ginvariant, DynamicArray, (STR)func, (STR)file, (int)line)
-  test_assert( self->capacity >= self->DynamicArrayN.Array.size,
-               "DynamicArray has capacity < size", func, file, line);
+defmethod(void, ginvariant, ArrayDynamic, (STR)func, (STR)file, (int)line)
+  test_assert( self->capacity >= self->ArrayDynamicN.Array.size,
+               "ArrayDynamic has capacity < size", func, file, line);
   next_method(self, func, file, line);
 endmethod
 

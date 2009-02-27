@@ -32,16 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.6 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Sequence.h,v 1.7 2009/02/27 20:14:25 ldeniau Exp $
  |
 */
 
 #include <cos/Container.h>
 
-defclass(Sequence,Container)
+defclass(Sequence, Container)
 endclass
 
-defclass(ValueSequence,Sequence)
+defclass(ValueSequence, Sequence)
 endclass
 
 /* NOTE-USER: Sequence indexing policy
@@ -54,6 +54,14 @@ static inline U32
 index_abs(I32 index, U32 size) {
   return index + (index < 0) * size;
 }
+
+/***********************************************************
+ * Implementation (private)
+ */
+
+#define Sequence_FSName(NAME,SIZE,...) \
+        COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),SIZE)) \
+                  (COS_PP_CAT(NAME,N), COS_PP_CAT_NARG(NAME,__VA_ARGS__))
 
 #endif // COS_SEQUENCE_H
 

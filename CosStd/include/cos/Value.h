@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.7 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Value.h,v 1.8 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
@@ -55,8 +55,8 @@
          <- Complex
          <- BigFloat   (gmp)
 
-   <- Range  (1-5 dim)
-   <- Slice  (1-5 dim)
+   <- Range
+   <- Slice
 */
 
 defclass(Value)

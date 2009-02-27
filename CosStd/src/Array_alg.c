@@ -29,13 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.6 2009/02/12 08:48:08 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.7 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
+#include <cos/IntVector.h>
 #include <cos/Number.h>
-#include <cos/Vector.h>
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
@@ -242,7 +242,7 @@ defmethod(OBJ, gzipn, Array)
   OBJ *end = self->object+self->size;
 
   for (; obj < end; obj++) {
-    test_assert( cos_any_isKindOf(*obj, classref(Array)),
+    test_assert( cos_object_isKindOf(*obj, classref(Array)),
                  "invalid array element (should be an Array)" );
     size += gsize(*obj);
   }

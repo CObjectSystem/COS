@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.8 2008/11/10 08:00:42 ldeniau Exp $
+ | $Id: Functor.c,v 1.9 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
@@ -54,10 +54,9 @@ makclass(Function3, Functor);
 makclass(Function4, Functor);
 makclass(Function5, Functor);
 
-makclass(Compose  , Functor);
+makclass(BiFunctor, Functor);
 
-makclass(MultiFunctor2, Functor);
-makclass(MultiFunctor3, Functor);
+makclass(Compose  , Functor);
 
 // -----
 
@@ -80,7 +79,7 @@ STATIC_ASSERT(functor5_to_function5_compatibility,
 
 useclass(ExBadArity);
 
-// ----- ctors
+// ----- functors
 
 defmethod(OBJ, ginitWith, Functor1, Functor1)
   self->fct   = self2->fct;
@@ -159,30 +158,22 @@ defmethod(OBJ, ginitWith, Function5, Function5)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, MultiFunctor2, MultiFunctor2)
-  self->functor[0] = gretain(self2->functor[0]);
-  self->functor[1] = gretain(self2->functor[1]);
+// ----- bifunctor
+
+defmethod(OBJ, ginitWith, BiFunctor, BiFunctor)
+  self->fun1 = gretain(self2->fun1);
+  self->fun2 = gretain(self2->fun2);
   
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, MultiFunctor3, MultiFunctor3)
-  self->functor[0] = gretain(self2->functor[0]);
-  self->functor[1] = gretain(self2->functor[1]);
-  self->functor[2] = gretain(self2->functor[2]);
-  
-  retmethod(_1);
-endmethod
+// ----- composition
 
-defmethod(OBJ, galloc, mCompose)
-  retmethod(_1); // lazy alloc
-endmethod
+useclass(Compose);
 
 static inline struct Compose*
-compose_alloc(U32 size)
+Compose_alloc(U32 size)
 {
-  useclass(Compose);
-
   OBJ _cmp = gallocWithSize(Compose, size * sizeof(OBJ));
   struct Compose *cmp = STATIC_CAST(struct Compose*, _cmp);
 
@@ -192,12 +183,20 @@ compose_alloc(U32 size)
   return cmp;
 }
 
-defmethod(OBJ, ginitWith, mCompose, Compose) // clone
-  retmethod( ginitWith((OBJ)compose_alloc(self2->size),_2) );
+defmethod(OBJ, galloc, pmCompose)
+  retmethod(_1); // lazy alloc
 endmethod
 
-defmethod(OBJ, ginitWith, mCompose, Array) // clone
-  retmethod( ginitWith((OBJ)compose_alloc(self2->size),_2) );
+defmethod(OBJ, gclass, Compose)
+  retmethod(Compose); // class cluster
+endmethod
+
+defmethod(OBJ, ginitWith, pmCompose, Compose) // clone
+  retmethod( ginitWith((OBJ)Compose_alloc(self2->size),_2) );
+endmethod
+
+defmethod(OBJ, ginitWith, pmCompose, Array) // clone
+  retmethod( ginitWith((OBJ)Compose_alloc(self2->size),_2) );
 endmethod
 
 defmethod(OBJ, ginitWith, Compose, Compose) // copy
@@ -266,17 +265,9 @@ defmethod(OBJ, gdeinit, Functor5)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdeinit, MultiFunctor2)
-  grelease(self->functor[0]);
-  grelease(self->functor[1]);
-  
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gdeinit, MultiFunctor3)
-  grelease(self->functor[0]);
-  grelease(self->functor[1]);
-  grelease(self->functor[2]);
+defmethod(OBJ, gdeinit, BiFunctor)
+  grelease(self->fun1);
+  grelease(self->fun2);
   
   retmethod(_1);
 endmethod
@@ -288,7 +279,7 @@ defmethod(OBJ, gdeinit, Compose)
   retmethod(_1);
 endmethod
 
-// ----- Size (argc)
+// ----- Arity
 
 static const U8 argc[32] = {
 //  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
@@ -301,56 +292,52 @@ static const U8 argc[32] = {
     4,  5
 };
 
-defmethod(U32, gsize, Functor1)
+defmethod(U32, garity, Functor1)
   retmethod(0);
 endmethod
 
-defmethod(U32, gsize, Functor2)
+defmethod(U32, garity, Functor2)
   retmethod(2-argc[self->arity]);
 endmethod
 
-defmethod(U32, gsize, Functor3)
+defmethod(U32, garity, Functor3)
   retmethod(3-argc[self->arity]);
 endmethod
 
-defmethod(U32, gsize, Functor4)
+defmethod(U32, garity, Functor4)
   retmethod(4-argc[self->arity]);
 endmethod
 
-defmethod(U32, gsize, Functor5)
+defmethod(U32, garity, Functor5)
   retmethod(5-argc[self->arity]);
 endmethod
 
-defmethod(U32, gsize, Function1)
+defmethod(U32, garity, Function1)
   retmethod(1);
 endmethod
 
-defmethod(U32, gsize, Function2)
+defmethod(U32, garity, Function2)
   retmethod(2);
 endmethod
 
-defmethod(U32, gsize, Function3)
+defmethod(U32, garity, Function3)
   retmethod(3);
 endmethod
 
-defmethod(U32, gsize, Function4)
+defmethod(U32, garity, Function4)
   retmethod(4);
 endmethod
 
-defmethod(U32, gsize, Function5)
+defmethod(U32, garity, Function5)
   retmethod(5);
 endmethod
 
-defmethod(U32, gsize, Compose)
-  retmethod(gsize(self->functor[0]));
+defmethod(U32, garity, BiFunctor)
+  retmethod( garity(self->fun1) + garity(self->fun2) );
 endmethod
 
-defmethod(U32, gsize, MultiFunctor2)
-  retmethod(gsize(self->functor[0]));
-endmethod
-
-defmethod(U32, gsize, MultiFunctor3)
-  retmethod(gsize(self->functor[0]));
+defmethod(U32, garity, Compose)
+  retmethod( garity(self->functor[0]) );
 endmethod
 
 // ----- Eval

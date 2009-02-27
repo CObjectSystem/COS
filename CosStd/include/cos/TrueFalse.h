@@ -1,10 +1,10 @@
-#ifndef COS_POINTER_H
-#define COS_POINTER_H
+#ifndef COS_TRUEFALSE_H
+#define COS_TRUEFALSE_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS Pointer
+ | COS TrueFalse
  |
  o---------------------------------------------------------------------o
  |
@@ -32,29 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Pointer.h,v 1.4 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: TrueFalse.h,v 1.1 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
-#include <cos/Value.h>
+#include <cos/Predicate.h>
 
-// ----- definitions
+defclass(TrueFalse, Predicate)           endclass
+defclass(True     , TrueFalse) char _[]; endclass
+defclass(False    , TrueFalse) char _[]; endclass
 
-defclass(Pointer)
-  void *ptr;
-endclass
-
-defclass(AutoPointer,Pointer)
-  void (*pfree)(void*);
-endclass
-
-// ----- automatic constructors
-
-#define aPointer(ptr) ( (OBJ)&(struct Pointer) { \
-        {{ COS_CLS_NAME(Pointer).Behavior.id, COS_RC_AUTO }}, (ptr) } )
-
-#define aAutoPointer(ptr, pfree) ( (OBJ)&(struct AutoPointer) {{ \
-        {{ COS_CLS_NAME(AutoPointer).Behavior.id, COS_RC_AUTO }}, \
-         (ptr) }, (pfree) } )
-
-#endif // COS_POINTER_H
+#endif // COS_TRUEFALSE_H

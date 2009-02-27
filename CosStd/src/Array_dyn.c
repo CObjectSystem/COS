@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.6 2009/02/12 09:03:06 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.7 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
@@ -50,9 +50,9 @@ useclass(Array, ExBadAlloc);
 // ----- helpers
 
 void
-DynamicArray_adjust(struct DynamicArray *dyna)
+ArrayDynamic_adjust(struct ArrayDynamic *dyna)
 {
-  struct DynamicArrayN *dynn = &dyna->DynamicArrayN;
+  struct ArrayDynamicN *dynn = &dyna->ArrayDynamicN;
   struct Array         * arr = &dynn->Array;
 
   if (arr->object != dynn->base)
@@ -70,13 +70,13 @@ DynamicArray_adjust(struct DynamicArray *dyna)
 }
 
 void
-DynamicArray_enlarge(struct DynamicArray *dyna, F64 factor)
+ArrayDynamic_enlarge(struct ArrayDynamic *dyna, F64 factor)
 {
   enum { N = 10 };
   
   if (factor <= 1.0) return;
 
-  struct DynamicArrayN *dynn = &dyna->DynamicArrayN;
+  struct ArrayDynamicN *dynn = &dyna->ArrayDynamicN;
   struct Array         * arr = &dynn->Array;
 
   ptrdiff_t offset = arr->object - dynn->base;
@@ -93,17 +93,17 @@ DynamicArray_enlarge(struct DynamicArray *dyna, F64 factor)
 
 // ----- adjustment (capacity -> size)
 
-defmethod(void, gadjust, DynamicArray)
-  DynamicArray_adjust(self);
+defmethod(void, gadjust, ArrayDynamic)
+  ArrayDynamic_adjust(self);
 
-  test_assert( cos_any_changeClass(_1, classref(DynamicArrayN)),
+  test_assert( cos_object_changeClass(_1, classref(ArrayDynamicN)),
                "unable to change dynamic array to fixed size array" );
 endmethod
 
 // ----- clear (size -> 0)
 
-defmethod(void, gclear, DynamicArray)
-  struct DynamicArrayN *dynn = &self->DynamicArrayN;
+defmethod(void, gclear, ArrayDynamic)
+  struct ArrayDynamicN *dynn = &self->ArrayDynamicN;
   struct Array         *arr  = &dynn->Array;
 
   OBJ *obj = arr->object;
@@ -118,26 +118,26 @@ endmethod
 
 // ----- getters, setters
 
-defalias (OBJ, (gget)gtop, DynamicArray);
-defmethod(OBJ,  gget     , DynamicArray)
-  struct Array *arr = &self->DynamicArrayN.Array;
+defalias (OBJ, (gget)gtop, ArrayDynamic);
+defmethod(OBJ,  gget     , ArrayDynamic)
+  struct Array *arr = &self->ArrayDynamicN.Array;
 
   retmethod( arr->size ? arr->object[arr->size-1] : 0 );
 endmethod
 
-defalias (void, (gput)gpush, DynamicArray, Any);
-defmethod(void,  gput      , DynamicArray, Any)
-  struct Array *arr = &self->DynamicArrayN.Array;
+defalias (void, (gput)gpush, ArrayDynamic, Object);
+defmethod(void,  gput      , ArrayDynamic, Object)
+  struct Array *arr = &self->ArrayDynamicN.Array;
 
   if (arr->size == self->capacity)
-    DynamicArray_enlarge(self, ARRAY_GROWTH_RATE);
+    ArrayDynamic_enlarge(self, ARRAY_GROWTH_RATE);
     
   arr->object[arr->size++] = gretain(_2);
 endmethod
 
-defalias (void, (gdrop)gpop, DynamicArray);
-defmethod(void,  gdrop     , DynamicArray)
-  struct Array *arr = &self->DynamicArrayN.Array;
+defalias (void, (gdrop)gpop, ArrayDynamic);
+defmethod(void,  gdrop     , ArrayDynamic)
+  struct Array *arr = &self->ArrayDynamicN.Array;
 
   if (arr->size)
     grelease(arr->object[--arr->size]);
@@ -145,8 +145,8 @@ endmethod
 
 // ----- prepend, append
 
-defmethod(void, gprepend, DynamicArray, Array)
-  struct Array *arr = &self->DynamicArrayN.Array;
+defmethod(void, gprepend, ArrayDynamic, Array)
+  struct Array *arr = &self->ArrayDynamicN.Array;
 
   if (self->capacity - arr->size < self2->size) {
     F64 factor = 1.0;
@@ -155,7 +155,7 @@ defmethod(void, gprepend, DynamicArray, Array)
       factor *= ARRAY_GROWTH_RATE;
     while (self->capacity*factor - arr->size < self2->size);
 
-    DynamicArray_enlarge(self, factor);
+    ArrayDynamic_enlarge(self, factor);
   }
 
   memcpy(arr->object+ self2->size,
@@ -171,8 +171,8 @@ defmethod(void, gprepend, DynamicArray, Array)
   arr->size += self2->size;
 endmethod
 
-defmethod(void, gappend, DynamicArray, Array)
-  struct Array *arr = &self->DynamicArrayN.Array;
+defmethod(void, gappend, ArrayDynamic, Array)
+  struct Array *arr = &self->ArrayDynamicN.Array;
 
   if (self->capacity - arr->size < self2->size) {
     F64 factor = 1.0;
@@ -181,7 +181,7 @@ defmethod(void, gappend, DynamicArray, Array)
       factor *= ARRAY_GROWTH_RATE;
     while (self->capacity*factor - arr->size < self2->size);
 
-    DynamicArray_enlarge(self, factor);
+    ArrayDynamic_enlarge(self, factor);
   }
 
   OBJ *obj = arr  ->object+arr->size;

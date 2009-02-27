@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.2 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: functor.h,v 1.3 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,7 @@
 #include <cos/Object.h>
 #endif 
 
+defgeneric(U32, garity, fun);
 defgeneric(OBJ, geval , fun);
 defgeneric(OBJ, geval1, fun, (OBJ)arg1);
 defgeneric(OBJ, geval2, fun, (OBJ)arg1,(OBJ)arg2);

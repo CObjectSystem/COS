@@ -32,108 +32,92 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.7 2009/01/26 14:30:41 ldeniau Exp $
+ | $Id: Number.h,v 1.8 2009/02/27 20:14:25 ldeniau Exp $
  |
 */
 
 #include <cos/Value.h>
 
-// ----- number
+// ----- numbers
 
-defclass(Number, Value)
-endclass
+defclass(Number  , Value   )            endclass
 
-defclass(Integral, Number)
-endclass
+defclass(Integral, Number  )            endclass
+defclass(Int     , Integral) I32 value; endclass
+defclass(Long    , Integral) I64 value; endclass
+defclass(Char    , Int     )            endclass
+defclass(Short   , Int     )            endclass
 
-defclass(Floating, Number)
-endclass
-
-// ----- integral
-
-defclass(Int, Integral)
-  I32 value;
-endclass
-
-defclass(Long, Integral)
-  I64 value;
-endclass
-
-defclass(Char, Int)
-endclass
-
-defclass(Short, Int)
-endclass
-
-// ----- floating
-
-defclass(Float, Floating)
-  F64 value;
-endclass
-
-defclass(Complex, Floating)
-  C64 value;
-endclass
+defclass(Floating, Number  )            endclass
+defclass(Float   , Floating) F64 value; endclass
+defclass(Complex , Floating) C64 value; endclass
 
 // ----- automatic constructors
 
-#define aChar(C)  ( (OBJ)atChar(C) )
-#define atChar(C) ( &(struct Char) {{ \
-        {{{{{ COS_CLS_NAME(Char).Behavior.id, COS_RC_AUTO }}}}}, (C) }} )
+#define aChar(a)        ( (OBJ)atChar   (a) )
+#define aShort(a)       ( (OBJ)atShort  (a) )
+#define aInt(a)         ( (OBJ)atInt    (a) )
+#define aLong(a)        ( (OBJ)atLong   (a) )
+#define aFloat(a)       ( (OBJ)atFloat  (a) )
+#define aComplex(...)   ( (OBJ)atComplex(__VA_ARGS__) )
 
-#define aShort(S)  ( (OBJ)atShort(S) )
-#define atShort(S) ( &(struct Short) {{ \
-        {{{{{ COS_CLS_NAME(Short).Behavior.id, COS_RC_AUTO }}}}}, (S) }} )
+#define atChar(a)       atNumber2(Char   , a)
+#define atShort(a)      atNumber2(Short  , a)
+#define atInt(a)        atNumber (Int    , a)
+#define atLong(a)       atNumber (Long   , a)
+#define atFloat(a)      atNumber (Float  , a)
+#define atComplex1(a)   atNumber (Complex, a)
+#define atComplex2(r,i) atNumber (Complex, *(F64[]){(r),(i)})
+#define atComplex(...)  COS_PP_CAT_NARG(atComplex,__VA_ARGS__)(__VA_ARGS__)
 
-#define aInt(I)  ( (OBJ)atInt(I) )
-#define atInt(I) ( &(struct Int) { \
-        {{{{{ COS_CLS_NAME(Int).Behavior.id, COS_RC_AUTO }}}}}, (I) } )
+// --- shortcuts
 
-#define aLong(L)  ( (OBJ)atLong(L) )
-#define atLong(L) ( &(struct Long) { \
-        {{{{{ COS_CLS_NAME(Long).Behavior.id, COS_RC_AUTO }}}}}, (L) } )
+#ifndef COS_NOSHORTCUT
 
-#define aFloat(R)  ( (OBJ)atFloat(R) )
-#define atFloat(R) ( &(struct Float) { \
-        {{{{{ COS_CLS_NAME(Float).Behavior.id, COS_RC_AUTO }}}}}, (R) } )
+#define aChr(...)  aChar   (__VA_ARGS__)
+#define aSht(...)  aShort  (__VA_ARGS__)
+#define aLng(...)  aLong   (__VA_ARGS__)
+#define aFlt(...)  aFloat  (__VA_ARGS__)
+#define aCpx(...)  aComplex(__VA_ARGS__)
 
-#define aComplex(...)  ( (OBJ)atComplex(__VA_ARGS__) )
-#define atComplex(...) COS_PP_CAT_NARG(atComplex,__VA_ARGS__)(__VA_ARGS__)
+#endif
 
-#define atComplex1(C) ( &(struct Complex) { \
-        {{{{{ COS_CLS_NAME(Complex).Behavior.id, COS_RC_AUTO }}}}}, (C) } )
-#define atComplex2(R,I) ( &(struct Complex) { \
-        {{{{{ COS_CLS_NAME(Complex).Behavior.id, COS_RC_AUTO }}}}}, \
-         *(FLOAT[]) {(R),(I)} } )
+/***********************************************************
+ * Implementation (private)
+ */
 
-// ---- inliners
+#define atNumber(T,a) \
+  ( &(struct T){ {{{{ COS_CLS_NAME(T).Behavior.id, COS_RC_AUTO }}}}, (a) } )
+
+#define atNumber2(T,a) \
+  ( &(struct T){{ {{{{ COS_CLS_NAME(T).Behavior.id, COS_RC_AUTO }}}}, (a) }} )
+
+// ---- float inliners
 
 static inline BOOL
 float_equal(FLOAT x, FLOAT y)
 {
   return x <= y && x >= y;
-  COS_UNUSED(float_equal);
 }
+
+// ---- complex inliners
 
 static inline COMPLEX
 complex_make(FLOAT x, FLOAT y)
 {
   return *(FLOAT[]){ x, y };
-  COS_UNUSED(complex_make);
 }
 
 static inline FLOAT
 complex_real(COMPLEX x)
 {
   return ((FLOAT*)&x)[0];
-  COS_UNUSED(complex_real);
 }
 
 static inline FLOAT
 complex_imag(COMPLEX x)
 {
   return ((FLOAT*)&x)[1];
-  COS_UNUSED(complex_imag);
 }
 
 static inline BOOL
@@ -141,7 +125,6 @@ complex_equal(COMPLEX x, COMPLEX y)
 {
   return float_equal(complex_real(x), complex_real(y)) &&
          float_equal(complex_imag(x), complex_imag(y));
-  COS_UNUSED(complex_equal);
 }
 
 #endif // COS_NUMBER_H

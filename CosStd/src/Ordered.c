@@ -29,16 +29,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Ordered.c,v 1.3 2008/10/24 22:03:30 ldeniau Exp $
+ | $Id: Ordered.c,v 1.4 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/Ordered.h>
 
 // -----
 
-makclass(Ordered,Nil);
-makclass(Equal,Ordered);
-makclass(Lesser,Ordered);
-makclass(Greater,Ordered);
+makclass(Ordered, Predicate);
+
+makclass(Equal  , Ordered);
+makclass(Lesser , Ordered);
+makclass(Greater, Ordered);

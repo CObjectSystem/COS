@@ -29,116 +29,31 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.2 2009/01/22 16:45:08 ldeniau Exp $
+ | $Id: Range.c,v 1.3 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/Range.h>
+
 #include <cos/gen/object.h>
 
-makclass(Range , Value);
-makclass(Range1, Range);
-makclass(Range2, Range);
-makclass(Range3, Range);
-makclass(Range4, Range);
-makclass(Range5, Range);
+makclass(Range, Value);
 
 // ----- copy
 
-defmethod(OBJ, ginitWith, Range1, Range1)
+defmethod(OBJ, ginitWith, Range, Range)
   self1->start  = self2->start,
   self1->end    = self2->end  ,
   self1->stride = self2->end  ;
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, Range2, Range2)
-  for (int i = 0; i < 2; i++)
-    self1->start [i] = self2->start [i],
-    self1->end   [i] = self2->end   [i],
-    self1->stride[i] = self2->stride[i];
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Range3, Range3)
-  for (int i = 0; i < 3; i++)
-    self1->start [i] = self2->start [i],
-    self1->end   [i] = self2->end   [i],
-    self1->stride[i] = self2->stride[i];
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Range4, Range4)
-  for (int i = 0; i < 4; i++)
-    self1->start [i] = self2->start [i],
-    self1->end   [i] = self2->end   [i],
-    self1->stride[i] = self2->stride[i];
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Range5, Range5)
-  for (int i = 0; i < 5; i++)
-    self1->start [i] = self2->start [i],
-    self1->end   [i] = self2->end   [i],
-    self1->stride[i] = self2->stride[i];
-
-  retmethod(_1);
-endmethod
-
 // ----- equality
 
-defmethod(OBJ, gisEqual, Range1, Range1)
+defmethod(OBJ, gisEqual, Range, Range)
   BOOL res = self1->start  == self2->start
           && self1->end    == self2->end 
           && self1->stride == self2->stride;
-
-  retmethod( res ? True : False );
-endmethod
-
-defmethod(OBJ, gisEqual, Range2, Range2)
-  BOOL res = YES;
-
-  for (int i = 0; res && i < 2; i++)
-    res = res && self1->start [i] == self2->start [i]
-              && self1->end   [i] == self2->end   [i]
-              && self1->stride[i] == self2->stride[i];
-
-  retmethod( res ? True : False );
-endmethod
-
-defmethod(OBJ, gisEqual, Range3, Range3)
-  BOOL res = YES;
-
-  for (int i = 0; res && i < 3; i++)
-    res = res && self1->start [i] == self2->start [i]
-              && self1->end   [i] == self2->end   [i]
-              && self1->stride[i] == self2->stride[i];
-
-  retmethod( res ? True : False );
-endmethod
-
-defmethod(OBJ, gisEqual, Range4, Range4)
-  BOOL res = YES;
-
-  for (int i = 0; res && i < 4; i++)
-    res = res && self1->start [i] == self2->start [i]
-              && self1->end   [i] == self2->end   [i]
-              && self1->stride[i] == self2->stride[i];
-
-  retmethod( res ? True : False );
-endmethod
-
-defmethod(OBJ, gisEqual, Range5, Range5)
-  BOOL res = YES;
-
-  for (int i = 0; res && i < 5; i++)
-    res = res && self1->start [i] == self2->start [i]
-              && self1->end   [i] == self2->end   [i]
-              && self1->stride[i] == self2->stride[i];
 
   retmethod( res ? True : False );
 endmethod

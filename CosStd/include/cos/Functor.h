@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Functor (closure)
+ | COS Functor (closure and expression)
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.9 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Functor.h,v 1.10 2009/02/27 20:14:25 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,8 @@
 
 // ----- definitions
 
-defclass(Functor) endclass
+defclass(Functor)
+endclass
 
 defclass(Functor1,Functor)
   OBJFCT1 fct;
@@ -96,9 +97,9 @@ defclass(Function5, Functor)
   OBJFCT5 fct;
 endclass
 
-// ----- Sequence of functors (composition)
+// ----- Composition of functors
 
-defclass(Compose,Functor)
+defclass(Compose, Functor)
   U32  size;
   OBJ *functor;
   OBJ _functor[];
@@ -106,41 +107,56 @@ endclass
 
 // ----- Parallel functors
 
-defclass(MultiFunctor2,Functor) // BiFunctor
-  OBJ functor[2];
+defclass(BiFunctor, Functor)
+  OBJ fun1;
+  OBJ fun2;
 endclass
 
-defclass(MultiFunctor3,Functor)
-  OBJ functor[3];
-endclass
+// ----- automatic constructors
 
-// ----- automatic constructor
+#define aFunctor(...)   ( (OBJ)atFunctor  (__VA_ARGS__) )
+#define aCompose(...)   ( (OBJ)atCompose  (__VA_ARGS__) )
+#define aBiFunctor(...) ( (OBJ)atBiFunctor(__VA_ARGS__) )
 
-#define aFunctor(F,...) \
-  ((OBJ)aFunctorN(COS_PP_NARG(__VA_ARGS__),F,__VA_ARGS__))
+// --- shortcuts
 
-#define aMultiFunctor(...) \
-  ((OBJ)aMultiFunctorN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__))
+#ifndef COS_NOSHORTCUT
 
-#define aCompose(...) \
-  ((OBJ)aComposeN(COS_PP_NARG(__VA_ARGS__),__VA_ARGS__))
+#define aFun(...)    aFunctor  (__VA_ARGS__)
+#define aCmp(...)    aCompose  (__VA_ARGS__)
+#define aBiFun(...)  aBiFunctor(__VA_ARGS__)
 
-#define aFunctorN(N,F,...) \
-        COS_PP_CAT3(Functor,N,_init)(&(struct COS_PP_CAT(Functor,N)) { \
-        {{{ COS_CLS_NAME(COS_PP_CAT(Functor,N)).Behavior.id, COS_RC_AUTO }}}, \
-         F, -1, COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
+#endif
 
-#define aComposeN(N,...) \
-        (&(struct Compose) { \
-        {{{{ COS_CLS_NAME(Compose).Behavior.id, COS_RC_AUTO }}}}, \
-         N, (OBJ[]){ COS_PP_SEQ(COS_PP_REV(__VA_ARGS__)) } })
 
-#define aMultiFunctorN(N,...) \
-        (&(struct COS_PP_CAT(MultiFunctor,N)) { \
-        {{{{ COS_CLS_NAME(COS_PP_CAT(MultiFunctor,N)).Behavior.id, COS_RC_AUTO }}}}, \
-         { __VA_ARGS__ } })
+/***********************************************************
+ * Implementation (private)
+ */
 
-// ----- automatic constructor initializers
+#define atFunctor(F,...) \
+  atFunctorN(COS_PP_NARG(__VA_ARGS__),F,__VA_ARGS__)
+
+#define atFunctorN(N,F,...) \
+  COS_PP_CAT3(Functor,N,_init)( &(struct COS_PP_CAT(Functor,N)) { \
+    {{ COS_CLS_NAME(COS_PP_CAT(Functor,N)).Behavior.id, COS_RC_AUTO }}, \
+    F, -1, COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
+
+// ---
+
+#define atCompose(...) \
+  ( &(struct Compose) { \
+    {{ COS_CLS_NAME(Compose).Behavior.id, COS_RC_AUTO }}, \
+    COS_PP_NARG(__VA_ARGS__), \
+    (OBJ[]){ COS_PP_SEQ(COS_PP_REV((__VA_ARGS__))) } })
+
+// ---
+
+#define atBiFunctor(F1,F2) \
+  ( &(struct BiFunctor) { \
+    {{ COS_CLS_NAME(BiFunctor).Behavior.id, COS_RC_AUTO }}, \
+    F1, F2 })
+
+// ----- initializers
 
 static inline struct Functor1*
 Functor1_init(struct Functor1* fun)
@@ -148,7 +164,7 @@ Functor1_init(struct Functor1* fun)
   fun->arity = fun->arg != 0;
 
   if (!fun->arity)
-    fun->Functor.Object.Any.id = cos_class_id(classref(Function1));
+    fun->Functor.Object.id = cos_class_id(classref(Function1));
 
   return fun;
 }
@@ -160,7 +176,7 @@ Functor2_init(struct Functor2* fun)
             | ((fun->arg[1] != 0) << 1);
 
   if (!fun->arity)
-    fun->Functor.Object.Any.id = cos_class_id(classref(Function2));
+    fun->Functor.Object.id = cos_class_id(classref(Function2));
 
   return fun;
 }
@@ -173,7 +189,7 @@ Functor3_init(struct Functor3* fun)
             | ((fun->arg[2] != 0) << 2);
 
   if (!fun->arity)
-    fun->Functor.Object.Any.id = cos_class_id(classref(Function3));
+    fun->Functor.Object.id = cos_class_id(classref(Function3));
 
   return fun;
 }
@@ -187,7 +203,7 @@ Functor4_init(struct Functor4* fun)
             | ((fun->arg[3] != 0) << 3);
 
   if (!fun->arity)
-    fun->Functor.Object.Any.id = cos_class_id(classref(Function4));
+    fun->Functor.Object.id = cos_class_id(classref(Function4));
 
   return fun;
 }
@@ -202,7 +218,7 @@ Functor5_init(struct Functor5* fun)
             | ((fun->arg[4] != 0) << 4);
 
   if (!fun->arity)
-    fun->Functor.Object.Any.id = cos_class_id(classref(Function5));
+    fun->Functor.Object.id = cos_class_id(classref(Function5));
 
   return fun;
 }

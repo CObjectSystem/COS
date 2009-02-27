@@ -29,14 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fct.c,v 1.4 2009/02/11 11:48:47 ldeniau Exp $
+ | $Id: Array_fct.c,v 1.5 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
 #include <cos/Functor.h>
+#include <cos/IntVector.h>
 #include <cos/Number.h>
-#include <cos/Vector.h>
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
@@ -157,7 +157,7 @@ endmethod
 // ----- filter, reduce, accumulate
 
 defmethod(OBJ, gfilter, Array, Function1)
-  struct Array* arr = DynamicArray_alloc(self->size);
+  struct Array* arr = ArrayDynamic_alloc(self->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr ->object;
   OBJ *src = self->object;
@@ -173,7 +173,7 @@ defmethod(OBJ, gfilter, Array, Function1)
   retmethod(gautoRelease(_arr));
 endmethod
 
-defmethod(OBJ, greduce, Array, Function2, Any)
+defmethod(OBJ, greduce, Array, Function2, Object)
   OBJ  obj = _3;
   OBJ *src = self->object;
   OBJ *end = self->object+self->size;
@@ -185,7 +185,7 @@ defmethod(OBJ, greduce, Array, Function2, Any)
   retmethod(obj);
 endmethod
 
-defmethod(OBJ, gaccumulate, Array, Function2, Any)
+defmethod(OBJ, gaccumulate, Array, Function2, Object)
   struct Array* arr = Array_alloc(self->size+1);
   OBJ _arr = (OBJ)arr; PRT(_arr);
   OBJ *obj = arr ->object;
@@ -204,7 +204,7 @@ endmethod
 
 // ----- finding
 
-defmethod(OBJ, gfind, Array, Any, Function2)
+defmethod(OBJ, gfind, Array, Object, Function2)
   useclass(Lesser, Equal, Greater);
 
   if (self->size == 0)
@@ -329,7 +329,6 @@ quicksort_fct(OBJ a[], I32 r, OBJFCT2 fct)
   SORT(a[0],a[r-1]);
   if ((ri = GCMP(a[r  ],a[0])) == Lesser) EXCH(a[r],a[0  ]);
   if ((rj = GCMP(a[r-1],a[r])) == Lesser) EXCH(a[r],a[r-1]);
-//  else  if (GCMP(a[r-1],a[0])  == Lesser) EXCH(a[0],a[r-1]), EXCH(ri,rj);
 
   // partitioning initialization
   i = 0, j = r-1;
@@ -396,7 +395,6 @@ iquicksort_fct(I32 a[], OBJ o[], I32 r, OBJFCT2 fct)
   SORT(a[0],a[r-1]);
   if ((ri = GCMP(a[r  ],a[0])) == Lesser) EXCH(a[r],a[0  ]);
   if ((rj = GCMP(a[r-1],a[r])) == Lesser) EXCH(a[r],a[r-1]);
-//  else  if (GCMP(a[r-1],a[0])  == Lesser) EXCH(a[0],a[r-1]), EXCH(ri,rj);
 
   // partitioning initialization
   i = 0, j = r-1;

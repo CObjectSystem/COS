@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vectors and SubVectors
+ | COS Vector
  |
  o---------------------------------------------------------------------o
  |
@@ -32,274 +32,95 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.9 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: Vector.h,v 1.10 2009/02/27 20:14:26 ldeniau Exp $
  |
 */
 
 #include <cos/Sequence.h>
 
-/* Vector subclasses:
-<- Vector
-   <- IntVector  <- IntVectorN (0..9)
-                 <- IntDynVectorN <- IntDynVector
-                 <- IntSubVector
-   <- LngVector  <- LngVectorN (0..9)
-                 <- LngDynVectorN <- LngDynVector
-                 <- LngSubVector
-   <- FltVector  <- FltVectorN (0..9)
-                 <- FltDynVectorN <- FltDynVector
-                 <- FltSubVector
-   <- CpxVector  <- CpxVectorN (0..9)
-                 <- CpxDynVectorN <- CpxDynVector
-                 <- CpxSubVector
+/* NOTE-USER: Vector class cluster constructors
+
+   aXVector    (obj,...)                     -> Fixed size vector (automatic)
+   aXVectorRef (buffer,size[,stride])        -> Vector view       (automatic)
+   aXVectorView(vector,start,size[,stride])  -> Vector view       (automatic)
+
+   gnew       (XVector)                      -> Dynamic vector
+   gnewWith   (XVector,capacity)             -> Dynamic vector    (pre-allocated)
+
+   gnewWith   (XVector,vector)               -> Fixed size vector (clone)
+
+   gnewWith2  (XVector,size,obj)             -> Fixed size vector (element)
+   gnewWith2  (XVector,size,fun)             -> Fixed size vector (generator)
+   gnewWith2  (XVector,vector,range)         -> Fixed size vector (subvector)
+   gnewWith2  (XVector,vector,slice)         -> Fixed size vector (subvector)
+   gnewWith2  (XVector,vector,intvec)        -> Fixed size vector (sequence)
+   
+   gnewWith2  (View,vector,range)            -> Vector view       (view)
+   gnewWith2  (View,vector,slice)            -> Vector view       (view)
+
+   gnewWithXPtr(XVector,buffer,size,copy)    -> Fixed size vector (copy)
+                                             -> Vector           (!copy)
+
+   where:
+   - X stands for Int, Lng, Flt, Cpx
+   - All vectors are mutable
+   - All vectors own value elements
+   - Fixed size vectors will be one of XVector0 to XVector9 if size is < 10.
+   - Dynamic vectors can shrink and grow (gput, gcat, ...)
+   - Dynamic vectors can be converted to fixed size vector (gadjust)
+   - Vector views work only on vectors which do not resize (undefined behavior)
+   - Vector views clone are fixed size vectors (copy), not views
 */
 
-defclass(Vector,ValueSequence)
+defclass(Vector, ValueSequence)
 endclass
 
-// ----- Vectors
+/***********************************************************
+ * Implementation (private)
+ */
 
-defclass(IntVector, Vector)
-  I32 *value;
-  U32  size;
-endclass
+// ----- automatic constructors (helpers for specialization)
 
-defclass(LngVector, Vector)
-  I64 *value;
-  U32  size;
-endclass
+/* NOTE-INFO:
+    P  type prefix  (e.g. Int, Lng, Flt, Cpx)
+    E  element type (e.g. I32, I64, F64, C64)
+    T  type         (e.g. IntVector , LngVector)
+    TN sized type   (e.g. IntVector0, IntVector1, ..)
+*/
 
-defclass(FltVector, Vector)
-  F64 *value;
-  U32  size;
-endclass
+#define atVector(P,E,...) \
+  atVectorN(COS_PP_CAT(P,Sequence_FSName(Vector,10,__VA_ARGS__)), \
+            COS_PP_CAT(P,Vector),E,__VA_ARGS__)
 
-defclass(CpxVector, Vector)
-  C64 *value;
-  U32  size;
-endclass
+#define atVectorN(TN,T,E,...) \
+  ( (struct T*)&(struct TN) {{ \
+    {{{{ COS_CLS_NAME(TN).Behavior.id, COS_RC_AUTO }}}}, \
+    COS_PP_NARG(__VA_ARGS__), 1, (E[]){ __VA_ARGS__ } }} )
 
-// ----- Dynamic Vectors
+// ---
 
-defclass(IntDynVectorN, IntVector) endclass
-defclass(LngDynVectorN, LngVector) endclass
-defclass(FltDynVectorN, FltVector) endclass
-defclass(CpxDynVectorN, CpxVector) endclass
+#define atVectorRef(P,E,...) \
+  COS_PP_CAT_NARG(atArrayRef,__VA_ARGS__)(COS_PP_CAT(P,Vector),__VA_ARGS__)
 
-defclass(IntDynVector, IntDynVectorN)
-  U32 capacity;
-endclass
+#define atVectorRef2(T,buffer,size) \
+        atVectorRef3(T,buffer,size,1)
 
-defclass(LngDynVector, LngDynVectorN)
-  U32 capacity;
-endclass
+#define atVectorRef3(T,buffer,size,stride) \
+  ( &(struct T) { \
+    {{{{ COS_CLS_NAME(T).Behavior.id, COS_RC_AUTO }}}}, \
+    (size), (stride), (buffer) } )
 
-defclass(FltDynVector, FltDynVectorN)
-  U32 capacity;
-endclass
+// ---
 
-defclass(CpxDynVector, CpxDynVectorN)
-  U32 capacity;
-endclass
+#define atVectorView(P,E,...) \
+  COS_PP_CAT_NARG(atVectorView,__VA_ARGS__)(COS_PP_CAT(P,VectorView),__VA_ARGS__)
 
-// ----- Sub Vectors
+#define atVectorView3(T,vector,start,size) \
+        atVectorView4(T,vector,start,size,1)
 
-defclass(IntSubVector, IntVector)
-  OBJ vector;
-endclass
-
-defclass(LngSubVector, LngVector)
-  OBJ vector;
-endclass
-
-defclass(FltSubVector, FltVector)
-  OBJ vector;
-endclass
-
-defclass(CpxSubVector, CpxVector)
-  OBJ vector;
-endclass
-
-// ----- Vector of integer (I32)
-
-defclass(IntVector0, IntVector) I32 _value[]; endclass
-defclass(IntVector1, IntVector) I32 _value[]; endclass
-defclass(IntVector2, IntVector) I32 _value[]; endclass
-defclass(IntVector3, IntVector) I32 _value[]; endclass
-defclass(IntVector4, IntVector) I32 _value[]; endclass
-defclass(IntVector5, IntVector) I32 _value[]; endclass
-defclass(IntVector6, IntVector) I32 _value[]; endclass
-defclass(IntVector7, IntVector) I32 _value[]; endclass
-defclass(IntVector8, IntVector) I32 _value[]; endclass
-defclass(IntVector9, IntVector) I32 _value[]; endclass
-defclass(IntVectorN, IntVector) I32 _value[]; endclass
-
-#define aIntVector(...)                  ( (OBJ)atIntVector   (__VA_ARGS__      ) )
-#define aIntVectorRef(size,array)        ( (OBJ)atIntVectorRef(size,array       ) )
-#define aIntSubVector(vector,start,size) ( (OBJ)atIntSubVector(vector,start,size) )
-
-#define atIntVector(...)                  atVectorT   (Int,I32,__VA_ARGS__)
-#define atIntVectorRef(size,array)        atVectorRefT(Int,size,array)
-#define atIntSubVector(vector,start,size) atSubVectorT(Int,vector,start,size)
-
-// ----- Vector of integer (I64)
-
-defclass(LngVector0, LngVector) I64 _value[]; endclass
-defclass(LngVector1, LngVector) I64 _value[]; endclass
-defclass(LngVector2, LngVector) I64 _value[]; endclass
-defclass(LngVector3, LngVector) I64 _value[]; endclass
-defclass(LngVector4, LngVector) I64 _value[]; endclass
-defclass(LngVector5, LngVector) I64 _value[]; endclass
-defclass(LngVector6, LngVector) I64 _value[]; endclass
-defclass(LngVector7, LngVector) I64 _value[]; endclass
-defclass(LngVector8, LngVector) I64 _value[]; endclass
-defclass(LngVector9, LngVector) I64 _value[]; endclass
-defclass(LngVectorN, LngVector) I64 _value[]; endclass
-
-#define aLngVector(...)                  ( (OBJ)atLngVector   (__VA_ARGS__      ) )
-#define aLngVectorRef(size,array)        ( (OBJ)atLngVectorRef(size,array       ) )
-#define aLngSubVector(vector,start,size) ( (OBJ)atLngSubVector(vector,start,size) )
-
-#define atLngVector(...)                  atVectorT   (Lng,I64,__VA_ARGS__)
-#define atLngVectorRef(size,array)        atVectorRefT(Lng,size,array)
-#define atLngSubVector(vector,start,size) atSubVectorT(Lng,vector,start,size)
-
-// ----- Vector of double
-
-defclass(FltVector0, FltVector) F64 _value[]; endclass
-defclass(FltVector1, FltVector) F64 _value[]; endclass
-defclass(FltVector2, FltVector) F64 _value[]; endclass
-defclass(FltVector3, FltVector) F64 _value[]; endclass
-defclass(FltVector4, FltVector) F64 _value[]; endclass
-defclass(FltVector5, FltVector) F64 _value[]; endclass
-defclass(FltVector6, FltVector) F64 _value[]; endclass
-defclass(FltVector7, FltVector) F64 _value[]; endclass
-defclass(FltVector8, FltVector) F64 _value[]; endclass
-defclass(FltVector9, FltVector) F64 _value[]; endclass
-defclass(FltVectorN, FltVector) F64 _value[]; endclass
-
-#define aFltVector(...)                  ( (OBJ)atFltVector   (__VA_ARGS__      ) )
-#define aFltVectorRef(size,array)        ( (OBJ)atFltVectorRef(size,array       ) )
-#define aFltSubVector(vector,start,size) ( (OBJ)atFltSubVector(vector,start,size) )
-
-#define atFltVector(...)                  atVectorT   (Flt,F64,__VA_ARGS__)
-#define atFltVectorRef(size,array)        atVectorRefT(Flt,size,array)
-#define atFltSubVector(vector,start,size) atSubVectorT(Flt,vector,start,size)
-
-// ----- Vector of complex
-
-defclass(CpxVector0, CpxVector) C64 _value[]; endclass
-defclass(CpxVector1, CpxVector) C64 _value[]; endclass
-defclass(CpxVector2, CpxVector) C64 _value[]; endclass
-defclass(CpxVector3, CpxVector) C64 _value[]; endclass
-defclass(CpxVector4, CpxVector) C64 _value[]; endclass
-defclass(CpxVector5, CpxVector) C64 _value[]; endclass
-defclass(CpxVector6, CpxVector) C64 _value[]; endclass
-defclass(CpxVector7, CpxVector) C64 _value[]; endclass
-defclass(CpxVector8, CpxVector) C64 _value[]; endclass
-defclass(CpxVector9, CpxVector) C64 _value[]; endclass
-defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
-
-#define aCpxVector(...)                  ( (OBJ)atCpxVector   (__VA_ARGS__      ) )
-#define aCpxVectorRef(size,array)        ( (OBJ)atCpxVectorRef(size,array       ) )
-#define aCpxSubVector(vector,start,size) ( (OBJ)atCpxSubVector(vector,start,size) )
-
-#define atCpxVector(...)                  atVectorT   (Cpx,C64,__VA_ARGS__)
-#define atCpxVectorRef(size,array)        atVectorRefT(Cpx,size,array)
-#define atCpxSubVector(vector,start,size) atSubVectorT(Cpx,vector,start,size)
-
-// ----- automatic constructors implementation
-
-#define atVectorT(P,T,...) \
-        atVectorN(P,T,COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),10)) \
-                  (N,COS_PP_NARG(__VA_ARGS__)),__VA_ARGS__)
-#define atVectorN(P,T,N,...) \
-        ( (struct COS_PP_CAT(P,Vector)*)&(struct COS_PP_CAT3(P,Vector,N)) {{ \
-          {{{ COS_CLS_NAME(COS_PP_CAT3(P,Vector,N)).Behavior.id, COS_RC_AUTO }}}, \
-          (T[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__) }} )
-
-#define atVectorRefT(P,size,array) \
-        ( &(struct COS_PP_CAT(P,Vector)) { \
-          {{{ COS_CLS_NAME(COS_PP_CAT(P,Vector)).Behavior.id, COS_RC_AUTO }}}, \
-          (array), (size) } )
-
-#define atSubVectorT(P,vector,substart,subsize) \
-        ( COS_PP_CAT(P,SubVector_init)(&(struct COS_PP_CAT(P,SubVector)) {{ \
-          {{{ COS_CLS_NAME(COS_PP_CAT(P,SubVector)).Behavior.id, COS_RC_AUTO }}}, \
-          (subsize), 0 }, (vector) }, (substart)) )
-
-// ----- automatic sub-vectors init/checker
-
-#ifndef COS_VALUE_H
-#include <cos/Value.h>
-#endif
-
-static inline struct IntVector*
-IntSubVector_init(struct IntSubVector *subvec, I32 substart)
-{
-  test_assert( cos_any_superClass(subvec->vector) == classref(IntVector),
-               "subvector accepts only fixed size vector" );
-
-  struct IntVector *svec = &subvec->IntVector;
-  struct IntVector * vec = STATIC_CAST(struct IntVector*, subvec->vector);
-
-  U32 start = index_abs(substart, vec->size);
-  test_assert( start + svec->size <= vec->size, "subvector out of range" );
-
-  svec->value = vec->value + start;
-
-  return svec;
-}
-
-static inline struct LngVector*
-LngSubVector_init(struct LngSubVector *subvec, I32 substart)
-{
-  test_assert( cos_any_superClass(subvec->vector) == classref(LngVector),
-               "subvector accepts only fixed size vector" );
-
-  struct LngVector *svec = &subvec->LngVector;
-  struct LngVector * vec = STATIC_CAST(struct LngVector*, subvec->vector);
-
-  U32 start = index_abs(substart, vec->size);
-  test_assert( start + svec->size <= vec->size, "subvector out of range" );
-
-  svec->value = vec->value + start;
-
-  return svec;
-}
-
-static inline struct FltVector*
-FltSubVector_init(struct FltSubVector *subvec, I32 substart)
-{
-  test_assert( cos_any_superClass(subvec->vector) == classref(FltVector),
-               "subvector accepts only fixed size vector" );
-
-  struct FltVector *svec = &subvec->FltVector;
-  struct FltVector * vec = STATIC_CAST(struct FltVector*, subvec->vector);
-
-  U32 start = index_abs(substart, vec->size);
-  test_assert( start + svec->size <= vec->size, "subvector out of range" );
-
-  svec->value = vec->value + start;
-
-  return svec;
-}
-
-static inline struct CpxVector*
-CpxSubVector_init(struct CpxSubVector *subvec, I32 substart)
-{
-  test_assert( cos_any_superClass(subvec->vector) == classref(CpxVector),
-               "subvector accepts only fixed size vector" );
-
-  struct CpxVector *svec = &subvec->CpxVector;
-  struct CpxVector * vec = STATIC_CAST(struct CpxVector*, subvec->vector);
-
-  U32 start = index_abs(substart, vec->size);
-  test_assert( start + svec->size <= vec->size, "subvector out of range" );
-
-  svec->value = vec->value + start;
-
-  return svec;
-}
+#define atVectorView4(T,vector,start,size,stride) \
+  ( COS_PP_CAT(T,_init)(&(struct T) {{ \
+    {{{{ COS_CLS_NAME(T).Behavior.id, COS_RC_AUTO }}}}, \
+    (size), (stride), 0 }, (vector) }, (start)) )
 
 #endif // COS_VECTOR_H
