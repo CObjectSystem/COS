@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.14 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: config.h,v 1.15 2009/03/03 14:45:26 ldeniau Exp $
  |
 */
 
@@ -134,8 +134,15 @@
    Automatic
 */
 #ifndef __GNUC__
-#undef  __attribute__    // not a macro so far but safer
-#define __attribute__(a) // disable GCC __attribute__
+
+#undef  __attribute__         // not a macro so far but safer
+#define __attribute__(a)      // disable GCC __attribute__
+#define always_inline inline
+
+#else
+
+#define always_inline inline __attribute__((__always_inline__))
+
 #endif
 
 #endif // COS_COS_CONFIG_H

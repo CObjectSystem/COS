@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.29 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.30 2009/03/03 14:45:27 ldeniau Exp $
  |
 */
 
@@ -889,7 +889,7 @@ cos_object_changeClass(OBJ _1, const struct Class *new)
   struct Class *cls = cos_object_class(_1);
   struct Object *obj;
 
-  if (cls->isz != new->isz || !cls_isSubOf(cls,new))
+  if (!cls_isSubOf(cls,new))
     return NO;
 
   obj = STATIC_CAST(struct Object*,_1);

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.16 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: object.h,v 1.17 2009/03/03 14:45:27 ldeniau Exp $
  |
 */
 
@@ -91,43 +91,43 @@ defgeneric(void, gdeinitialize , _1);
 // ----- inliners -----
 
 // inliner gnewXXX (= galloc() + ginitXXX())
-static inline OBJ
+static always_inline OBJ
 gnew(OBJ _1) {
   return ginit(galloc(_1)); COS_UNUSED(gnew);
 }
 
-static inline OBJ
+static always_inline OBJ
 gnewWith(OBJ _1, OBJ _2) {
   return ginitWith(galloc(_1),_2);  COS_UNUSED(gnewWith);
 }
 
-static inline OBJ
+static always_inline OBJ
 gnewWith2(OBJ _1, OBJ _2, OBJ _3) {
   return ginitWith2(galloc(_1),_2,_3);  COS_UNUSED(gnewWith2);
 }
 
-static inline OBJ
+static always_inline OBJ
 gnewWith3(OBJ _1, OBJ _2, OBJ _3, OBJ _4) {
   return ginitWith3(galloc(_1),_2,_3,_4);  COS_UNUSED(gnewWith3);
 }
 
-static inline OBJ
+static always_inline OBJ
 gnewWith4(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5) {
   return ginitWith4(galloc(_1),_2,_3,_4,_5);  COS_UNUSED(gnewWith4);
 }
 
-static inline OBJ
+static always_inline OBJ
 gnewWithLoc(OBJ _1, OBJ _2, STR func, STR file, int line) {
   return ginitWithLoc(galloc(_1),_2,func,file,line);  COS_UNUSED(gnewWithLoc);
 }
 
-static inline OBJ
+static always_inline OBJ
 gnewWithStr(OBJ _1, STR str) {
   return ginitWithStr(galloc(_1),str);  COS_UNUSED(gnewWithStr);
 }
 
 // inliner gclone
-static inline OBJ
+static always_inline OBJ
 gclone(OBJ _1) {
   return ginitWith(galloc(gclass(_1)),_1);  COS_UNUSED(gclone);
 }

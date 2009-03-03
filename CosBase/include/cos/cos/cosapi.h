@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.23 2009/02/27 20:11:46 ldeniau Exp $
+ | $Id: cosapi.h,v 1.24 2009/03/03 14:45:26 ldeniau Exp $
  |
 */
 
@@ -179,7 +179,7 @@ extern int cos_logmsg_level_;
 
 #if COS_TLS || !COS_POSIX // -----------------------------
 
-static inline struct cos_method_cache1*
+static always_inline struct cos_method_cache1*
 cos_method_cache1(void)
 {
   extern __thread struct cos_method_cache1 cos_method_cache1_;
@@ -187,7 +187,7 @@ cos_method_cache1(void)
   COS_UNUSED(cos_method_cache1);
 }
 
-static inline struct cos_method_cache2*
+static always_inline struct cos_method_cache2*
 cos_method_cache2(void)
 {
   extern __thread struct cos_method_cache2 cos_method_cache2_;
@@ -195,7 +195,7 @@ cos_method_cache2(void)
   COS_UNUSED(cos_method_cache2);
 }
 
-static inline struct cos_method_cache3*
+static always_inline struct cos_method_cache3*
 cos_method_cache3(void)
 {
   extern __thread struct cos_method_cache3 cos_method_cache3_;
@@ -203,7 +203,7 @@ cos_method_cache3(void)
   COS_UNUSED(cos_method_cache3);
 }
 
-static inline struct cos_method_cache4*
+static always_inline struct cos_method_cache4*
 cos_method_cache4(void)
 {
   extern __thread struct cos_method_cache4 cos_method_cache4_;
@@ -211,7 +211,7 @@ cos_method_cache4(void)
   COS_UNUSED(cos_method_cache4);
 }
 
-static inline struct cos_method_cache5*
+static always_inline struct cos_method_cache5*
 cos_method_cache5(void)
 {
   extern __thread struct cos_method_cache5 cos_method_cache5_;
@@ -219,7 +219,7 @@ cos_method_cache5(void)
   COS_UNUSED(cos_method_cache5);
 }
 
-static inline struct cos_exception_context*
+static always_inline struct cos_exception_context*
 cos_exception_context(void)
 {
   extern __thread struct cos_exception_context *cos_exception_cxt_;
@@ -239,7 +239,7 @@ struct cos_method_cache3* cos_method_cache3_init(void);
 struct cos_method_cache4* cos_method_cache4_init(void);
 struct cos_method_cache5* cos_method_cache5_init(void);
 
-static inline struct cos_method_cache1*
+static always_inline struct cos_method_cache1*
 cos_method_cache1(void)
 {
   extern pthread_key_t cos_method_cache1_key;
@@ -248,7 +248,7 @@ cos_method_cache1(void)
   COS_UNUSED(cos_method_cache1);
 }
 
-static inline struct cos_method_cache2*
+static always_inline struct cos_method_cache2*
 cos_method_cache2(void)
 {
   extern pthread_key_t cos_method_cache2_key;
@@ -257,7 +257,7 @@ cos_method_cache2(void)
   COS_UNUSED(cos_method_cache2);
 }
 
-static inline struct cos_method_cache3*
+static always_inline struct cos_method_cache3*
 cos_method_cache3(void)
 {
   extern pthread_key_t cos_method_cache3_key;
@@ -266,7 +266,7 @@ cos_method_cache3(void)
   COS_UNUSED(cos_method_cache3);
 }
 
-static inline struct cos_method_cache4*
+static always_inline struct cos_method_cache4*
 cos_method_cache4(void)
 {
   extern pthread_key_t cos_method_cache4_key;
@@ -275,7 +275,7 @@ cos_method_cache4(void)
   COS_UNUSED(cos_method_cache4);
 }
 
-static inline struct cos_method_cache5*
+static always_inline struct cos_method_cache5*
 cos_method_cache5(void)
 {
   extern pthread_key_t cos_method_cache5_key;
@@ -286,63 +286,63 @@ cos_method_cache5(void)
 
 #endif // ------------------------------------------------
 
-static inline U32
+static always_inline U32
 cos_object_id(OBJ obj)
 {
   return COS_STATIC_CAST(struct Object*, obj)->id;
   COS_UNUSED(cos_object_id);
 }
 
-static inline U32
+static always_inline U32
 cos_object_rc(OBJ obj)
 {
   return COS_STATIC_CAST(struct Object*, obj)->rc;
   COS_UNUSED(cos_object_rc);
 }
 
-static inline struct Class*
+static always_inline struct Class*
 cos_object_class(OBJ obj)
 {
   return cos_class_get(cos_object_id(obj));
   COS_UNUSED(cos_object_class);
 }
 
-static inline struct Class*
+static always_inline struct Class*
 cos_object_superClass(OBJ obj)
 {
   return cos_object_class(obj)->spr;
   COS_UNUSED(cos_object_superClass);
 }
 
-static inline STR
+static always_inline STR
 cos_object_className(OBJ obj)
 {
   return cos_object_class(obj)->name;
   COS_UNUSED(cos_object_className);
 }
 
-static inline U32
+static always_inline U32
 cos_class_id(const struct Class *cls)
 {
   return cls->Behavior.id;
   COS_UNUSED(cos_class_id);
 }
 
-static inline U32
+static always_inline U32
 cos_generic_id(SEL sel)
 {
   return sel->Behavior.id;
   COS_UNUSED(cos_generic_id);
 }
 
-static inline BOOL
+static always_inline BOOL
 cos_object_isa(OBJ obj, const struct Class *cls)
 {
   return cos_object_id(obj) == cos_class_id(cls);
   COS_UNUSED(cos_object_isa);
 }
 
-static inline struct cos_exception_protect
+static always_inline struct cos_exception_protect
 cos_exception_protect(struct cos_exception_protect *ptr, OBJ const *obj)
 {
   struct cos_exception_context *cxt = cos_exception_context();
@@ -355,7 +355,7 @@ cos_exception_protect(struct cos_exception_protect *ptr, OBJ const *obj)
   COS_UNUSED(cos_exception_protect);
 }
 
-static inline struct cos_exception_extendedProtect
+static always_inline struct cos_exception_extendedProtect
 cos_exception_objectProtect(struct cos_exception_extendedProtect *ptr,
                             OBJ const *alt, VOFUNC fct)
 {
@@ -371,7 +371,7 @@ cos_exception_objectProtect(struct cos_exception_extendedProtect *ptr,
   COS_UNUSED(cos_exception_objectProtect);
 }
 
-static inline struct cos_exception_extendedProtect
+static always_inline struct cos_exception_extendedProtect
 cos_exception_extendedProtect(struct cos_exception_extendedProtect *ptr,
                               void * const*alt, VPFUNC fct)
 {

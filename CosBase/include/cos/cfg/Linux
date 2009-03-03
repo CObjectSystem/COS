@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.10 2009/02/25 14:44:15 ldeniau Exp $
+# | $Id: Linux,v 1.11 2009/03/03 14:45:23 ldeniau Exp $
 # |
 #
 
@@ -44,7 +44,7 @@ LIBSHEXT    := .so
 #
 # tools specific
 #
-CC          := gcc-4.2
+CC          := gcc # gcc-4.2
 CPP         := $(CC) -E
 DEP         := $(CC) -M
 LD          := $(CC)
@@ -97,7 +97,7 @@ SYSPATH     := PATH
 #
 # compiler specific (linux+gcc are the reference)
 #
-CCFLAGS     += --param large-function-growth=400 --param inline-unit-growth=200
+# CCFLAGS     += --param large-function-growth=400 --param inline-unit-growth=200
 
 DEBUG_CC    += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
                -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
