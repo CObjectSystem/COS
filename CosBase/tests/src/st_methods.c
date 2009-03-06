@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.12 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: st_methods.c,v 1.13 2009/03/06 14:36:38 ldeniau Exp $
  |
 */
 
@@ -181,7 +181,7 @@ st_memory(void)
   memset(arr, 0, P * sizeof *arr);
   for (i=0; i<P; i++) arr[i] = gnew(Counter);
   for (i=P; i>0; i--) grelease(arr[i-1]);
-  
+
   i = 0;
   STEST( "new (galloc+ginit)", P, arr[i++] = gnew(Counter) );
 

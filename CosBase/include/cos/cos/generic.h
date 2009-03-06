@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.18 2009/03/03 14:45:26 ldeniau Exp $
+ | $Id: generic.h,v 1.19 2009/03/06 14:36:38 ldeniau Exp $
  |
 */
 
@@ -243,9 +243,8 @@ COS_GEN_COMPMAK(RET,NAME,CLS,PS,C,A,R,COS_NO)
 
 #define COS_GEN_DEFV_2(RET,NAME,VPS,PS,AS,IS,C,A,R) \
 extern struct Generic COS_GEN_NAME(NAME); \
-COS_GEN_TYPEDEF(RET,NAME,PS,AS,   C,A    ) \
-COS_GEN_FUNCDCL(RET,NAME,VPS  ,IS        ) \
-COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,1) \
+COS_GEN_TYPEDEF(RET,NAME,    PS,AS,   C,A    ) \
+COS_GEN_FUNCDCL(RET,NAME,VPS,PS   ,IS,C      ) \
 COS_SCP_END
 
 /* variadic generic instantiation
@@ -274,6 +273,7 @@ COS_GEN_RANKCHK(    NAME,             C            ) \
 COS_GEN_NAMECHK(    NAME                           ) \
 COS_GEN_SIZECHK(    NAME,               A,R        ) \
 COS_GEN_VFUNDEF(RET,NAME,   VPS,AS,IS,C,A,R        ) \
+COS_GEN_NEXTDEF(RET,NAME,    PS,AS,IS,C,A,R,COS_YES) \
 COS_GEN_COMPMAK(RET,NAME,CLS,PS,      C,A,R,COS_YES)
 
 /*
@@ -324,8 +324,10 @@ COS_PP_IF(R)(COS_STATIC_ASSERT( \
     sizeof(COS_RET_TYPE(NAME)) < (1u << 16) );,)
 
 //  generic function declaration
-#define COS_GEN_FUNCDCL(RET,NAME,PS,IS) \
-extern RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF);
+#define COS_GEN_FUNCDCL(RET,NAME,VPS,PS,IS,C) \
+extern RET              (NAME)  COS_PP_MAP2(VPS,IS,COS_SIG_GENF); \
+extern void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
+                                SEL _sel, RET* _ret, COS_PP_CAT(IMP,C) _nxt);
 
 // generic function definition
 #define COS_GEN_FUNCDEF(RET,NAME,PS,AS,IS,C,A,R) \
@@ -381,7 +383,7 @@ RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
 
 // generic next function definition
 #define COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,V) \
-static COS_PP_IF(V)(,always_inline) \
+COS_PP_IF(V)(,static always_inline) \
 void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
                          SEL _sel, RET* _ret, COS_PP_CAT(IMP,C) _nxt) \
 { \
