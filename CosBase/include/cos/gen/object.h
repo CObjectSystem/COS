@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.17 2009/03/03 14:45:27 ldeniau Exp $
+ | $Id: object.h,v 1.18 2009/03/09 13:33:49 ldeniau Exp $
  |
 */
 
@@ -72,7 +72,7 @@ defgeneric(U32 , ghash         , _1);
 
 // properties, keys
 defgeneric(OBJ , (GenAccessor)ggetAt, _1, at);
-defgeneric(void, (GenAccessor)gputAt, _1, what, at);
+defgeneric(void, (GenAccessor)gputAt, _1, at, what);
 
 // comparison
 defgeneric(OBJ , (GenOperator)gisEqual, _1, _2); // return True or False

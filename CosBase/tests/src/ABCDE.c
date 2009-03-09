@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.10 2009/02/02 09:30:52 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.11 2009/03/09 13:33:49 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdarg.h>
 #include "generics.h"
 #include "properties.h"
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.9 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: property.h,v 1.10 2009/03/09 13:33:47 ldeniau Exp $
  |
 */
 
@@ -126,12 +126,12 @@
        retmethod( gautoRelease(aInt(self->size)) );
      endmethod
 
-     defmethod(void, gputAt, Array, Object, mP_size)
-       self->size = gint(_2);
+     defmethod(void, gputAt, Array, mP_size, Object)
+       self->size = gint(_3);
      endmethod
 
-     defmethod(void, gputAt, Array, Int, mP_size) // faster specialization
-       self->size = self2->value;
+     defmethod(void, gputAt, Array, mP_size, Int) // faster specialization
+       self->size = self3->value;
      endmethod
 
      // hand-written read-only property fullname with dynamically built attribute
@@ -209,14 +209,14 @@
   COS_MTH_END
 
 #define COS_PRP_DEF_SET(NAME,PROP,ATTR,UNBOX) \
-  COS_MTH_DEF(void, gputAt, NAME, Object, COS_MPR_NAME(PROP)) \
-    UNBOX(COS_PP_IFDEF(ATTR)(&self->ATTR,self), _2); \
+  COS_MTH_DEF(void, gputAt, NAME, COS_MPR_NAME(PROP), Object) \
+    UNBOX(COS_PP_IFDEF(ATTR)(&self->ATTR,self), _3); \
   COS_MTH_END
 
 #define COS_PRP_DEF_PUT(NAME,PROP,ATTR) \
-  COS_MTH_DEF(void, gputAt, NAME, Object, COS_MPR_NAME(PROP)) \
+  COS_MTH_DEF(void, gputAt, NAME, COS_MPR_NAME(PROP), Object) \
     OBJ old = self->ATTR; \
-    self->ATTR = gretain(_2); \
+    self->ATTR = gretain(_3); \
     grelease(old); \
   COS_MTH_END
 
