@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.7 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Sequence.c,v 1.8 2009/03/09 16:54:01 ldeniau Exp $
  |
 */
 
@@ -57,13 +57,13 @@ defmethod(OBJ, ginitWith2, pmView, Sequence, Range)
   retmethod( ginitWith2(_1,_2,slice) );
 endmethod
 
-defmethod(void, gputAt, Sequence, Sequence, Range)
-  OBJ slice = (OBJ)Slice_fromRange(atSlice(0,0), self3, gsize(_1));
-  gputAt(_1,_2,slice);
-endmethod
-
 defmethod(OBJ, ggetAt, Sequence, Range)
   OBJ slice = (OBJ)Slice_fromRange(atSlice(0,0), self2, gsize(_1));
   retmethod( ggetAt(_1,slice) );
+endmethod
+
+defmethod(void, gputAt, Sequence, Range, Sequence)
+  OBJ slice = (OBJ)Slice_fromRange(atSlice(0,0), self2, gsize(_1));
+  gputAt(_1,slice,_3);
 endmethod
 
