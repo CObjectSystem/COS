@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.h,v 1.2 2009/02/27 23:28:53 ldeniau Exp $
+ | $Id: CpxVector.h,v 1.3 2009/03/11 10:20:41 ldeniau Exp $
  |
 */
 
@@ -74,7 +74,7 @@ endclass
 // ----- Vector view
 
 defclass(CpxVectorView, CpxVector)
-  OBJ vector;
+  struct CpxVector *vector;
 endclass
 
 // ----- Dynamic vector

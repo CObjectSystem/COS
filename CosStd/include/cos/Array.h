@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.14 2009/02/27 23:28:52 ldeniau Exp $
+ | $Id: Array.h,v 1.15 2009/03/11 10:20:41 ldeniau Exp $
  |
 */
 
@@ -107,7 +107,7 @@ endclass
 // ----- Array view
 
 defclass(ArrayView, Array)
-  OBJ array;
+  struct Array *array;
 endclass
 
 // ----- Dynamic array

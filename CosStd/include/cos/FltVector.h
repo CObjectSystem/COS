@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.h,v 1.2 2009/02/27 23:28:53 ldeniau Exp $
+ | $Id: FltVector.h,v 1.3 2009/03/11 10:20:41 ldeniau Exp $
  |
 */
 
@@ -74,7 +74,7 @@ endclass
 // ----- Vector view
 
 defclass(FltVectorView, FltVector)
-  OBJ vector;
+  struct FltVector *vector;
 endclass
 
 // ----- Dynamic vector

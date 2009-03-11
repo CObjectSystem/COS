@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.5 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: Range.h,v 1.6 2009/03/11 10:20:41 ldeniau Exp $
  |
 */
 
@@ -148,5 +148,32 @@ Slice_fromRange(struct Slice *s, struct Range *r, U32 size)
 
   return s;  
 }
+
+/*
+static inline struct Slice*
+Slice_fromRange(struct Slice *s, struct Range *r, U32 size)
+{
+  U32 start;
+  U32 end;
+
+  if (r->stride < 0) {
+    end    = index_abs(r->start, size);
+    start  = index_abs(r->end  , size);
+    stride = -r->stride;
+  } else {
+    start  = index_abs(r->start, size);
+    end    = index_abs(r->end  , size);
+    stride = r->stride;
+  }
+
+  if (start < end) {
+    size = (end - start + stride) / stride;
+  } else {
+    size = (start - end + stride) / stride;
+  }
+
+  return s;
+}
+*/
 
 #endif // COS_RANGE_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.5 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: logic.h,v 1.6 2009/03/11 10:20:41 ldeniau Exp $
  |
 */
 
@@ -46,36 +46,36 @@ defgeneric(OBJ, gimplies, _1, _2); // (not _1) or _2
 
 // inliners
 
-static inline BOOL
-equal(OBJ _1, OBJ _2) {
+static always_inline BOOL
+gequal(OBJ _1, OBJ _2) {
   return gisEqual(_1,_2) == True;
 }
 
-static inline BOOL
-lesser(OBJ _1, OBJ _2) {
+static always_inline BOOL
+glesser(OBJ _1, OBJ _2) {
   useclass(Lesser);
   return gcompare(_1,_2) == Lesser;
 }
 
-static inline BOOL
-greater(OBJ _1, OBJ _2) {
+static always_inline BOOL
+ggreater(OBJ _1, OBJ _2) {
   useclass(Greater);
   return gcompare(_1,_2) == Greater;
 }
 
-static inline BOOL
-notEqual(OBJ _1, OBJ _2) {
+static always_inline BOOL
+gnotEqual(OBJ _1, OBJ _2) {
   return gisEqual(_1,_2) != True;
 }
 
-static inline BOOL
-lesserEqual(OBJ _1, OBJ _2) {
+static always_inline BOOL
+glesserOrEqual(OBJ _1, OBJ _2) {
   useclass(Greater);
   return gcompare(_1,_2) != Greater;
 }
 
-static inline BOOL
-greaterEqual(OBJ _1, OBJ _2) {
+static always_inline BOOL
+ggreaterOrEqual(OBJ _1, OBJ _2) {
   useclass(Lesser);
   return gcompare(_1,_2) != Lesser;
 }

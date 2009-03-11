@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.27 2009/02/27 23:28:53 ldeniau Exp $
+ | $Id: Array.c,v 1.28 2009/03/11 10:20:41 ldeniau Exp $
  |
 */
 
@@ -104,11 +104,11 @@ endmethod
 struct Array*
 ArrayView_init(struct ArrayView *view, I32 idx)
 {
-  test_assert( cos_object_isKindOf(view->array, classref(Array)),
-               "ArrayView accepts only arrays" );
+//  test_assert( cos_object_isKindOf(view->array, classref(Array)),
+//               "ArrayView accepts only arrays" );
 
   struct Array* arr = &view->Array;
-  struct Array* ref = STATIC_CAST(struct Array*, view->array);
+  struct Array* ref =  view->array;
 
   U32 start  = index_abs(idx, ref->size);
 
@@ -125,11 +125,11 @@ ArrayView_init(struct ArrayView *view, I32 idx)
 struct Array*
 ArraySubview_init(struct ArrayView *view, I32 idx)
 {
-  test_assert( cos_object_isKindOf(view->array, classref(Array)),
-               "ArrayView accepts only arrays" );
+//  test_assert( cos_object_isKindOf(view->array, classref(Array)),
+//               "ArrayView accepts only arrays" );
 
   struct Array* arr = &view->Array;
-  struct Array* ref = STATIC_CAST(struct Array*, view->array);
+  struct Array* ref =  view->array;
 
   U32 start  = index_abs(idx, ref->size);
 

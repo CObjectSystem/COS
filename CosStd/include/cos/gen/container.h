@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.10 2009/02/24 14:44:34 ldeniau Exp $
+ | $Id: container.h,v 1.11 2009/03/11 10:20:41 ldeniau Exp $
  |
 */
 
@@ -53,7 +53,7 @@ defgeneric(OBJ , gtop       , _1);        // alias for gget
 defgeneric(void, gpop       , _1);        // alias for gdrop
 
 // list-like accessor
-defgeneric(void, ginsertAt  , _1, what, at);
+defgeneric(void, ginsertAt  , _1, at, what);
 defgeneric(void, gremoveAt  , _1, at);
 
 // seq-like accessor
@@ -62,16 +62,16 @@ defgeneric(void, gappend    , _1, what);
 defgeneric(OBJ , gfirst     , _1);
 defgeneric(OBJ , glast      , _1);
 
-// raw data (copy) accessors
-defgeneric(void, ggetValue  , _1, what);
-defgeneric(void, ggetValueAt, _1, what, at);
-
 // check for elements
 defgeneric(OBJ , gisEmpty   , _1);
-defgeneric(OBJ , gisPrefixOf, _1, _2);
-defgeneric(OBJ , gisSuffixOf, _1, _2);
 
 // adjust object (e.g. capacity to size)
 defgeneric(void, gadjust    , _1);
+
+// inliner
+static always_inline BOOL
+gempty(OBJ _1) { 
+  return gisEmpty(_1) == True; 
+}
 
 #endif // COS_GEN_CONTAINER_H

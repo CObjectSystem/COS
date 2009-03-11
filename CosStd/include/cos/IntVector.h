@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.h,v 1.2 2009/02/27 23:28:53 ldeniau Exp $
+ | $Id: IntVector.h,v 1.3 2009/03/11 10:20:41 ldeniau Exp $
  |
 */
 
@@ -74,7 +74,7 @@ endclass
 // ----- Vector view
 
 defclass(IntVectorView, IntVector)
-  OBJ vector;
+  struct IntVector *vector;
 endclass
 
 // ----- Dynamic vector
