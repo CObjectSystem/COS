@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.cpp,v 1.4 2008/07/02 22:27:28 ldeniau Exp $
+ | $Id: st_methods.cpp,v 1.5 2009/03/11 12:29:27 ldeniau Exp $
  |
 */
 
@@ -47,12 +47,12 @@ st_methods()
   Counter cnt;
   IIncr &inc = cnt;
 
-  STEST( "virtual member function (0 argument )", N, N, inc.incr() );
-  STEST( "virtual member function (1 argument )", N, N, inc.incrBy(1) );
-  STEST( "virtual member function (2 arguments)", N, N, inc.incrBy(1,1) );
-  STEST( "virtual member function (3 arguments)", N, N, inc.incrBy(1,1,1) );
-  STEST( "virtual member function (4 arguments)", N, N, inc.incrBy(1,1,1,1) );
-  STEST( "virtual member function (5 arguments)", N, N, inc.incrBy(1,1,1,1,1) );
+  STEST( "virtual member function (0 argument )", N, inc.incr() );
+  STEST( "virtual member function (1 argument )", N, inc.incrBy(1) );
+  STEST( "virtual member function (2 arguments)", N, inc.incrBy(1,1) );
+  STEST( "virtual member function (3 arguments)", N, inc.incrBy(1,1,1) );
+  STEST( "virtual member function (4 arguments)", N, inc.incrBy(1,1,1,1) );
+  STEST( "virtual member function (5 arguments)", N, inc.incrBy(1,1,1,1,1) );
   
   assert( cnt.value() == N+N+2*N+3*N+4*N+5*N );
 }
@@ -66,10 +66,10 @@ st_multimethods()
   IAddTo3 &add3 = cnt, &one3 = cnt1;
   IAddTo4 &add4 = cnt, &one4 = cnt1;
 
-  STEST( "virtual member function & visitor pattern (rank 2)", N, N, add1.addTo(one1) );
-  STEST( "virtual member function & visitor pattern (rank 3)", N, N, add2.addTo(one2,one2) );
-  STEST( "virtual member function & visitor pattern (rank 4)", N, N, add3.addTo(one3,one3,one3) );
-  STEST( "virtual member function & visitor pattern (rank 5)", N, N, add4.addTo(one4,one4,one4,one4) );
+  STEST( "virtual member function & visitor pattern (rank 2)", N, add1.addTo(one1) );
+  STEST( "virtual member function & visitor pattern (rank 3)", N, add2.addTo(one2,one2) );
+  STEST( "virtual member function & visitor pattern (rank 4)", N, add3.addTo(one3,one3,one3) );
+  STEST( "virtual member function & visitor pattern (rank 5)", N, add4.addTo(one4,one4,one4,one4) );
   
   assert( cnt.value() == N+2*N+3*N+4*N );
 }
@@ -82,8 +82,8 @@ st_memory(void)
   U32 i;
   
   i = 0;
-  STEST( "new", P, P, arr[i++] = new Counter );
+  STEST( "new", P, arr[i++] = new Counter );
 
   i = 0;
-  STEST( "delete", P, P, delete arr[i++] );
+  STEST( "delete", P, delete arr[i++] );
 }

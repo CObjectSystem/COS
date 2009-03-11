@@ -32,20 +32,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Counter.hpp,v 1.1 2008/06/27 16:17:25 ldeniau Exp $
+ | $Id: Counter.hpp,v 1.2 2009/03/11 12:29:27 ldeniau Exp $
  |
 */
 
 #include "Interfaces.hpp"
 
-#define UNIQUE virtual
-
 class Counter :
-  UNIQUE public IIncr,
-  UNIQUE public IAddTo1,
-  UNIQUE public IAddTo2,
-  UNIQUE public IAddTo3,
-  UNIQUE public IAddTo4
+  virtual public IIncr,
+  virtual public IAddTo1,
+  virtual public IAddTo2,
+  virtual public IAddTo3,
+  virtual public IAddTo4
 {
 public:
   explicit Counter(U32 val=0) : _val(val) {}
@@ -61,18 +59,20 @@ public: // overrides with covariant return type
   virtual Counter& incrBy(U32,U32,U32,U32,U32);
   
   virtual Counter& addTo(const IAddTo1&);
+  virtual Counter& addTo(const IAddTo2&, const IAddTo2&);
+  virtual Counter& addTo(const IAddTo3&, const IAddTo3&, const IAddTo3&);
+  virtual Counter& addTo(const IAddTo4&, const IAddTo4&, const IAddTo4&, const IAddTo4&);
+
+protected:
   virtual Counter& addTo(Counter&) const;
 
-  virtual Counter& addTo(const IAddTo2&, const IAddTo2&);
   virtual Counter& addTo(Counter&, const IAddTo2&) const;
   virtual Counter& addTo(Counter&, const Counter&) const;
 
-  virtual Counter& addTo(const IAddTo3&, const IAddTo3&, const IAddTo3&);
   virtual Counter& addTo(Counter&, const IAddTo3&, const IAddTo3&) const;
   virtual Counter& addTo(Counter&, const Counter&, const IAddTo3&) const;
   virtual Counter& addTo(Counter&, const Counter&, const Counter&) const;
 
-  virtual Counter& addTo(const IAddTo4&, const IAddTo4&, const IAddTo4&, const IAddTo4&);
   virtual Counter& addTo(Counter&, const IAddTo4&, const IAddTo4&, const IAddTo4&) const;
   virtual Counter& addTo(Counter&, const Counter&, const IAddTo4&, const IAddTo4&) const;
   virtual Counter& addTo(Counter&, const Counter&, const Counter&, const IAddTo4&) const;
@@ -81,7 +81,5 @@ public: // overrides with covariant return type
 private: // states
   U32 _val;
 };
-
-#undef UNIQUE
 
 #endif // COS_TESTS_COUNTER_HPP

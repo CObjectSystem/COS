@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Interfaces.hpp,v 1.1 2008/06/27 16:17:25 ldeniau Exp $
+ | $Id: Interfaces.hpp,v 1.2 2009/03/11 12:29:27 ldeniau Exp $
  |
 */
 
 typedef unsigned U32;
-
-class Counter;
 
 struct IIncr {
   virtual ~IIncr() {}
@@ -50,34 +48,48 @@ struct IIncr {
   virtual IIncr& incrBy(U32,U32,U32,U32,U32) = 0;
 };
 
+class Counter;
+
 struct IAddTo1 {
   virtual ~IAddTo1() {}
   virtual IAddTo1& addTo(const IAddTo1&) = 0;
-  virtual IAddTo1& addTo(Counter&) const = 0;
+
+protected:
+  friend class Counter;
+  virtual Counter& addTo(Counter&) const = 0;
 };
 
 struct IAddTo2 {
   virtual ~IAddTo2() {}
   virtual IAddTo2& addTo(const IAddTo2&, const IAddTo2&) = 0;
-  virtual IAddTo2& addTo(Counter&, const IAddTo2&) const = 0;
-  virtual IAddTo2& addTo(Counter&, const Counter&) const = 0;
+
+protected:
+  friend class Counter;
+  virtual Counter& addTo(Counter&, const IAddTo2&) const = 0;
+  virtual Counter& addTo(Counter&, const Counter&) const = 0;
 };
 
 struct IAddTo3 {
   virtual ~IAddTo3() {}
   virtual IAddTo3& addTo(const IAddTo3&, const IAddTo3&, const IAddTo3&) = 0;
-  virtual IAddTo3& addTo(Counter&, const IAddTo3&, const IAddTo3&) const = 0;
-  virtual IAddTo3& addTo(Counter&, const Counter&, const IAddTo3&) const = 0;
-  virtual IAddTo3& addTo(Counter&, const Counter&, const Counter&) const = 0;
+
+protected:
+  friend class Counter;
+  virtual Counter& addTo(Counter&, const IAddTo3&, const IAddTo3&) const = 0;
+  virtual Counter& addTo(Counter&, const Counter&, const IAddTo3&) const = 0;
+  virtual Counter& addTo(Counter&, const Counter&, const Counter&) const = 0;
 };
 
 struct IAddTo4 {
   virtual ~IAddTo4() {}
   virtual IAddTo4& addTo(const IAddTo4&, const IAddTo4&, const IAddTo4&, const IAddTo4&) = 0;
-  virtual IAddTo4& addTo(Counter&, const IAddTo4&, const IAddTo4&, const IAddTo4&) const = 0;
-  virtual IAddTo4& addTo(Counter&, const Counter&, const IAddTo4&, const IAddTo4&) const = 0;
-  virtual IAddTo4& addTo(Counter&, const Counter&, const Counter&, const IAddTo4&) const = 0;
-  virtual IAddTo4& addTo(Counter&, const Counter&, const Counter&, const Counter&) const = 0;
+
+protected:
+  friend class Counter;
+  virtual Counter& addTo(Counter&, const IAddTo4&, const IAddTo4&, const IAddTo4&) const = 0;
+  virtual Counter& addTo(Counter&, const Counter&, const IAddTo4&, const IAddTo4&) const = 0;
+  virtual Counter& addTo(Counter&, const Counter&, const Counter&, const IAddTo4&) const = 0;
+  virtual Counter& addTo(Counter&, const Counter&, const Counter&, const Counter&) const = 0;
 };
 
 #endif // COS_TESTS_INTERFACES_HPP
