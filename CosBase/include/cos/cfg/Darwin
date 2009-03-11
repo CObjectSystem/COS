@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.9 2009/01/23 10:34:58 ldeniau Exp $
+# | $Id: Darwin,v 1.10 2009/03/11 11:08:45 ldeniau Exp $
 # |
 #
 
@@ -98,10 +98,9 @@ SYSPATH     := PATH
 #
 # compiler specific settings (linux+gcc are the reference)
 #
-CCFLAGS     += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
+DEBUG_CC    += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
                -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
                -Wpointer-arith -Wbad-function-cast -Wcast-align -Wcast-qual \
-               -Wfloat-equal -Wconversion -Wno-conversion -Winline \
-               --param large-function-growth=500 --param inline-unit-growth=200
+               -Wfloat-equal -Wconversion -Wno-conversion -Winline
 
 # end of makefile
