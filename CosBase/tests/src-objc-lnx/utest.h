@@ -32,14 +32,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utest.h,v 1.1 2008/10/03 07:37:31 ldeniau Exp $
+ | $Id: utest.h,v 1.2 2009/03/11 12:35:06 ldeniau Exp $
  |
 */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define UTEST_START(name) \
         { \
           struct utest_info _uti[1]; \
-          utest_init(_uti, name, __FILE__); \
+          utest_init(_uti, KEEP_FAILED_MAX, name, __FILE__); \
           {
 
 #define UTEST(cond) \
@@ -50,44 +54,49 @@
           utest_fini(_uti); \
         }
 
-#define STEST(name,N,itr,...) \
+#define STEST(name,itr,expr) \
         do { \
           struct stest_info _sti[1]; \
-          stest_init(_sti, name, N); \
+          stest_init(_sti, name, itr); \
           while (_sti->i++ < (itr)) { \
-            __VA_ARGS__; \
+            expr; \
           }  \
           stest_fini(_sti); \
         } while (0)
 
-enum { MAX_KEEP_FAIL = 10 };
+#define UTEST_STR(a)  UTEST_STR_(a)
+#define UTEST_STR_(a) #a
+
+enum { KEEP_FAILED_MAX = 10 };
 
 struct utest_info {
+  int         keep_max;
   const char *test_file;
-  const char *fail_cond[MAX_KEEP_FAIL];
-  int         fail_line[MAX_KEEP_FAIL];
+  const char *fail_cond[KEEP_FAILED_MAX];
+  int         fail_line[KEEP_FAILED_MAX];
   int         fail_cnt;
   int         test_cnt;
   double      test_t0;
 };
 
 struct stest_info {
-  int    i, itr;
+  long   i, itr;
   double t0;
 };
 
-void utest_check(struct utest_info *uti, int pass, const char *cond, int line);
-void utest_init (struct utest_info *uti, const char *name, const char *file);
-void utest_fini (struct utest_info *uti);
+void utest_check(struct utest_info*, int, const char*, int);
+void utest_init (struct utest_info*, int, const char*, const char*);
+void utest_fini (struct utest_info*);
 void utest_stat (void);
 void utest_clear(void);
 
-void stest_init (struct stest_info *sti, const char *name, int itr);
-void stest_fini (struct stest_info *sti);
+void stest_init (struct stest_info*, const char*, long);
+void stest_fini (struct stest_info*);
 void stest_stat (void);
 void stest_clear(void);
 
-#define UTEST_STR(a)  UTEST_STR_(a)
-#define UTEST_STR_(a) #a
+#ifdef __cplusplus
+}
+#endif
 
 #endif // COS_TESTS_UTEST_H

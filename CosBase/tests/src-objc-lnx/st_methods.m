@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_methods.m,v 1.1 2008/10/03 07:37:31 ldeniau Exp $
+ | $Id: st_methods.m,v 1.2 2009/03/11 12:35:06 ldeniau Exp $
  |
 */
 
@@ -46,12 +46,12 @@ st_methods()
 {
   id cnt = [Counter new];
 
-  STEST( "method (0 argument )", N, N, [cnt incr] );
-  STEST( "method (1 argument )", N, N, [cnt incrBy: 1] );
-  STEST( "method (2 arguments)", N, N, [cnt incrBy: 1 :1] );
-  STEST( "method (3 arguments)", N, N, [cnt incrBy: 1 :1 :1] );
-  STEST( "method (4 arguments)", N, N, [cnt incrBy: 1 :1 :1 :1] );
-  STEST( "method (5 arguments)", N, N, [cnt incrBy: 1 :1 :1 :1 :1] );
+  STEST( "method (0 argument )", N, [cnt incr] );
+  STEST( "method (1 argument )", N, [cnt incrBy: 1] );
+  STEST( "method (2 arguments)", N, [cnt incrBy: 1 :1] );
+  STEST( "method (3 arguments)", N, [cnt incrBy: 1 :1 :1] );
+  STEST( "method (4 arguments)", N, [cnt incrBy: 1 :1 :1 :1] );
+  STEST( "method (5 arguments)", N, [cnt incrBy: 1 :1 :1 :1 :1] );
   
   assert( (U32)[cnt value] == (U32)(N+N+2*N+3*N+4*N+5*N) );
 
@@ -64,10 +64,10 @@ st_multimethods()
   id cnt = [Counter new];
   id one = [[Counter new] incr];
 
-  STEST( "method & visitor pattern (rank 2)", N, N, [cnt addTo1: one] );
-  STEST( "method & visitor pattern (rank 3)", N, N, [cnt addTo2: one :one] );
-  STEST( "method & visitor pattern (rank 4)", N, N, [cnt addTo3: one :one :one] );
-  STEST( "method & visitor pattern (rank 5)", N, N, [cnt addTo4: one :one :one :one] );
+  STEST( "method & visitor pattern (rank 2)", N, [cnt addTo1: one] );
+  STEST( "method & visitor pattern (rank 3)", N, [cnt addTo2: one :one] );
+  STEST( "method & visitor pattern (rank 4)", N, [cnt addTo3: one :one :one] );
+  STEST( "method & visitor pattern (rank 5)", N, [cnt addTo4: one :one :one :one] );
 
   assert( (U32)[cnt value] == (U32)(N+2*N+3*N+4*N) );
 
@@ -83,8 +83,8 @@ st_memory(void)
   U32 i;
 
   i = 0;
-  STEST( "alloc+init", P, P, arr[i++] = [[Counter alloc] init] );
+  STEST( "alloc+init", P, arr[i++] = [[Counter alloc] init] );
 
   i = 0;
-  STEST( "dealloc", P, P, [arr[i++] free] );
+  STEST( "dealloc", P, [arr[i++] free] );
 }
