@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.11 2009/03/11 11:10:21 ldeniau Exp $
+# | $Id: Darwin,v 1.12 2009/03/18 15:46:37 ldeniau Exp $
 # |
 #
 
@@ -89,6 +89,7 @@ SHARED_LD    = -dynamiclib -fPIC -Wl,-install_name,$(@F) -Wl,-U,_cos_symbol_init
 # system specific settings
 #
 SYSFLAGS    := -DCOS_NOTLS \
+               -DSYSNAME=$(OSYS) -DARCHNAME=$(ARCH) \
                -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
                -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS     := -lpthread -ldl

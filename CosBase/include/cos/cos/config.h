@@ -32,12 +32,19 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.15 2009/03/03 14:45:26 ldeniau Exp $
+ | $Id: config.h,v 1.16 2009/03/18 15:47:26 ldeniau Exp $
  |
 */
 
 #ifndef COS_COS_COS_H
 #error "COS: use <cos/cos/cos.h> instead of <cos/cos/config.h>"
+#endif
+
+/* NOTE-CONF: System specific config
+*/
+#ifdef SYSNAME
+#define  COS_CFG_INC(SYSNAME) <cos/cfg/SYSNAME.h>
+#include COS_CFG_INC(SYSNAME)
 #endif
 
 /* NOTE-CONF: C89 compliance

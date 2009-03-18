@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.7 2008/11/07 23:39:35 ldeniau Exp $
+ | $Id: contract.h,v 1.8 2009/03/18 15:47:27 ldeniau Exp $
  |
 */
 
@@ -204,10 +204,10 @@
   } \
   goto _cos_ctr_end; \
   _cos_ctr_end: \
-  if (COS_CONTRACT >= COS_CONTRACT_POST && _cos_ctr_st == cos_tag_redo) {\
+  if (COS_CONTRACT >= COS_CONTRACT_POST && _cos_ctr_st == cos_tag_redo) { \
     _cos_ctr_st = cos_tag_post; \
     goto _cos_ctr_beg; \
-  } \
+  }
 
 // contract return
 #define COS_CTR_RET(...) \

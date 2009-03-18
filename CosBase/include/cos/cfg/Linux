@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.12 2009/03/11 11:08:45 ldeniau Exp $
+# | $Id: Linux,v 1.13 2009/03/18 15:46:40 ldeniau Exp $
 # |
 #
 
@@ -88,7 +88,8 @@ SHARED_LD    = -shared -fPIC -Wl,-soname,$(@F)
 #
 # system specific
 #
-SYSFLAGS    := -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
+SYSFLAGS    := -DSYSNAME=$(OSYS) -DARCHNAME=$(ARCH) \
+               -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
                -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS     := -lpthread -ldl
 SYSLIBPATH  := LD_LIBRARY_PATH
