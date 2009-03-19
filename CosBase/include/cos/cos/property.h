@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.10 2009/03/09 13:33:47 ldeniau Exp $
+ | $Id: property.h,v 1.11 2009/03/19 16:20:14 ldeniau Exp $
  |
 */
 
@@ -205,12 +205,12 @@
 
 #define COS_PRP_DEF_GET(NAME,PROP,ATTR,BOX) \
   COS_MTH_DEF(OBJ, ggetAt, NAME, COS_MPR_NAME(PROP)) \
-    COS_MTH_RET(BOX(COS_PP_IFDEF(ATTR)(self->ATTR,self))); \
+    COS_MTH_RET(COS_PP_IFDEF(ATTR)(BOX(self->ATTR), BOX(self))); \
   COS_MTH_END
 
 #define COS_PRP_DEF_SET(NAME,PROP,ATTR,UNBOX) \
   COS_MTH_DEF(void, gputAt, NAME, COS_MPR_NAME(PROP), Object) \
-    UNBOX(COS_PP_IFDEF(ATTR)(&self->ATTR,self), _3); \
+    COS_PP_IFDEF(ATTR)(self->ATTR = UNBOX(_3), UNBOX(self, _3)); \
   COS_MTH_END
 
 #define COS_PRP_DEF_PUT(NAME,PROP,ATTR) \
