@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.h,v 1.5 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Exception.h,v 1.6 2009/03/22 13:51:03 ldeniau Exp $
  |
 */
 
@@ -46,6 +46,7 @@
 
 defclass(Exception)
   STR str;
+  OBJ obj;
 endclass
 
 defclass(ExErrno,Exception)
@@ -64,6 +65,7 @@ defclass(ExBadDomain     ,Exception) endclass
 defclass(ExBadFormat     ,Exception) endclass
 defclass(ExBadMessage    ,Exception) endclass
 defclass(ExBadRange      ,Exception) endclass
+defclass(ExBadProperty   ,Exception) endclass
 defclass(ExBadPredicate  ,Exception) endclass
 defclass(ExBadSize       ,Exception) endclass
 defclass(ExBadType       ,Exception) endclass

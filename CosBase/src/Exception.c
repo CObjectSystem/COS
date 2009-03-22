@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.9 2009/02/25 23:22:10 ldeniau Exp $
+ | $Id: Exception.c,v 1.10 2009/03/22 13:51:04 ldeniau Exp $
  |
 */
 
@@ -58,6 +58,7 @@ makclass(ExBadDomain     ,Exception);
 makclass(ExBadFormat     ,Exception);
 makclass(ExBadMessage    ,Exception);
 makclass(ExBadPredicate  ,Exception);
+makclass(ExBadProperty   ,Exception);
 makclass(ExBadRange      ,Exception);
 makclass(ExBadSize       ,Exception);
 makclass(ExBadType       ,Exception);
@@ -72,21 +73,34 @@ makclass(ExUnderflow     ,Exception);
 
 defmethod(OBJ, ginit, Exception)
   self->str = "";
+  self->obj = Nil;
   retmethod(_1);
 endmethod
  
+defmethod(OBJ, ginitWith, Exception, Object)
+  self->str = "";
+  self->obj = gretain(_2);
+  retmethod(_1);
+endmethod
+
 defmethod(OBJ, ginitWithStr, Exception, (STR)str)
   self->str = str ? str : "";
+  self->obj = Nil;
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gdeinit, Exception)
   self->str = "";
+  grelease(self->obj);
   retmethod(_1);
 endmethod
 
 defmethod(STR, gstr, Exception)
   retmethod(self->str);
+endmethod
+
+defmethod(OBJ, gobj, Exception)
+  retmethod(self->obj);
 endmethod
 
 // ----- assert
