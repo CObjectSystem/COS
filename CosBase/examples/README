@@ -1,0 +1,62 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS Examples README
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: README,v 1.1 2009/03/25 16:59:37 ldeniau Exp $
+# |
+#
+
+Compilation and run:
+--------------------
+
+from each subdirectories:
+
+make release.run
+
+or (assuming COS is installed or LD_LIBRARY_PATH set appropriately):
+
+make release
+./arch/bin/cos-ex01
+
+Debugging makefiles:
+--------------------
+
+make [target] SHOW=yes TRACE=yes
+
+# debug flags
+SHOW  will show the commands run
+TRACE will show the value of important variables
+
+Project information:
+--------------------
+  - web page: http:/cern.ch/laurent.deniau/cos.html
+  - web site: http:/sf.net/projects/cos
+  - contact : laurent.deniau@cern.ch
+
