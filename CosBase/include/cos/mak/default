@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.23 2009/02/25 14:45:03 ldeniau Exp $
+# | $Id: default,v 1.24 2009/03/25 16:36:34 ldeniau Exp $
 # |
 #
 
@@ -103,12 +103,14 @@ OBJECTS  = $(addprefix $(OBJDIR)/, \
 DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
 
 BASEMOD  = $(wildcard \
-             $(foreach d, $(abspath $(moddirs) $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../..), \
-               $(foreach m, $(moddeps),$(d)/$(m))))
+             $(foreach d, $(abspath $(moddirs) \
+               $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../.. $(BASEDIR)/../../..), \
+                 $(foreach m, $(moddeps),$(d)/$(m))))
              
 DESTMOD  = $(wildcard \
-             $(foreach d, $(abspath $(moddirs) $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../..), \
-               $(foreach m, $(moddeps),$(d)/$(m))))
+             $(foreach d, $(abspath $(moddirs) \
+               $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../.. $(DESTDIR)/../../..), \
+                 $(foreach m, $(moddeps),$(d)/$(m))))
 
 MODS     = $(addprefix --dep=, $(moddeps))
 
