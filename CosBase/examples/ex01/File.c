@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.1 2009/03/25 16:34:55 ldeniau Exp $
+ | $Id: File.c,v 1.2 2009/03/25 16:50:08 ldeniau Exp $
  |
 */
 
@@ -57,5 +57,13 @@ endmethod
 
 defmethod(void, gprint, File, String)
   fputs(self2->str, self1->file);
+endmethod
+
+// extend the class Stream to support File creation
+
+useclass(File);
+
+defmethod(OBJ, ginitWithStr, pmStream, (STR)str)
+  retmethod( gnewWithStr(File,str) );
 endmethod
 

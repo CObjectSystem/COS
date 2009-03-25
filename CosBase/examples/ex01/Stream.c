@@ -29,11 +29,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.1 2009/03/25 16:34:55 ldeniau Exp $
+ | $Id: Stream.c,v 1.2 2009/03/25 16:50:08 ldeniau Exp $
  |
 */
 
 #include "Stream.h"
+#include "generics.h"
 
 makclass(Stream);
+
+defmethod(OBJ, galloc, pmStream)
+  retmethod(_1); // lazy, delegate to subclass initializer
+endmethod
 

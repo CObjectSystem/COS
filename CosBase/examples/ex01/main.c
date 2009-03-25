@@ -29,27 +29,27 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: main.c,v 1.1 2009/03/25 16:34:55 ldeniau Exp $
+ | $Id: main.c,v 1.2 2009/03/25 16:50:08 ldeniau Exp $
  |
 */
 
 #include "generics.h"
 #include <stdlib.h>
 
-useclass(File, String);
+useclass(Stream, String);
 
 int main(void)
 {
-  OBJ file = gnewWithStr(File, 0); // default = stdout
+  OBJ strm = gnewWithStr(Stream, 0);
   OBJ str1 = gnewWithStr(String, "string one\n");
   OBJ str2 = gnewWithStr(String, "string two\n");
 
-  gprint(file, str1);
-  gprint(file, str2);
+  gprint(strm, str1);
+  gprint(strm, str2);
     
   grelease(str1);
   grelease(str2);
-  grelease(file);
+  grelease(strm);
 
   return EXIT_SUCCESS;
 }
