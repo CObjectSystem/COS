@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.18 2009/02/27 20:11:46 ldeniau Exp $
+ | $Id: cosdef.h,v 1.19 2009/04/01 22:31:59 ldeniau Exp $
  |
 */
 
@@ -138,6 +138,12 @@ enum {
 
 // selector types for compile-time checks
 typedef struct OBJ_as_SEL* OBJ_as_SEL; // ADT, never defined
+
+// generic arguments
+struct cos_generic_arginfo {
+  U16 size;
+  U16 offset;
+};
 
 // exception context
 struct cos_exception_context {

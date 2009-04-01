@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.14 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: base.h,v 1.15 2009/04/01 22:31:59 ldeniau Exp $
  |
 */
 
@@ -132,9 +132,10 @@
 #define COS_MPR_NAME(NAME)    COS_PP_CAT(mP_     ,NAME)
 #define COS_PPR_NAME(NAME)    COS_PP_CAT(pmP_    ,NAME)
 
-// generics return and arguments type
+// generics return and arguments type and info
 #define COS_RET_TYPE(NAME)    COS_PP_CAT(NAME,_ret_t)
 #define COS_ARG_TYPE(NAME)    COS_PP_CAT(NAME,_arg_t)
+#define COS_ARG_INFO(NAME)    COS_PP_CAT(NAME,_arg_i)
 
 // behavior max ranks
 #define COS_CLS_RNKMAX  31
