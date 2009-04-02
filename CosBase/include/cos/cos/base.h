@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.15 2009/04/01 22:31:59 ldeniau Exp $
+ | $Id: base.h,v 1.16 2009/04/02 15:11:28 ldeniau Exp $
  |
 */
 
@@ -262,7 +262,7 @@
 
 // unused identifier
 #define COS_UNUSED(...) \
-        (COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),COS_UNUSED_1)))
+        COS_PP_SEPWITH(COS_PP_MAP((__VA_ARGS__),COS_UNUSED_1),;)
 #define COS_UNUSED_1(NAME) (void)(NAME)
 
 // scope end (;)

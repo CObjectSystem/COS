@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.9 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.10 2009/04/02 15:11:29 ldeniau Exp $
  |
 */
 
@@ -49,9 +49,8 @@ ut_autorelease(void)
 {
   useclass(A, AutoRelease);
   OBJ a, c;
-  OBJ ar;
   volatile size_t i;
-  volatile OBJ ar1, ar2, ar3, ar4;
+  volatile OBJ ar, ar1, ar2, ar3, ar4;
   static OBJ arr[1000];
   
   UTEST_START("reference counting & autorelease")

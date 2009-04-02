@@ -29,11 +29,11 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.6 2009/04/02 08:26:06 ldeniau Exp $
+# | $Id: README,v 1.7 2009/04/02 15:11:01 ldeniau Exp $
 # |
 #
 
-IMPORTANT: The C Object System requires GNU make 3.81 or higher.
+*** IMPORTANT: The C Object System requires GNU make 3.81 or higher ***
 
 Compilation/tests/[un]install:
 ------------------------------
@@ -64,6 +64,9 @@ path-to-cos/CosBase/Makefile
 # program
 path-to-cos/CosBase/tests/Makefile
 
+# examples
+path-to-cos/CosBase/examples/ex??/Makefile
+
 Debugging makefiles:
 --------------------
 
@@ -73,16 +76,33 @@ make [target] SHOW=yes TRACE=yes
 SHOW  will show the commands run
 TRACE will show the value of important variables
 
+Code examples:
+--------------
+
+path-to-cos/CosBase/examples
+
 Supported platforms:
 --------------------
 
-platform name is detected using the posix command "uname -s"
+note: platforms name are detected using the posix command "uname -s"
 
 the list of supported platforms are in the directory
 path-to-cos/CosBase/include/cos/cfg/
 
 porting on Unixes/Posix compliant platform should be easy
-porting on Windows probably requires some Posix like environment (e.g. Mingw, Cygwin)
+porting on Windows requires some Posix-like environment (e.g. Mingw, Cygwin)
+
+Tested platforms:
+-----------------
+
+# Architectures
+Linux Ubuntu 8.04 and 8.10 (Debian) on i386   (32-bit) Core2 Duo
+Linux Ubuntu 8.04 and 8.10 (Debian) on x86_64 (64-bit) Core2 Duo
+Linux SLC 4.0              (RedHat) on x86_64 (64-bit) Quad Xeon
+Mac OS X Leopard           (Darwin) on x86_64 (64-bit) Core2 Duo
+
+# Compilers
+gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2
 
 Documentation:
 --------------

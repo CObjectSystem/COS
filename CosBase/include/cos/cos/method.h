@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.26 2009/04/02 13:35:07 ldeniau Exp $
+ | $Id: method.h,v 1.27 2009/04/02 15:11:29 ldeniau Exp $
  |
 */
 
@@ -272,7 +272,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   COS_PP_IF(R)(/* use ret */,COS_UNUSED(_ret);) \
   COS_UNUSED(_sel,_arg,self,next_method, \
     _cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_rnd,\
-    _cos_mth_nxt_cls,_cos_mth_nxt_p); \
+    _cos_mth_nxt_cls,_cos_mth_nxt_p,_cos_mth_nxt_chk); \
   /* method user code */ \
   _cos_mth_body:
 
@@ -289,6 +289,8 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   enum { _cos_mth_nxt_ind = !COS_TOK_ISGUM(NAME) }; \
   /* next_method pointer */ \
   static _cos_mth_nxt_t _cos_mth_nxt_p = (_cos_mth_nxt_t)COS_YES; \
+  /* next_method pointer for type check */ \
+  _cos_mth_nxt _cos_mth_nxt_chk = 0; \
   /* next_method selector */ \
   SEL const _cos_mth_nxt_sel = &COS_GEN_NAME(NAME); \
   /* next_method method rank */ \
@@ -332,7 +334,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 // next_method
 #define COS_MTH_NXT(...) \
   /* compile-time check: next_method arguments */ \
-  (0 ? ((_cos_mth_nxt)next_method)(__VA_ARGS__) : \
+  (0 ? _cos_mth_nxt_chk(__VA_ARGS__) : \
   ( COS_MTH_NXT_INIT, _cos_mth_nxt_ind ? \
   /* indirect invocation */ \
    next_method(__VA_ARGS__,_sel,_ret,_cos_mth_nxt_p) : \
