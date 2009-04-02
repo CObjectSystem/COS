@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.30 2009/02/25 23:22:10 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.31 2009/04/02 21:24:20 ldeniau Exp $
  |
 */
 
@@ -62,6 +62,10 @@ defclass(AutoRelease)
 endclass
 
 makclass(AutoRelease);
+
+// -----
+
+useclass(ExBadValue, ExBadAlloc, ExBadMessage);
 
 // -----
 
@@ -141,7 +145,6 @@ _pool_init(void)
 static void
 enlarge(struct AutoRelease* p)
 {
-  useclass(ExBadAlloc);
   U32 size = p->top - p->stk;
   U32 new_size;
   OBJ *stk;
@@ -171,10 +174,10 @@ static inline void
 clear(struct AutoRelease *p)
 {
   if (p->tmp)
-    grelease(p->tmp), p->tmp = 0;
+    cos_object_release(p->tmp), p->tmp = 0;
 
   while (p->top-- > p->stk)
-    if (*p->top) grelease(*p->top);
+    if (*p->top) cos_object_release(*p->top);
 }
 
 static inline OBJ
@@ -188,6 +191,15 @@ push(OBJ obj)
   return *pool->top++ = obj;
 }
 
+static inline void
+pop_and_release(OBJ obj)
+{
+  struct AutoRelease *pool = pool_get();
+
+  if (*(pool->top-1) == obj)
+    gdealloc(gdeinit(*--pool->top));
+}
+
 static inline OBJ
 pop_or_retain(struct Object *obj)
 {
@@ -199,14 +211,103 @@ pop_or_retain(struct Object *obj)
   return (OBJ)obj;
 }
 
-static inline void
-pop_and_release(struct Object *obj)
-{
-  struct AutoRelease *pool = pool_get();
+// ----- ownership
 
-  if (*(pool->top-1) == (OBJ)obj)
-    gdealloc(gdeinit(*--pool->top));
+OBJ
+cos_object_retain(OBJ _1)
+{
+  struct Object *self = STATIC_CAST(struct Object*, _1);
+
+  if (self->rc > COS_RC_UNIT)
+    return ++self->rc, _1;
+
+  if (self->rc == COS_RC_UNIT)
+    return pop_or_retain(self);
+
+  if (self->rc == COS_RC_STATIC)
+    return _1;
+
+  if (self->rc == COS_RC_AUTO)
+    return gclone(_1);
+
+  // self->rc < COS_RC_STATIC
+  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
+  return 0; // never reached
 }
+
+void
+cos_object_release(OBJ _1)
+{
+  struct Object *self = STATIC_CAST(struct Object*, _1);
+
+  if (self->rc > COS_RC_UNIT) {
+    --self->rc;
+    return;
+  }
+
+  if (self->rc == COS_RC_UNIT) {
+    gdealloc(gdeinit(_1));
+    return;
+  }
+  
+  if (self->rc == COS_RC_STATIC)
+    return;
+
+  // self->rc < COS_RC_STATIC || self->rc == COS_RC_AUTO
+  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
+}
+
+OBJ
+cos_object_autoRelease(OBJ _1)
+{
+  struct Object *self = STATIC_CAST(struct Object*, _1);
+
+  if (self->rc >= COS_RC_UNIT)
+    return push(_1);
+	
+  if (self->rc == COS_RC_STATIC)
+    return _1;
+
+  if (self->rc == COS_RC_AUTO)
+    return push(gclone(_1));
+
+  // self->rc < COS_RC_STATIC
+  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
+  return 0; // never reached
+}
+
+void
+cos_object_discard(OBJ _1)
+{
+  struct Object *self = STATIC_CAST(struct Object*, _1);
+
+  if (self->rc == COS_RC_UNIT)
+    pop_and_release(_1);
+}
+
+// -----
+
+defmethod(OBJ, gretain, Object)
+  retmethod( cos_object_retain(_1) );
+endmethod
+
+defmethod(OBJ, gautoRelease, Object)
+  retmethod( cos_object_autoRelease(_1) );
+endmethod
+
+defmethod(void, grelease, Object)
+  cos_object_release(_1);
+endmethod
+
+defmethod(void, gdiscard, Object)
+  cos_object_discard(_1);
+endmethod
+
+// -----
+
+defmethod(U32, gsize, AutoRelease)
+  retmethod(self->top - self->stk);
+endmethod
 
 // -----
 
@@ -225,7 +326,7 @@ defmethod(OBJ, gdeinit, AutoRelease)
 
   // safer to release pool(s) above self first
   while ((pool = pool_get()) != self)
-    grelease((OBJ)pool);
+    cos_object_release((OBJ)pool);
 
   // ensure transitivity when grelease sends gautoRelease
   pool_set(self->prv);
@@ -261,86 +362,24 @@ defmethod(void, gdeinitialize, pmAutoRelease)
   }
 endmethod
 
-// -----
+// ----- AutoRelease pool specializations
 
 defmethod(OBJ, gretain, AutoRelease)
-  useclass(ExBadMessage);
   THROW( gnewWithStr(ExBadMessage, "AutoRelease pool cannot be retained") );
   COS_UNUSED(RETVAL);
 endmethod
 
 defmethod(OBJ, gautoRelease, AutoRelease)
-  useclass(ExBadMessage);
   THROW( gnewWithStr(ExBadMessage, "AutoRelease pool cannot be autoreleased") );
   COS_UNUSED(RETVAL);
 endmethod
 
-// ----- ownership
-
-defmethod(OBJ, gretain, Object)
-  useclass(ExBadValue);
-
-  if (self->rc > COS_RC_UNIT)
-    retmethod(++self->rc, _1);
-
-  if (self->rc == COS_RC_UNIT)
-    retmethod(pop_or_retain(self));
-
-  if (self->rc == COS_RC_STATIC)
-    retmethod(_1);
-
-  if (self->rc == COS_RC_AUTO)
-    retmethod(gclone(_1));
-
-  // self->rc < COS_RC_STATIC
-  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
+defmethod(void, gdiscard, AutoRelease)
+  THROW( gnewWithStr(ExBadMessage, "AutoRelease pool cannot be discarded") );
 endmethod
 
-defmethod(void, grelease, Object)
-  useclass(ExBadValue);
-
-  if (self->rc > COS_RC_UNIT) {
-    --self->rc;
-    retmethod();
-  }
-
-  if (self->rc == COS_RC_UNIT) {
-    gdealloc(gdeinit(_1));
-    retmethod();
-  }
-  
-  if (self->rc == COS_RC_STATIC)
-    retmethod();
-
-  // self->rc < COS_RC_STATIC || self->rc == COS_RC_AUTO
-  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
-endmethod
-
-defmethod(void, gdiscard, Object)
-  if (self->rc == COS_RC_UNIT)
-    pop_and_release(self);
-endmethod
-
-defmethod(OBJ, gautoRelease, Object)
-  useclass(ExBadValue);
-
-  if (self->rc >= COS_RC_UNIT)
-    retmethod(push(_1));
-	
-  if (self->rc == COS_RC_STATIC)
-    retmethod(_1);
-
-  if (self->rc == COS_RC_AUTO)
-    retmethod(push(gclone(_1)));
-
-  // self->rc < COS_RC_STATIC
-  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
-endmethod
-
-// -----
-
-defmethod(U32, gsize, AutoRelease)
-  retmethod(self->top - self->stk);
+defmethod(void, grelease, AutoRelease)
+  cos_object_release(_1);
 endmethod
 
 /*
