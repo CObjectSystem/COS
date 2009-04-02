@@ -29,14 +29,14 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.13 2009/03/18 15:46:40 ldeniau Exp $
+# | $Id: Linux,v 1.14 2009/04/02 23:29:01 ldeniau Exp $
 # |
 #
 
 #
 # library specific
 #
-LIBTYPE     := static shared
+LIBTYPE     := shared  # static not needed by default
 LIBPREFIX   := lib
 LIBAREXT    := .a
 LIBSHEXT    := .so

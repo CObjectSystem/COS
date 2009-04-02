@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.13 2009/03/06 14:36:38 ldeniau Exp $
+ | $Id: st_methods.c,v 1.14 2009/04/02 23:29:02 ldeniau Exp $
  |
 */
 
@@ -192,9 +192,6 @@ st_memory(void)
   lvl = cos_logmsg_set(COS_LOGMSG_WARN);
   STEST( "autoRelease", P, gautoRelease(arr[i++]) );
   cos_logmsg_set(lvl);
-
-  i = 0;
-  STEST( "discard", P, gdiscard(arr[i++]) ); // does nothing since refcnt == 2
 
   i = 0;
   STEST( "release", P, grelease(arr[i++]) );

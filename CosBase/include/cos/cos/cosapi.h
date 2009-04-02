@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.25 2009/04/02 21:23:54 ldeniau Exp $
+ | $Id: cosapi.h,v 1.26 2009/04/02 23:29:01 ldeniau Exp $
  |
 */
 
@@ -54,7 +54,6 @@ BOOL cos_object_unsafeChangeClass(OBJ,const struct Class*,const struct Class*);
 OBJ  cos_object_retain(OBJ);
 void cos_object_release(OBJ);
 OBJ  cos_object_autoRelease(OBJ);
-void cos_object_discard(OBJ);
 
 struct Generic* cos_generic_get(U32);
 struct Generic* cos_generic_getWithStr(STR);

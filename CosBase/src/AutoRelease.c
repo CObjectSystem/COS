@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.31 2009/04/02 21:24:20 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.32 2009/04/02 23:29:02 ldeniau Exp $
  |
 */
 
@@ -191,26 +191,6 @@ push(OBJ obj)
   return *pool->top++ = obj;
 }
 
-static inline void
-pop_and_release(OBJ obj)
-{
-  struct AutoRelease *pool = pool_get();
-
-  if (*(pool->top-1) == obj)
-    gdealloc(gdeinit(*--pool->top));
-}
-
-static inline OBJ
-pop_or_retain(struct Object *obj)
-{
-  struct AutoRelease *pool = pool_get();
-
-  if (*--pool->top != (OBJ)obj)
-    ++pool->top, ++obj->rc;
-
-  return (OBJ)obj;
-}
-
 // ----- ownership
 
 OBJ
@@ -218,11 +198,8 @@ cos_object_retain(OBJ _1)
 {
   struct Object *self = STATIC_CAST(struct Object*, _1);
 
-  if (self->rc > COS_RC_UNIT)
+  if (self->rc >= COS_RC_UNIT)
     return ++self->rc, _1;
-
-  if (self->rc == COS_RC_UNIT)
-    return pop_or_retain(self);
 
   if (self->rc == COS_RC_STATIC)
     return _1;
@@ -245,14 +222,14 @@ cos_object_release(OBJ _1)
     return;
   }
 
+  if (self->rc == COS_RC_STATIC)
+    return;
+
   if (self->rc == COS_RC_UNIT) {
     gdealloc(gdeinit(_1));
     return;
   }
   
-  if (self->rc == COS_RC_STATIC)
-    return;
-
   // self->rc < COS_RC_STATIC || self->rc == COS_RC_AUTO
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 }
@@ -264,7 +241,7 @@ cos_object_autoRelease(OBJ _1)
 
   if (self->rc >= COS_RC_UNIT)
     return push(_1);
-	
+
   if (self->rc == COS_RC_STATIC)
     return _1;
 
@@ -274,15 +251,6 @@ cos_object_autoRelease(OBJ _1)
   // self->rc < COS_RC_STATIC
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
   return 0; // never reached
-}
-
-void
-cos_object_discard(OBJ _1)
-{
-  struct Object *self = STATIC_CAST(struct Object*, _1);
-
-  if (self->rc == COS_RC_UNIT)
-    pop_and_release(_1);
 }
 
 // -----
@@ -297,10 +265,6 @@ endmethod
 
 defmethod(void, grelease, Object)
   cos_object_release(_1);
-endmethod
-
-defmethod(void, gdiscard, Object)
-  cos_object_discard(_1);
 endmethod
 
 // -----
@@ -372,10 +336,6 @@ endmethod
 defmethod(OBJ, gautoRelease, AutoRelease)
   THROW( gnewWithStr(ExBadMessage, "AutoRelease pool cannot be autoreleased") );
   COS_UNUSED(RETVAL);
-endmethod
-
-defmethod(void, gdiscard, AutoRelease)
-  THROW( gnewWithStr(ExBadMessage, "AutoRelease pool cannot be discarded") );
 endmethod
 
 defmethod(void, grelease, AutoRelease)

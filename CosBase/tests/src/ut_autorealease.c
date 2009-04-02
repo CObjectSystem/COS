@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.10 2009/04/02 15:11:29 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.11 2009/04/02 23:29:02 ldeniau Exp $
  |
 */
 
@@ -86,11 +86,11 @@ ut_autorelease(void)
     UTEST( gsize(ar) == 1 );
     UTEST( gretainCount(a) == 1  );
     a = gretain(a);
-    UTEST( gsize(ar) == 0 );
-    UTEST( gretainCount(a) == 1  );
-    a = gretain(a);
-    UTEST( gsize(ar) == 0 );
+    UTEST( gsize(ar) == 1 );
     UTEST( gretainCount(a) == 2  );
+    a = gretain(a);
+    UTEST( gsize(ar) == 1 );
+    UTEST( gretainCount(a) == 3  );
     grelease(ar);
     UTEST( gretainCount(a) == 2  );
     UTEST( (grelease(a), 1) );
@@ -106,9 +106,11 @@ ut_autorelease(void)
     UTEST( gsize(ar) == 2 );
     UTEST( gretainCount(a) == 2  );
     c = gretain(c);
-    UTEST( gsize(ar) == 1 );
-    UTEST( gretainCount(c) == 1  );
+    UTEST( gsize(ar) == 2 );
+    UTEST( gretainCount(c) == 2  );
     grelease(ar);
+    UTEST( gretainCount(a) == 1  );
+    UTEST( gretainCount(c) == 1  );
     UTEST( (grelease(a), 1) );
     UTEST( (grelease(c), 1) );
 
@@ -141,23 +143,28 @@ ut_autorelease(void)
           TRY
              ar4 = gnew(AutoRelease);
              for (; i < 700; i++)
-               gdiscard(gautoRelease(gnew(A)));
+               gautoRelease(gnew(A));
              THROW(Nil);
           FINALLY
-            UTEST( gsize(ar4) == 0 ), ar4 = 0;
+            UTEST( gsize(ar4) == 100 );
+            grelease(ar4), ar4 = 0;
           ENDTRY
         FINALLY
-          UTEST( gsize(ar3) == 300 ), ar3 = 0;
+          UTEST( gsize(ar3) == 300 );
         ENDTRY // rethrow Nil
       FINALLY
-        UTEST( gsize(ar2) == 200 ), ar2 = 0;
+        UTEST( gsize(ar3) == 300 );
+        UTEST( gsize(ar2) == 200 );
       ENDTRY // rethrow Nil
     CATCH_ANY() // catch Nil
     FINALLY
-      UTEST( gsize(ar1) == 100 ), ar1 = 0;
+      UTEST( gsize(ar1) == 100 );
+      UTEST( gsize(ar2) == 200 );
+      UTEST( gsize(ar3) == 300 );
     ENDTRY
     UTEST( gsize(ar) == 0 );
     grelease(ar); // destroy all chained pools
+    ar = ar1 = ar2 = ar3 = ar4 = 0;
 
   UTEST_END
 }
