@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.25 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: method.h,v 1.26 2009/04/02 13:35:07 ldeniau Exp $
  |
 */
 
@@ -253,7 +253,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   const struct Method* const restrict _mth = \
     (struct Method*)&COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T); \
   OBJ _cos_mth_objs[C]; \
-  int _cos_mth_line;,/* no trace */) \
+  int _cos_mth_line = 0;,/* no trace */) \
   /* arguments variables initialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_MTH_ARG)),/* no arg */) \
   /* trace entering the method (if requested) */ \

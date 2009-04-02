@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_exception.c,v 1.7 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: ut_exception.c,v 1.8 2009/04/02 13:35:09 ldeniau Exp $
  |
 */
 
@@ -72,9 +72,9 @@ useclass(ExSignal);
   volatile int line = 0;
   volatile int do_throw;
   volatile OBJ c = Nil;
+  volatile int i;
   OBJ a = Nil;
   OBJ b = Nil;
-  int i;
 
   UTEST_START("exception & signal")
 
