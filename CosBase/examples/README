@@ -29,9 +29,11 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.1 2009/03/25 16:59:37 ldeniau Exp $
+# | $Id: README,v 1.2 2009/04/02 08:26:32 ldeniau Exp $
 # |
 #
+
+IMPORTANT: The C Object System requires GNU make 3.81 or higher.
 
 Compilation and run:
 --------------------
