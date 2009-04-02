@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.7 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: Proxy.c,v 1.8 2009/04/02 07:45:35 ldeniau Exp $
  |
 */
 
@@ -168,14 +168,14 @@ endmethod
 static inline void
 chkret(SEL sel, OBJ* ret, struct Proxy* pxy)
 {
-  if (COS_GEN_ORET(sel) && *ret == pxy->obj)
+  if (COS_GEN_ISOBJ(sel) && *ret == pxy->obj)
     *ret = (OBJ)pxy;
 }
 
 static inline void
 chkret2(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2)
 {
-  if (COS_GEN_ORET(sel)) {
+  if (COS_GEN_ISOBJ(sel)) {
     if (*ret == pxy1->obj)
       *ret = (OBJ)pxy1;
     else if (*ret == pxy2->obj)
@@ -186,7 +186,7 @@ chkret2(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2)
 static inline void
 chkret3(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3)
 {
-  if (COS_GEN_ORET(sel)) {
+  if (COS_GEN_ISOBJ(sel)) {
     if (*ret == pxy1->obj)
       *ret = (OBJ)pxy1;
     else if (*ret == pxy2->obj)

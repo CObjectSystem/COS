@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.20 2009/04/01 22:31:59 ldeniau Exp $
+ | $Id: generic.h,v 1.21 2009/04/02 07:44:50 ldeniau Exp $
  |
 */
 
@@ -321,7 +321,7 @@ COS_PP_IF(A)(COS_STATIC_ASSERT( \
     sizeof(COS_ARG_TYPE(NAME)) < (1u << 16) );,) \
 COS_PP_IF(R)(COS_STATIC_ASSERT( \
   COS_PP_CAT(NAME,__generic_return_value_size_greater_than_64Kb), \
-    sizeof(COS_RET_TYPE(NAME)) < (1u << 16) );,)
+    sizeof(COS_RET_TYPE(NAME))+1 < (1u << 16) );,)
 
 //  generic function declaration
 #define COS_GEN_FUNCDCL(RET,NAME,VPS,PS,IS,C) \
@@ -420,12 +420,12 @@ struct Generic COS_GEN_NAME(NAME) = { \
   COS_PP_SEPWITH(COS_PP_MAP(((RET),COS_PP_SEQ(PS)),COS_GEN_STR),"\0"), \
   /* link to generic class */ \
   (void*)&COS_CLS_NAME(CLS), \
-  /* argument info */ \
+  /* argument info, sizeof OBJ = 0 */ \
   COS_PP_IF(A)(COS_ARG_INFO(NAME),0), \
   /* size of monomorphic arguments struct */ \
   COS_PP_IF(A)(sizeof(COS_ARG_TYPE(NAME)),0), \
-  /* size of returned value */ \
-  COS_PP_IF(R)(sizeof(COS_RET_TYPE(NAME)),0), \
+  /* size of returned value, sizeof OBJ = 0, void = -1 */ \
+  COS_PP_IF(R)(COS_PP_IF(COS_TOK_ISOBJ(RET))(0,sizeof(COS_RET_TYPE(NAME))),-1), \
   /* cryptic information */ \
   COS_GEN_INFO(0,COS_PP_LEN(PS), \
      COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_OBJ),COS_YES,COS_PP_AND), \
@@ -464,6 +464,9 @@ struct Generic COS_GEN_NAME(NAME) = { \
 #define COS_GEN_ARGI(a,t) \
   { COS_PP_IF(COS_TOK_ISOBJ(COS_PRM_TYPE(a)))(0,sizeof(COS_PRM_TYPE(a))), \
     offsetof(t, COS_PRM_NAME(a)) }
+
+#define COS_GEN_ISOBJ(gen)  ((gen)->retsize == (U16) 0)
+#define COS_GEN_ISVOID(gen) ((gen)->retsize == (U16)-1)
 
 // param-type is OBJ
 #define COS_GEN_OBJ(a) \

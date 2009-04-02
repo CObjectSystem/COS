@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.11 2009/03/09 13:33:49 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.12 2009/04/02 07:45:35 ldeniau Exp $
  |
 */
 
@@ -230,7 +230,7 @@ endmethod
 static inline void
 chkret(SEL sel, OBJ* ret)
 {
-  if (COS_GEN_ORET(sel))
+  if (COS_GEN_ISOBJ(sel))
     *ret = Nil;
 }
 
