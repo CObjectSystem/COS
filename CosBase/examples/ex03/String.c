@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS example01 -- String class
+ | COS example03 -- String class
  |
  o---------------------------------------------------------------------o
  |
@@ -29,15 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.2 2009/04/02 23:33:13 ldeniau Exp $
+ | $Id: String.c,v 1.1 2009/04/02 23:33:13 ldeniau Exp $
  |
 */
 
 #include "String.h"
 #include "generics.h"
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 makclass(String);
 

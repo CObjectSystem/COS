@@ -29,23 +29,35 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.2 2009/04/02 08:26:32 ldeniau Exp $
+# | $Id: README,v 1.3 2009/04/02 23:33:12 ldeniau Exp $
 # |
 #
 
-IMPORTANT: The C Object System requires GNU make 3.81 or higher.
+*** IMPORTANT: The C Object System requires GNU make 3.81 or higher ***
 
 Compilation and run:
 --------------------
 
 from each subdirectories:
 
-make release.run
+make debug.run
 
-or (assuming COS is installed or LD_LIBRARY_PATH set appropriately):
+or (assuming COS is installed or LD_LIBRARY_PATH is set appropriately):
 
-make release
-./arch/bin/cos-ex01
+make
+./arch/bin/cos-ex01_d
+
+Examples:
+---------
+
+ex01:
+  Show how to create classes and extend a class cluster (i.e. Stream)
+
+ex02:
+  Show how to use multiple ineritance (i.e. IOStream)
+  
+ex03:
+  Show how to implement a "manual" garbage collector in few lines
 
 Debugging makefiles:
 --------------------

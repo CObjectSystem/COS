@@ -1,7 +1,10 @@
+#ifndef GENERICS_H
+#define GENERICS_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS example01 -- String class
+ | COS example03 -- generics
  |
  o---------------------------------------------------------------------o
  |
@@ -29,30 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.2 2009/04/02 23:33:13 ldeniau Exp $
+ | $Id: generics.h,v 1.1 2009/04/02 23:33:13 ldeniau Exp $
  |
 */
 
-#include "String.h"
-#include "generics.h"
+#include <cos/Object.h>
+#include <cos/gen/object.h>
+#include <cos/gen/value.h>
 
-#include <string.h>
-#include <stdlib.h>
-
-makclass(String);
-
-defmethod(OBJ, ginitWithStr, String, (STR)str)
-  useclass(ExBadAlloc);
-
-  self->str = strdup(str);
-  if (!self->str)
-    THROW(ExBadAlloc);
-  
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gdeinit, String)
-  free(self->str);
-  retmethod(_1);
-endmethod
+#endif
 
