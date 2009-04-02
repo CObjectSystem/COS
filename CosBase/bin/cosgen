@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosgen,v 1.10 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: cosgen,v 1.11 2009/04/02 13:21:18 ldeniau Exp $
 # |
 #
 
@@ -146,7 +146,8 @@ for f in $filelist; do
   if [ "$gen" != "" ] ; then
     f=`echo $f | sed -e 's,^.*include/,,' -e 's,^.*src/,,'`
     echo "#include \"$f\""             >> $out
-    gens="$gens$gen\n"
+    echo                               >> $out
+    gens=`echo "$gens$gen"`
   fi
 done
 
