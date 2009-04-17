@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.11 2009/03/19 16:20:14 ldeniau Exp $
+ | $Id: property.h,v 1.12 2009/04/17 21:13:55 ldeniau Exp $
  |
 */
 
@@ -123,7 +123,7 @@
 
      // hand-written read-write property size
      defmethod(OBJ, ggetAt, Array, mP_size)
-       retmethod( gautoRelease(aInt(self->size)) );
+       retmethod( gautoDelete(aInt(self->size)) );
      endmethod
 
      defmethod(void, gputAt, Array, mP_size, Object)
@@ -136,7 +136,7 @@
 
      // hand-written read-only property fullname with dynamically built attribute
      defmethod(OBJ, ggetAt, Person, mP_fullname)
-       retmethod( gautoRelease(gcat(self->firstname, self->lastname)) );
+       retmethod( gcat(self->firstname, self->lastname) );
      endmethod
 */
 

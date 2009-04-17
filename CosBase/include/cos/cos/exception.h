@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.10 2009/02/27 20:11:46 ldeniau Exp $
+ | $Id: exception.h,v 1.11 2009/04/17 21:13:55 ldeniau Exp $
  |
 */
 
@@ -143,8 +143,8 @@
 
     // code using str and file;
 
-    grelease(file); // close the file
-    grelease(str);
+    gdelete(file); // close the file
+    gdelete(str);
     UNPRT(str); // unprotect str and all objects protected after
 
   example2:

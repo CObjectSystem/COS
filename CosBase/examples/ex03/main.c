@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: main.c,v 1.1 2009/04/02 23:33:13 ldeniau Exp $
+ | $Id: main.c,v 1.2 2009/04/17 21:13:55 ldeniau Exp $
  |
 */
 
@@ -48,17 +48,20 @@ useclass(String, AutoRelease);
 */
 defmethod(OBJ, (galloc), mObject)   // around method
   next_method(self);                // allocate
-  if (_1 != AutoRelease)            // do not auto-release pools
-    cos_object_autoRelease(RETVAL); // auto-release
+  gautoRelease(RETVAL);             // auto-release
 endmethod
 
-defmethod(void, (grelease), Object)
-  if (self->rc > COS_RC_UNIT) self->rc--;
+defmethod(void, (gdelete), Object)
 endmethod
 
-defmethod(OBJ, (gautoRelease), Object)
-  BOOL is_auto = self->rc == COS_RC_AUTO;
-  retmethod( is_auto ? gclone(_1) : _1 );
+defmethod(OBJ, (gautoDelete), Object)
+  retmethod( self->rc == COS_RC_AUTO ? gclone(_1) : _1 );
+endmethod
+
+defmethod(OBJ, (gretain), Object)
+  next_method(self);
+  if (self->rc == COS_RC_AUTO)
+    RETVAL = gretain(RETVAL); // once more for auto objects
 endmethod
 
 /*
@@ -82,7 +85,7 @@ endmethod
    run with valgrind or equivalent to check for memory leaks
 
  test-II:
-   remove the pool (gnew, gsize, grelease) to "see" the default pool in action
+   remove the pool (gnew, gsize, gdelete) to "see" the default pool in action
    run with valgrind or equivalent to check for memory leaks
 
  test-III:
@@ -101,13 +104,13 @@ int main(void)
     char buf[128];
 
     sprintf(buf, "string no %d", i);
-    obj = gnewWithStr(String, buf); // autoreleased
-    grelease(obj); // not destroyed (do nothing)
+    obj = gnewWithStr(String, buf); // autoReleased
+    gdelete(obj);                   // do nothing
   }
 
   printf("pool size = %u\n", gsize(pool));
   
-  grelease(pool); // pool specialization, collect the strings
+  gdelete(pool); // pool specialization, collect the strings
 
   return EXIT_SUCCESS;
 }

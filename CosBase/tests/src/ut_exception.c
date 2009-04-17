@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_exception.c,v 1.8 2009/04/02 13:35:09 ldeniau Exp $
+ | $Id: ut_exception.c,v 1.9 2009/04/17 21:13:56 ldeniau Exp $
  |
 */
 
@@ -109,7 +109,7 @@ useclass(ExSignal);
     FINALLY
       if (do_throw == NO) {
         UTEST( check_str(c, "C is not thrown") );
-        grelease(a), grelease(b); grelease(c);
+        gdelete(a), gdelete(b); gdelete(c);
       }
       if (do_throw == YES)
         UTEST( check_str(c, "C has been caught as an A") );

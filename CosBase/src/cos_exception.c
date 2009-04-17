@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.14 2009/02/27 20:11:46 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.15 2009/04/17 21:13:55 ldeniau Exp $
  |
 */
 
@@ -204,7 +204,7 @@ defmethod(void, gthrow, Object, (STR)func, (STR)file, (int)line)
     cxt->file = file ? file : "";
     cxt->line = line;
   }
-	
+
   if (cxt->unstk == YES)
     terminate();
 
@@ -214,7 +214,6 @@ defmethod(void, gthrow, Object, (STR)func, (STR)file, (int)line)
     terminate();
 
   cos_exception_lngjmp(cxt->buf, cxt->tag | cos_tag_throw);
-
 endmethod
 
 defmethod(void, gdeinitialize, pmException)

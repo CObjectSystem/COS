@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.19 2009/04/02 23:29:02 ldeniau Exp $
+ | $Id: object.h,v 1.20 2009/04/17 21:13:55 ldeniau Exp $
  |
 */
 
@@ -57,7 +57,9 @@ defgeneric(void, gclear        , _1);
 
 // ownership
 defgeneric(OBJ , gretain       , _1);
+defgeneric(void, gdelete       , _1);
 defgeneric(void, grelease      , _1);
+defgeneric(OBJ , gautoDelete   , _1);
 defgeneric(OBJ , gautoRelease  , _1);
 defgeneric(U32 , gretainCount  , _1);
 
