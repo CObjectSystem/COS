@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.15 2009/04/17 21:13:55 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.16 2009/04/19 17:52:37 ldeniau Exp $
  |
 */
 
@@ -101,7 +101,7 @@ unwind_stack(struct cos_exception_context *cxt)
         ep->fct(*ep->alt);
     }
     else if (*p->obj)
-      grelease(*p->obj);
+      gdelete(*p->obj);
   }
 
   cxt->unstk = NO;
@@ -174,10 +174,13 @@ cos_exception_deinitContext(struct cos_exception_context *cxt)
 {
 	cxt_set(cxt->prv);
 
-	if ( (cxt->tag & cos_tag_throw) )
+	if ( (cxt->tag & cos_tag_throw) ) {
+    cxt->prv->ex = cxt->ex;
 		cos_exception_throw(cxt->ex,cxt->func,cxt->file,cxt->line); // rethrow
+  }
 
-	if (cxt->ex) grelease(cxt->ex);
+	if (cxt->ex)
+	  grelease(cxt->ex), cxt->ex = 0;
 }
 
 // -----
@@ -196,14 +199,13 @@ defmethod(void, gthrow, Object, (STR)func, (STR)file, (int)line)
 
   struct cos_exception_context *cxt = cos_exception_context();
 
-  if (cxt->ex != _1) {
-	  if (cxt->ex) grelease(cxt->ex);
-
-    cxt->ex   = self->rc == COS_RC_AUTO ? gclone(_1) : _1;
-    cxt->func = func ? func : "";
-    cxt->file = file ? file : "";
-    cxt->line = line;
-  }
+  OBJ ex = cxt->ex;
+  cxt->ex = gretain(_1);
+  if (ex) grelease(ex);
+  
+  cxt->func = func ? func : "";
+  cxt->file = file ? file : "";
+  cxt->line = line;
 
   if (cxt->unstk == YES)
     terminate();
@@ -219,7 +221,8 @@ endmethod
 defmethod(void, gdeinitialize, pmException)
   struct cos_exception_context *cxt = cos_exception_context();
   
-  if (cxt->ex != 0) grelease(cxt->ex);
+  if (cxt->ex)
+    grelease(cxt->ex), cxt->ex = 0;
 endmethod
 
 /*

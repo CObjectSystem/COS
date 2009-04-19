@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.11 2009/04/17 21:13:55 ldeniau Exp $
+ | $Id: exception.h,v 1.12 2009/04/19 17:52:36 ldeniau Exp $
  |
 */
 
@@ -163,10 +163,10 @@
   - PRT(o,..) protects the object pointer o (not the object pointed) against
     raised exceptions, therefore if the object pointed by o changes before
     UNPRT(), the new object will be automatically protected. If o is not nul,
-    grelease(o) will be invoked during stack unwinding. During stack unwinding,
+    gdelete(o) will be invoked during stack unwinding. During stack unwinding,
     cos_exception_uncaught() returns a non-zero value, 0 otherwise.
   - OPRT(o,f) works like PRT but specifies the function to call instead of
-    grelease as in PRT if an exception is raised.
+    gdelete as in PRT if an exception is raised.
   - EPRT(p,f) works like PRT but specifies the function to call on the
     non-OBJ pointer p as in PRT if an exception is raised.
   - UNPRT(o) unprotects o and all objects protected after.
@@ -185,6 +185,7 @@
 #define COS_DISABLE_RETHROW
 #define COS_DISABLE_PRT
 #define COS_DISABLE_EPRT
+#define COS_DISABLE_OPRT
 #define COS_DISABLE_UNPRT
 #endif
 
