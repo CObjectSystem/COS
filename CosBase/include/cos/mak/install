@@ -29,11 +29,16 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: install,v 1.2 2009/05/08 21:25:37 ldeniau Exp $
+# | $Id: install,v 1.3 2009/05/08 23:01:31 ldeniau Exp $
 # |
 #
 
 INSTALLED_FILES := INSTALLED_FILES
+
+#
+# prefix normalization
+#
+override PREFIX := $(abspath $(PREFIX))
 
 #
 # install
@@ -41,20 +46,20 @@ INSTALLED_FILES := INSTALLED_FILES
 INSTMODS := $(addsuffix .install, $(MODULES))
 
 .PHONY: install install.prn install.pre install.do install.post $(INSTMODS)
-.PHONY: install.hdrs install.bins install.libs install.docs install.aux
+.PHONY: install.hdrs install.bins install.libs install.docs install.auxs
 
 install: install.prn install.pre install.do install.post
 
 install.prn:
 	@echo "*** Installing $(PRJNAME)"
 
-install.do: $(INSTMODS) install.hdrs install.bins install.libs install.docs install.aux
+install.do: $(INSTMODS) install.hdrs install.bins install.libs install.docs install.auxs
 
 install.hdrs:
 	$_ for f in $(HEADERS) ; do \
 	     d=$(PREFIX)/$(INCDIR)/$${f#include/} ; \
 	     echo "*** Copying $$f -> $$d" ; \
-	     cp -f $$f $$d ; \
+#	     cp -f $$f $$d ; \
        echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
@@ -62,7 +67,7 @@ install.bins:
 	$_ for f in $(wildcard $(OSNAME)/bin/*) ; do \
 	     d=$(PREFIX)/$(BINDIR)/$${f#$(OSNAME)/bin/} ; \
 	     echo "*** Copying $$f -> $$d" ; \
-	     cp -f $$f $$d ; \
+#	     cp -f $$f $$d ; \
        echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
@@ -70,17 +75,17 @@ install.libs:
 	$_ for f in $(wildcard $(OSNAME)/bin/*) ; do \
 	     d=$(PREFIX)/$(LIBDIR)/$${f#$(OSNAME)/lib/} ; \
 	     echo "*** Copying $$f -> $$d" ; \
-	     cp -f $$f $$d ; \
+#	     cp -f $$f $$d ; \
        echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
 install.docs: # TODO
 
-install.aux: # TODO
+install.auxs: # TODO
 
 ifneq ($(INSTMODS),)
 $(INSTMODS):
-	$_ $(MAKE) -C $(basename $@) install
+	$_ $(MAKE) -C $(basename $@) install PREFIX=$(PREFIX)
 endif
 
 #

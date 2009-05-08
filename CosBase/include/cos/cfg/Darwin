@@ -29,14 +29,14 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.15 2009/05/08 21:25:37 ldeniau Exp $
+# | $Id: Darwin,v 1.16 2009/05/08 23:01:31 ldeniau Exp $
 # |
 #
 
 #
 # install paths
 #
-PREFIX      := /usr
+PREFIX      := /usr         # absolute path
 BINDIR      := bin
 LIBDIR      := lib
 INCDIR      := include

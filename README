@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.8 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: README,v 1.9 2009/05/08 23:01:30 ldeniau Exp $
 # |
 #
 
@@ -40,14 +40,14 @@ Compilation/tests/[un]install:
 
 cd path-to-cos
 make
-make tests                                    # optional
-make install [PREFIX=path-to-prefix]          # as root
-make uninstall                                # as root
+make tests                                       # optional
+make install [PREFIX=path-to-install]            # as root
+make uninstall                                   # as root
 
 Makefile examples:
 ------------------
 
-# distribution
+# distrib
 path-to-cos/Makefile
 
 # library
@@ -56,7 +56,7 @@ path-to-cos/CosBase/Makefile
 # program
 path-to-cos/CosBase/examples/ex??/Makefile
 
-# tests
+# tests (program with auto-run)
 path-to-cos/CosBase/tests/Makefile
 
 Debugging makefiles:
@@ -94,7 +94,7 @@ Linux SLC 4.0              (RedHat) on x86_64 (64-bit) Quad Xeon
 Mac OS X Leopard           (Darwin) on x86_64 (64-bit) Core2 Duo
 
 # Compilers
-gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2
+gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2, 4.3.3
 
 Documentation:
 --------------
