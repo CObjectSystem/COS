@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.16 2009/04/19 17:52:37 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.17 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,7 @@
 
 static struct cos_exception_context _cxt0;
 
-#if COS_TLS || !COS_POSIX // -----------------------------
+#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
 
 __thread struct cos_exception_context *cos_exception_cxt_ = &_cxt0;
 
@@ -53,7 +53,7 @@ cxt_set(struct cos_exception_context *cxt)
   cos_exception_cxt_ = cxt;
 }
 
-#else // COS_POSIX && !COS_TLS ---------------------------
+#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
 static pthread_key_t _cxt_key;
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch1.c,v 1.7 2008/11/18 08:34:25 ldeniau Exp $
+ | $Id: cos_dispatch1.c,v 1.8 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
@@ -59,11 +59,11 @@ static void init(SEL,OBJ,void*,void*);
 static struct cos_method_slot1 sentinel = { &sentinel,init,0,0 };
 static struct cos_method_slot1 *cache_empty = &sentinel;
 
-#if COS_TLS || !COS_POSIX // -----------------------------
+#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
 
 __thread struct cos_method_cache1 cos_method_cache1_ = { &cache_empty, 0 };
 
-#else // COS_POSIX && !COS_TLS ---------------------------
+#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
 pthread_key_t cos_method_cache1_key;
 

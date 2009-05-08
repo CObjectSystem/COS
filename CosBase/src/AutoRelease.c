@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.33 2009/04/17 21:13:55 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.34 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
@@ -82,7 +82,7 @@ STATIC_ASSERT(COS_AUTORELEASE_WARN_is_too_small,
 
 static struct AutoRelease _pool0; // sentinel
 
-#if COS_TLS || !COS_POSIX // -----------------------------
+#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
 
 static __thread struct AutoRelease *_pool = &_pool0;
 
@@ -103,7 +103,7 @@ _pool_init(void)
 {
 }
 
-#else // COS_POSIX && !COS_TLS ---------------------------
+#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
 static pthread_key_t _pool_key;
 

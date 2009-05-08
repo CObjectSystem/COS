@@ -29,15 +29,15 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.6 2008/12/15 17:45:42 ldeniau Exp $
+# | $Id: program,v 1.7 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
 #
 # targets context (deferred -> immediate)
 #
-BINNAME  := $(program)$(TARGETEXT)
-SBINNAME := $(program)$(TARGETEXT)$(if $(TARGETEXT),s,_s)
+BINNAME  := $(program)$(TARGETEXT)$(BINEXT)
+SBINNAME := $(program)$(TARGETEXT)$(if $(TARGETEXT),s,_s)$(BINEXT)
 
 $(TARGET).%: TARGET    := $(TARGET)
 $(TARGET).%: TARGETEXT := $(TARGETEXT)
@@ -45,87 +45,61 @@ $(TARGET).%: BINNAME   := $(BINNAME)
 $(TARGET).%: SBINNAME  := $(SBINNAME)
 
 #
-# clean targets
-#
-.PHONY: $(TARGET).clean
-
-$(TARGET).clean:
-	@  echo "*** Cleaning $(TARGET)"
-	$_ $(RM) $(OBJDIR)
-	$_ $(RM) $(BINDIR)/$(BINNAME)
-	$_ $(RM) $(BINDIR)/$(SBINNAME)
-
-#
 # build targets
 #
-ifneq ($(filter $(TARGET) $(TARGET).run $(TARGET).srun,$(GOALS)),)
-
 .PHONY: $(TARGET)
-.PHONY: $(TARGET).dir
 .PHONY: $(TARGET).run $(TARGET).srun
 .PHONY: $(TARGET).bin $(TARGET).sbin
 .PHONY: $(TARGET).pre $(TARGET).post
 
-$(TARGET): $(TARGET).dir \
-           $(TARGET).pre \
-           $(if $(filter shared,$(LNKTYPE)),$(TARGET).bin ) \
-           $(if $(filter static,$(LNKTYPE)),$(TARGET).sbin) \
+$(TARGET): $(TARGET).pre  \
+           $(if $(filter shared,$(LIBTYPE)),$(TARGET).bin ) \
+           $(if $(filter static,$(LIBTYPE)),$(TARGET).sbin) \
            $(TARGET).post
 
-$(TARGET).dir: project.dir $(call missing,$(OBJDIR))
+#
+# rules for building program with dynamic linkage
+#
+$(TARGET).bin: $(OSNAME)/bin/$(BINNAME)
 
-$(OBJDIR):
-	$_ $(MKDIR) $@
+$(OSNAME)/bin/$(BINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
+	@  echo "*** Building [$(TARGET)] $(@F)"
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@ $(LIBS) $(SYSLIBS)
+	$_ $(if $(STRIP),$(if $(call eq,$(TARGET),release),$(STRIP) $@))
 
 #
-# rules for building static program
+# rules for building program with static linkage
 #
 $(TARGET).sbin: CCFLAGS += $(STATIC_CC)
 $(TARGET).sbin: LDFLAGS += $(STATIC_LD)
-$(TARGET).sbin: $(BINDIR)/$(SBINNAME)
+$(TARGET).sbin: $(OSNAME)/bin/$(SBINNAME)
 
-$(BINDIR)/$(SBINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM)_s.o
-	@  echo "*** Building $(notdir $@)"
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	$_ $(EXEDIR)/$(COSSYM)      --out=$(<D)/$(program)_$(COSSYM)_s.c $(COSSYMOPT) $@
-	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/$(program)_$(COSSYM)_s.c -o $(<D)/$(program)_$(COSSYM)_s.o
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
+$(OSNAME)/bin/$(SBINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
+	@  echo "*** Building [$(TARGET)] $(@F)"
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@ $(LIBS) $(SYSLIBS)
 	$_ $(if $(STRIP),$(if $(call eq,$(TARGET),release),$(STRIP) $@))
-
-#
-# rules for building shared program
-#
-$(TARGET).bin: $(BINDIR)/$(BINNAME)
-
-$(BINDIR)/$(BINNAME): $(OBJECTS) $(OBJDIR)/$(program)_$(COSSYM).o
-	@  echo "*** Building $(notdir $@)"
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(program)_$(COSSYM).c $(COSSYMOPT) $@
-	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/$(program)_$(COSSYM).c -o $(<D)/$(program)_$(COSSYM).o
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@ $(LIBS) $(SYSLIBS)
-	$_ $(if $(STRIP),$(if $(call eq,$(TARGET),release),$(STRIP) $@))
-
-#
-# rules for running static program (helper)
-#
-$(TARGET).srun: $(TARGET)
-	@  echo "*** Running $(SBINNAME)"
-	$_ $(BINDIR)/$(SBINNAME) $(ARGS)
 
 #
 # rules for running shared program (helper)
 #
+$(TARGET).run: $(LIBTYPE) := $(filter shared,$(LIBTYPE))
 $(TARGET).run: $(TARGET)
-	@  echo "*** Running $(BINNAME)"
+	@  echo "*** Running [$(TARGET)] $(BINNAME)"
 	$_ export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
 	   $(SED) 's, :,:,g'` ; \
-	   $(BINDIR)/$(BINNAME) $(ARGS)
+	   $(OSNAME)/bin/$(BINNAME) $(ARGS)
+
+#
+# rules for running static program (helper)
+#
+$(TARGET).srun: $(LIBTYPE) := $(filter static,$(LIBTYPE))
+$(TARGET).srun: $(TARGET)
+	@  echo "*** Running [$(TARGET)] $(SBINNAME)"
+	$_ $(OSNAME)/bin/$(SBINNAME) $(ARGS)
 
 #
 # include other target rules
 #
-include $(MAKDIR)/mak/compile
-
-endif # $(TARGET)
+include $(COSDIR)/mak/compile
 
 # end of makefile

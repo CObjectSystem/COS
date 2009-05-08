@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.16 2009/04/02 15:11:28 ldeniau Exp $
+ | $Id: base.h,v 1.17 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
@@ -85,7 +85,7 @@
 
 // compile time assert (not perfect...)
 #define COS_STATIC_ASSERT(tag,cond) \
-        enum { COS_PP_CAT(STATIC_ASSERT__,tag) = 1/(cond) }
+        enum { COS_PP_CAT(COS_ERROR__,tag) = 1/(cond) }
 
 // type alignment (not perfect...)
 #define COS_TYPE_ALIGNMENT(T) \

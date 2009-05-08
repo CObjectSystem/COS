@@ -29,79 +29,58 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library,v 1.5 2008/12/15 17:45:42 ldeniau Exp $
+# | $Id: library,v 1.6 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
 #
 # targets context (deferred -> immediate)
 #
-LIBNAME := $(LIBPREFIX)$(library)$(TARGETEXT)
+LIBNAME  := $(LIBPREFIX)$(library)$(TARGETEXT)$(LIBSHEXT)
+SLIBNAME := $(LIBPREFIX)$(library)$(TARGETEXT)$(LIBAREXT)
 
 $(TARGET).%: TARGET    := $(TARGET)
 $(TARGET).%: TARGETEXT := $(TARGETEXT)
 $(TARGET).%: LIBNAME   := $(LIBNAME)
-
-#
-# clean targets
-#
-.PHONY: $(TARGET).clean
-
-$(TARGET).clean:
-	@  echo "*** Cleaning $(TARGET)"
-	$_ $(RM) $(OBJDIR)
-	$_ $(RM) $(LIBDIR)/$(LIBNAME).*
+$(TARGET).%: SLIBNAME  := $(SLIBNAME)
+$(TARGET).%: COSSYM    := $(COSSYM) --mod=$(library)
 
 #
 # build targets
 #
-ifneq ($(filter $(TARGET),$(GOALS)),)
-
 .PHONY: $(TARGET)
-.PHONY: $(TARGET).dir
-.PHONY: $(TARGET).ar  $(TARGET).sh
+.PHONY: $(TARGET).lib $(TARGET).slib
 .PHONY: $(TARGET).pre $(TARGET).post
 
-$(TARGET): $(TARGET).dir \
-           $(TARGET).pre \
-           $(if $(filter shared,$(LNKTYPE)),$(TARGET).sh) \
-           $(if $(filter static,$(LNKTYPE)),$(TARGET).ar) \
+$(TARGET): $(TARGET).pre \
+           $(if $(filter shared,$(LIBTYPE)),$(TARGET).lib ) \
+           $(if $(filter static,$(LIBTYPE)),$(TARGET).slib) \
            $(TARGET).post
-
-$(TARGET).dir: project.dir $(call missing,$(OBJDIR))
-
-$(OBJDIR):
-	$_ $(MKDIR) $@
-
-#
-# rules for building static library
-#
-$(TARGET).ar: $(LIBDIR)/$(LIBNAME)$(LIBAREXT)
-
-$(LIBDIR)/$(LIBNAME)$(LIBAREXT): $(OBJECTS)
-	@  echo "*** Building $(notdir $@)"
-	$_ $(AR) $@ $^
 
 #
 # rules for building shared library
 #
-$(TARGET).sh: CCFLAGS += $(SHARED_CC)
-$(TARGET).sh: LDFLAGS += $(SHARED_LD)
-$(TARGET).sh: $(LIBDIR)/$(LIBNAME)$(LIBSHEXT)
+$(TARGET).lib: CCFLAGS += $(SHARED_CC)
+$(TARGET).lib: LDFLAGS += $(SHARED_LD)
+$(TARGET).lib: $(OSNAME)/lib/$(LIBNAME)
 
-$(LIBDIR)/$(LIBNAME)$(LIBSHEXT): $(OBJECTS) $(OBJDIR)/$(library)_$(COSSYM).o
-	@  echo "*** Building $(notdir $@)"
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
-	$_ $(EXEDIR)/$(COSSYM) $(MODS) --out=$(<D)/$(library)_$(COSSYM).c --mod=$(library) $(COSSYMOPT) $@.$(VERSION)
-	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c    $(<D)/$(library)_$(COSSYM).c -o $(<D)/$(library)_$(COSSYM).o
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $^ -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
+$(OSNAME)/lib/$(LIBNAME): $(OSNAME)/$(TARGET)/$(library)_syms.o
+	@  echo "*** Building [$(TARGET)] $(@F)"
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
 	$_ $(LN) $(@F).$(VERSION) $@
+
+#
+# rules for building static library
+#
+$(TARGET).slib: $(OSNAME)/lib/$(SLIBNAME)
+
+$(OSNAME)/lib/$(SLIBNAME): $(OSNAME)/$(TARGET)/$(library)_syms.o
+	@  echo "*** Building [$(TARGET)] $(@F)"
+	$_ $(AR) $@ $(OBJECTS) $<
 
 #
 # include other target rules
 #
-include $(MAKDIR)/mak/compile
-
-endif # $(TARGET)
+include $(COSDIR)/mak/compile
 
 # end of makefile

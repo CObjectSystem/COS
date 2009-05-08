@@ -29,108 +29,80 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.10 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: prologue,v 1.11 2009/05/08 17:03:20 ldeniau Exp $
 # |
+#
+
+#
+# NOTE-USER: make requirements
+#
+# COS makefiles requires GNU make version 3.81 or higher
 #
 
 #
 # NOTE-USER: config variables from make invocation
 #
-# INSTALL = where to install the project (optional, default '/usr'    )
-# OSYS    = operating system             (optional, default 'uname -s')
-# ARCH    = system architecture          (optional, default 'uname -m')
+# INSTALL = where to install the project (optional, default is config specific)
+# OSNAME  = operating system             (optional, default is 'uname -s')
 # ARGS    = program.run extra arguments
 # SHOW    = yes -> show  commands
 # TRACE   = yes -> trace variables
 #
 
-#
-# NOTE-INFO: important variables set
-#
-# PREFIX  = where to get     COS files                           (autodetected)
-# MAKDIR  = where to get     COS makefiles                       (PREFIX/include/cos)
-# EXEDIR  = where to get     COS tools         (cossym, cosgen)  (PREFIX/bin)
-# BASEDIR = where to get     the project files (base)            (autodetected)
-# DESTDIR = where to build   the project       (destination)     (autodetected)
-# INSTDIR = where to install the project       (installation)    (INSTALL)
-# OSNAME  = OSYS_ARCH
-#
+# clear some suffixes (MAKEFLAGS += -R doesn't work)
+.SUFFIXES:
 
 # some useful functions
 eq      = $(if $(subst $1,,$2),,t)
 neq     = $(if $(subst $1,,$2),t,)
+first   = $(wordlist 1,1,$1)
+last    = $(wordlist $(words $1),$(words $1),$1)
+rest    = $(wordlist 2,$(words $1),$1)
 assert  = $(if $1,,$(error $2))
-exists  = $(call assert,$(wildcard $1),$2)
+exists  = $(if $(wildcard $1),,$(error $2))
 missing = $(filter-out $(wildcard $1),$1)
-reverse = $(strip $(if $1,$(call reverse,$(wordlist 2,$(words $1),$1)) $(firstword $1)))
+mkdir   = $(if $(wildcard $1),,$(shell $(MKDIR) $1))
+reverse = $(strip $(if $1,$(call reverse,$(call rest,$1)) $(call first $1)))
 
-# detect prefix path (e.g /path/to/CosBase or /usr or /usr/local)
-PREFIX := $(abspath $(subst include/cos/prologue,,$(lastword $(MAKEFILE_LIST))))
+#
+# NOTE-INFO: important variables set
+#
+# COSDIR = where to get COS     files (autodetected)
+# PRJDIR = where to get project files (autodetected)
+# OSNAME = operating system name      (autodetected)
+#
 
-# detect project path (e.g path-to-project)
-BASEDIR := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
+# detect cos path (e.g path-to-this-file)
+COSDIR  := $(abspath $(dir $(call last,$(MAKEFILE_LIST))))
 
-# detect destination path (e.g path-to-user)
-DESTDIR := $(abspath $(PWD))
+# detect project path (e.g path-to-project-makefile)
+PRJDIR  := $(abspath $(dir $(call first,$(MAKEFILE_LIST))))
 
-# set/detect install path (e.g path-to-install)
-ifeq ($(INSTDIR),)
-INSTDIR = $(abspath $(if $(INSTALL),$(INSTALL),$(firstword $(wildcard /usr))))
+# detect operating system (e.g. Linux)
+OSNAME  := $(shell uname -s)
+OSNAME  := $(if $(OSNAME),$(OSNAME),Default)
+
+# set command echo
+_ := $(if $(call eq,$(SHOW),yes),,@)
+
+# debug
+ifneq ($(SHOW),yes)
+MAKEFLAGS += --no-print-directory
 endif
 
-# set install path for documentation (e.g path-to-install-shared)
-ifeq ($(INSTDOC),)
-INSTDOC = $(INSTDIR)/share/doc/$($(PRJTYPE))
-endif
-
-# file listing installed files
-ifeq ($(INSTALLED),)
-INSTALLED = $(INSTDOC)/installed_$(OSNAME).txt
-endif
-
-# set/detect operating system (e.g. Linux)
-OSYS := $(if $(OSYS),$(OSYS),$(shell uname -s))
-
-# set/detect architecture (e.g. x86_64)
-ARCH := $(if $(ARCH),$(ARCH),$(shell uname -m))
-
-# other useful variables
-MAKDIR := $(PREFIX)/include/cos
-EXEDIR := $(PREFIX)/bin
-OSNAME  = $(OSYS)_$(ARCH)
-
-# for debugging 
+# debug
 ifeq ($(TRACE),yes)
-$(info PREFIX  = $(PREFIX))
-$(info BASEDIR = $(BASEDIR))
-$(info DESTDIR = $(DESTDIR))
-$(info INSTDIR = $(INSTDIR))
-$(info OSNAME  = $(OSNAME))
+$(info COSDIR = $(COSDIR))
+$(info PRJDIR = $(PRJDIR))
+$(info OSNAME = $(OSNAME))
 endif
 
 # checks
-$(call assert, $(OSYS)              , unable to detect operating system)
-$(call assert, $(ARCH)              , unable to detect system architecture)
-$(call exists, $(PREFIX)            , unable to find PREFIX='$(PREFIX)')
-$(call exists, $(BASEDIR)           , unable to find BASEDIR='$(BASEDIR)')
-$(call exists, $(MAKDIR)            , unable to find MAKDIR='$(MAKDIR)')
-$(call exists, $(EXEDIR)            , unable to find EXEDIR='$(EXEDIR)')
-$(call exists, $(MAKDIR)/epilogue   , unable to detect COS makefiles)
-$(call exists, $(MAKDIR)/cfg/$(OSYS), unable to find COS config for '$(OSYS)')
-
-# cancel default rules
-.SUFFIXES:
-
-# default target
-.DEFAULT_GOAL = all
-
-# exported variables
-export INSTDIR
-export INSTDOC
-export INSTALLED
+$(call exists, $(COSDIR), unable to find COSDIR='$(COSDIR)')
+$(call assert, $(OSNAME), unable to detect operating system)
 
 # include operating system config
-include $(MAKDIR)/cfg/$(OSYS)
+include $(COSDIR)/cfg/$(OSNAME)
 
 # end of makefile
 

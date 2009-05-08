@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS makefile -- config for MacOS X
+# | COS makefile -- Darwin (MacOS X)
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,17 +29,31 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.13 2009/04/02 23:29:01 ldeniau Exp $
+# | $Id: Darwin,v 1.14 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
 #
+# install paths
+#
+PREFIX      := /usr
+BINDIR      := bin
+LIBDIR      := lib
+INCDIR      := include
+DOCDIR      := share/doc
+
+#
 # library specific (no static on MacOS X for gcc)
 #
-LIBTYPE     := shared # static not supported by gcc on Darwin
+LIBTYPE     := shared
 LIBPREFIX   := lib
 LIBAREXT    := .a
 LIBSHEXT    := .so
+
+#
+# program specific
+#
+BINEXT      := 
 
 #
 # tools specific
@@ -58,7 +72,7 @@ SED         := sed
 GREP        := grep
 FIND        := find
 SORT        := sort
-MKTAR       := tar cvz
+TAR         := tar cvz
 
 #
 # compiler and linker specific
@@ -86,10 +100,9 @@ SHARED_CC   := -dynamiclib -fPIC
 SHARED_LD    = -dynamiclib -fPIC -Wl,-install_name,$(@F) -Wl,-U,_cos_symbol_init
 
 #
-# system specific settings
+# system specific
 #
-SYSFLAGS    := -DCOS_NOTLS \
-               -DSYSNAME=$(OSYS) -DARCHNAME=$(ARCH) \
+SYSFLAGS    := -DOSNAME=$(OSNAME) \
                -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
                -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS     := -lpthread -ldl
@@ -97,11 +110,13 @@ SYSLIBPATH  := DYLD_LIBRARY_PATH
 SYSPATH     := PATH
 
 #
-# compiler specific settings (linux+gcc are the reference)
+# compiler specific (darwin+gcc are the reference)
 #
-DEBUG_CC    += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
+CCFLAGS     += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
                -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
                -Wpointer-arith -Wbad-function-cast -Wcast-align -Wcast-qual \
                -Wfloat-equal -Wconversion -Wno-conversion -Winline
+
+# CCFLAGS   += --param large-function-growth=400 --param inline-unit-growth=200
 
 # end of makefile

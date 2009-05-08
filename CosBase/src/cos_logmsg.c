@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.11 2009/01/22 16:45:07 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.12 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,7 @@
 #include <string.h>
 #include <errno.h>
 
-#if COS_POSIX
+#if COS_HAVE_POSIX
 #include <unistd.h>
 #include <pthread.h>
 #endif
@@ -79,10 +79,10 @@ cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
     if (cos_logmsg_out == stderr) fflush(stdout);
 
     va_start(va,fmt);
-#if COS_POSIX
+#if COS_HAVE_POSIX
     fprintf(cos_logmsg_out,"COS-%s[%u]:(%s,%d,%s): ",
             tag[lvl], (U32)getpid(), file ? file : "", line, func ? func : "");
-#else
+#else // !COS_HAVE_POSIX
     fprintf(cos_logmsg_out,"COS-%s:(%s,%d,%s): ",
             tag[lvl], file ? file : "", line, func ? func : "");
 #endif

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.30 2009/03/03 14:45:27 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.31 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
@@ -1076,7 +1076,7 @@ cos_method_get5(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
  * ----------------------------------------------------------------------------
  */
 
-#if COS_POSIX
+#if COS_HAVE_POSIX
 
 #include <pthread.h>
 
@@ -1101,7 +1101,7 @@ cos_method_nextClear(void)
   pthread_mutex_unlock(&nxt_lock);
 }
 
-#else
+#else // !COS_HAVE_POSIX
 
 void
 cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, U32 rnd, struct Class* const* cls)
@@ -1116,7 +1116,7 @@ cos_method_nextClear(void)
   nxt_clear();
 }
 
-#endif
+#endif // COS_HAVE_POSIX
 
 /*
  * ----------------------------------------------------------------------------

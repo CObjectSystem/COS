@@ -29,13 +29,12 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.7 2009/02/10 13:03:22 ldeniau Exp $
+# | $Id: Makefile,v 1.8 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
-# detect location (bootstrap, normally $(cos) = cos)
-pwd := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-cos := $(pwd)/../CosBase/include/cos
+# bootstrap, normally $(cos) = cos
+cos := ../CosBase/include/cos
 
 # standard COS makefile
 
@@ -43,8 +42,21 @@ include $(cos)/prologue
 
 library := CosStd
 version := 0.1
+release := 200905
+package := $(library)-$(version)_$(release)
+
+# files and modules
+sources := $(wildcard src/*.c)
+headers := $(wildcard include/cos/*.h include/cos/*/*.h)
+defgens := $(wildcard include/cos/gen/*.h)
+defprps := $(wildcard include/cos/prp/*.h)
+
+# project dependencies (as with -lname)
 moddeps := CosBase
-targets := debug
+
+# project dependencies (as with -Ipath or -Lpath)
+incdirs := src include ../CosBase/include
+libdirs := ../CosBase/$(OSNAME)/lib
 
 include $(cos)/epilogue
 

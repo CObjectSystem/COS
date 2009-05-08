@@ -59,11 +59,11 @@ static void init(SEL,OBJ,OBJ,OBJ,OBJ,OBJ,void*,void*);
 static struct cos_method_slot5 sentinel = { &sentinel,init,0,0,0,0,0,0 };
 static struct cos_method_slot5 *cache_empty = &sentinel;
 
-#if COS_TLS || !COS_POSIX // -----------------------------
+#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
 
 __thread struct cos_method_cache5 cos_method_cache5_ = { &cache_empty, 0 };
 
-#else // COS_POSIX && !COS_TLS ---------------------------
+#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
 pthread_key_t cos_method_cache5_key;
 

@@ -29,120 +29,85 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.24 2009/03/25 16:36:34 ldeniau Exp $
+# | $Id: default,v 1.25 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
 #
-# default settings
+# targets
 #
-PRJTYPE := $(if $(program),program,$(if $(library),library,$(if $(distrib),distrib)))
+TARGETS  := $(if $(targets),$(targets),all)
 
-VERSION := $(if $(version),$(version),0.0)
-RELEASE := $(if $(release),$(release),$(shell date +'%Y%m'))
-PACKAGE := $(if $(package),$(package),$($(PRJTYPE))$(if $(version),-$(version))_$(RELEASE))
+.DEFAULT_GOAL := default
 
-ifneq ($(filter program library,$(PRJTYPE)),)
+#
+# project
+#
+PRJTYPE  := $(strip $(if $(program),program, \
+                    $(if $(library),library, \
+                    $(if $(distrib),distrib))))
+PRJGOAL  := $(if $(MAKECMDGOALS),$(MAKECMDGOALS),$(TARGETS))
+PRJNAME  := $($(PRJTYPE))
 
-COSSYM  := cossym
-COSGEN  := cosgen
-COSPRP  := cosprp
-COSCMT  := coscmt
+#
+# identity
+#
+VERSION  := $(if $(version),$(version),0)
+RELEASE  := $(if $(release),$(release),0)
+PACKAGE  := $(if $(package),$(package),$(PRJNAME)-$(VERSION)_$(RELEASE))
 
-LNKTYPE := $(filter static shared,$(targets))
-LNKTYPE := $(if $(LNKTYPE),$(LNKTYPE),$(LIBTYPE))
+#
+# files
+#
+SOURCES   = $(wildcard $(sources))
+HEADERS   = $(wildcard $(headers))
+DEFGENS   = $(wildcard $(defgens))
+DEFPRPS   = $(wildcard $(defprps))
 
-TARGETS := $(filter debug profile release,$(targets))
-TARGETS := $(if $(TARGETS),$(TARGETS),debug profile release)
+MODULES   = $(wildcard $(modules))
 
-# sources
+INCDIRS   = $(wildcard $(incdirs))
+BINDIRS   = $(wildcard $(bindirs))
+LIBDIRS   = $(wildcard $(libdirs))
+MODDIRS   = $(wildcard $(moddirs))
 
-ifneq ($(wildcard $(BASEDIR)/include),)
-INCDIR  := $(BASEDIR)/include
-SRCDIR  := $(BASEDIR)/src
-else ifneq ($(wildcard $(BASEDIR)/src),)
-INCDIR  := $(BASEDIR)/src
-SRCDIR  := $(BASEDIR)/src
-else
-INCDIR  := $(BASEDIR)
-SRCDIR  := $(BASEDIR)
-endif
+SRCDIRS   = $(sort $(dir $(SOURCES)))
+HDRDIRS   = $(sort $(dir $(HEADERS)))
 
-HEADERS := $(wildcard $(if $(headers),$(abspath $(headers)),$(SRCDIR)/*.h \
-             $(if $(wildcard $(BASEDIR)/include),$(INCDIR)/*.h $(INCDIR)/*/*.h \
-             $(INCDIR)/*/*/*.h $(INCDIR)/*/*/*/*.h $(INCDIR)/*/*/*/*/*.h)))
+OBJECTS   = $(addprefix $(OSNAME)/$(TARGET)/, \
+              $(addsuffix .o,$(basename $(notdir $(SOURCES)))) \
+              $(if $(DEFGENS),$(PRJNAME)_gens.o) \
+              $(if $(DEFPRPS),$(PRJNAME)_prps.o))
 
-SOURCES := $(wildcard $(if $(sources),$(abspath $(sources)),$(SRCDIR)/*.c))
+DEPENDS   = $(patsubst %.o,%.d,$(OBJECTS))
 
-ifneq ($(defgens),no)
-GENERIC := $(filter-out $(PREFIX)/include/cos/cos/%.h \
-                        $(PREFIX)/include/cos/cpp/%.h, \
-             $(if $(defgens),$(wildcard $(abspath $(defgens))),$(HEADERS)))
-GENERIC := $(if $(GENERIC),$(shell $(GREP) -F -l defgeneric $(GENERIC)))
-endif
+INCLUDE   = $(addprefix -I, $(INCDIRS))
+LIBRARY   = $(addprefix -L, $(LIBDIRS) $(OSNAME)/lib)
+BINARY    = $(strip         $(BINDIRS) $(OSNAME)/bin)
 
-ifneq ($(defprps),no)
-PRPERTY := $(filter-out $(PREFIX)/include/cos/cos/%.h \
-                        $(PREFIX)/include/cos/cpp/%.h, \
-             $(if $(defprps),$(wildcard $(abspath $(defprps))),$(HEADERS)))
-PRPERTY := $(if $(PRPERTY),$(shell $(GREP) -F -l defproperty $(PRPERTY)))
-endif
-
-# destinations
-
-BINDIR   = $(DESTDIR)/$(OSNAME)/bin
-LIBDIR   = $(DESTDIR)/$(OSNAME)/lib
-OBJDIR   = $(DESTDIR)/$(OSNAME)/obj/$(TARGET)
-TMPDIR   = $(DESTDIR)/$(OSNAME)/tmp/$(TARGET)
-
-OBJECTS  = $(addprefix $(OBJDIR)/, \
-             $(addsuffix .o,$(basename $(notdir $(SOURCES)))) \
-             $(if $(GENERIC),$($(PRJTYPE))_$(COSGEN).o) \
-             $(if $(PRPERTY),$($(PRJTYPE))_$(COSPRP).o))
-
-DEPENDS  = $(patsubst %.o,%.d,$(OBJECTS))
-
-BASEMOD  = $(wildcard \
-             $(foreach d, $(abspath $(moddirs) \
-               $(BASEDIR) $(BASEDIR)/.. $(BASEDIR)/../.. $(BASEDIR)/../../..), \
-                 $(foreach m, $(moddeps),$(d)/$(m))))
-             
-DESTMOD  = $(wildcard \
-             $(foreach d, $(abspath $(moddirs) \
-               $(DESTDIR) $(DESTDIR)/.. $(DESTDIR)/../.. $(DESTDIR)/../../..), \
-                 $(foreach m, $(moddeps),$(d)/$(m))))
-
-MODS     = $(addprefix --dep=, $(moddeps))
-
-LIBS     = $(addprefix -l, $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
-
-INCLUDE  = $(addprefix -I, $(INCDIR) \
-             $(addsuffix /include,$(BASEMOD)) \
-	           $(wildcard $(abspath $(incdirs))) \
-             $(wildcard $(PREFIX)/include))
-
-LIBRARY  = $(addprefix -L, \
-             $(addsuffix /$(OSNAME)/lib,$(DESTMOD)) \
-	           $(wildcard $(abspath $(libdirs))) \
-             $(wildcard $(PREFIX)/lib))
-
-BINARY   =   $(addsuffix /$(OSNAME)/bin,$(DESTMOD)) \
-             $(wildcard $(abspath $(bindirs))) \
-             $(wildcard $(PREFIX)/bin)
-
-endif # library or program
+MODS      = $(addprefix --dep=, $(moddeps))
+LIBS      = $(addprefix -l, $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
 
 #
 # standard patterns
 #
 CLEANPAT := '*~' '.*~' '.\#*'
-CLEANCMD := $(wordlist 2,99,$(addprefix -o -name ,$(CLEANPAT) $(cleanpat)))
+CLEANCMD := $(call rest,$(addprefix -o -name ,$(CLEANPAT) $(cleanpat)))
 
 TAREXPAT := 'CVS*' TODO tmp $(CLEANPAT) $(cleanpat)
 TAREXCMD := $(addprefix --exclude=,$(TAREXPAT) $(tarexpat))
 
 INSEXPAT := '[Mm]akefile' $(TAREXPAT) $(tarexpat)
-INSEXCMD := $(wordlist 2,99,$(addprefix -o -name ,$(INSEXPAT) $(insexpat)))
+INSEXCMD := $(call rest,$(addprefix -o -name ,$(INSEXPAT) $(insexpat)))
+
+#
+# standard tools
+#
+COSBIN   := $(wildcard $(abspath $(COSDIR)/../../$(OSNAME)/bin))
+COSSYM    = $(if $(COSBIN),$(COSBIN)/)cossym$(BINEXT)
+COSGEN    = $(if $(COSBIN),$(COSBIN)/)cosgen$(BINEXT)
+COSPRP    = $(if $(COSBIN),$(COSBIN)/)cosprp$(BINEXT)
+COSCMT    = $(if $(COSBIN),$(COSBIN)/)coscmt$(BINEXT)
 
 #
 # standard flags
@@ -150,22 +115,15 @@ INSEXCMD := $(wordlist 2,99,$(addprefix -o -name ,$(INSEXPAT) $(insexpat)))
 CPPFLAGS    += $(SYSFLAGS) $(EXTRA_CPPFLAGS)
 CCFLAGS     += $(SYSFLAGS) $(EXTRA_CCFLAGS)
 LDFLAGS     += $(SYSFLAGS) $(EXTRA_LDFLAGS)
+
 DEBUG_CPP   += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
 DEBUG_CC    += -UNDEBUG -DCOS_LOGMSG=COS_LOGMSG_DEBUG -DCOS_CONTRACT=COS_CONTRACT_ALL
+
 PROFILE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRACT_PRE
 PROFILE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRACT_PRE
+
 RELEASE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
 RELEASE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
-
-#
-# standard goals
-#
-GOALS := $(if $(MAKECMDGOALS),$(MAKECMDGOALS),$(.DEFAULT_GOAL))
-
-#
-# for show/trace/debugging 
-#
-_ := $(if $(call eq,$(SHOW),yes),,@)
 
 #
 # for debugging 
@@ -175,16 +133,18 @@ TARGET := [$(TARGETS)]
 $(info VERSION = $(VERSION))
 $(info RELEASE = $(RELEASE))
 $(info PRJTYPE = $(PRJTYPE))
-$(info LNKTYPE = $(LNKTYPE))
-$(info TARGETS = $(TARGETS))
-$(info HEADERS[$(words $(HEADERS))] = $(HEADERS))
-$(info GENERIC[$(words $(GENERIC))] = $(GENERIC))
-$(info PRPERTY[$(words $(PRPERTY))] = $(PRPERTY))
+$(info PRJNAME = $(PRJNAME))
+$(info PRJGOAL = $(PRJGOAL))
+$(info COSSYM  = $(COSSYM))
+$(info COSGEN  = $(COSGEN))
+$(info COSPRP  = $(COSPRP))
+$(info COSCMT  = $(COSCMT))
 $(info SOURCES[$(words $(SOURCES))] = $(SOURCES))
+$(info HEADERS[$(words $(HEADERS))] = $(HEADERS))
+$(info DEFGENS[$(words $(DEFGENS))] = $(DEFGENS))
+$(info DEFPRPS[$(words $(DEFPRPS))] = $(DEFPRPS))
 $(info OBJECTS[$(words $(OBJECTS))] = $(OBJECTS))
 $(info DEPENDS[$(words $(DEPENDS))] = $(DEPENDS))
-$(info BASEMOD[$(words $(BASEMOD))] = $(BASEMOD))
-$(info DESTMOD[$(words $(DESTMOD))] = $(DESTMOD))
 $(info INCLUDE[$(words $(INCLUDE))] = $(INCLUDE))
 $(info LIBRARY[$(words $(LIBRARY))] = $(LIBRARY))
 $(info BINARY [$(words $(BINARY))] = $(BINARY))
@@ -194,10 +154,10 @@ $(info CPPFLAGS    = $(CPPFLAGS))
 $(info CCFLAGS     = $(CCFLAGS))
 $(info LDFLAGS     = $(LDFLAGS))
 $(info DEBUG_CPP   = $(DEBUG_CPP))
-$(info DEBUG_CC    = $(DEBUG_CC))
 $(info PROFILE_CPP = $(PROFILE_CPP))
-$(info PROFILE_CC  = $(PROFILE_CC))
 $(info RELEASE_CPP = $(RELEASE_CPP))
+$(info DEBUG_CC    = $(DEBUG_CC))
+$(info PROFILE_CC  = $(PROFILE_CC))
 $(info RELEASE_CC  = $(RELEASE_CC))
 endif
 

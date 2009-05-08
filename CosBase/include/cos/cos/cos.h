@@ -32,13 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.11 2009/03/09 13:33:47 ldeniau Exp $
+ | $Id: cos.h,v 1.12 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
 /* NOTE-USER: ISO C89/C99 Compliance
-   The preprocessor *must* be C99 compliant (see config.h).
-   The compiler     *must* be C89 compliant (see config.h).
+   The preprocessor *must* be C99 compliant.
+   The compiler     *must* be C89 compliant.
  */
 #if !__STDC__ || __STDC_VERSION__ < 199901L
 #error "COS: COS requires an ISO C99 preprocessor to work properly"

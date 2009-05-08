@@ -1,0 +1,116 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS makefile -- install
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: install,v 1.1 2009/05/08 17:03:20 ldeniau Exp $
+# |
+#
+
+INSTALLED_FILES := INSTALLED_FILES
+
+#
+# install
+#
+INSTMODS := $(addsuffix .install, $(MODULES))
+
+.PHONY: install install.prn install.pre install.do install.post $(INSTMODS)
+.PHONY: install.hdrs install.bins install.libs install.docs install.aux
+
+install: install.prn install.pre install.do install.post
+
+install.prn:
+	@echo "*** Installing $(PRJNAME)"
+
+install.do: $(INSTMODS) install.hdrs install.bins install.libs install.docs install.aux
+
+install.hdrs:
+	$_ for f in $(HEADERS) ; do \
+	     d=$(PREFIX)/$(INCDIR)/$${f#include/} ; \
+	     echo "*** Copying $$f -> $$d" ; \
+	     $(CP) $$f $$d ; \
+       echo $$d >> $(INSTALLED_FILES) ; \
+	   done
+
+install.bins:
+	$_ for f in $(wildcard $(OSNAME)/bin/*) ; do \
+	     d=$(PREFIX)/$(BINDIR)/$${f#$(OSNAME)/bin/} ; \
+	     echo "*** Copying $$f -> $$d" ; \
+	     $(CP) $$f $$d ; \
+       echo $$d >> $(INSTALLED_FILES) ; \
+	   done
+
+install.libs:
+	$_ for f in $(wildcard $(OSNAME)/bin/*) ; do \
+	     d=$(PREFIX)/$(LIBDIR)/$${f#$(OSNAME)/lib/} ; \
+	     echo "*** Copying $$f -> $$d" ; \
+	     $(CP) $$f $$d ; \
+       echo $$d >> $(INSTALLED_FILES) ; \
+	   done
+
+install.docs: # TODO
+
+install.aux: # TODO
+
+ifneq ($(INSTMODS),)
+$(INSTMODS):
+	$_ $(MAKE) -C $(basename $@) install
+endif
+
+#
+# uninstall
+#
+UNINSTMODS := $(addsuffix .uninstall, $(MODULES))
+
+.PHONY: uninstall uninstall.prn uninstall.pre uninstall.do uninstall.post $(UNINSTMODS)
+
+uninstall: uninstall.prn uninstall.pre uninstall.do uninstall.post
+
+uninstall.prn:
+	@echo "*** Uninstalling $(PRJNAME)"
+
+uninstall.do: $(UNINSTMODS)
+	$_ if [ -f $(INSTALLED_FILES) ] ; then \
+	     files=`$(SORT) -u -r $(INSTALLED_FILES)` ; \
+	     for f in $$files ; do \
+	       if [ -f $$f ] ; then \
+	         echo "*** Removing $$f" ; \
+	         $(RM) $$f ; \
+         fi ; \
+	     done ; \
+	     $(RM) $(INSTALLED_FILES) ; \
+	   fi
+
+ifneq ($(UNINSTMODS),)
+$(UNINSTMODS):
+	$_ $(MAKE) -C $(basename $@) uninstall
+endif
+
+# end of makefile
+

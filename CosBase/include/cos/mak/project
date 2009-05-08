@@ -29,53 +29,14 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.17 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: project,v 1.18 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
-# checks
-$(call assert, $(PRJTYPE), empty project type)
-$(call assert, $(LNKTYPE), unable to detect link modes)
-$(call assert, $(SOURCES), unable to find source files)
-
 #
-# project goals
-#
-GOALS := $(patsubst install,                        all      ,$(GOALS))
-GOALS := $(patsubst tests,                          all      ,$(GOALS))
-GOALS := $(patsubst all.clean, $(addsuffix .clean,$(TARGETS)),$(GOALS))
-GOALS := $(patsubst all.srun,  $(addsuffix .srun, $(TARGETS)),$(GOALS))
-GOALS := $(patsubst all.run,   $(addsuffix .run,  $(TARGETS)),$(GOALS))
-GOALS := $(patsubst all,                          $(TARGETS) ,$(GOALS))
-GOALS := $(sort $(GOALS))
-
-ifeq ($(TRACE),yes)
-$(info GOALS = $(GOALS))
-endif
-
-# debug target
-
-TARGET    := debug
-TARGETEXT := _d
-
-$(TARGET).%: CPPFLAGS += $(DEBUG_CPP)
-$(TARGET).%:  CCFLAGS += $(DEBUG_CC)
-$(TARGET).%:  LDFLAGS += $(DEBUG_LD)
-
-include $(MAKDIR)/mak/$(PRJTYPE)
-
-# profile target
-
-TARGET    := profile
-TARGETEXT := _p
-
-$(TARGET).%: CPPFLAGS += $(PROFILE_CPP)
-$(TARGET).%:  CCFLAGS += $(PROFILE_CC)
-$(TARGET).%:  LDFLAGS += $(PROFILE_LD)
-
-include $(MAKDIR)/mak/$(PRJTYPE)
-
 # release target
+#
+ifneq ($(filter all release release.%,$(PRJGOAL)),)
 
 TARGET    := release
 TARGETEXT :=
@@ -84,15 +45,52 @@ $(TARGET).%: CPPFLAGS += $(RELEASE_CPP)
 $(TARGET).%:  CCFLAGS += $(RELEASE_CC)
 $(TARGET).%:  LDFLAGS += $(RELEASE_LD)
 
-include $(MAKDIR)/mak/$(PRJTYPE)
+include $(COSDIR)/mak/$(PRJTYPE)
 
-# directories target
+DOIT := $(call mkdir,$(OSNAME)/bin)
+DOIT := $(call mkdir,$(OSNAME)/lib)
+DOIT := $(call mkdir,$(OSNAME)/$(TARGET))
 
-.PHONY: project.dir
+endif
 
-project.dir: $(call missing,$(BINDIR) $(LIBDIR) $(TMPDIR))
+#
+# debug target
+#
+ifneq ($(filter all debug debug.%,$(PRJGOAL)),)
 
-$(BINDIR) $(LIBDIR) $(TMPDIR):
-	$_ $(MKDIR) $@
+TARGET    := debug
+TARGETEXT := _d
+
+$(TARGET).%: CPPFLAGS += $(DEBUG_CPP)
+$(TARGET).%:  CCFLAGS += $(DEBUG_CC)
+$(TARGET).%:  LDFLAGS += $(DEBUG_LD)
+
+include $(COSDIR)/mak/$(PRJTYPE)
+
+DOIT := $(call mkdir,$(OSNAME)/bin)
+DOIT := $(call mkdir,$(OSNAME)/lib)
+DOIT := $(call mkdir,$(OSNAME)/$(TARGET))
+
+endif
+
+#
+# profile target
+#
+ifneq ($(filter all profile profile.%,$(PRJGOAL)),)
+
+TARGET    := profile
+TARGETEXT := _p
+
+$(TARGET).%: CPPFLAGS += $(PROFILE_CPP)
+$(TARGET).%:  CCFLAGS += $(PROFILE_CC)
+$(TARGET).%:  LDFLAGS += $(PROFILE_LD)
+
+include $(COSDIR)/mak/$(PRJTYPE)
+
+DOIT := $(call mkdir,$(OSNAME)/bin)
+DOIT := $(call mkdir,$(OSNAME)/lib)
+DOIT := $(call mkdir,$(OSNAME)/$(TARGET))
+
+endif
 
 # end of makefile

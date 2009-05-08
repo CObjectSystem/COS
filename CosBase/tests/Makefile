@@ -29,21 +29,36 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.8 2008/12/10 13:07:34 ldeniau Exp $
+# | $Id: Makefile,v 1.9 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
-# detect location (bootstrap, normally $(cos) = cos)
-pwd := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-cos := $(pwd)/../include/cos
+# bootstrap, normally $(cos) = cos
+cos := ../include/cos
 
 # standard COS makefile
 
 include $(cos)/prologue
 
+# project
 program := testCosBase
+
+# targets
+targets := debug.run
+
+# files & modules
+sources := $(wildcard src/*.c)
+headers := $(wildcard src/*.h)
+defgens := $(headers)
+defprps := $(headers)
+
+# project dependencies (as with -lname)
 moddeps := CosBase
+
+# project dependencies (as with -Ipath or -Lpath)
+incdirs := ../include src
+libdirs := ../$(OSNAME)/lib
 
 include $(cos)/epilogue
 
-# end of COS tests makefile
+# end of makefile

@@ -29,28 +29,20 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.7 2009/04/02 15:11:01 ldeniau Exp $
+# | $Id: README,v 1.8 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
-*** IMPORTANT: The C Object System requires GNU make 3.81 or higher ***
+*** IMPORTANT: The C Object System requires GNU make 3.80 or higher ***
 
 Compilation/tests/[un]install:
 ------------------------------
 
-# in the source tree
 cd path-to-cos
-make [target] [INSTALL=path-to-prefix]
-
-# ouside the source tree
-cd path-to-build
-make -f path-to-cos/Makefile [target] [INSTALL=path-to-prefix]
-
-# possible targets
-tests, install, uninstall
-
-# default install
-INSTALL=/usr
+make
+make tests                                    # optional
+make install [PREFIX=path-to-prefix]          # as root
+make uninstall                                # as root
 
 Makefile examples:
 ------------------
@@ -62,10 +54,10 @@ path-to-cos/Makefile
 path-to-cos/CosBase/Makefile
 
 # program
-path-to-cos/CosBase/tests/Makefile
-
-# examples
 path-to-cos/CosBase/examples/ex??/Makefile
+
+# tests
+path-to-cos/CosBase/tests/Makefile
 
 Debugging makefiles:
 --------------------

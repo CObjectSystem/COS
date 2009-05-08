@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile89.sh,v 1.7 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: compile89.sh,v 1.8 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
@@ -39,59 +39,62 @@
 # this example is for CosBase itself which is C89 compliant
 #
 
+# defines
+NAME=CosBase
+OSNAME=`uname -s`
+DEFINE="-DCOS_C89 -DOSNAME=$OSNAME -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE"
+
 # dirs
 incdir=include
 srcdir=src
-bindir=bin
-
-# defines
-DEFINE="-DCOS_C89 -DCOS_POSIX=1 -DCOS_TLS=1 -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE"
+bindir=$OSNAME/bin
 
 # compiler (C99 is only used for preprocessing)
-C99="cc -std=c99 -pedantic -W -Wall -Iinclude -O3 $DEFINE -w"  # -w can be removed
-C89="cc -std=c89 -pedantic -W -Wall -Iinclude -O3 $DEFINE"
+C89="c89 -Iinclude -O3 $DEFINE"
+C99="c99 -Iinclude -O3 $DEFINE -w"  # -w can be removed
 
 # check location
 PWD=`basename \`pwd\``
 
-if [ "$PWD" != "CosBase" ] ; then
-  echo `basename $0` "must be run from the CosBase directory"
+if [ "$PWD" != "$NAME" ] ; then
+  echo `basename $0` "must be run from the $NAME directory"
   exit;
 fi
 
 # cleaning
-rm -f $srcdir/_cosgen.c $srcdir/_cossym.c $srcdir/libCosBase89.a $srcdir/*.o
+rm -f $srcdir/${NAME}_gens.c \
+      $srcdir/${NAME}_prps.c \
+      $srcdir/${NAME}_syms.c \
+      $srcdir/lib${NAME}89.a \
+      $srcdir/*.o
 
 if [ "$1" = "clean" ] ; then
   exit 1
 fi
 
 # 1) collect generics and properties (preprocessing only)
-$bindir/cosgen --out=$srcdir/_cosgen.c $incdir/cos/gen/*.h
-$bindir/cosprp --out=$srcdir/_cosprp.c $incdir/cos/prp/*.h
+$bindir/cosgen --out=$srcdir/${NAME}_gens.c $incdir/cos/gen/*.h
+$bindir/cosprp --out=$srcdir/${NAME}_prps.c $incdir/cos/prp/*.h
 
 # 2) compile source files (2 steps)
-for f in $srcdir/*.c; do
+for f in $srcdir/*.c ; do
   f=$srcdir/`basename $f .c`
   echo "compiling $f.c"
-  $C99 -E -o $f.i $f.c # 2.1) preprocessing
-  $C89 -c -o $f.o $f.i # 2.2) compilation
+  $C99 -E $f.c -o $f.i # 2.1) preprocessing
+  $C89 -c $f.i -o $f.o # 2.2) compilation
   rm $f.i
 done
 
 # 3) collect symbols (compilation only)
-$bindir/cossym --out=$srcdir/_cossym.c $srcdir/*.o
-$C89 -c -o $srcdir/_cossym.o $srcdir/_cossym.c
+$bindir/cossym --out=$srcdir/${NAME}_syms.c $srcdir/*.o
+$C89 -c -o $srcdir/${NAME}_syms.o $srcdir/${NAME}_syms.c
 
-# build archive (must not contain symbol table)
-ar -rc $srcdir/libCosBase89.a $srcdir/*.o
-ar -d  $srcdir/libCosBase89.a _cossym.o
+# build archive
+ar -rc $srcdir/lib${NAME}89.a $srcdir/*.o
 
 # build program (require main() to be defined)
-# if the program defines classes, generics and methods,
-# step 3) collecting symbols should include its objects files.
-# $C89 $srcdir/*.o -o program
+# $C89 $srcdir/*.o main.o -o program
 
 # build program from archive (idem)
-# $C89 $srcdir/libCosBase89.a $srcdir/_cossym.o -o program
+# $C89 $srcdir/libCosBase89.a main.o -o program
 

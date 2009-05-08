@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosprp,v 1.3 2009/04/02 13:21:18 ldeniau Exp $
+# | $Id: cosprp,v 1.4 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
@@ -100,19 +100,6 @@ while [ "$1" != "" ] ; do
 
 done
 
-# check coscmt
-if grep -F -q "COS-SED-SCRIPT" "$exedir/coscmt" ; then
-  # bootstrap script
-  chmod -x "$exedir/coscmt"
-  cmt="sed -nf $exedir/coscmt"
-elif  [ -x "$exedir/coscmt" ] ; then
-  # installed coscmt
-  cmt="$exedir/coscmt -l"
-else
-  echo "error: unable to find file $exedir/coscmt"
-  usage 
-fi
-
 ##### Start of _cosprp.c #####
 
 mkdir -p `dirname $out`
@@ -134,8 +121,7 @@ END-OF-TEXT
 
 for f in $filelist; do
   # retrieve properties
-  prp=`cat $f \
-     | $cmt \
+  prp=`$exedir/coscmt -l $f \
      | tr '\n\t' '  ' \
      | sed  -e 's/  *\(defproperty\) *(\([^;]*\);/@\1(\2;@/g' \
      | tr '@' '\n' \
@@ -146,12 +132,12 @@ for f in $filelist; do
   if [ "$prp" != "" ] ; then
     f=`echo $f | sed -e 's,^.*include/,,' -e 's,^.*src/,,'`
     echo "#include \"$f\""               >> $out
-    echo                                 >> $out
     prps=`echo "$prps$prp"`
   fi
 done
 
 # makproperty
+echo                                     >> $out
 echo "$prps" \
   | sort -u \
   | sed -e 's/defproperty/makproperty/g' >> $out

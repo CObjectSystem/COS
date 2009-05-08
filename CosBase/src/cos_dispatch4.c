@@ -13,7 +13,7 @@
  | http://cern.ch/laurent.deniau/cos.html
  |
  o---------------------------------------------------------------------o
- |COS_TLS
+ |
  | This file is part of the C Object System framework.
  |
  | The C Object System is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch4.c,v 1.7 2008/11/18 08:34:25 ldeniau Exp $
+ | $Id: cos_dispatch4.c,v 1.8 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
@@ -59,11 +59,11 @@ static void init(SEL,OBJ,OBJ,OBJ,OBJ,void*,void*);
 static struct cos_method_slot4 sentinel = { &sentinel,init,0,0,0,0,0 };
 static struct cos_method_slot4 *cache_empty = &sentinel;
 
-#if COS_TLS || !COS_POSIX // -----------------------------
+#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
 
 __thread struct cos_method_cache4 cos_method_cache4_ = { &cache_empty, 0 };
 
-#else // COS_POSIX && !COS_TLS ---------------------------
+#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
 pthread_key_t cos_method_cache4_key;
 

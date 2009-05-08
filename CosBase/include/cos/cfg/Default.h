@@ -1,10 +1,10 @@
-#ifndef COS_CFG_DARWIN_H
-#define COS_CFG_DARWIN_H
+#ifndef COS_CFG_DEFAULT_H
+#define COS_CFG_DEFAULT_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS config: Darwin
+ | COS config: Default
  |
  o---------------------------------------------------------------------o
  |
@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Darwin.h,v 1.2 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: Default.h,v 1.1 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
 #define COS_HAVE_TLS   0
-#define COS_HAVE_POSIX 1
+#define COS_HAVE_POSIX 0
 
-#endif // COS_CFG_DARWIN_H
+#endif // COS_CFG_DEFAULT_H

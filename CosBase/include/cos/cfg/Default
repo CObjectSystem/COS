@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS testsuite
+# | COS makefile -- Default 
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,33 +29,78 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.5 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: Default,v 1.1 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
-# bootstrap, normally $(cos) = cos
-cos := ../../CosBase/include/cos
+#
+# install paths
+#
+PREFIX      := /usr
+BINDIR      := bin
+LIBDIR      := lib
+INCDIR      := include
+DOCDIR      := share/doc
 
-# standard COS makefile
+#
+# library specific
+#
+LIBTYPE     := static
+LIBPREFIX   := lib
+LIBAREXT    := .a
 
-include $(cos)/prologue
+#
+# program specific
+#
+BINEXT      := 
 
-# project
-program := testCosStd
+#
+# tools specific
+#
+CC          := c99
+CPP         := $(CC) -E
+DEP         := $(CC) -M
+LD          := $(CC)
+AR          := ar -cr
+STRIP       := strip -s
+LN          := ln -sf
+RM          := rm -Rf
+CP          := cp -RPf
+MKDIR       := mkdir -p
+SED         := sed
+GREP        := grep
+FIND        := find
+SORT        := sort
+TAR         := tar cvz
 
-# files and modules
-sources := $(wildcard src/*.c)
-headers := $(wildcard src/*.h)
-defgens := $(headers)
-defprps := $(headers)
+#
+# compiler and linker specific
+#
+CPPFLAGS    := -W -Wall
+CCFLAGS     := -W -Wall -O3
+LDFLAGS     := -W -Wall -O3
 
-# project dependencies (as with -lname)
-moddeps := CosStd CosBase
+DEBUG_CPP   :=
+DEBUG_CC    := -g
+DEBUG_LD    := -g
 
-# project dependencies (as with -Ipath or -Lpath)
-incdirs := $(foreach m,$(moddeps),../../$(m)/include) src
-libdirs := $(foreach m,$(moddeps),../../$(m)/$(OSNAME)/lib)
+PROFILE_CPP :=
+PROFILE_CC  := -pg
+PROFILE_LD  := -pg
 
-include $(cos)/epilogue
+RELEASE_CPP :=
+RELEASE_CC  := 
+RELEASE_LD  := 
+
+STATIC_CC   := -static
+STATIC_LD   := -static
+
+#
+# system specific
+#
+SYSFLAGS    := -DOSNAME=Default
+SYSLIBS     :=
+SYSLIBPATH  := LD_LIBRARY_PATH
+SYSPATH     := PATH
 
 # end of makefile

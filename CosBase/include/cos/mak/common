@@ -29,176 +29,78 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.11 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: common,v 1.12 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
 #
-# build targets
+# default
 #
-.PHONY: all all.prn all.pre all.do all.post
-.PHONY: all.run all.srun all.clean all.tests all.install all.uninstall
-.PHONY: $(modules)
-.PHONY: $(addsuffix .run,       $(modules))
-.PHONY: $(addsuffix .srun,      $(modules))
-.PHONY: $(addsuffix .clean,     $(modules))
-.PHONY: $(addsuffix .tests,     $(modules))
-.PHONY: $(addsuffix .install,   $(modules))
-.PHONY: $(addsuffix .uninstall, $(modules))
+.PHONY: default
 
-all          : all.prn all.pre all.do all.post
-all.run      : $(addsuffix .run,      $(modules)  $(TARGETS))
-all.srun     : $(addsuffix .srun,     $(modules)  $(TARGETS))
-all.clean    : $(addsuffix .clean,    $(modules)  $(TARGETS))
-all.tests    : $(addsuffix .tests,    $(modules)) $(TARGETS)
-all.install  : $(addsuffix .install,  $(modules)) $(TARGETS)
-all.uninstall: $(addsuffix .uninstall,$(call reverse,$(modules)))
+default: $(TARGETS)
+
+#
+# all
+#
+ALLTARGETS := $(patsubst all,release debug profile,$(TARGETS))
+
+.PHONY: all all.prn all.pre all.do all.post $(MODULES)
+
+all: all.prn all.pre all.do all.post
 
 all.prn:
-	@echo "*** Making $($(PRJTYPE))"
+	@echo "*** Making $(PRJNAME)"
 
-all.do: $(modules) $(TARGETS)
+all.do: $(MODULES) $(if $(call neq,$(PRJTYPE),distrib),$(ALLTARGETS))
 
-$(modules):
-	$_ [ -d $(DESTDIR)/$@ ] || $(MKDIR)   $(DESTDIR)/$@
-	$_   cd $(DESTDIR)/$@   && $(MAKE) -C $(BASEDIR)/$@
-
-$(addsuffix .run, $(modules)):
-	$_ [ -d $(DESTDIR)/$(basename $@) ] || $(MKDIR)   $(DESTDIR)/$(basename $@)
-	$_   cd $(DESTDIR)/$(basename $@)   && $(MAKE) -C $(BASEDIR)/$(basename $@) all.run
-
-$(addsuffix .srun, $(modules)):
-	$_ [ -d $(DESTDIR)/$(basename $@) ] || $(MKDIR)   $(DESTDIR)/$(basename $@)
-	$_   cd $(DESTDIR)/$(basename $@)   && $(MAKE) -C $(BASEDIR)/$(basename $@) all.srun
-
-$(addsuffix .clean, $(modules)):
-	$_ [ -d $(DESTDIR)/$(basename $@) ] || $(MKDIR)   $(DESTDIR)/$(basename $@)
-	$_   cd $(DESTDIR)/$(basename $@)   && $(MAKE) -C $(BASEDIR)/$(basename $@) all.clean
-
-$(addsuffix .tests, $(modules)):
-	$_ [ -d $(DESTDIR)/$(basename $@) ] || $(MKDIR)   $(DESTDIR)/$(basename $@)
-	$_   cd $(DESTDIR)/$(basename $@)   && $(MAKE) -C $(BASEDIR)/$(basename $@) tests
-
-$(addsuffix .install,$(modules)):
-	$_ [ -d $(DESTDIR)/$(basename $@) ] || $(MKDIR)   $(DESTDIR)/$(basename $@)
-	$_   cd $(DESTDIR)/$(basename $@)   && $(MAKE) -C $(BASEDIR)/$(basename $@) install
-
-$(addsuffix .uninstall,$(modules)):
-	$_ [ -d $(DESTDIR)/$(basename $@) ] || $(MKDIR)   $(DESTDIR)/$(basename $@)
-	$_   cd $(DESTDIR)/$(basename $@)   && $(MAKE) -C $(BASEDIR)/$(basename $@) uninstall
+ifneq ($(MODULES),)
+$(MODULES):
+	@echo "*** Making [$@]"
+	$_ $(MAKE) -C $@
+endif
 
 #
 # tests
 #
-.PHONY: tests tests.prn tests.pre tests.do tests.post
-.PHONY: dest.tests
+TESTMODS := $(addsuffix .tests, $(MODULES))
+TESTDIRS := $(wildcard tests)
 
-tests: tests.prn all.tests tests.pre tests.do tests.post
+.PHONY: tests tests.pre tests.do tests.post $(TESTMODS)
 
-tests.prn:
-	@echo "*** Testing $($(PRJTYPE))"
+tests: $(TESTMODS) tests.pre tests.do tests.post
 
-tests.do: $(if $(wildcard $(BASEDIR)/tests),dest.tests)
+tests.do:
+	$_ $(if $(TESTDIRS),$(MAKE) -C tests)
 
-dest.tests:
-	$_ [ -d $(DESTDIR)/tests ] || $(MKDIR)   $(DESTDIR)/tests
-	$_   cd $(DESTDIR)/tests   && $(MAKE) -C $(BASEDIR)/tests debug.run
-
-#
-# install
-#
-.PHONY: install install.prn install.dir install.pre install.do install.post
-.PHONY: base.install dest.install dist.install
-
-install: install.prn all.install install.dir install.pre install.do install.post
-
-install.prn:
-	@echo "*** Installing $($(PRJTYPE))"
-
-install.do: clean base.install dest.install dist.install
-
-base.install install.dir: \
-BASE_FILES = $(subst $(BASEDIR)/,, \
-                        $(if $(wildcard $(BASEDIR)/bin $(BASEDIR)/include $(BASEDIR)/share), \
-             $(shell $(FIND) $(wildcard $(BASEDIR)/bin $(BASEDIR)/include $(BASEDIR)/share)  \
-                        \( $(INSEXCMD) \) -prune -o \( -type f -o -type l \) -print)))
-
-dest.install install.dir: \
-DEST_FILES = $(subst $(DESTDIR)/$(OSNAME)/,, \
-                        $(if $(wildcard $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib), \
-             $(shell $(FIND) $(wildcard $(DESTDIR)/$(OSNAME)/bin $(DESTDIR)/$(OSNAME)/lib)  \
-                        \( $(INSEXCMD) \) -prune -o \( -type f -o -type l \) -print)))
-
-dist.install install.dir: \
-DIST_FILES = $(subst $(BASEDIR)/,, \
-             $(shell $(FIND) $(BASEDIR) -maxdepth 1 \
-                        \( $(INSEXCMD) \) -prune -o \( -type f -o -type l \) -print))
-
-base.install:
-	$_ for f in $(BASE_FILES) ; do \
-	     echo "*** Copying $$f" ; \
-	     $(CP) $(BASEDIR)/$$f $(INSTDIR)/$$f ; \
-	     echo  $(INSTDIR)/$$f >> $(INSTALLED) ; \
-	   done
-
-dest.install:
-	$_ for f in $(DEST_FILES) ; do \
-	     echo "*** Copying $$f" ; \
-	     $(CP) $(DESTDIR)/$(OSNAME)/$$f $(INSTDIR)/$$f ; \
-	     echo  $(INSTDIR)/$$f >> $(INSTALLED) ; \
-	   done
-
-dist.install:
-	$_ for f in $(DIST_FILES) ; do \
-	     echo "*** Copying $$f" ; \
-	     $(CP) $(BASEDIR)/$$f $(INSTDOC)/$$f ; \
-	     echo $(INSTDOC)/$$f >> $(INSTALLED) ; \
-	   done
-
-install.dir:
-	$_ dirs="$(INSTDOC) $(call missing, \
-	     $(sort $(abspath $(dir $(addprefix $(INSTDIR)/, $(BASE_FILES) $(DEST_FILES))))))" ; \
-	   for d in $$dirs ; do \
-	     if [ ! -d $$d ] ; then \
-	       echo "*** Creating $$d" ; \
-	       $(MKDIR) $$d ; \
-	     fi ; \
-	   done
-
-#
-# uninstall
-#
-.PHONY: uninstall uninstall.prn uninstall.pre uninstall.do uninstall.post
-
-uninstall: uninstall.prn uninstall.pre uninstall.do uninstall.post all.uninstall
-
-uninstall.prn:
-	@echo "*** Uninstalling $($(PRJTYPE))"
-
-uninstall.do:
-	$_ if [ -f $(INSTALLED) ] ; then \
-	     files=`$(SORT) -u -r $(INSTALLED)` ; \
-	     for f in $$files ; do \
-	       echo "*** Removing $$f" ; \
-	       $(RM) $$f ; \
-	     done ; \
-	     $(RM) $(INSTALLED) ; \
-	   fi
+ifneq ($(TESTMODS),)
+$(TESTMODS):
+	@  echo "*** Making [$(basename $@)] tests"
+	$_ $(MAKE) -C $(basename $@) tests
+endif
 
 #
 # clean
 #
-.PHONY: clean cleanbuild cleanall
+CLEANMODS := $(addsuffix .cleanbuild, $(MODULES))
+CLEANDIRS := $(wildcard $(OSNAME) tests/$(OSNAME))
+
+.PHONY: cleanall clean cleanbuild $(CLEANMODS)
+
+cleanall: clean cleanbuild
 
 clean:
 	@  echo "*** Cleaning files"
-	$_ $(FIND) $(BASEDIR) -type f \( $(CLEANCMD) \) -exec $(RM) {} \;
+	$_ $(FIND) . -type f \( $(CLEANCMD) \) -exec $(RM) {} \;
 
-cleanbuild:
-	@  echo "*** Cleaning builds"
-	$_ $(RM) `$(FIND) $(DESTDIR) -type d -name $(OSNAME) -print`
+cleanbuild: $(CLEANMODS)
+	@  echo "*** Cleaning [$(PRJNAME)] builds"
+	$_ $(if $(CLEANDIRS),$(RM) $(CLEANDIRS))
 
-cleanall: cleanbuild clean
+ifneq ($(CLEANMODS),)
+$(CLEANMODS):
+	$_ $(MAKE) -C $(basename $@) cleanbuild
+endif
 
 #
 # tarball
@@ -206,9 +108,8 @@ cleanall: cleanbuild clean
 .PHONY: tarball
 
 tarball: cleanall
-	@  echo "*** Making tarball"
-	$_ cd $(BASEDIR)/.. ; \
-	   $(MKTAR) -f $(PACKAGE).tgz $(TAREXCMD) $(notdir $(BASEDIR))
+	@  echo "*** Making $(PACKAGE)"
+	$_ tar cvz -C .. -f $(PACKAGE).tgz $(TAREXCMD) $(notdir $(PRJDIR))
 
 # end of makefile
 

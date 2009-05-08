@@ -32,8 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Linux.h,v 1.1 2009/03/18 15:46:40 ldeniau Exp $
+ | $Id: Linux.h,v 1.2 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
+
+#define COS_HAS_TLS   1
+#define COS_HAS_POSIX 1
 
 #endif // COS_CFG_LINUX_H

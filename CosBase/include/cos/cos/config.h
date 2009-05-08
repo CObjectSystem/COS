@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.16 2009/03/18 15:47:26 ldeniau Exp $
+ | $Id: config.h,v 1.17 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
@@ -42,9 +42,12 @@
 
 /* NOTE-CONF: System specific config
 */
-#ifdef SYSNAME
-#define  COS_CFG_INC(SYSNAME) <cos/cfg/SYSNAME.h>
-#include COS_CFG_INC(SYSNAME)
+#define COS_CFG_INCLUDE(OSNAME) <cos/cfg/OSNAME.h>
+
+#ifdef OSNAME
+#include COS_CFG_INCLUDE(OSNAME)
+#else
+#include COS_CFG_INCLUDE(Default)
 #endif
 
 /* NOTE-CONF: C89 compliance
@@ -111,29 +114,10 @@
 
 #endif
 
-/* NOTE-CONF: POSIX and Thread Local Storage
-   define system flags here or with SYSFLAGS in the config.xxx makefile
+/* NOTE-CONF: Thread Local Storage
+   see cos/cfg/OSNAME.h
 */
-// default assumptions
-#ifndef COS_POSIX
-#define COS_POSIX 1
-#endif
-
-#ifndef COS_TLS
-#define COS_TLS 1
-#endif
-
-// check for negations
-#ifdef COS_NOTLS
-#undef COS_TLS
-#endif
-
-#ifdef COS_NOPOSIX
-#undef COS_POSIX
-#endif
-
-// adjust keywords
-#if !COS_TLS
+#if !COS_HAVE_TLS
 #define __thread
 #endif
 

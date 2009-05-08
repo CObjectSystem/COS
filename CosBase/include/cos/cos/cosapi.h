@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.27 2009/04/17 21:13:55 ldeniau Exp $
+ | $Id: cosapi.h,v 1.28 2009/05/08 17:03:20 ldeniau Exp $
  |
 */
 
@@ -177,7 +177,7 @@ extern int cos_logmsg_level_;
  * Inlined functions
  */
 
-#if COS_TLS || !COS_POSIX // -----------------------------
+#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
 
 static always_inline struct cos_method_cache1*
 cos_method_cache1(void)
@@ -227,7 +227,7 @@ cos_exception_context(void)
   COS_UNUSED(cos_exception_context);
 }
 
-#else // COS_POSIX && !COS_TLS ---------------------------
+#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
 #include <pthread.h>
 

@@ -29,13 +29,12 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.10 2009/03/11 10:20:41 ldeniau Exp $
+# | $Id: Makefile,v 1.11 2009/05/08 17:03:19 ldeniau Exp $
 # |
 #
 
-# detect location (bootstrap, normally $(cos) = cos)
-pwd := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-cos := $(pwd)/CosBase/include/cos
+# bootstrap, normally $(cos) = cos
+cos := CosBase/include/cos
 
 #
 # standard COS makefile
@@ -44,8 +43,9 @@ cos := $(pwd)/CosBase/include/cos
 include $(cos)/prologue
 
 distrib := cos
-version := 0.7
-release := 200812
+version := 0.8
+release := 200905
+
 modules := CosBase
 
 include $(cos)/epilogue

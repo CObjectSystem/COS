@@ -29,19 +29,22 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: epilogue,v 1.5 2009/01/22 16:45:07 ldeniau Exp $
+# | $Id: epilogue,v 1.6 2009/05/08 17:03:20 ldeniau Exp $
 # |
 #
 
 # default settings
-include $(MAKDIR)/mak/default
+include $(COSDIR)/mak/default
 
 # common targets
-include $(MAKDIR)/mak/common
+include $(COSDIR)/mak/common
+
+# install targets
+include $(COSDIR)/mak/install
 
 # load rules for program and library
 ifneq ($(filter program library,$(PRJTYPE)),)
-include $(MAKDIR)/mak/project
+include $(COSDIR)/mak/project
 endif
 
 # end of makefile
