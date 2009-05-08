@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosprp,v 1.4 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: cosprp,v 1.5 2009/05/08 21:43:11 ldeniau Exp $
 # |
 #
 
@@ -123,10 +123,10 @@ for f in $filelist; do
   # retrieve properties
   prp=`$exedir/coscmt -l $f \
      | tr '\n\t' '  ' \
-     | sed  -e 's/  *\(defproperty\) *(\([^;]*\);/@\1(\2;@/g' \
+     | sed -e 's/  *\(defproperty\) *(\([^;]*\);/@\1(\2;@/g' \
      | tr '@' '\n' \
      | grep -E -e '^defproperty\([^;]*;$' \
-     | sed  -e 's/ *\([()]\) */\1/g' -e 's/ *)/)/g'`
+     | sed -e 's/ *\([()]\) */\1/g' -e 's/ *)/)/g'`
   
   # includes
   if [ "$prp" != "" ] ; then

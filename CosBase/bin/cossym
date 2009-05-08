@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cossym,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
+# | $Id: cossym,v 1.3 2009/05/08 21:43:11 ldeniau Exp $
 # |
 #
 
@@ -165,13 +165,13 @@ token='[A-Za-z_][A-Za-z0-9_]*'
 if [ "$filelist" != "" ] ; then
     sym=`nm   -g -P $filelist \
        | grep -E -e "^_?cos_[cgm]_$token D " \
-   	   | cut  -d ' ' -f 1 \
+   	   | cut  -f 1 -d ' ' \
 			 | sed  -e 's/^_cos/cos/g' \
        | sort -u`
     if [ "$rmcls" != "" ] ; then
 		lnk=`nm   -g -P $filelist \
        | grep -E -e "^_?cos_l_$token B " \
-       | cut  -d ' ' -f 1 \
+       | cut  -f 1 -d ' ' \
 			 | sed  -e 's/^_cos/cos/g' \
        | sort -u`
     fi
