@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.7 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: program,v 1.8 2009/05/08 21:25:37 ldeniau Exp $
 # |
 #
 
@@ -86,7 +86,7 @@ $(TARGET).run: $(LIBTYPE) := $(filter shared,$(LIBTYPE))
 $(TARGET).run: $(TARGET)
 	@  echo "*** Running [$(TARGET)] $(BINNAME)"
 	$_ export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
-	   $(SED) 's, :,:,g'` ; \
+	   sed -e 's, :,:,g'` ; \
 	   $(OSNAME)/bin/$(BINNAME) $(ARGS)
 
 #

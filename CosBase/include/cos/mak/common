@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.12 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: common,v 1.13 2009/05/08 21:25:37 ldeniau Exp $
 # |
 #
 
@@ -91,11 +91,11 @@ cleanall: clean cleanbuild
 
 clean:
 	@  echo "*** Cleaning files"
-	$_ $(FIND) . -type f \( $(CLEANCMD) \) -exec $(RM) {} \;
+	$_ find . -type f \( $(CLEANCMD) \) -exec rm -f {} \;
 
 cleanbuild: $(CLEANMODS)
 	@  echo "*** Cleaning [$(PRJNAME)] builds"
-	$_ $(if $(CLEANDIRS),$(RM) $(CLEANDIRS))
+	$_ $(if $(CLEANDIRS), rm -Rf $(CLEANDIRS))
 
 ifneq ($(CLEANMODS),)
 $(CLEANMODS):
@@ -109,7 +109,7 @@ endif
 
 tarball: cleanall
 	@  echo "*** Making $(PACKAGE)"
-	$_ tar cvz -C .. -f $(PACKAGE).tgz $(TAREXCMD) $(notdir $(PRJDIR))
+	$_ cd .. && tar cvzf $(PACKAGE).tgz $(TAREXCMD) $(notdir $(PRJDIR))
 
 # end of makefile
 

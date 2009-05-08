@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.14 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: Darwin,v 1.15 2009/05/08 21:25:37 ldeniau Exp $
 # |
 #
 
@@ -64,15 +64,6 @@ DEP         := $(CC) -M
 LD          := $(CC)
 AR          := ar -cr
 STRIP       := strip
-LN          := ln -sf
-RM          := rm -Rf
-CP          := cp -RPf
-MKDIR       := mkdir -p
-SED         := sed
-GREP        := grep
-FIND        := find
-SORT        := sort
-TAR         := tar cvz
 
 #
 # compiler and linker specific

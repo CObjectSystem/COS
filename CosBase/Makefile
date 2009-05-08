@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.21 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: Makefile,v 1.22 2009/05/08 21:25:36 ldeniau Exp $
 # |
 #
 
@@ -93,9 +93,9 @@ include $(cos)/epilogue
 .PHONY: bootstrap
 
 bootstrap: $(OSNAME)/bin/coscmt$(BINEXT)
-	$_ $(CP) bin/cosgen$(BINEXT) $(OSNAME)/bin
-	$_ $(CP) bin/cosprp$(BINEXT) $(OSNAME)/bin
-	$_ $(CP) bin/cossym$(BINEXT) $(OSNAME)/bin
+	$_ cp -f bin/cosgen$(BINEXT) $(dir $<)
+	$_ cp -f bin/cosprp$(BINEXT) $(dir $<)
+	$_ cp -f bin/cossym$(BINEXT) $(dir $<)
 
 $(OSNAME)/bin/coscmt$(BINEXT): CCFLAGS := $(CCFLAGS)
 $(OSNAME)/bin/coscmt$(BINEXT): tools/src/coscmt.c

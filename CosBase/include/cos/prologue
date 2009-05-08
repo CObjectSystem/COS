@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.11 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: prologue,v 1.12 2009/05/08 21:25:37 ldeniau Exp $
 # |
 #
 
@@ -61,7 +61,7 @@ rest    = $(wordlist 2,$(words $1),$1)
 assert  = $(if $1,,$(error $2))
 exists  = $(if $(wildcard $1),,$(error $2))
 missing = $(filter-out $(wildcard $1),$1)
-mkdir   = $(if $(wildcard $1),,$(shell $(MKDIR) $1))
+mkdir   = $(if $(wildcard $1),,$(shell mkdir -p $1))
 reverse = $(strip $(if $1,$(call reverse,$(call rest,$1)) $(call first $1)))
 
 #
@@ -80,7 +80,10 @@ PRJDIR  := $(abspath $(dir $(call first,$(MAKEFILE_LIST))))
 
 # detect operating system (e.g. Linux)
 OSNAME  := $(shell uname -s)
-OSNAME  := $(if $(OSNAME),$(OSNAME),Default)
+ifeq ($(OSNAME),)
+OSNAME  := Default
+$(warning OSNAME set to Default for configuration)
+endif
 
 # set command echo
 _ := $(if $(call eq,$(SHOW),yes),,@)

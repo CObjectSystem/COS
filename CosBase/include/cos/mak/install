@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: install,v 1.1 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: install,v 1.2 2009/05/08 21:25:37 ldeniau Exp $
 # |
 #
 
@@ -54,7 +54,7 @@ install.hdrs:
 	$_ for f in $(HEADERS) ; do \
 	     d=$(PREFIX)/$(INCDIR)/$${f#include/} ; \
 	     echo "*** Copying $$f -> $$d" ; \
-	     $(CP) $$f $$d ; \
+	     cp -f $$f $$d ; \
        echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
@@ -62,7 +62,7 @@ install.bins:
 	$_ for f in $(wildcard $(OSNAME)/bin/*) ; do \
 	     d=$(PREFIX)/$(BINDIR)/$${f#$(OSNAME)/bin/} ; \
 	     echo "*** Copying $$f -> $$d" ; \
-	     $(CP) $$f $$d ; \
+	     cp -f $$f $$d ; \
        echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
@@ -70,7 +70,7 @@ install.libs:
 	$_ for f in $(wildcard $(OSNAME)/bin/*) ; do \
 	     d=$(PREFIX)/$(LIBDIR)/$${f#$(OSNAME)/lib/} ; \
 	     echo "*** Copying $$f -> $$d" ; \
-	     $(CP) $$f $$d ; \
+	     cp -f $$f $$d ; \
        echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
@@ -97,14 +97,14 @@ uninstall.prn:
 
 uninstall.do: $(UNINSTMODS)
 	$_ if [ -f $(INSTALLED_FILES) ] ; then \
-	     files=`$(SORT) -u -r $(INSTALLED_FILES)` ; \
+	     files=`sort -u $(INSTALLED_FILES)` ; \
 	     for f in $$files ; do \
 	       if [ -f $$f ] ; then \
 	         echo "*** Removing $$f" ; \
-	         $(RM) $$f ; \
+	         rm -f $$f ; \
          fi ; \
 	     done ; \
-	     $(RM) $(INSTALLED_FILES) ; \
+	     rm -f $(INSTALLED_FILES) ; \
 	   fi
 
 ifneq ($(UNINSTMODS),)

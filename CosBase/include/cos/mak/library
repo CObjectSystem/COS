@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library,v 1.6 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: library,v 1.7 2009/05/08 21:25:37 ldeniau Exp $
 # |
 #
 
@@ -67,7 +67,7 @@ $(TARGET).lib: $(OSNAME)/lib/$(LIBNAME)
 $(OSNAME)/lib/$(LIBNAME): $(OSNAME)/$(TARGET)/$(library)_syms.o
 	@  echo "*** Building [$(TARGET)] $(@F)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
-	$_ $(LN) $(@F).$(VERSION) $@
+	$_ ln -sf $(@F).$(VERSION) $@
 
 #
 # rules for building static library

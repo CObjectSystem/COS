@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile,v 1.7 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: compile,v 1.8 2009/05/08 21:25:37 ldeniau Exp $
 # |
 #
 
@@ -78,7 +78,7 @@ $(OSNAME)/$(TARGET)/%.d: TARGET := $(TARGET)
 $(OSNAME)/$(TARGET)/%.d: %.c
 	@  echo "*** Computing [$(TARGET)] $(@F)"
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
-	   $(SED) -e 's,[^:]*:,$(basename $@).o:,' > $@
+	   sed -e 's,[^:]*:,$(basename $@).o:,' > $@
 
 #
 # include dependencies
