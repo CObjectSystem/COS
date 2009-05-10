@@ -29,14 +29,14 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.12 2009/05/08 21:25:37 ldeniau Exp $
+# | $Id: prologue,v 1.13 2009/05/10 01:32:57 ldeniau Exp $
 # |
 #
 
 #
 # NOTE-USER: make requirements
 #
-# COS makefiles requires GNU make version 3.81 or higher
+# COS makefiles requires GNU make version 3.80 or higher
 #
 
 #
@@ -45,45 +45,59 @@
 # INSTALL = where to install the project (optional, default is config specific)
 # OSNAME  = operating system             (optional, default is 'uname -s')
 # ARGS    = program.run extra arguments
-# SHOW    = yes -> show  commands
-# TRACE   = yes -> trace variables
+# SHOW    = yes -> show commands
 #
 
-# clear some suffixes (MAKEFLAGS += -R doesn't work)
-.SUFFIXES:
-
+#
 # some useful functions
-eq      = $(if $(subst $1,,$2),,t)
-neq     = $(if $(subst $1,,$2),t,)
-first   = $(wordlist 1,1,$1)
-last    = $(wordlist $(words $1),$(words $1),$1)
+#
+eq      = $(if $(patsubst $1,,$2),,t)
+neq     = $(if $(patsubst $1,,$2),t,)
+first   = $(word 1,$1)
+last    = $(word $(words $1),$1)
 rest    = $(wordlist 2,$(words $1),$1)
+chop    = $(wordlist 2,$(words $1),_ $1)
 assert  = $(if $1,,$(error $2))
 exists  = $(if $(wildcard $1),,$(error $2))
-missing = $(filter-out $(wildcard $1),$1)
 mkdir   = $(if $(wildcard $1),,$(shell mkdir -p $1))
-reverse = $(strip $(if $1,$(call reverse,$(call rest,$1)) $(call first $1)))
+reverse = $(strip $(if $1,$(call reverse,$(call rest,$1)) $(call first,$1)))
+
+ifeq ($(origin abspath),undefined)
+mkpath  = $(strip /$(patsubst /%,%,$(patsubst %/,%,$(subst / ,/, \
+            $(call rmdots_, \
+              $(subst /,/ ,$(call rplpat_,/./,/,$(call rplpat_,//,/, \
+                $(call mkpath_,$1)/))))))))
+mkpath_ = $(if $(call ispath_,$1),$(CURDIR)/)$1
+ispath_ = $(call eq,$(patsubst /%,%,$1),$1)
+rplpat_ = $(strip $(if $(call eq,$(subst $1,$2,$3),$3),$3, \
+            $(call rplpat_,$1,$2,$(subst $1,$2,$3))))
+rmdots_ = $(strip $(if $1, \
+            $(if $(call eq,../,$(call first,$1)), \
+              $(call rmdots_,$(call rest,$1),$(call chop,$2)), \
+              $(call rmdots_,$(call rest,$1),$2 $(call first,$1))),$2))
+else
+mkpath  = $(abspath $1)
+endif
 
 #
 # NOTE-INFO: important variables set
 #
-# COSDIR = where to get COS     files (autodetected)
-# PRJDIR = where to get project files (autodetected)
-# OSNAME = operating system name      (autodetected)
+# COSDIR = where to get COS files (autodetected)
+# OSNAME = operating system name  (autodetected)
 #
 
 # detect cos path (e.g path-to-this-file)
-COSDIR  := $(abspath $(dir $(call last,$(MAKEFILE_LIST))))
-
-# detect project path (e.g path-to-project-makefile)
-PRJDIR  := $(abspath $(dir $(call first,$(MAKEFILE_LIST))))
+COSDIR := $(patsubst %/prologue,%,$(call last,$(MAKEFILE_LIST)))
 
 # detect operating system (e.g. Linux)
-OSNAME  := $(shell uname -s)
+OSNAME := $(shell uname -s)
 ifeq ($(OSNAME),)
-OSNAME  := Default
+OSNAME := Default
 $(warning OSNAME set to Default for configuration)
 endif
+
+# clear some suffixes (MAKEFLAGS += -R doesn't work)
+.SUFFIXES:
 
 # set command echo
 _ := $(if $(call eq,$(SHOW),yes),,@)
@@ -91,13 +105,6 @@ _ := $(if $(call eq,$(SHOW),yes),,@)
 # debug
 ifneq ($(SHOW),yes)
 MAKEFLAGS += --no-print-directory
-endif
-
-# debug
-ifeq ($(TRACE),yes)
-$(info COSDIR = $(COSDIR))
-$(info PRJDIR = $(PRJDIR))
-$(info OSNAME = $(OSNAME))
 endif
 
 # checks

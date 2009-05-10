@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.8 2009/05/08 21:25:37 ldeniau Exp $
+# | $Id: program,v 1.9 2009/05/10 01:32:57 ldeniau Exp $
 # |
 #
 
@@ -65,7 +65,7 @@ $(TARGET).bin: $(OSNAME)/bin/$(BINNAME)
 $(OSNAME)/bin/$(BINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
 	@  echo "*** Building [$(TARGET)] $(@F)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@ $(LIBS) $(SYSLIBS)
-	$_ $(if $(STRIP),$(if $(call eq,$(TARGET),release),$(STRIP) $@))
+	$_ $(if $(STRIP),$(STRIP) $@)
 
 #
 # rules for building program with static linkage
@@ -77,7 +77,7 @@ $(TARGET).sbin: $(OSNAME)/bin/$(SBINNAME)
 $(OSNAME)/bin/$(SBINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
 	@  echo "*** Building [$(TARGET)] $(@F)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@ $(LIBS) $(SYSLIBS)
-	$_ $(if $(STRIP),$(if $(call eq,$(TARGET),release),$(STRIP) $@))
+	$_ $(if $(STRIP),$(STRIP) $@)
 
 #
 # rules for running shared program (helper)

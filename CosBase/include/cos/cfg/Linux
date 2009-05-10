@@ -29,14 +29,14 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.17 2009/05/08 23:01:31 ldeniau Exp $
+# | $Id: Linux,v 1.18 2009/05/10 01:32:57 ldeniau Exp $
 # |
 #
 
 #
 # install paths
 #
-PREFIX      := /usr         # absolute path
+PREFIX      := /usr
 BINDIR      := bin
 LIBDIR      := lib
 INCDIR      := include

@@ -29,14 +29,14 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Default,v 1.2 2009/05/08 23:01:31 ldeniau Exp $
+# | $Id: Default,v 1.3 2009/05/10 01:32:57 ldeniau Exp $
 # |
 #
 
 #
 # install paths
 #
-PREFIX      := /usr         # absolute path
+PREFIX      := /usr
 BINDIR      := bin
 LIBDIR      := lib
 INCDIR      := include
@@ -62,16 +62,7 @@ CPP         := $(CC) -E
 DEP         := $(CC) -M
 LD          := $(CC)
 AR          := ar -cr
-STRIP       := strip -s
-LN          := ln -sf
-RM          := rm -Rf
-CP          := cp -RPf
-MKDIR       := mkdir -p
-SED         := sed
-GREP        := grep
-FIND        := find
-SORT        := sort
-TAR         := tar cvz
+STRIP       := strip
 
 #
 # compiler and linker specific

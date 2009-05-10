@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.13 2009/05/08 21:25:37 ldeniau Exp $
+# | $Id: common,v 1.14 2009/05/10 01:32:57 ldeniau Exp $
 # |
 #
 
@@ -109,7 +109,7 @@ endif
 
 tarball: cleanall
 	@  echo "*** Making $(PACKAGE)"
-	$_ cd .. && tar cvzf $(PACKAGE).tgz $(TAREXCMD) $(notdir $(PRJDIR))
+	$_ cd .. && tar cvzf $(PACKAGE).tgz $(TAREXCMD) $(notdir $(CURDIR))
 
 # end of makefile
 

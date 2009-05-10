@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.25 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: default,v 1.26 2009/05/10 01:32:57 ldeniau Exp $
 # |
 #
 
@@ -103,7 +103,7 @@ INSEXCMD := $(call rest,$(addprefix -o -name ,$(INSEXPAT) $(insexpat)))
 #
 # standard tools
 #
-COSBIN   := $(wildcard $(abspath $(COSDIR)/../../$(OSNAME)/bin))
+COSBIN   := $(wildcard $(COSDIR)/../../$(OSNAME)/bin)
 COSSYM    = $(if $(COSBIN),$(COSBIN)/)cossym$(BINEXT)
 COSGEN    = $(if $(COSBIN),$(COSBIN)/)cosgen$(BINEXT)
 COSPRP    = $(if $(COSBIN),$(COSBIN)/)cosprp$(BINEXT)
@@ -124,42 +124,6 @@ PROFILE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_INFO  -DCOS_CONTRACT=COS_CONTRAC
 
 RELEASE_CPP += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
 RELEASE_CC  += -DNDEBUG -DCOS_LOGMSG=COS_LOGMSG_WARN  -DCOS_CONTRACT=COS_CONTRACT_PRE
-
-#
-# for debugging 
-#
-ifeq ($(TRACE),yes)
-TARGET := [$(TARGETS)]
-$(info VERSION = $(VERSION))
-$(info RELEASE = $(RELEASE))
-$(info PRJTYPE = $(PRJTYPE))
-$(info PRJNAME = $(PRJNAME))
-$(info PRJGOAL = $(PRJGOAL))
-$(info COSSYM  = $(COSSYM))
-$(info COSGEN  = $(COSGEN))
-$(info COSPRP  = $(COSPRP))
-$(info COSCMT  = $(COSCMT))
-$(info SOURCES[$(words $(SOURCES))] = $(SOURCES))
-$(info HEADERS[$(words $(HEADERS))] = $(HEADERS))
-$(info DEFGENS[$(words $(DEFGENS))] = $(DEFGENS))
-$(info DEFPRPS[$(words $(DEFPRPS))] = $(DEFPRPS))
-$(info OBJECTS[$(words $(OBJECTS))] = $(OBJECTS))
-$(info DEPENDS[$(words $(DEPENDS))] = $(DEPENDS))
-$(info INCLUDE[$(words $(INCLUDE))] = $(INCLUDE))
-$(info LIBRARY[$(words $(LIBRARY))] = $(LIBRARY))
-$(info BINARY [$(words $(BINARY))] = $(BINARY))
-$(info LIBS   [$(words $(LIBS))] = $(LIBS))
-$(info MODS   [$(words $(MODS))] = $(MODS))
-$(info CPPFLAGS    = $(CPPFLAGS))
-$(info CCFLAGS     = $(CCFLAGS))
-$(info LDFLAGS     = $(LDFLAGS))
-$(info DEBUG_CPP   = $(DEBUG_CPP))
-$(info PROFILE_CPP = $(PROFILE_CPP))
-$(info RELEASE_CPP = $(RELEASE_CPP))
-$(info DEBUG_CC    = $(DEBUG_CC))
-$(info PROFILE_CC  = $(PROFILE_CC))
-$(info RELEASE_CC  = $(RELEASE_CC))
-endif
 
 # end of makefile
 

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.11 2009/05/08 17:03:19 ldeniau Exp $
+# | $Id: Makefile,v 1.12 2009/05/10 01:32:56 ldeniau Exp $
 # |
 #
 
@@ -51,3 +51,4 @@ modules := CosBase
 include $(cos)/epilogue
 
 # end of makefile
+

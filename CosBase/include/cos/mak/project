@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: project,v 1.18 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: project,v 1.19 2009/05/10 01:32:57 ldeniau Exp $
 # |
 #
 
@@ -64,6 +64,7 @@ TARGETEXT := _d
 $(TARGET).%: CPPFLAGS += $(DEBUG_CPP)
 $(TARGET).%:  CCFLAGS += $(DEBUG_CC)
 $(TARGET).%:  LDFLAGS += $(DEBUG_LD)
+$(TARGET).%:    STRIP := 
 
 include $(COSDIR)/mak/$(PRJTYPE)
 
@@ -84,6 +85,7 @@ TARGETEXT := _p
 $(TARGET).%: CPPFLAGS += $(PROFILE_CPP)
 $(TARGET).%:  CCFLAGS += $(PROFILE_CC)
 $(TARGET).%:  LDFLAGS += $(PROFILE_LD)
+$(TARGET).%:    STRIP := 
 
 include $(COSDIR)/mak/$(PRJTYPE)
 

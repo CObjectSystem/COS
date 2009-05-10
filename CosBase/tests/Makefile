@@ -29,15 +29,16 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.9 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: Makefile,v 1.10 2009/05/10 01:32:57 ldeniau Exp $
 # |
 #
 
 # bootstrap, normally $(cos) = cos
 cos := ../include/cos
 
+#
 # standard COS makefile
-
+#
 include $(cos)/prologue
 
 # project
@@ -62,3 +63,4 @@ libdirs := ../$(OSNAME)/lib
 include $(cos)/epilogue
 
 # end of makefile
+
