@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS README
+# | COS INSTALL
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,56 +29,20 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.10 2009/05/11 21:39:57 ldeniau Exp $
+# | $Id: INSTALL,v 1.1 2009/05/11 21:39:57 ldeniau Exp $
 # |
 #
 
 *** IMPORTANT: The C Object System requires GNU make 3.80 or higher ***
 
-Documentation:
---------------
+Compilation/tests/install/uninstall:
+------------------------------------
 
-paper and presentation can be found in
-path-to-cos/doc/
-
-or after installation to
-$(PREFIX)/$(DOCDIR)/cos/
-
-Project information:
---------------------
-
-  - web page: http:/cern.ch/laurent.deniau/cos.html
-  - web site: http:/sf.net/projects/cos
-  - contact : laurent.deniau@cern.ch
-
-Makefile examples:
-------------------
-
-# distrib
-path-to-cos/Makefile
-
-# library
-path-to-cos/CosBase/Makefile
-
-# program
-path-to-cos/CosBase/examples/ex??/Makefile
-
-# tests (program with auto-run)
-path-to-cos/CosBase/tests/Makefile
-
-Debugging makefiles:
---------------------
-
-make [target] SHOW=yes
-
-# debug flags
-SHOW will show the commands run
-
-Code examples:
---------------
-
-path-to-cos/CosBase/examples
-path-to-cos/CosBase/tests
+cd path-to-cos
+make
+make tests                                       # optional
+make install [PREFIX=path-to-install]            # probably as root
+make uninstall                                   # probably as root
 
 Supported platforms:
 --------------------
@@ -97,7 +61,7 @@ porting on Windows requires some Posix-like environment (e.g. Mingw, Cygwin)
 Tested platforms:
 -----------------
 
-# Systems & Architectures
+# System & Architectures
 Linux Ubuntu 8.04 and 8.10 (Debian) on i386   (32-bit) Core2 Duo
 Linux Ubuntu 8.04 and 8.10 (Debian) on x86_64 (64-bit) Core2 Duo
 Linux SLC 4.0              (RedHat) on x86_64 (64-bit) Quad Xeon
@@ -105,4 +69,20 @@ Mac OS X Leopard           (Darwin) on x86_64 (64-bit) Core2 Duo
 
 # Compilers
 gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2, 4.3.3
+
+Documentation:
+--------------
+
+paper and presentation can be found in
+path-to-cos/doc/
+
+or after installation to
+$(PREFIX)/$(DOCDIR)/cos/
+
+Project information:
+--------------------
+
+  - web page: http:/cern.ch/laurent.deniau/cos.html
+  - web site: http:/sf.net/projects/cos
+  - contact : laurent.deniau@cern.ch
 

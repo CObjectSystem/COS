@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README.C89,v 1.6 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: README.C89,v 1.7 2009/05/11 21:39:57 ldeniau Exp $
 # |
 #
 
@@ -49,7 +49,7 @@ CosStd and other modules require a C99 compiler or a compiler which supports at 
 
 Example of CosBase compilation (see CosBase/compile89.sh):
   cd CosBase ; make bootstrap ; ./compile89.sh ; ls src/*.[ao]
-  ./compile89.sh clean
+  ./compile89.sh clean      # remove objects and archive files
 
 Details of compilation on Linux (see CosBase/compile89.sh):
   cpp -std=c99 -pedantic -W -Wall -Iinclude -DCOS_C89 -DOSNAME=Linux -E -o src/file.i src/file.c
