@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.23 2009/05/10 01:32:57 ldeniau Exp $
+# | $Id: Makefile,v 1.24 2009/05/11 23:31:29 ldeniau Exp $
 # |
 #
 
@@ -68,8 +68,7 @@ libdirs :=
 moddirs :=
 
 # documentation
-docdirs := 
-docspat :=
+auxdocs :=
 
 # patterns (clean, install-excluded, tar-excluded)
 cleanpat :=

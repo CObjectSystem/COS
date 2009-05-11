@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.12 2009/05/10 01:32:56 ldeniau Exp $
+# | $Id: Makefile,v 1.13 2009/05/11 23:31:28 ldeniau Exp $
 # |
 #
 
@@ -42,11 +42,18 @@ cos := CosBase/include/cos
 
 include $(cos)/prologue
 
+# project
 distrib := cos
 version := 0.8
 release := 200905
 
+# modules
 modules := CosBase
+
+# documentation
+auxdocs := $(wildcard doc/*.pdf.gz) \
+           COPYING COPYING.LESSER CREDITS \
+           INSTALL README README.C89
 
 include $(cos)/epilogue
 

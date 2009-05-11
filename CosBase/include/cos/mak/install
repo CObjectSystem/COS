@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: install,v 1.5 2009/05/10 01:32:57 ldeniau Exp $
+# | $Id: install,v 1.6 2009/05/11 23:31:29 ldeniau Exp $
 # |
 #
 
@@ -46,14 +46,14 @@ override PREFIX := $(call mkpath,$(PREFIX))
 INSTMODS := $(addsuffix .install, $(MODULES))
 
 .PHONY: install install.prn install.pre install.do install.post $(INSTMODS)
-.PHONY: install.hdrs install.bins install.libs install.docs install.auxs
+.PHONY: install.hdrs install.bins install.libs install.docs
 
 install: install.prn install.pre install.do install.post
 
 install.prn:
 	@echo "*** Installing $(PRJNAME)"
 
-install.do: $(INSTMODS) install.hdrs install.bins install.libs install.docs install.auxs
+install.do: $(INSTMODS) install.hdrs install.bins install.libs install.docs
 
 install.hdrs:
 	$_ for f in $(HEADERS) ; do \
@@ -61,7 +61,7 @@ install.hdrs:
 	     echo "*** Copying $$f -> $$d" ; \
 	     mkdir -p $${d%/*} ; \
 	     cp -fP $$f $$d ; \
-       echo $$d >> $(INSTALLED_FILES) ; \
+	     echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
 install.bins:
@@ -70,7 +70,7 @@ install.bins:
 	     echo "*** Copying $$f -> $$d" ; \
 	     mkdir -p $${d%/*} ; \
 	     cp -fP $$f $$d ; \
-       echo $$d >> $(INSTALLED_FILES) ; \
+	     echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
 install.libs:
@@ -79,16 +79,21 @@ install.libs:
 	     echo "*** Copying $$f -> $$d" ; \
 	     mkdir -p $${d%/*} ; \
 	     cp -fP $$f $$d ; \
-       echo $$d >> $(INSTALLED_FILES) ; \
+	     echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
-install.docs: # TODO
-
-install.auxs: # TODO
+install.docs:
+	$_ for f in $(AUXDOCS) ; do \
+	     d=$(PREFIX)/$(DOCDIR)/$(PRJNAME)/$${f#doc/} ; \
+	     echo "*** Copying $$f -> $$d" ; \
+	     mkdir -p $${d%/*} ; \
+	     cp -fP $$f $$d ; \
+	     echo $$d >> $(INSTALLED_FILES) ; \
+	   done
 
 ifneq ($(INSTMODS),)
 $(INSTMODS):
-	$_ $(MAKE) -C $(basename $@) install PREFIX=$(PREFIX)
+	$_ $(MAKE) -C $(basename $@) install PREFIX=$(PREFIX) DOCDIR=$(DOCDIR)/$(PRJNAME)
 endif
 
 #
@@ -110,7 +115,8 @@ uninstall.do: $(call reverse,$(UNINSTMODS))
 	       if [ -f $$f ] ; then \
 	         echo "*** Removing $$f" ; \
 	         rm -f $$f ; \
-         fi ; \
+	       fi ; \
+	       rmdir -p $${f%/*} > /dev/null 2>&1 ; \
 	     done ; \
 	     rm -f $(INSTALLED_FILES) ; \
 	   fi
