@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: install,v 1.6 2009/05/11 23:31:29 ldeniau Exp $
+# | $Id: install,v 1.7 2009/05/12 08:20:23 ldeniau Exp $
 # |
 #
 
@@ -86,8 +86,12 @@ install.docs:
 	$_ for f in $(AUXDOCS) ; do \
 	     d=$(PREFIX)/$(DOCDIR)/$(PRJNAME)/$${f#doc/} ; \
 	     echo "*** Copying $$f -> $$d" ; \
-	     mkdir -p $${d%/*} ; \
-	     cp -fP $$f $$d ; \
+	     if [ -d $$f ] ; then \
+	       cp -fR $$f $${d%/*} ; \
+	     else \
+	       mkdir -p $${d%/*} ; \
+	       cp -fP $$f $$d ; \
+	     fi ; \
 	     echo $$d >> $(INSTALLED_FILES) ; \
 	   done
 
@@ -112,11 +116,14 @@ uninstall.do: $(call reverse,$(UNINSTMODS))
 	$_ if [ -f $(INSTALLED_FILES) ] ; then \
 	     files=`sort -u $(INSTALLED_FILES)` ; \
 	     for f in $$files ; do \
-	       if [ -f $$f ] ; then \
+	       if [ -d $$f ] ; then \
+	         echo "*** Removing $$f" ; \
+	         rm -fR $$f ; \
+	       elif [ -f $$f ] ; then \
 	         echo "*** Removing $$f" ; \
 	         rm -f $$f ; \
+	         rmdir -p $${f%/*} > /dev/null 2>&1 ; \
 	       fi ; \
-	       rmdir -p $${f%/*} > /dev/null 2>&1 ; \
 	     done ; \
 	     rm -f $(INSTALLED_FILES) ; \
 	   fi

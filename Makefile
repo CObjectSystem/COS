@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.13 2009/05/11 23:31:28 ldeniau Exp $
+# | $Id: Makefile,v 1.14 2009/05/12 08:20:23 ldeniau Exp $
 # |
 #
 
@@ -51,7 +51,7 @@ release := 200905
 modules := CosBase
 
 # documentation
-auxdocs := $(wildcard doc/*.pdf.gz) \
+auxdocs := $(wildcard doc/*.pdf.gz) doc/html \
            COPYING COPYING.LESSER CREDITS \
            INSTALL README README.C89
 
