@@ -30,13 +30,13 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cosprp,v 1.5 2009/05/08 21:43:11 ldeniau Exp $
+# | $Id: cosprp,v 1.6 2009/05/13 14:54:00 ldeniau Exp $
 # |
 #
 
 # default settings
 progname=`basename $0`
-exedir=`dirname $0`
+cpp="cc -E -I."
 filelist=
 out="_cosprp.c"
 datestr=`date`
@@ -64,6 +64,10 @@ cat <<END-OF-TEXT
       Put the result in file_name
       Default is: $out
 
+    --cpp=<command>
+      Specify the command for preprocessing the source files
+      Default is: $cpp
+
 END-OF-TEXT
 
     exit 1
@@ -72,15 +76,21 @@ END-OF-TEXT
 # parse arguments
 while [ "$1" != "" ] ; do
 
-	val=`expr $1 : '--in=\(.*\)'`
+	val=`expr "$1" : '--in=\(.*\)'`
 	if [ "$val" != "" ] ; then
 		filelist="$filelist `cat $val`";
 		shift; continue;
 	fi
 
-	val=`expr $1 : '--out=\(.*\)'`
+	val=`expr "$1" : '--out=\(.*\)'`
 	if [ "$val" != "" ] ; then
 		out="$val";
+		shift; continue;
+	fi
+
+	val=`expr "$1" : '--cpp=\(.*\)'`
+	if [ "$val" != "" ] ; then
+		cpp="$val";
 		shift; continue;
 	fi
 
@@ -89,7 +99,7 @@ while [ "$1" != "" ] ; do
     usage
 	fi
 
-	val=`expr $1 : '--\(.*\)'`
+	val=`expr "$1" : '--\(.*\)'`
 	if [ "$val" != "" ] ; then
 		echo "error: unknown option --$val"
 		usage
@@ -119,20 +129,21 @@ cat > $out <<END-OF-TEXT
 
 END-OF-TEXT
 
-for f in $filelist; do
+for f in $filelist ; do
   # retrieve properties
-  prp=`$exedir/coscmt -l $f \
+  prp=`$cpp -DCOS_NOCOS $f \
      | tr '\n\t' '  ' \
-     | sed -e 's/  *\(defproperty\) *(\([^;]*\);/@\1(\2;@/g' \
+     | sed -e 's/[^A-Za-z0-9_]\(defproperty\)[ \t]*(\([^;]*\);/@\1(\2;@/g' \
      | tr '@' '\n' \
      | grep -E -e '^defproperty\([^;]*;$' \
      | sed -e 's/ *\([()]\) */\1/g' -e 's/ *)/)/g'`
-  
+
   # includes
   if [ "$prp" != "" ] ; then
     f=`echo $f | sed -e 's,^.*include/,,' -e 's,^.*src/,,'`
     echo "#include \"$f\""               >> $out
-    prps=`echo "$prps$prp"`
+    prps="$prps
+$prp"
   fi
 done
 

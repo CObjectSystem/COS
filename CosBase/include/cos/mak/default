@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.27 2009/05/11 23:31:29 ldeniau Exp $
+# | $Id: default,v 1.28 2009/05/13 14:54:03 ldeniau Exp $
 # |
 #
 
@@ -105,7 +105,7 @@ INSEXCMD := $(call rest,$(addprefix -o -name ,$(INSEXPAT) $(insexpat)))
 #
 # standard tools
 #
-COSBIN   := $(wildcard $(COSDIR)/../../$(OSNAME)/bin)
+COSBIN   := $(call mkpath,$(wildcard $(COSDIR)/../../$(OSNAME)/bin))
 COSSYM    = $(if $(COSBIN),$(COSBIN)/)cossym$(BINEXT)
 COSGEN    = $(if $(COSBIN),$(COSBIN)/)cosgen$(BINEXT)
 COSPRP    = $(if $(COSBIN),$(COSBIN)/)cosprp$(BINEXT)

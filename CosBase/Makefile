@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.24 2009/05/11 23:31:29 ldeniau Exp $
+# | $Id: Makefile,v 1.25 2009/05/13 14:57:01 ldeniau Exp $
 # |
 #
 
@@ -86,8 +86,7 @@ include $(cos)/epilogue
 
 #
 # COS boostrap
-# install tools cosgen, cosprp and cossym before anything else is done.
-# cosgen and cosprp rely on coscmt to remove C comments
+# install tools cosgen, cosprp, coscmt and cossym before anything else is done.
 #
 .PHONY: bootstrap
 

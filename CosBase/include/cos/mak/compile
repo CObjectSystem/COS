@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile,v 1.8 2009/05/08 21:25:37 ldeniau Exp $
+# | $Id: compile,v 1.9 2009/05/13 14:54:03 ldeniau Exp $
 # |
 #
 
@@ -43,21 +43,21 @@ vpath %.c $(SRCDIRS)
 #
 $(OSNAME)/$(TARGET)/$(PRJNAME)_gens.c: $(DEFGENS)
 	@  echo "*** Computing [$(TARGET)] generics"
-	$_ $(COSGEN) --out=$@ $^
+	$_ $(COSGEN) --cpp="$(CPP) $(INCLUDE) $(CPPFLAGS)" --out=$@ $^
 
 #
 # rule for properties
 #
 $(OSNAME)/$(TARGET)/$(PRJNAME)_prps.c: $(DEFPRPS)
 	@  echo "*** Computing [$(TARGET)] properties"
-	$_ $(COSPRP) --out=$@ $^
+	$_ $(COSPRP) --cpp="$(CPP) $(INCLUDE) $(CPPFLAGS)" --out=$@ $^
 
 #
 # rule for symbols
 #
 $(OSNAME)/$(TARGET)/$(PRJNAME)_syms.c: $(OBJECTS)
 	@  echo "*** Computing [$(TARGET)] symbols"
-	$_ $(COSSYM) $(MODS) --out=$(<D)/$(PRJNAME)_syms.c $(COSSYMOPT) $^
+	$_ $(COSSYM) --nm="$(NM)" $(MODS) --out=$(<D)/$(PRJNAME)_syms.c $(COSSYMOPT) $^
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/$(PRJNAME)_syms.c -o $(<D)/$(PRJNAME)_syms.o
 
 #
