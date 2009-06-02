@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.17 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.18 2009/06/02 21:43:29 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@ static struct cos_exception_context _cxt0;
 
 __thread struct cos_exception_context *cos_exception_cxt_ = &_cxt0;
 
-static inline void
+static always_inline void
 cxt_set(struct cos_exception_context *cxt)
 {
   cos_exception_cxt_ = cxt;
@@ -57,7 +57,7 @@ cxt_set(struct cos_exception_context *cxt)
 
 static pthread_key_t _cxt_key;
 
-static inline void
+static void
 cxt_set(struct cos_exception_context *cxt)
 {
 	 test_assert( pthread_setspecific(_cxt_key, cxt) == 0 );

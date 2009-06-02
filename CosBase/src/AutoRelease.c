@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.34 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.35 2009/06/02 21:43:29 ldeniau Exp $
  |
 */
 
@@ -107,13 +107,13 @@ _pool_init(void)
 
 static pthread_key_t _pool_key;
 
-static inline void
+static void
 pool_set(struct AutoRelease *pool)
 {
 	test_assert( pthread_setspecific(_pool_key, pool) == 0 );
 }
 
-static inline struct AutoRelease*
+static always_inline struct AutoRelease*
 pool_get(void)
 {
 	struct AutoRelease *pool = pthread_getspecific(_pool_key);
@@ -194,8 +194,10 @@ push(OBJ obj)
 // ----- Object ownership
 
 defmethod(OBJ, gretain, Object)
-  if (self->rc >= COS_RC_UNIT)
-    retmethod(++self->rc, _1);
+  if (self->rc >= COS_RC_UNIT) {
+    ++self->rc;
+    retmethod(_1);
+  }
 
   if (self->rc == COS_RC_AUTO)
     retmethod(gclone(_1));
@@ -207,18 +209,8 @@ defmethod(OBJ, gretain, Object)
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
-defmethod(OBJ, gautoRelease, Object)
-  if (self->rc >= COS_RC_UNIT)
-    retmethod(push(_1));
-
-  if (self->rc == COS_RC_STATIC)
-    retmethod(_1);
-
-  // self->rc < COS_RC_STATIC || self->rc == COS_RC_AUTO
-  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
-endmethod
-
-defmethod(OBJ, gautoDelete, Object)
+defalias (OBJ, (gautoRelease)gautoDelete, Object);
+defmethod(OBJ,  gautoRelease            , Object)
   if (self->rc >= COS_RC_UNIT)
     retmethod(push(_1));
 
@@ -235,11 +227,14 @@ endmethod
 defalias (void, (grelease)gdelete, Object);
 defmethod(void,  grelease        , Object)
   if (self->rc > COS_RC_UNIT) {
-    --self->rc; retmethod();
+    --self->rc;
+    retmethod();
   }
 
   if (self->rc == COS_RC_UNIT) {
-    gdealloc(gdeinit(_1)); retmethod();
+    self->rc = COS_RC_STATIC; // avoid cycle dependencies
+    gdealloc(gdeinit(_1));
+    retmethod();
   }
   
   if (self->rc == COS_RC_STATIC)
@@ -256,8 +251,9 @@ defmethod(OBJ, gretain, AutoRelease)
   COS_UNUSED(RETVAL);
 endmethod
 
-defmethod(OBJ, gautoRelease, AutoRelease)
-  COS_UNUSED(RETVAL); // insensitive
+defalias (OBJ, (gautoRelease)gautoDelete, AutoRelease);
+defmethod(OBJ,  gautoRelease            , AutoRelease)
+  COS_UNUSED(RETVAL); // insensitive, already chained
 endmethod
 
 defalias (void, (grelease)gdelete, AutoRelease);
@@ -290,15 +286,15 @@ defmethod(OBJ, gdeinit, AutoRelease)
   while ((pool = pool_get()) != self)
     grelease((OBJ)pool);
 
-  // ensure transitivity when grelease sends gautoRelease
-  pool_set(self->prv);
-
   // release autoReleased objects
   clear(self);
 
   // free stack
   if (self->stk != self->_stk)
     free(self->stk-1);
+
+  // remove from top
+  pool_set(self->prv);
 
   retmethod(_1);
 endmethod

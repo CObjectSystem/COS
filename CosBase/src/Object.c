@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.10 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: Object.c,v 1.11 2009/06/02 21:43:29 ldeniau Exp $
  |
 */
 
@@ -50,9 +50,7 @@ useclass(ExBadAlloc, ExBadMessage);
 
 // ----- properties
 
-defmethod(OBJ, ggetAt, Object, mP_class)
-  retmethod( (OBJ)cos_class_get(self->id) );
-endmethod
+defproperty(Object, (id)class, (OBJ)cos_class_get);
 
 // ----- allocator, deallocator
 
@@ -97,8 +95,7 @@ defmethod(OBJ, gisInstanceOf, Object, Class)
 endmethod
 
 defmethod(OBJ, gisKindOf, Object, Class)
-  retmethod( self1->id == self2->Behavior.id ||
-             cos_object_isKindOf(_1,self2)
+  retmethod( self1->id == self2->Behavior.id || cos_object_isKindOf(_1,self2)
              ? True : False );
 endmethod
 
@@ -128,8 +125,8 @@ defmethod(OBJ, gunderstandMessage3, Object, Object, Object, (SEL)msg)
 endmethod
 
 defmethod(OBJ, gunderstandMessage4, Object, Object, Object, Object, (SEL)msg)
- retmethod( cos_method_understand4(msg, self1->id, self2->id, self3->id,
-                                        self4->id)
+ retmethod( cos_method_understand4(msg, self1->id, self2->id,
+                                        self3->id, self4->id)
             ? True : False );
 endmethod
 
