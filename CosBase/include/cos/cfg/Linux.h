@@ -32,11 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Linux.h,v 1.3 2009/05/08 21:43:11 ldeniau Exp $
+ | $Id: Linux.h,v 1.4 2009/06/08 22:35:43 ldeniau Exp $
  |
 */
 
 #define COS_HAVE_TLS   1
 #define COS_HAVE_POSIX 1
+
+#define COS_LIB_PREFIX "lib"
+#define COS_LIB_SHEXT  ".so"
 
 #endif // COS_CFG_LINUX_H

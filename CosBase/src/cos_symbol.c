@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.31 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.32 2009/06/08 22:35:43 ldeniau Exp $
  |
 */
 
@@ -44,9 +44,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-enum { MAX_TBL = 50 };
+enum { MAX_TBL = 100 }; // maximum number of modules
 
-static struct Object **tbl[MAX_TBL];
+static U32 tbl_ini = 0; // index of first table not yet initialized
+static struct Object **tbl_sym[MAX_TBL];
 
 static struct {
   struct Behavior **bhv; // indexed by id % msk
@@ -525,27 +526,28 @@ sym_prepStorage(U32 n_cls, U32 n_gen, U32 n_mth)
 static void
 sym_init(void)
 {
+  static U32 arnd = 0;
   U32 n_cls=0, n_mcl=0, n_pcl=0, n_gen=0, n_mth=0;
-  U32 t, s, r=0;
+  U32 t, s;
 
   // count symbols
-  for (t = 0; t < MAX_TBL && tbl[t]; t++) {
-    for (s = 0; tbl[t][s]; s++) {
+  for (t = tbl_ini; t < MAX_TBL && tbl_sym[t]; t++) {
+    for (s = 0; tbl_sym[t][s]; s++) {
 
       // count symbols
-      switch(tbl[t][s]->rc) {
+      switch(tbl_sym[t][s]->rc) {
       case cos_tag_class  : ++n_cls; break;
       case cos_tag_mclass : ++n_mcl; break;
       case cos_tag_pclass : ++n_pcl; break;
       case cos_tag_generic: ++n_gen; break;
-      case cos_tag_alias  : mth_initAlias(STATIC_CAST(struct Method1*, tbl[t][s]));
+      case cos_tag_alias  : mth_initAlias(STATIC_CAST(struct Method1*, tbl_sym[t][s]));
       case cos_tag_method : ++n_mth; break;
       default: cos_abort("invalid COS symbol");
       }
 
       // set behavior tag
-      if (tbl[t][s]->rc != cos_tag_method)
-        bhv_setTag(STATIC_CAST(struct Behavior*, tbl[t][s]));
+      if (tbl_sym[t][s]->rc != cos_tag_method)
+        bhv_setTag(STATIC_CAST(struct Behavior*, tbl_sym[t][s]));
     }
   }
 
@@ -557,21 +559,21 @@ sym_init(void)
   sym_prepStorage(n_cls,n_gen,n_mth);
 
   // copy & prepare symbols
-  for (t = 0; t < MAX_TBL && tbl[t]; t++) {
-    for (s = 0; tbl[t][s]; s++) {
+  for (t = tbl_ini; t < MAX_TBL && tbl_sym[t]; t++) {
+    for (s = 0; tbl_sym[t][s]; s++) {
 
       // add behavior symbol to behavior table
-      if (tbl[t][s]->rc != cos_tag_method) {
-        struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl[t][s]);
+      if (tbl_sym[t][s]->rc != cos_tag_method) {
+        struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl_sym[t][s]);
         U32 i = bhv->id & sym.msk;
         if (sym.bhv[i]) cos_abort("behavior slot %u already assigned", i);
         sym.bhv[i] = bhv;
       }
 
       // finalize symbol information and store it
-      switch(tbl[t][s]->rc) {
+      switch(tbl_sym[t][s]->rc) {
       case cos_tag_class: {
-        struct Class *cls = STATIC_CAST(struct Class*, tbl[t][s]);
+        struct Class *cls = STATIC_CAST(struct Class*, tbl_sym[t][s]);
         const struct Class *pcl = STATIC_CAST(const struct Class*, cls->name);
         sym.cls[sym.n_cls++] = cls; // hack: meta-link
         cls->name = pcl->name+2;    // hack: name is shared
@@ -580,20 +582,20 @@ sym_init(void)
       } break;
 
       case cos_tag_pclass: {
-        struct Class *pcl = STATIC_CAST(struct Class*, tbl[t][s]);
+        struct Class *pcl = STATIC_CAST(struct Class*, tbl_sym[t][s]);
         pcl->spr->name = pcl->name+1; // hack: name is shared
         pcl->Behavior.Object.id = cos_class_id(classref(PropMetaClass));
         pcl->Behavior.Object.rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_mclass: {
-        struct Class *mcl = STATIC_CAST(struct Class*, tbl[t][s]);
+        struct Class *mcl = STATIC_CAST(struct Class*, tbl_sym[t][s]);
         mcl->Behavior.Object.id = cos_class_id(classref(MetaClass));
         mcl->Behavior.Object.rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_generic: {
-        struct Generic *gen = STATIC_CAST(struct Generic*, tbl[t][s]);
+        struct Generic *gen = STATIC_CAST(struct Generic*, tbl_sym[t][s]);
         const struct Class *cls = STATIC_CAST(const struct Class*, gen->sig);
         sym.gen[sym.n_gen++] = gen;
         gen->sig = gen->name + strlen(gen->name) + 1;
@@ -602,11 +604,11 @@ sym_init(void)
       } break;
 
       case cos_tag_method: {
-        struct Method *mth = STATIC_CAST(struct Method*, tbl[t][s]);
+        struct Method *mth = STATIC_CAST(struct Method*, tbl_sym[t][s]);
         gen_incMth(mth->gen);
         sym.mth[sym.n_mth++] = mth;
         mth->Object.rc = COS_RC_STATIC;
-        if (mth->arnd) mth->arnd = --r;
+        if (mth->arnd) mth->arnd = --arnd;
         switch(COS_GEN_RNK(mth->gen)) {
         case 1: mth->Object.id = cos_class_id(classref(Method1)); break;
         case 2: mth->Object.id = cos_class_id(classref(Method2)); break;
@@ -632,6 +634,12 @@ sym_init(void)
   // set class properties
   cls_setClassProp(genericref(ggetAt));
   cls_setClassProp(genericref(gputAt));
+  
+  // clear next-method
+  nxt_clear();
+  
+  // end of module(s) init
+  tbl_ini = t;
 }
 
 static void
@@ -646,6 +654,8 @@ sym_deinit(void)
   free(sym.gen), sym.gen = 0, sym.n_gen = 0;
   free(sym.mth), sym.mth = 0, sym.n_mth = 0;
   free(sym.nxt), sym.nxt = 0, sym.n_nxt = 0, sym.m_nxt = 0;
+  
+  tbl_ini = 0;
 }
 
 static void
@@ -754,14 +764,14 @@ cos_symbol_register(struct Object* sym[])
   if (!sym)
     cos_abort("null symbol table");
 
-  for (i = 0; i < MAX_TBL && tbl[i]; i++)
-    if (tbl[i] == sym)
+  for (i = 0; i < MAX_TBL && tbl_sym[i]; i++)
+    if (tbl_sym[i] == sym)
       return;
 
   if (i == MAX_TBL)
     cos_abort("too many COS symbols tables registered (%u tables)", i);
 
-  tbl[i] = sym;
+  tbl_sym[i] = sym;
 }
 
 // ----- generic
@@ -1076,6 +1086,8 @@ cos_method_get5(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
  * ----------------------------------------------------------------------------
  */
 
+// ----- next-method
+
 #if COS_HAVE_POSIX
 
 #include <pthread.h>
@@ -1114,6 +1126,61 @@ void
 cos_method_nextClear(void)
 {
   nxt_clear();
+}
+
+#endif // COS_HAVE_POSIX
+
+// ----- module
+
+#if COS_HAVE_POSIX
+
+#include <dlfcn.h>
+#include <stdio.h>
+
+void
+cos_module_load(STR modname[])
+{
+  void  *handle;
+  void (*symbol)(void);
+
+  char buf[250];
+  STR  err;
+  int  i;
+
+  for (i = 0; modname[i]; i++) {
+    // load module
+    sprintf(buf, COS_LIB_PREFIX "%200s" COS_LIB_SHEXT, modname[i]);
+    buf[sizeof(buf)-1] = 0;
+
+    handle = dlopen(buf, RTLD_LAZY);
+    if (!handle)
+      cos_abort("unable to load module %s: %s", modname[i], dlerror());
+
+    // search registration service
+    sprintf(buf, "cos_symbol_init%200s", modname[i]);
+    buf[sizeof(buf)-1] = 0;
+    
+    dlerror();
+    *(void**)&symbol = dlsym(handle, buf);
+    if ((err = dlerror()) != NULL)
+      cos_abort("unable to initialize module %s: %s", modname[i], err);
+
+    // register symbols
+    symbol();
+  }
+
+  // init loaded tables and classes
+  sym_init();
+  cls_init();
+}
+
+#else // !COS_HAVE_POSIX
+
+void
+cos_module_load(STR modname[])
+{
+  cos_abort("dynamic linking loader not supported");
+  COS_UNUSED(modname);
 }
 
 #endif // COS_HAVE_POSIX

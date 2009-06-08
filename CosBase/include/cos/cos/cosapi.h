@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.28 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: cosapi.h,v 1.29 2009/06/08 22:35:43 ldeniau Exp $
  |
 */
 
@@ -109,6 +109,8 @@ void   cos_exception_initContext(struct cos_exception_context*);
 void   cos_exception_deinitContext(struct cos_exception_context*);
 
 cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
+
+void   cos_module_load(STR*); // null terminated array of module names
 
 /* NOTE-INFO: loggers
    - prototype: void cos_xxx(STR fmt, ...);
