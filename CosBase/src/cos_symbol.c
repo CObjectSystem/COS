@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.32 2009/06/08 22:35:43 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.33 2009/06/09 22:30:30 ldeniau Exp $
  |
 */
 
@@ -326,9 +326,10 @@ cls_classPropCnt(const struct Generic *gen, const struct Class *cls, I32 rnk)
 {
   U32 n=0, p=0;
   I32 r = COS_CLS_RNK(cls);
+  enum { get, put };
 
-       if (gen == genericref(ggetAt)) p = 0;
-  else if (gen == genericref(gputAt)) p = 1;
+       if (gen == genericref(ggetAt)) p = get;
+  else if (gen == genericref(gputAt)) p = put;
   else cos_abort("invalid generic '%s' for properties", gen->name);
 
   if ((U32)rnk > (U32)r) rnk = r;
@@ -337,7 +338,7 @@ cls_classPropCnt(const struct Generic *gen, const struct Class *cls, I32 rnk)
     --r, cls = cls->spr;
 
   while (r >= rnk) {
-    n += cls_decodePropCnt(cls->ref.prp[p],NO);
+    n += cls_decodePropCnt(cls->prp[p], NO);
     --r, cls = cls->spr;
   }
 
@@ -351,11 +352,12 @@ cls_classPropLst(const struct Generic *gen,
 {
   struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
-  U32 i=0, c=0, p=0;
+  U32 i=0, p=0;
   I32 r = COS_CLS_RNK(cls);
+  enum { get, put };
 
-       if (gen == genericref(ggetAt)) c = 1, p = 0;
-  else if (gen == genericref(gputAt)) c = 2, p = 1;
+       if (gen == genericref(ggetAt)) p = get;
+  else if (gen == genericref(gputAt)) p = put;
   else cos_abort("invalid generic '%s' for properties", gen->name);
 
   if ((U32)rnk > (U32)r) rnk = r;
@@ -364,20 +366,20 @@ cls_classPropLst(const struct Generic *gen,
     --r, cls = cls->spr;
 
   while (r >= rnk) {
-    if (cls->ref.prp[p]) {
-      U32 j = cls_decodePropIdx(cls->ref.prp[p]);
-      U32 n = cls_decodePropCnt(cls->ref.prp[p],YES)+j;
+    if (cls->prp[p]) {
+      U32 j = cls_decodePropIdx(cls->prp[p]);
+      U32 n = cls_decodePropCnt(cls->prp[p], YES)+j;
 
       for (; i < n_prp && j < n    ; i++, j++)
-        prp[i] = mth[j]->cls[c]->ref.cls;
+        prp[i] = mth[j]->cls[1]->cls;
 
       for (; i < n_prp && j < n_mth; i++, j++) {
         if (cls !=          mth[j]->cls[0]  ||
-           !cls_isMetaClass(mth[j]->cls[c]) || 
-           !cls_isProperty (mth[j]->cls[c]->ref.cls))
+           !cls_isMetaClass(mth[j]->cls[1]) || 
+           !cls_isProperty (mth[j]->cls[1]->cls))
           break;
 
-        prp[i] = mth[j]->cls[c]->ref.cls;
+        prp[i] = mth[j]->cls[1]->cls;
       }
     }
 
@@ -392,36 +394,28 @@ cls_setClassProp(const struct Generic *gen)
 {
   struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
-  U32 i, j, c=0, p=0;
+  U32 i, j, p=0;
+  enum { get, put };
 
-       if (gen == genericref(ggetAt)) c = 1, p = 0;
-  else if (gen == genericref(gputAt)) c = 2, p = 1;
+       if (gen == genericref(ggetAt)) p = get;
+  else if (gen == genericref(gputAt)) p = put;
   else cos_abort("invalid generic '%s' for properties", gen->name);
 
   for (i = 0; i < n_mth;) {
 
-    if (!cls_isMetaClass(mth[i]->cls[c]) ||
-        !cls_isProperty (mth[i]->cls[c]->ref.cls)) {
+    if (!cls_isMetaClass(mth[i]->cls[1]) ||
+        !cls_isProperty (mth[i]->cls[1]->cls)) {
         ++i; continue;
     } 
 
     for (j = i++; i < n_mth; i++)
       if (mth[j]->cls[0] != mth[i]->cls[0]  ||
-          !cls_isMetaClass (mth[i]->cls[c]) || 
-          !cls_isProperty  (mth[i]->cls[c]->ref.cls))
+          !cls_isMetaClass (mth[i]->cls[1]) || 
+          !cls_isProperty  (mth[i]->cls[1]->cls))
         break;
 
-    mth[j]->cls[0]->ref.prp[p] = cls_encodeProp(j, i-j);
+    mth[j]->cls[0]->prp[p] = cls_encodeProp(j, i-j);
   }
-}
-
-static void
-cls_clearClassProp(void)
-{
-  U32 i;
-  
-  for (i = 0; i < sym.n_cls; i++)
-    sym.cls[i]->ref.cls = 0;
 }
 
 static inline void
@@ -646,7 +640,6 @@ static void
 sym_deinit(void)
 {
   nxt_clear();
-  cls_clearClassProp();
   
   free(sym.bhv), sym.bhv = 0, sym.  msk = 0;
   free(sym.cls), sym.cls = 0, sym.n_cls = 0;
@@ -671,7 +664,7 @@ cls_init(void)
     struct Class *cls = ini[i]->cls[0];
 
     if (cls_isMetaClass(cls))
-      ginitialize((OBJ)cls->ref.cls);
+      ginitialize((OBJ)cls->cls);
   }
 }
 
@@ -688,7 +681,7 @@ cls_deinit(void)
     struct Class *cls = dei[i]->cls[0];
 
     if (cls_isMetaClass(cls))
-      gdeinitialize((OBJ)cls->ref.cls);
+      gdeinitialize((OBJ)cls->cls);
   }
 }
 
@@ -1369,13 +1362,14 @@ cos_symbol_showClassProperties(FILE *fp, int spr)
   const struct Class *r_prp[256];
   const struct Class *w_prp[256];
   U32 i, j, k, r, w, n_prp = COS_ARRLEN(r_prp);
+  enum { get, put };
 
   if (!fp) fp = stderr;
 
   fprintf(fp, "classes properties:\n");
 
   for (i = 0; i < sym.n_cls; i++) {
-    if (!sym.cls[i]->ref.cls) continue;
+    if (!sym.cls[i]->cls) continue;
     
     k = spr ? 0 : COS_CLS_RNK(sym.cls[i]);
     r = cos_class_readProperties (sym.cls[i],k,r_prp,n_prp);
@@ -1384,8 +1378,8 @@ cos_symbol_showClassProperties(FILE *fp, int spr)
     fprintf(fp, "cls[%3u] = %-25s (%5u,%3u) / (%5u,%3u)\n",
             i,
             sym.cls[i]->name,
-            cls_decodePropIdx(sym.cls[i]->ref.prp[0]), r,
-            cls_decodePropIdx(sym.cls[i]->ref.prp[1]), w);
+            cls_decodePropIdx(sym.cls[i]->prp[get]), r,
+            cls_decodePropIdx(sym.cls[i]->prp[put]), w);
 
     for (j = 0; j < r || j < w; j++)
       fprintf(fp, "           prp[%3u] : %-26s / %-26s\n",

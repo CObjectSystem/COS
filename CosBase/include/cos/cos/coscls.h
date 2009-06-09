@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.9 2009/04/02 07:44:47 ldeniau Exp $
+ | $Id: coscls.h,v 1.10 2009/06/09 22:30:29 ldeniau Exp $
  |
 */
 
@@ -142,10 +142,8 @@ COS_CLS_DEF(Class,Behavior)
   U32 isz;
   STR name;
   struct Class* spr;
-  union {
-    struct Class* cls;
-    U32 prp[2];
-  } ref;
+  struct Class* cls;
+  U32 prp[2];
 COS_CLS_END
 
 COS_CLS_DEF(Method,Object)
