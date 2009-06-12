@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.33 2009/06/09 22:30:30 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.34 2009/06/12 23:11:03 ldeniau Exp $
  |
 */
 
@@ -1125,7 +1125,7 @@ cos_method_nextClear(void)
 
 // ----- module
 
-#if COS_HAVE_POSIX
+#if COS_HAVE_POSIX && COS_HAVE_DLINK
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -1133,9 +1133,8 @@ cos_method_nextClear(void)
 void
 cos_module_load(STR modname[])
 {
-  void  *handle;
   void (*symbol)(void);
-
+  void  *handle, **tmp;
   char buf[250];
   STR  err;
   int  i;
@@ -1154,7 +1153,8 @@ cos_module_load(STR modname[])
     buf[sizeof(buf)-1] = 0;
     
     dlerror();
-    *(void**)&symbol = dlsym(handle, buf);
+    tmp = (void**)&symbol;
+    *tmp = dlsym(handle, buf);
     if ((err = dlerror()) != NULL)
       cos_abort("unable to initialize module %s: %s", modname[i], err);
 
@@ -1167,7 +1167,7 @@ cos_module_load(STR modname[])
   cls_init();
 }
 
-#else // !COS_HAVE_POSIX
+#else // !COS_HAVE_POSIX || !COS_HAVE_DLINK
 
 void
 cos_module_load(STR modname[])
@@ -1176,7 +1176,7 @@ cos_module_load(STR modname[])
   COS_UNUSED(modname);
 }
 
-#endif // COS_HAVE_POSIX
+#endif // COS_HAVE_POSIX && COS_HAVE_DLINK
 
 /*
  * ----------------------------------------------------------------------------

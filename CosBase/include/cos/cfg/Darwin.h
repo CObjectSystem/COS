@@ -32,12 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Darwin.h,v 1.3 2009/06/08 22:35:43 ldeniau Exp $
+ | $Id: Darwin.h,v 1.4 2009/06/12 23:11:03 ldeniau Exp $
  |
 */
 
 #define COS_HAVE_TLS   0
 #define COS_HAVE_POSIX 1
+#define COS_HAVE_DLINK 1
 
 #define COS_LIB_PREFIX "lib"
 #define COS_LIB_SHEXT  ".so"
