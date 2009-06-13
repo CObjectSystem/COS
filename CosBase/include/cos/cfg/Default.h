@@ -32,11 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Default.h,v 1.1 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: Default.h,v 1.2 2009/06/13 11:00:34 ldeniau Exp $
  |
 */
 
 #define COS_HAVE_TLS   0
 #define COS_HAVE_POSIX 0
+#define COS_HAVE_DLINK 0
 
 #endif // COS_CFG_DEFAULT_H

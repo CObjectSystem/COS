@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Default,v 1.4 2009/05/13 14:54:03 ldeniau Exp $
+# | $Id: Default,v 1.5 2009/06/13 11:00:34 ldeniau Exp $
 # |
 #
 
@@ -52,6 +52,7 @@ LIBAREXT    := .a
 #
 # program specific
 #
+BINTYPE     := static
 BINEXT      := 
 
 #

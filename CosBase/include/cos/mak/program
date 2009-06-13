@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.9 2009/05/10 01:32:57 ldeniau Exp $
+# | $Id: program,v 1.10 2009/06/13 11:00:34 ldeniau Exp $
 # |
 #
 
@@ -53,8 +53,8 @@ $(TARGET).%: SBINNAME  := $(SBINNAME)
 .PHONY: $(TARGET).pre $(TARGET).post
 
 $(TARGET): $(TARGET).pre  \
-           $(if $(filter shared,$(LIBTYPE)),$(TARGET).bin ) \
-           $(if $(filter static,$(LIBTYPE)),$(TARGET).sbin) \
+           $(if $(filter shared,$(BINTYPE)),$(TARGET).bin ) \
+           $(if $(filter static,$(BINTYPE)),$(TARGET).sbin) \
            $(TARGET).post
 
 #

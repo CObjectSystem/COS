@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.28 2009/04/02 21:23:55 ldeniau Exp $
+ | $Id: method.h,v 1.29 2009/06/13 11:00:34 ldeniau Exp $
  |
 */
 
@@ -75,7 +75,7 @@
    - the function pointer cos_method_trace (see cos/cos/cosapi.h) will be
      called only if the cos_logmsg_level == COS_LOGMSG_TRACE at runtime.
    - COS_METHOD_TRACE is automatically defined if
-     COS_LOGMSG_LEVEL <= COS_LOGMSG_DEBUG
+     COS_LOGMSG <= COS_LOGMSG_DEBUG
 */
 
 /* method keywords:

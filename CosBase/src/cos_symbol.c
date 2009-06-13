@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.34 2009/06/12 23:11:03 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.35 2009/06/13 11:00:34 ldeniau Exp $
  |
 */
 
@@ -44,10 +44,16 @@
 #include <stdlib.h>
 #include <time.h>
 
-enum { MAX_TBL = 100 }; // maximum number of modules
+#if COS_HAVE_POSIX && COS_HAVE_DLINK
+#include <dlfcn.h>
+#include <stdio.h>
+#endif
 
-static U32 tbl_ini = 0; // index of first table not yet initialized
+enum { MAX_TBL = 100 }; // maximum number of modules (& plug-in)
+
+static U32             tbl_ini = 0; // index of first table not yet initialized
 static struct Object **tbl_sym[MAX_TBL];
+static void           *tbl_mod[MAX_TBL];
 
 static struct {
   struct Behavior **bhv; // indexed by id % msk
@@ -639,6 +645,8 @@ sym_init(void)
 static void
 sym_deinit(void)
 {
+  int i;
+  
   nxt_clear();
   
   free(sym.bhv), sym.bhv = 0, sym.  msk = 0;
@@ -648,7 +656,14 @@ sym_deinit(void)
   free(sym.mth), sym.mth = 0, sym.n_mth = 0;
   free(sym.nxt), sym.nxt = 0, sym.n_nxt = 0, sym.m_nxt = 0;
   
+//  cos_info("%d symbol table deinit", tbl_ini);
   tbl_ini = 0;
+  
+#if COS_HAVE_POSIX && COS_HAVE_DLINK
+  for (i = 0; i < MAX_TBL && tbl_mod[i]; i++)
+    dlclose(tbl_mod[i]);
+//  cos_info("%d module unloaded", i);
+#endif
 }
 
 static void
@@ -763,8 +778,8 @@ cos_symbol_register(struct Object* sym[])
 
   if (i == MAX_TBL)
     cos_abort("too many COS symbols tables registered (%u tables)", i);
-
-  tbl_sym[i] = sym;
+  else
+    tbl_sym[i] = sym;
 }
 
 // ----- generic
@@ -1106,7 +1121,7 @@ cos_method_nextClear(void)
   pthread_mutex_unlock(&nxt_lock);
 }
 
-#else // !COS_HAVE_POSIX
+#else
 
 void
 cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, U32 rnd, struct Class* const* cls)
@@ -1121,45 +1136,61 @@ cos_method_nextClear(void)
   nxt_clear();
 }
 
-#endif // COS_HAVE_POSIX
+#endif
 
 // ----- module
 
 #if COS_HAVE_POSIX && COS_HAVE_DLINK
 
-#include <dlfcn.h>
-#include <stdio.h>
-
 void
-cos_module_load(STR modname[])
+cos_module_load(STR *mod)
 {
   void (*symbol)(void);
-  void  *handle, **tmp;
-  char buf[250];
-  STR  err;
-  int  i;
+  void **tmp, *handle;
+  char   buf[250];
+  STR    ext, err;
+  int    i, j;
 
-  for (i = 0; modname[i]; i++) {
+#if   defined(COS_DEBUG)
+  ext = "_d";
+#elif defined(COS_PROFILE)
+  ext = "_p";
+#else
+  ext = "";
+#endif
+
+  if (!mod)
+    cos_abort("null module table");
+
+  for (j = 0; j < MAX_TBL && tbl_mod[j]; j++)
+    ;
+
+  for (i = 0; mod[i]; i++) {
     // load module
-    sprintf(buf, COS_LIB_PREFIX "%200s" COS_LIB_SHEXT, modname[i]);
+    sprintf(buf, COS_LIB_PREFIX "%200s%s" COS_LIB_SHEXT, ext, mod[i]);
     buf[sizeof(buf)-1] = 0;
 
     handle = dlopen(buf, RTLD_LAZY);
     if (!handle)
-      cos_abort("unable to load module %s: %s", modname[i], dlerror());
+      cos_abort("unable to load module %s%s: %s", ext, mod[i], dlerror());
 
     // search registration service
-    sprintf(buf, "cos_symbol_init%200s", modname[i]);
+    sprintf(buf, "cos_symbol_init%200s", mod[i]);
     buf[sizeof(buf)-1] = 0;
     
     dlerror();
     tmp = (void**)&symbol;
     *tmp = dlsym(handle, buf);
     if ((err = dlerror()) != NULL)
-      cos_abort("unable to initialize module %s: %s", modname[i], err);
+      cos_abort("unable to initialize module %s: %s", mod[i], err);
 
     // register symbols
-    symbol();
+    if (j == MAX_TBL)
+      cos_abort("too many COS modules loaded (%u loaded)", j);
+    else {
+      symbol();
+      tbl_mod[j] = handle;
+    }
   }
 
   // init loaded tables and classes
@@ -1167,16 +1198,15 @@ cos_module_load(STR modname[])
   cls_init();
 }
 
-#else // !COS_HAVE_POSIX || !COS_HAVE_DLINK
+#else
 
 void
-cos_module_load(STR modname[])
+cos_module_load(STR *mod)
 {
-  cos_abort("dynamic linking loader not supported");
-  COS_UNUSED(modname);
+  cos_abort("dynamic linking loader not supported (module %s)", mod);
 }
 
-#endif // COS_HAVE_POSIX && COS_HAVE_DLINK
+#endif
 
 /*
  * ----------------------------------------------------------------------------
