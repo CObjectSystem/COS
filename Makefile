@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.15 2009/06/14 19:55:13 ldeniau Exp $
+# | $Id: Makefile,v 1.16 2009/06/14 19:57:18 ldeniau Exp $
 # |
 #
 
@@ -52,7 +52,7 @@ modules := CosBase
 
 # documentation
 auxdocs := $(wildcard doc/*.pdf.gz) doc/html \
-           COPYING COPYING.LESSER CREDITS \
+           CHANGELOG COPYING COPYING.LESSER CREDITS \
            INSTALL README README.C89
 
 include $(cos)/epilogue
