@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: FreeBSD,v 1.1 2009/06/14 17:47:38 ldeniau Exp $
+# | $Id: FreeBSD,v 1.2 2009/06/14 20:26:20 ldeniau Exp $
 # |
 #
 
@@ -107,6 +107,7 @@ SYSFLAGS    := -DOSNAME=$(OSNAME) \
                -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
                -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS     := -lpthread -ldl
+SYSLIBPATH  := LD_LIBRARY_PATH
 
 #
 # compiler specific (gcc is the reference)

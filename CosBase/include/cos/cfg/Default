@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Default,v 1.6 2009/06/14 17:47:38 ldeniau Exp $
+# | $Id: Default,v 1.7 2009/06/14 20:26:20 ldeniau Exp $
 # |
 #
 
@@ -90,7 +90,5 @@ RELEASE_LD  :=
 #
 SYSFLAGS    := -DOSNAME=Default
 SYSLIBS     :=
-SYSLIBPATH  := LD_LIBRARY_PATH
-SYSPATH     := PATH
 
 # end of makefile
