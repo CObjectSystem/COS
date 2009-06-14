@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.17 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: base.h,v 1.18 2009/06/14 17:47:38 ldeniau Exp $
  |
 */
 
@@ -235,14 +235,10 @@
 #define COS_TOK_ISVALIST(a) \
         COS_PP_IF(COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_VALIST_,a))) \
           (COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_VALISTF_,a)()),0)
-#define COS_TOK_ISNIL(a) \
-        COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_NIL_,a))
-#define COS_TOK_ISGEN(a) \
-        COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_GEN_,a))
-#define COS_TOK_ISPRP(a) \
-        COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_PRP_,a))
-#define COS_TOK_ISGUM(a) \
-        COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_GUM_,a))
+#define COS_TOK_ISNIL(a) COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_NIL_,a))
+#define COS_TOK_ISGEN(a) COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_GEN_,a))
+#define COS_TOK_ISPRP(a) COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_PRP_,a))
+#define COS_TOK_ISGUM(a) COS_PP_ISTUPLE(COS_PP_CAT_(COS_TOK_GUM_,a))
 
 #define COS_TOK_NIL_Nil           ()
 #define COS_TOK_GEN_Generic       ()

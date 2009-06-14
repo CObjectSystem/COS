@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.29 2009/06/13 11:00:34 ldeniau Exp $
+# | $Id: default,v 1.30 2009/06/14 17:47:38 ldeniau Exp $
 # |
 #
 
@@ -45,7 +45,8 @@ TARGETS  := $(if $(targets),$(targets),all)
 #
 PRJTYPE  := $(strip $(if $(program),program, \
                     $(if $(library),library, \
-                    $(if $(distrib),distrib))))
+                    $(if $(plug-in),plug-in, \
+                    $(if $(distrib),distrib)))))
 PRJGOAL  := $(if $(MAKECMDGOALS),$(MAKECMDGOALS),$(TARGETS))
 PRJNAME  := $($(PRJTYPE))
 

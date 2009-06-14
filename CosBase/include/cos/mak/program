@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.10 2009/06/13 11:00:34 ldeniau Exp $
+# | $Id: program,v 1.11 2009/06/14 17:47:38 ldeniau Exp $
 # |
 #
 
@@ -64,7 +64,7 @@ $(TARGET).bin: $(OSNAME)/bin/$(BINNAME)
 
 $(OSNAME)/bin/$(BINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
 	@  echo "*** Building [$(TARGET)] $(@F)"
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@ $(LIBS) $(SYSLIBS)
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@ $(LIBS) $(SYSLIBS)
 	$_ $(if $(STRIP),$(STRIP) $@)
 
 #
@@ -85,9 +85,7 @@ $(OSNAME)/bin/$(SBINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
 $(TARGET).run: $(LIBTYPE) := $(filter shared,$(LIBTYPE))
 $(TARGET).run: $(TARGET)
 	@  echo "*** Running [$(TARGET)] $(BINNAME)"
-	$_ export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
-	   sed -e 's, :,:,g'` ; \
-	   $(OSNAME)/bin/$(BINNAME) $(ARGS)
+	$_ $(OSNAME)/bin/$(BINNAME) $(ARGS)
 
 #
 # rules for running static program (helper)

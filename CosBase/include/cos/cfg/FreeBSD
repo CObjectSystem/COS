@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS makefile -- Darwin (MacOS X)
+# | COS makefile -- FreeBSD
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.20 2009/06/14 17:47:38 ldeniau Exp $
+# | $Id: FreeBSD,v 1.1 2009/06/14 17:47:38 ldeniau Exp $
 # |
 #
 
@@ -46,12 +46,12 @@ DOCDIR      := share/doc
 # program specific
 #
 BINTYPE     := shared
-BINEXT      := 
+BINEXT      :=
 
 #
-# library specific (no static on MacOS X for gcc)
+# library specific
 #
-LIBTYPE     := shared plugin
+LIBTYPE     := shared static plugin
 LIBPREFIX   := lib
 LIBAREXT    := .a
 LIBSHEXT    := .so
@@ -59,13 +59,13 @@ LIBSHEXT    := .so
 #
 # tools specific
 #
-CC          := gcc -m64
+CC          := gcc
 CPP         := $(CC) -E
 DEP         := $(CC) -M
 LD          := $(CC)
 AR          := ar -cr
 NM          := nm -P -g
-STRIP       := strip
+STRIP       := strip -s
 
 #
 # compiler and linker specific
@@ -89,11 +89,11 @@ RELEASE_LD  :=
 STATIC_CC   := -static
 STATIC_LD   := -static
 
-SHARED_CC   := -dynamiclib -fPIC
-SHARED_LD    = -dynamiclib -fPIC -Wl,-install_name,$(@F) -Wl,-U,_cos_symbol_init
+SHARED_CC   := -shared -fPIC
+SHARED_LD    = -shared -fPIC -Wl,-soname,$(@F)
 
-PLUGIN_CC   := -dynamic -bundle -fPIC
-PLUGIN_LD   := -dynamic -bundle -fPIC -read_only_relocs suppress -Wl,-noprebind -Wl,-bind_at_load
+PLUGIN_CC   := $(SHARED_CC)
+PLUGIN_LD    = $(SHARED_LD)
 
 #
 # dynamic library search path
@@ -111,6 +111,7 @@ SYSLIBS     := -lpthread -ldl
 #
 # compiler specific (gcc is the reference)
 #
+
 CCFLAGS     += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
                -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
                -Wpointer-arith -Wbad-function-cast -Wcast-align -Wcast-qual \

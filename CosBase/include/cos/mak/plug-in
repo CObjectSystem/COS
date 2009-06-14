@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS makefile -- epilogue
+# | COS makefile -- plug-in
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,22 +29,46 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: epilogue,v 1.7 2009/06/14 17:47:36 ldeniau Exp $
+# | $Id: plug-in,v 1.1 2009/06/14 17:47:38 ldeniau Exp $
 # |
 #
 
-# default settings
-include $(COSDIR)/mak/default
+#
+# targets context (deferred -> immediate)
+#
+LIBNAME  := $(LIBPREFIX)$(plug-in)$(TARGETEXT)$(LIBSHEXT)
 
-# common targets
-include $(COSDIR)/mak/common
+$(TARGET).%: TARGET    := $(TARGET)
+$(TARGET).%: TARGETEXT := $(TARGETEXT)
+$(TARGET).%: LIBNAME   := $(LIBNAME)
+$(TARGET).%: COSSYM    := $(COSSYM) --mod=$(plug-in)
 
-# install targets
-include $(COSDIR)/mak/install
+#
+# build targets
+#
+.PHONY: $(TARGET)
+.PHONY: $(TARGET).lib $(TARGET).slib
+.PHONY: $(TARGET).pre $(TARGET).post
 
-# load rules for program, library and plug-in
-ifneq ($(filter program library plug-in,$(PRJTYPE)),)
-include $(COSDIR)/mak/project
-endif
+$(TARGET): $(TARGET).pre \
+           $(if $(filter plugin,$(LIBTYPE)),$(TARGET).lib ) \
+           $(TARGET).post
+
+#
+# rules for building plug-in
+#
+$(TARGET).lib: CCFLAGS += $(PLUGIN_CC)
+$(TARGET).lib: LDFLAGS += $(PLUGIN_LD)
+$(TARGET).lib: $(OSNAME)/lib/$(LIBNAME)
+
+$(OSNAME)/lib/$(LIBNAME): $(OSNAME)/$(TARGET)/$(plug-in)_syms.o
+	@  echo "*** Building [$(TARGET)] $(@F)"
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
+	$_ ln -sf $(@F).$(VERSION) $@
+
+#
+# include other target rules
+#
+include $(COSDIR)/mak/compile
 
 # end of makefile

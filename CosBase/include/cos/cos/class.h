@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.11 2009/06/09 22:30:29 ldeniau Exp $
+ | $Id: class.h,v 1.12 2009/06/14 17:47:38 ldeniau Exp $
  |
 */
 
@@ -152,7 +152,8 @@
         enum { COS_CLS_RANK(NAME) = 0, \
                COS_MCL_RANK(NAME) = 3, /* 1+rankOf Class */ \
                COS_PCL_RANK(NAME) = 1+COS_MCL_RANK(NAME) }; \
-        enum { COS_CLS_MSPE(NAME) = 0, \
+        enum { COS_CLS_MSPE(NAME) = \
+                 COS_PP_IF(COS_TOK_ISNIL(NAME))(1,0), \
                COS_MCL_MSPE(NAME) = 0, \
                COS_PCL_MSPE(NAME) = 0 }; \
         struct NAME {
@@ -163,9 +164,8 @@
                COS_MCL_RANK(NAME) = 1+COS_MCL_RANK(SUPER), \
                COS_PCL_RANK(NAME) = 1+COS_MCL_RANK(NAME) }; \
         enum { COS_CLS_MSPE(NAME) = \
-                 COS_PP_IF(COS_TOK_ISNIL(NAME))(1, \
                  COS_PP_IF(COS_TOK_ISPRP(NAME))(3, \
-                 COS_PP_IF(COS_TOK_ISGEN(NAME))(4,COS_CLS_MSPE(SUPER)))), \
+                 COS_PP_IF(COS_TOK_ISGEN(NAME))(4,COS_CLS_MSPE(SUPER))), \
                COS_MCL_MSPE(NAME) = COS_MCL_MSPE(SUPER), \
                COS_PCL_MSPE(NAME) = COS_PCL_MSPE(SUPER) }; \
         struct NAME { \

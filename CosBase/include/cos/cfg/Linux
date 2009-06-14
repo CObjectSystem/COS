@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Linux,v 1.20 2009/06/13 11:00:34 ldeniau Exp $
+# | $Id: Linux,v 1.21 2009/06/14 17:47:38 ldeniau Exp $
 # |
 #
 
@@ -43,18 +43,18 @@ INCDIR      := include
 DOCDIR      := share/doc
 
 #
-# library specific
-#
-LIBTYPE     := shared static
-LIBPREFIX   := lib
-LIBAREXT    := .a
-LIBSHEXT    := .so
-
-#
 # program specific
 #
 BINTYPE     := shared
 BINEXT      :=
+
+#
+# library specific
+#
+LIBTYPE     := shared static plugin
+LIBPREFIX   := lib
+LIBAREXT    := .a
+LIBSHEXT    := .so
 
 #
 # tools specific
@@ -92,6 +92,14 @@ STATIC_LD   := -static
 SHARED_CC   := -shared -fPIC
 SHARED_LD    = -shared -fPIC -Wl,-soname,$(@F)
 
+PLUGIN_CC   := $(SHARED_CC)
+PLUGIN_LD    = $(SHARED_LD)
+
+#
+# dynamic library search path
+#
+RPATH        = $(patsubst -L%,-Wl$(comma)-rpath$(comma)%,$(LIBRARY))
+
 #
 # system specific
 #
@@ -99,11 +107,9 @@ SYSFLAGS    := -DOSNAME=$(OSNAME) \
                -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
                -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBS     := -lpthread -ldl
-SYSLIBPATH  := LD_LIBRARY_PATH
-SYSPATH     := PATH
 
 #
-# compiler specific (linux+gcc are the reference)
+# compiler specific (gcc is the reference)
 #
 
 CCFLAGS     += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \

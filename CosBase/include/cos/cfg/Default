@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Default,v 1.5 2009/06/13 11:00:34 ldeniau Exp $
+# | $Id: Default,v 1.6 2009/06/14 17:47:38 ldeniau Exp $
 # |
 #
 
@@ -84,9 +84,6 @@ PROFILE_LD  := -pg
 RELEASE_CPP :=
 RELEASE_CC  := 
 RELEASE_LD  := 
-
-STATIC_CC   := -static
-STATIC_LD   := -static
 
 #
 # system specific
