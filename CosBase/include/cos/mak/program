@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.12 2009/06/14 20:26:20 ldeniau Exp $
+# | $Id: program,v 1.13 2009/06/14 20:31:20 ldeniau Exp $
 # |
 #
 
@@ -65,7 +65,6 @@ $(TARGET).bin: $(OSNAME)/bin/$(BINNAME)
 $(OSNAME)/bin/$(BINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
 	@  echo "*** Building [$(TARGET)] $(@F)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@ $(LIBS) $(SYSLIBS)
-	$_ $(if $(STRIP),$(STRIP) $@)
 
 #
 # rules for building program with static linkage
