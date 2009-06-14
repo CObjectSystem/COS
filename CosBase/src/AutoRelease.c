@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.35 2009/06/02 21:43:29 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.36 2009/06/14 20:06:53 ldeniau Exp $
  |
 */
 
@@ -170,7 +170,7 @@ enlarge(struct AutoRelease* p)
   p->end = stk + new_size;
 }
 
-static inline void
+static always_inline void
 clear(struct AutoRelease *p)
 {
   if (p->tmp)
@@ -180,7 +180,7 @@ clear(struct AutoRelease *p)
     if (*p->top) grelease(*p->top);
 }
 
-static inline OBJ
+static always_inline OBJ
 push(OBJ obj)
 {
   struct AutoRelease *pool = pool_get();
