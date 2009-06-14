@@ -1,0 +1,77 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS ChangeLog
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: CHANGELOG,v 1.1 2009/06/14 19:33:23 ldeniau Exp $
+# |
+#
+
+TODO
+  - more OO interface and classes for introspection
+  - more platform support (Cygwin)
+  - refactoring of cos_symbols.c (hugly)
+  - much more unit tests
+  - manuals (still looking for the media: LaTeX or not LaTeX)
+
+** 0.8 [2009-]
+  - makefile simplified and compliant with gmake 3.80 (and maybe earlier)
+  - plug-in support (not really tested)
+  - rpath added, replaces LD_LIBRARY_PATH settings for run targets in makefile
+  - SunOS and FreeDSB makefile added (for gcc), but not tested.
+  - Nil specialization check restored (bugged since Nil became a root class)
+  - examples added
+  - tarball + tests + install + uninstall
+
+** 0.7 [2008-2009] - First beta release
+  - all the language feature are there
+  - moving from alpha to beta state
+  - properties added
+  - gdelete and gautoDelete added (for semi-GC)
+  - more compile-time checks
+  - module support
+  - start of other modules (not provided)
+  - tarball + tests + install
+
+** 0.5 [2007-2008] - New design from scratch
+  - sourceforge project reloaded (history lost)
+  - syntax changes, more flexible, safer
+  - deep macros refactoring
+  - methods protocol completely changed (packed struct for monomorphic parameters)
+  - aliases and contract added
+  - CVS only
+
+** 0.2 [2006-2007] - First alpha release
+  - first try
+  - iterate over various object model and language syntax
+  - feasibility test on C expressivity (macros)
+  - feasibility test on dispatcher speed (± C++ virtual calls efficiency)
+  - use variadic function for methods (not very portable)
+  - CVS only
+
