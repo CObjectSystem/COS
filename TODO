@@ -1,0 +1,53 @@
+#
+# o---------------------------------------------------------------------o
+# |
+# | COS ToDo list
+# |
+# o---------------------------------------------------------------------o
+# |
+# | C Object System
+# |
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# |
+# | For more information, see:
+# | http://cern.ch/laurent.deniau/cos.html
+# |
+# o---------------------------------------------------------------------o
+# |
+# | This file is part of the C Object System framework.
+# |
+# | The C Object System is free software; you can redistribute it and/or
+# | modify it under the terms of the GNU Lesser General Public License
+# | as published by the Free Software Foundation; either version 3 of
+# | the License, or (at your option) any later version.
+# |
+# | The C Object System is distributed in the hope that it will be
+# | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# |
+# | See <http://www.gnu.org/licenses> for more details.
+# |
+# o---------------------------------------------------------------------o
+# |
+# | $Id: TODO,v 1.1 2009/06/16 21:44:19 ldeniau Exp $
+# |
+#
+
+TODO-CosBase
+  - more OO (interface) and classes for introspection
+  - more platform support (Cygwin)
+  - refactoring of cos_symbols.c (hugly code)
+  - much more unit tests
+  - manuals (still looking for a web-complian media: LaTeX or not LaTeX)
+  - icc support on Linux and MacOSX x86 and x86_64
+  - libunwind support if TRY is too slow (check portability outside gcc or gcc option)
+  - libtcmalloc support if malloc is too slow (check portability of google-perftools)
+  - libpthread support for coroutine (check portability on Cygwin) (?)
+
+TODO-CosStd (and other modules?)
+  - support for libpcre or posix regex (?)
+  - support for libgmp and BigInt, BigFloat and Rational classes
+  - support JSON(-RPC) and/or YAML serialization based on class properties 
+  - support for libOpenGL or alternatives for plot and data visualization (?)
+  - support for libodbc (Oracle)
+
