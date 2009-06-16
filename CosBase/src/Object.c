@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.11 2009/06/02 21:43:29 ldeniau Exp $
+ | $Id: Object.c,v 1.12 2009/06/16 21:43:45 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,7 @@
 
 #include <stdlib.h>
 
-// -----
+// ----- root class
 
 makclass(Object,_);
 
@@ -48,7 +48,7 @@ makclass(Object,_);
 
 useclass(ExBadAlloc, ExBadMessage);
 
-// ----- properties
+// ----- properties (read-only)
 
 defproperty(Object, (id)class, (OBJ)cos_class_get);
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.19 2009/04/01 22:31:59 ldeniau Exp $
+ | $Id: cosdef.h,v 1.20 2009/06/16 21:43:45 ldeniau Exp $
  |
 */
 
@@ -85,7 +85,7 @@ typedef struct { F64 _[2]; } C64, COMPLEX;
 #endif
 
 typedef const char*           STR; // string literal
-typedef struct OBJ*           OBJ; // object ADT, never defined
+typedef struct OBJ*           OBJ; // object ADT
 typedef const struct Generic* SEL; // message selector
 
 typedef void (*FUNC)(void);
@@ -138,6 +138,9 @@ enum {
 
 // selector types for compile-time checks
 typedef struct OBJ_as_SEL* OBJ_as_SEL; // ADT, never defined
+
+// for compile-time checks of OBJ vs void*
+struct OBJ { char isOBJ; };
 
 // generic arguments
 struct cos_generic_arginfo {

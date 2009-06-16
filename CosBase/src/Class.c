@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.4 2009/01/26 09:46:26 ldeniau Exp $
+ | $Id: Class.c,v 1.5 2009/06/16 21:43:45 ldeniau Exp $
  |
 */
 
@@ -44,7 +44,7 @@
 
 makclass(Class,Behavior);
 
-// ----- properties
+// ----- properties (read-only)
 
 defproperty(Class, (spr)superClass, (OBJ));
 
@@ -64,20 +64,23 @@ endmethod
 
 // ----- behavior
 
-// rank 1
+// ----- rank 1
+
 defmethod(OBJ, ginstancesUnderstandMessage1, Class, (SEL)msg)
   retmethod(cos_method_understand1(msg,
                                    self1->Behavior.id) ? True : False);
 endmethod
 
-// rank 2
+// ----- rank 2
+
 defmethod(OBJ, ginstancesUnderstandMessage2, Class, Class, (SEL)msg)
   retmethod(cos_method_understand2(msg,
                                    self1->Behavior.id,
                                    self2->Behavior.id) ? True : False);
 endmethod
 
-// rank 3
+// ----- rank 3
+
 defmethod(OBJ, ginstancesUnderstandMessage3, Class, Class, Class, (SEL)msg)
   retmethod(cos_method_understand3(msg,
                                    self1->Behavior.id,
@@ -85,7 +88,8 @@ defmethod(OBJ, ginstancesUnderstandMessage3, Class, Class, Class, (SEL)msg)
                                    self3->Behavior.id) ? True : False);
 endmethod
 
-// rank 4
+// ----- rank 4
+
 defmethod(OBJ, ginstancesUnderstandMessage4, Class, Class, Class, Class,
                                              (SEL)msg)
   retmethod(cos_method_understand4(msg,
@@ -95,7 +99,8 @@ defmethod(OBJ, ginstancesUnderstandMessage4, Class, Class, Class, Class,
                                    self4->Behavior.id) ? True : False);
 endmethod
 
-// rank 5
+// ----- rank 5
+
 defmethod(OBJ, ginstancesUnderstandMessage5, Class, Class, Class, Class, Class,
                                              (SEL)msg)
   retmethod(cos_method_understand5(msg,

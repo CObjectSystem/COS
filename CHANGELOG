@@ -29,17 +29,9 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: CHANGELOG,v 1.2 2009/06/14 19:53:55 ldeniau Exp $
+# | $Id: CHANGELOG,v 1.3 2009/06/16 21:43:45 ldeniau Exp $
 # |
 #
-
-TODO
-  - more OO interface and classes for introspection
-  - more platform support (Cygwin)
-  - refactoring of cos_symbols.c (hugly)
-  - much more unit tests
-  - manuals (still looking for the media: LaTeX or not LaTeX)
-  - icc support on Linux and MacOSX
 
 ** 0.8 [2009-]
   - makefile simplified and compliant with gmake 3.80 (and maybe earlier)

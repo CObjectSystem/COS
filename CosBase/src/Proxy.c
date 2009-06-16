@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.8 2009/04/02 07:45:35 ldeniau Exp $
+ | $Id: Proxy.c,v 1.9 2009/06/16 21:43:45 ldeniau Exp $
  |
 */
 
@@ -58,13 +58,15 @@ endmethod
 
 // ----- understanding
 
-// rank 1
+// ----- rank 1
+
 defmethod(OBJ, gunderstandMessage1, Proxy, (SEL)msg)
   next_method(self1,msg);
   if (RETVAL == False) forward_message(self1->obj);
 endmethod
 
-// rank 2
+// ----- rank 2
+
 defmethod(OBJ, gunderstandMessage2, Proxy, Object, (SEL)msg)
   next_method(self1,self2,msg);
   if (RETVAL == False) forward_message(self1->obj,_2);
@@ -80,7 +82,8 @@ defmethod(OBJ, gunderstandMessage2, Proxy, Proxy, (SEL)msg)
   if (RETVAL == False) forward_message(self2->obj,self2->obj);
 endmethod
 
-// rank 3
+// ----- rank 3
+
 defmethod(OBJ, gunderstandMessage3, Proxy, Object, Object, (SEL)msg)
   next_method(self1,self2,self3,msg);
   if (RETVAL == False) forward_message(self1->obj,_2,_3);
@@ -116,7 +119,8 @@ defmethod(OBJ, gunderstandMessage3, Proxy, Proxy, Proxy, (SEL)msg)
   if (RETVAL == False) forward_message(self1->obj,self2->obj,self3->obj);
 endmethod
 
-// rank 4
+// ----- rank 4
+
 defmethod(OBJ, gunderstandMessage4, Proxy, Object, Object, Object, (SEL)msg)
   next_method(self1,self2,self3,self4,msg);
   if (RETVAL == False) forward_message(self1->obj,_2,_3,_4);
@@ -137,7 +141,8 @@ defmethod(OBJ, gunderstandMessage4, Object, Object, Object, Proxy, (SEL)msg)
   if (RETVAL == False) forward_message(_1,_2,_3,self4->obj);
 endmethod
 
-// rank 5
+// ----- rank 5
+
 defmethod(OBJ, gunderstandMessage5, Proxy, Object, Object, Object, Object, (SEL)msg)
   next_method(self1,self2,self3,self4,self5,msg);
   if (RETVAL == False) forward_message(self1->obj,_2,_3,_4,_5);
@@ -165,44 +170,41 @@ endmethod
 
 // ----- unrecognized
 
-static inline void
+static always_inline void
 chkret(SEL sel, OBJ* ret, struct Proxy* pxy)
 {
   if (COS_GEN_ISOBJ(sel) && *ret == pxy->obj)
     *ret = (OBJ)pxy;
 }
 
-static inline void
+static always_inline void
 chkret2(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2)
 {
   if (COS_GEN_ISOBJ(sel)) {
-    if (*ret == pxy1->obj)
-      *ret = (OBJ)pxy1;
-    else if (*ret == pxy2->obj)
-      *ret = (OBJ)pxy2;
+         if (*ret == pxy1->obj) *ret = (OBJ)pxy1;
+    else if (*ret == pxy2->obj) *ret = (OBJ)pxy2;
   }
 }
 
-static inline void
+static always_inline void
 chkret3(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3)
 {
   if (COS_GEN_ISOBJ(sel)) {
-    if (*ret == pxy1->obj)
-      *ret = (OBJ)pxy1;
-    else if (*ret == pxy2->obj)
-      *ret = (OBJ)pxy2;
-    else if (*ret == pxy3->obj)
-      *ret = (OBJ)pxy3;
+         if (*ret == pxy1->obj) *ret = (OBJ)pxy1;
+    else if (*ret == pxy2->obj) *ret = (OBJ)pxy2;
+    else if (*ret == pxy3->obj) *ret = (OBJ)pxy3;
   }
 }
 
-// rank 1
+// ----- rank 1
+
 defmethod(void, gunrecognizedMessage1, Proxy)
   forward_message(self1->obj);
   chkret(_sel,_ret,self1);
 endmethod
 
-// rank 2
+// ----- rank 2
+
 defmethod(void, gunrecognizedMessage2, Proxy, Object)
   forward_message(self1->obj,_2);
   chkret(_sel,_ret,self1);
@@ -218,7 +220,8 @@ defmethod(void, gunrecognizedMessage2, Proxy, Proxy)
   chkret2(_sel,_ret,self1,self2);
 endmethod
 
-// rank 3
+// ----- rank 3
+
 defmethod(void, gunrecognizedMessage3, Proxy, Object, Object)
   forward_message(self1->obj,_2,_3);
   chkret(_sel,_ret,self1);
@@ -254,7 +257,8 @@ defmethod(void, gunrecognizedMessage3, Proxy, Proxy, Proxy)
   chkret3(_sel,_ret,self1,self2,self3);
 endmethod
 
-// rank 4
+// ----- rank 4
+
 defmethod(void, gunrecognizedMessage4, Proxy, Object, Object, Object)
   forward_message(self1->obj,_2,_3,_4);
   chkret(_sel,_ret,self1);
@@ -275,7 +279,8 @@ defmethod(void, gunrecognizedMessage4, Object, Object, Object, Proxy)
   chkret(_sel,_ret,self4);
 endmethod
 
-// rank 5
+// ----- rank 5
+
 defmethod(void, gunrecognizedMessage5, Proxy, Object, Object, Object, Object)
   forward_message(self1->obj,_2,_3,_4,_5);
   chkret(_sel,_ret,self1);
@@ -300,3 +305,4 @@ defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Proxy)
   forward_message(_1,_2,_3,_4,self5->obj);
   chkret(_sel,_ret,self5);
 endmethod
+

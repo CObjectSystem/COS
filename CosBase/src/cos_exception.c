@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.18 2009/06/02 21:43:29 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.19 2009/06/16 21:43:45 ldeniau Exp $
  |
 */
 
@@ -219,10 +219,11 @@ defmethod(void, gthrow, Object, (STR)func, (STR)file, (int)line)
 endmethod
 
 defmethod(void, gdeinitialize, pmException)
+  static BOOL done = NO;
   struct cos_exception_context *cxt = cos_exception_context();
-  
-  if (cxt->ex)
-    grelease(cxt->ex), cxt->ex = 0;
+
+  if (!done && cxt->ex)
+    done = YES, grelease(cxt->ex), cxt->ex = 0;
 endmethod
 
 /*

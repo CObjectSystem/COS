@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_contract.c,v 1.2 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: cos_contract.c,v 1.3 2009/06/16 21:43:45 ldeniau Exp $
  |
 */
 
@@ -47,31 +47,40 @@ cos_contract_invariant1(OBJ _1, STR func, STR file, int line)
 }
 
 void
-cos_contract_invariant2(OBJ _1, OBJ _2, STR func, STR file, int line)
+cos_contract_invariant2(OBJ _1, OBJ _2,
+                        STR func, STR file, int line)
 {
   cos_contract_invariant1(_1,func,file,line);
   cos_contract_invariant1(_2,func,file,line);
 }
 
 void
-cos_contract_invariant3(OBJ _1, OBJ _2, OBJ _3, STR func, STR file, int line)
+cos_contract_invariant3(OBJ _1, OBJ _2, OBJ _3,
+                        STR func, STR file, int line)
 {
-  cos_contract_invariant2(_1,_2,func,file,line);
-  cos_contract_invariant1(_3   ,func,file,line);
+  cos_contract_invariant1(_1,func,file,line);
+  cos_contract_invariant1(_2,func,file,line);
+  cos_contract_invariant1(_3,func,file,line);
 }
 
 void
-cos_contract_invariant4(OBJ _1, OBJ _2, OBJ _3, OBJ _4, STR func, STR file, int line)
+cos_contract_invariant4(OBJ _1, OBJ _2, OBJ _3, OBJ _4,
+                        STR func, STR file, int line)
 {
-  cos_contract_invariant2(_1,_2,func,file,line);
-  cos_contract_invariant2(_3,_4,func,file,line);
+  cos_contract_invariant1(_1,func,file,line);
+  cos_contract_invariant1(_2,func,file,line);
+  cos_contract_invariant1(_3,func,file,line);
+  cos_contract_invariant1(_4,func,file,line);
 }
 
 void
-cos_contract_invariant5(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5, STR func, STR file, int line)
+cos_contract_invariant5(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5,
+                        STR func, STR file, int line)
 {
-  cos_contract_invariant2(_1,_2,func,file,line);
-  cos_contract_invariant2(_3,_4,func,file,line);
-  cos_contract_invariant1(_5   ,func,file,line);
+  cos_contract_invariant1(_1,func,file,line);
+  cos_contract_invariant1(_2,func,file,line);
+  cos_contract_invariant1(_3,func,file,line);
+  cos_contract_invariant1(_4,func,file,line);
+  cos_contract_invariant1(_5,func,file,line);
 }
 

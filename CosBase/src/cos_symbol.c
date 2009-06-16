@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.35 2009/06/13 11:00:34 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.36 2009/06/16 21:43:45 ldeniau Exp $
  |
 */
 
@@ -1194,8 +1194,18 @@ cos_module_load(STR *mod)
   }
 
   // init loaded tables and classes
-  sym_init();
-  cls_init();
+  if (init_done == NO)
+    cos_init();
+  else {
+    double t0, t1;
+
+    t0 = clock();
+    sym_init();
+    cls_init();
+    t1 = clock();
+    
+    init_duration += (t1-t0)/CLOCKS_PER_SEC;
+  }
 }
 
 #else

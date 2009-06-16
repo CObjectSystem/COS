@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.36 2009/06/14 20:06:53 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.37 2009/06/16 21:43:45 ldeniau Exp $
  |
 */
 
@@ -302,7 +302,10 @@ endmethod
 // -----
 
 defmethod(void, ginitialize, pmAutoRelease)
-  if (!_pool0.prv) {
+  static BOOL done = NO;
+  
+  if (!done && !_pool0.prv) {
+    done = YES;
     // cos_trace("ginitialize(pmAutoRelease)");
     _pool0.Object.id = cos_class_id(classref(AutoRelease));
     _pool0.Object.rc = COS_RC_STATIC;
@@ -313,7 +316,10 @@ defmethod(void, ginitialize, pmAutoRelease)
 endmethod
 
 defmethod(void, gdeinitialize, pmAutoRelease)
-  if (_pool0.prv) {
+  static BOOL done = NO;
+
+  if (!done && _pool0.prv) {
+    done = YES;
     // cos_trace("gdeinitialize(pmAutoRelease)");
     gdeinit((void*)&_pool0);
     _pool0.prv = 0;
