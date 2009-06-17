@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.38 2009/06/17 18:12:55 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.39 2009/06/17 21:34:45 ldeniau Exp $
  |
 */
 
@@ -232,7 +232,7 @@ defmethod(void,  grelease        , Object)
   }
 
   if (self->rc == COS_RC_UNIT) {
-    self->rc = COS_RC_STATIC; // avoid cycle dependencies
+    self->rc = COS_RC_STATIC; // avoid cyclic dependencies
     gdealloc(gdeinit(_1));
     retmethod();
   }

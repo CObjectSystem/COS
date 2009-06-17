@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.11 2009/03/03 14:45:27 ldeniau Exp $
+ | $Id: init.h,v 1.12 2009/06/17 21:34:44 ldeniau Exp $
  |
 */
 
@@ -53,13 +53,13 @@ defgeneric(OBJ, ginitWithLng   , _1, (I64)val);
 defgeneric(OBJ, ginitWithFlt   , _1, (F64)val);
 defgeneric(OBJ, ginitWithCpx   , _1, (C64)val);
 
-defgeneric(OBJ, ginitWithChrPtr, _1, (I8 *)val, (U32)n);
-defgeneric(OBJ, ginitWithShtPtr, _1, (I16*)val, (U32)n);
-defgeneric(OBJ, ginitWithIntPtr, _1, (I32*)val, (U32)n);
-defgeneric(OBJ, ginitWithLngPtr, _1, (I64*)val, (U32)n);
-defgeneric(OBJ, ginitWithFltPtr, _1, (F64*)val, (U32)n);
-defgeneric(OBJ, ginitWithCpxPtr, _1, (C64*)val, (U32)n);
-defgeneric(OBJ, ginitWithObjPtr, _1, (OBJ*)obj, (U32)n);
+defgeneric(OBJ, ginitWithChrPtr, _1, (I8 *)ref, (U32)n);
+defgeneric(OBJ, ginitWithShtPtr, _1, (I16*)ref, (U32)n);
+defgeneric(OBJ, ginitWithIntPtr, _1, (I32*)ref, (U32)n);
+defgeneric(OBJ, ginitWithLngPtr, _1, (I64*)ref, (U32)n);
+defgeneric(OBJ, ginitWithFltPtr, _1, (F64*)ref, (U32)n);
+defgeneric(OBJ, ginitWithCpxPtr, _1, (C64*)ref, (U32)n);
+defgeneric(OBJ, ginitWithObjPtr, _1, (OBJ*)ref, (U32)n);
 
 // newXXX (= alloc+initXXX)
 
