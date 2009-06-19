@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.7 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: Sequence.h,v 1.8 2009/06/19 23:57:27 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,7 @@ endclass
    - negative indexe starts from the end
      (index -1 is the last element)
 */
-static inline U32
+static inline I32
 index_abs(I32 index, U32 size) {
   return index + (index < 0) * size;
 }

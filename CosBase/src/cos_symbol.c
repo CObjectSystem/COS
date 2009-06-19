@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.36 2009/06/16 21:43:45 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.37 2009/06/19 23:57:27 ldeniau Exp $
  |
 */
 
@@ -1179,7 +1179,7 @@ cos_module_load(STR *mod)
     buf[sizeof(buf)-1] = 0;
     
     dlerror();
-    tmp = (void**)&symbol;
+    tmp = (void**)(void*)&symbol;
     *tmp = dlsym(handle, buf);
     if ((err = dlerror()) != NULL)
       cos_abort("unable to initialize module %s: %s", mod[i], err);

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.16 2009/06/14 19:57:18 ldeniau Exp $
+# | $Id: Makefile,v 1.17 2009/06/19 23:57:27 ldeniau Exp $
 # |
 #
 
@@ -48,7 +48,7 @@ version := 0.8
 release := 200906
 
 # modules
-modules := CosBase
+modules := CosBase CosStd
 
 # documentation
 auxdocs := $(wildcard doc/*.pdf.gz) doc/html \

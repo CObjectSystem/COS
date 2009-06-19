@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.3 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: functor.h,v 1.4 2009/06/19 23:57:27 ldeniau Exp $
  |
 */
 
@@ -47,6 +47,7 @@ defgeneric(OBJ, geval2, fun, (OBJ)arg1,(OBJ)arg2);
 defgeneric(OBJ, geval3, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 defgeneric(OBJ, geval4, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 defgeneric(OBJ, geval5, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
+defgeneric(OBJ, gevalN, fun, args);
 
 #endif // COS_GEN_FUNCTOR_H
 

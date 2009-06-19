@@ -32,15 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Ordered.h,v 1.4 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: Ordered.h,v 1.5 2009/06/19 23:57:27 ldeniau Exp $
  |
 */
 
 #include <cos/Predicate.h>
 
 defclass(Ordered, Predicate)           endclass
-defclass(Equal  , Ordered  ) char _[]; endclass
-defclass(Lesser , Ordered  ) char _[]; endclass
-defclass(Greater, Ordered  ) char _[]; endclass
+defclass(Equal  , Ordered  ) char _[]; endclass // final class, c99
+defclass(Lesser , Ordered  ) char _[]; endclass // final class, c99
+defclass(Greater, Ordered  ) char _[]; endclass // final class, c99
 
 #endif // COS_ORDERED_H

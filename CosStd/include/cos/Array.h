@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.15 2009/03/11 10:20:41 ldeniau Exp $
+ | $Id: Array.h,v 1.16 2009/06/19 23:57:27 ldeniau Exp $
  |
 */
 
@@ -77,9 +77,9 @@
 */
 
 defclass(Array, Sequence)
+  OBJ *object;
   U32  size;
   U32  stride;
-  OBJ *object;
 endclass
 
 // ----- automatic constructors
@@ -152,7 +152,7 @@ void          ArrayDynamic_enlarge(struct ArrayDynamic*,F64);
 #define atArrayN(TN,...) \
   ( (struct Array*)&(struct TN) {{ \
     {{{ COS_CLS_NAME(TN).Behavior.id, COS_RC_AUTO }}}, \
-    COS_PP_NARG(__VA_ARGS__), 1, (OBJ[]){ __VA_ARGS__ } }} )
+    (OBJ[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 }} )
           
 // ---
 
@@ -165,7 +165,7 @@ void          ArrayDynamic_enlarge(struct ArrayDynamic*,F64);
 #define atArrayRef3(buffer,size,stride) \
         ( &(struct Array) { \
           {{{ COS_CLS_NAME(Array).Behavior.id, COS_RC_AUTO }}}, \
-          (size), (stride), (buffer) } )
+          (buffer), (size), (stride) } )
 
 // ---
 
@@ -183,6 +183,6 @@ void          ArrayDynamic_enlarge(struct ArrayDynamic*,F64);
 #define atArrayView4(array,start,size,stride) \
   &(struct ArrayView) {{ \
     {{{ COS_CLS_NAME(ArrayView).Behavior.id, COS_RC_AUTO }}}, \
-    (size), (stride), 0 }, (array) }, (start)
+    0, (size), (stride) }, (array) }, (start)
 
 #endif // COS_ARRAY_H

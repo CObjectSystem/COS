@@ -32,13 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Locker.h,v 1.2 2008/10/13 09:17:33 ldeniau Exp $
+ | $Id: Locker.h,v 1.3 2009/06/19 23:57:27 ldeniau Exp $
  |
 */
 
 #include <cos/Proxy.h>
 
-#if COS_POSIX
+#if COS_HAVE_POSIX
 
 #include <pthread.h>
 
