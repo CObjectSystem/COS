@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.29 2009/06/13 11:00:34 ldeniau Exp $
+ | $Id: method.h,v 1.30 2009/06/20 00:27:48 ldeniau Exp $
  |
 */
 
@@ -403,11 +403,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 
 // method mangled names
 #define COS_MTH_MNAME(NAME,TAG,T) \
-  COS_PP_IF(T)( \
-    COS_PP_IFDEF(TAG)( \
-       COS_PP_CAT3(NAME,__a__,TAG), \
-       COS_PP_CAT3(NAME,__a__,__LINE__)), \
-    NAME)
+  COS_PP_IF(T)(COS_PP_CAT4(NAME,__a__,__LINE__,TAG),NAME)
                            
 // some constant tuples
 #define COS_MTH_SLF_TYP(N) \
