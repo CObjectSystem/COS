@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.37 2009/06/19 23:57:27 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.38 2009/06/25 17:05:36 ldeniau Exp $
  |
 */
 
@@ -65,6 +65,9 @@ static struct {
   U32 msk, n_cls, n_prp, n_gen, n_mth, n_nxt, m_nxt;
 } sym;
 
+// forward decl
+static void mod_clear(void);
+
 static inline U32
 toPow2(U32 val)
 {
@@ -89,21 +92,39 @@ bhv_tag(void)
 
   x = x * 2621124293u + 1;  // group generator for any \frac{\setN}{2^k\setN}, k=1..32
 
-  if (x == 896513217u) cos_abort("too many static behaviors (>1000000)");
+  if (x == 3722792833u)
+    cos_abort("too many static behaviors (>10000000)");
 
-  return x & COS_ID_TAGMSK;  // use only the 27 lower bits (134217727 ids)
+  return x & COS_ID_TAGMSK;  // use only the 27 lower bits (134217728 ids)
 }
 
-static inline void
+static void
 bhv_setTag(struct Behavior *bhv)
 {
   if (bhv->Object.id) { // generics case
-    if (bhv->id) cos_abort("behavior has already an id");
+    struct Generic *gen = STATIC_CAST(struct Generic*, bhv);
+
+    if (bhv->id)
+      cos_abort("generic '%s' has already an id", gen->name);
+
+    if ( (bhv->Object.id & COS_ID_TAGMSK) )
+      cos_abort("generic '%s' has invalid initialization", gen->name);
 
     bhv->id = bhv->Object.id | bhv_tag();
     bhv->Object.id = 0;
-  } else                    // classes case
+
+  } else {              // classes case
+    struct Class *cls = STATIC_CAST(struct Class*, bhv);
+
+    if (bhv->Object.id)
+      cos_abort("class '%s' has already an id", cls->name ? cls->name : "?");
+
+    if ( (bhv->id & COS_ID_TAGMSK) )
+      cos_abort("class '%s' has invalid initialization (multiple generics?)",
+        cls->name ? cls->name : "?");
+
     bhv->id |= bhv_tag();
+  }
 }
 
 static int // qsort
@@ -546,8 +567,10 @@ sym_init(void)
       }
 
       // set behavior tag
-      if (tbl_sym[t][s]->rc != cos_tag_method)
-        bhv_setTag(STATIC_CAST(struct Behavior*, tbl_sym[t][s]));
+      if (tbl_sym[t][s]->rc != cos_tag_method) {
+        struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl_sym[t][s]);
+        bhv_setTag(bhv);
+      }
     }
   }
 
@@ -566,7 +589,21 @@ sym_init(void)
       if (tbl_sym[t][s]->rc != cos_tag_method) {
         struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl_sym[t][s]);
         U32 i = bhv->id & sym.msk;
-        if (sym.bhv[i]) cos_abort("behavior slot %u already assigned", i);
+
+        if (sym.bhv[i]) {
+          switch(bhv->Object.rc) {
+          case cos_tag_class :
+          case cos_tag_mclass:
+          case cos_tag_pclass: {
+            struct Class *cls = STATIC_CAST(struct Class*, bhv);
+            cos_abort("class '%s' slot %u already assigned", cls->name ? cls->name : "?", i);
+          }
+          case cos_tag_generic: {
+            struct Generic *gen = STATIC_CAST(struct Generic*, bhv);
+            cos_abort("generic '%s' slot %u already assigned", gen->name, i);
+          }}
+        }
+
         sym.bhv[i] = bhv;
       }
 
@@ -645,10 +682,9 @@ sym_init(void)
 static void
 sym_deinit(void)
 {
-  int i;
-  
   nxt_clear();
-  
+  mod_clear();
+
   free(sym.bhv), sym.bhv = 0, sym.  msk = 0;
   free(sym.cls), sym.cls = 0, sym.n_cls = 0;
                  sym.prp = 0, sym.n_prp = 0;
@@ -656,14 +692,7 @@ sym_deinit(void)
   free(sym.mth), sym.mth = 0, sym.n_mth = 0;
   free(sym.nxt), sym.nxt = 0, sym.n_nxt = 0, sym.m_nxt = 0;
   
-//  cos_info("%d symbol table deinit", tbl_ini);
   tbl_ini = 0;
-  
-#if COS_HAVE_POSIX && COS_HAVE_DLINK
-  for (i = 0; i < MAX_TBL && tbl_mod[i]; i++)
-    dlclose(tbl_mod[i]);
-//  cos_info("%d module unloaded", i);
-#endif
 }
 
 static void
@@ -1142,6 +1171,17 @@ cos_method_nextClear(void)
 
 #if COS_HAVE_POSIX && COS_HAVE_DLINK
 
+static void
+mod_clear(void)
+{
+  int i;
+
+  for (i = 0; i < MAX_TBL && tbl_mod[i]; i++) {
+    cos_trace("unloading module #%d", i);
+    dlclose(tbl_mod[i]);
+  }
+}
+
 void
 cos_module_load(STR *mod)
 {
@@ -1209,6 +1249,11 @@ cos_module_load(STR *mod)
 }
 
 #else
+
+static void
+mod_clear(void)
+{
+}
 
 void
 cos_module_load(STR *mod)

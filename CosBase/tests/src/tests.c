@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.16 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: tests.c,v 1.17 2009/06/25 17:05:36 ldeniau Exp $
  |
 */
 
@@ -73,18 +73,18 @@ int main(int argc, char *argv[])
 
 
   if (init_time) {
-    // must be loaded before first message is sent
+    // must be loaded before COS is initialized (and first message is sent)
     atexit(on_exit);
     cos_init(); // explicit initialization for measurement
     printf("** COS init duration: %.3f s\n", cos_initDuration());
-  }
+  } else
+    cos_init();
     
   // convert signal to exception
   cos_signal_std();
 
   // for debugging
   if (debug_sym) {
-    cos_init();
     cos_symbol_showSummary(0);
     cos_symbol_showClasses(0);
     cos_symbol_showProperties(0);
