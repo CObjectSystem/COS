@@ -29,32 +29,49 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.3 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Range.c,v 1.4 2009/06/30 07:59:35 ldeniau Exp $
  |
 */
 
 #include <cos/Range.h>
 
 #include <cos/gen/object.h>
+#include <cos/gen/value.h>
+#include <cos/gen/sequence.h>
 
 makclass(Range, Value);
+
+// ----- constructors
+
+defmethod(OBJ, ginitWithRng1, Object, (I32)end)
+  retmethod( ginitWithRng3(_1, 0, end, 1) );
+endmethod
+
+defmethod(OBJ, ginitWithRng2, Object, (I32)start, (I32)end)
+  retmethod( ginitWithRng3(_1, start, end, 1) );
+endmethod
+
+defmethod(OBJ, ginitWithRng3, Range, (I32)start, (I32)end, (I32)stride)
+  self->start  = start;
+  self->end    = end;
+  self->stride = stride;
+
+  retmethod(_1);
+endmethod
 
 // ----- copy
 
 defmethod(OBJ, ginitWith, Range, Range)
-  self1->start  = self2->start,
-  self1->end    = self2->end  ,
-  self1->stride = self2->end  ;
+  self1->start  = self2->start;
+  self1->end    = self2->end;
+  self1->stride = self2->stride;
+
   retmethod(_1);
 endmethod
 
 // ----- equality
 
 defmethod(OBJ, gisEqual, Range, Range)
-  BOOL res = self1->start  == self2->start
-          && self1->end    == self2->end 
-          && self1->stride == self2->stride;
-
-  retmethod( res ? True : False );
+  retmethod( Range_isEqual(self1, self2) ? True : False );
 endmethod
 

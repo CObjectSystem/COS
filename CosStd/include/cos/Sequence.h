@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.8 2009/06/19 23:57:27 ldeniau Exp $
+ | $Id: Sequence.h,v 1.9 2009/06/30 07:59:34 ldeniau Exp $
  |
 */
 
@@ -43,17 +43,6 @@ endclass
 
 defclass(ValueSequence, Sequence)
 endclass
-
-/* NOTE-USER: Sequence indexing policy
-   - starts at zero
-     (index 0 is the first element)
-   - negative indexe starts from the end
-     (index -1 is the last element)
-*/
-static inline I32
-index_abs(I32 index, U32 size) {
-  return index + (index < 0) * size;
-}
 
 /***********************************************************
  * Implementation (private)

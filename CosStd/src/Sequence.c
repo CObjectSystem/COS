@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.8 2009/03/09 16:54:01 ldeniau Exp $
+ | $Id: Sequence.c,v 1.9 2009/06/30 07:59:35 ldeniau Exp $
  |
 */
 
@@ -48,22 +48,22 @@ makclass(ValueSequence, Sequence );
 // -----
 
 defmethod(OBJ, ginitWith2, mSequence, Sequence, Range)
-  OBJ slice = (OBJ)Slice_fromRange(atSlice(0,0), self3, gsize(_2));
-  retmethod( ginitWith2(_1,_2,slice) );  
+  struct Slice slice = Slice_fromRange(self3, gsize(_2));
+  retmethod( ginitWith2(_1,_2,(OBJ)&slice) );  
 endmethod
 
 defmethod(OBJ, ginitWith2, pmView, Sequence, Range)
-  OBJ slice = (OBJ)Slice_fromRange(atSlice(0,0), self3, gsize(_2));
-  retmethod( ginitWith2(_1,_2,slice) );
+  struct Slice slice = Slice_fromRange(self3, gsize(_2));
+  retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
 endmethod
 
 defmethod(OBJ, ggetAt, Sequence, Range)
-  OBJ slice = (OBJ)Slice_fromRange(atSlice(0,0), self2, gsize(_1));
-  retmethod( ggetAt(_1,slice) );
+  struct Slice slice = Slice_fromRange(self2, gsize(_1));
+  retmethod( ggetAt(_1,(OBJ)&slice) );
 endmethod
 
 defmethod(void, gputAt, Sequence, Range, Sequence)
-  OBJ slice = (OBJ)Slice_fromRange(atSlice(0,0), self2, gsize(_1));
-  gputAt(_1,slice,_3);
+  struct Slice slice = Slice_fromRange(self2, gsize(_1));
+  gputAt(_1,(OBJ)&slice,_3);
 endmethod
 

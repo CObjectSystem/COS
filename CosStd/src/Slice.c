@@ -29,32 +29,48 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.3 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Slice.c,v 1.4 2009/06/30 07:59:35 ldeniau Exp $
  |
 */
 
 #include <cos/Slice.h>
 
 #include <cos/gen/object.h>
+#include <cos/gen/sequence.h>
 
 makclass(Slice, Value);
+
+// ----- constructors
+
+defmethod(OBJ, ginitWithSlc1, Object, (U32)size)
+  retmethod( ginitWithSlc3(_1, 0, size, 1) );
+endmethod
+
+defmethod(OBJ, ginitWithSlc2, Object, (I32)start, (U32)size)
+  retmethod( ginitWithSlc3(_1, start, size, 1) );
+endmethod
+
+defmethod(OBJ, ginitWithSlc3, Slice, (I32)start, (U32)size, (I32)stride)
+  self->start  = start;
+  self->size   = size;
+  self->stride = stride;
+
+  retmethod(_1);
+endmethod
 
 // ----- copy
 
 defmethod(OBJ, ginitWith, Slice, Slice)
-  self1->start  = self2->start ,
-  self1->size   = self2->size  ,
+  self1->start  = self2->start;
+  self1->size   = self2->size;
   self1->stride = self2->stride;
+
   retmethod(_1);
 endmethod
 
 // ----- equality
 
 defmethod(OBJ, gisEqual, Slice, Slice)
-  BOOL res = self1->start  == self2->start
-          && self1->stride == self2->stride
-          && self1->size   == self2->size;
-
-  retmethod( res ? True : False );
+  retmethod( Slice_isEqual(self1, self2) ? True : False );
 endmethod
 

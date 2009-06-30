@@ -32,19 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.9 2009/06/19 23:57:27 ldeniau Exp $
+ | $Id: Slice.h,v 1.10 2009/06/30 07:59:34 ldeniau Exp $
  |
 */
 
-/* NOTE-USER: Range and Slice
-   Ranges are almost always converted to Slices before being used
-*/
-
-#include <cos/Range.h>
-
-#ifndef COS_SEQUENCE_H
-#include <cos/Sequence.h>
-#endif
+#include <cos/Value.h>
 
 defclass(Slice, Value)
   I32 start;
@@ -52,16 +44,23 @@ defclass(Slice, Value)
   I32 stride;
 endclass
 
+// ----- shortcuts
+
+#ifndef COS_NOSHORTCUT
+#define aSlc(...) aSlice(__VA_ARGS__)
+#endif
+
 // ----- automatic constructors
 
 #define aSlice(...)  ( (OBJ)atSlice(__VA_ARGS__) )
 #define atSlice(...) COS_PP_CAT_NARG(atSlice,__VA_ARGS__)(__VA_ARGS__)
 
-// ----- automatic constructors shortcuts
-
-#ifndef COS_NOSHORTCUT
-#define aSlc(...) aSlice(__VA_ARGS__)
-#endif
+/* NOTE-USER: Slice indexing policy
+   - start can be negative, zero or positive
+     (negative start means positive first element)
+   - size expresses the number of elements
+     (Slices can have zero size, but not Ranges)
+*/
 
 /***********************************************************
  * Implementation (private)
@@ -78,81 +77,65 @@ endclass
     {{ COS_CLS_NAME(Slice).Behavior.id, COS_RC_AUTO }}, \
     start, size, stride })
 
-// --- inliners
+// --- inliners (low-level monorphic interface)
 
-static inline U32
-Slice_size(struct Slice *s) {
-  return s->size;
-}
-
+// absolute index
 static inline I32
-Slice_eval(struct Slice *s, I32 i) {
+Slice_eval(const struct Slice *s, I32 i) {
   return s->start + i * s->stride;
 }
 
 static inline I32
-Slice_first(struct Slice *s) {
+Slice_first(const struct Slice *s) {
   return s->start;
 }
 
 static inline I32
-Slice_last(struct Slice *s) {
+Slice_last(const struct Slice *s) {
   return Slice_eval(s, s->size-1);
 }
 
+// size
 static inline U32
-Slice_end(struct Slice *s) {
-  return Slice_eval(s, s->size);
+Slice_size(const struct Slice *s) {
+  return s->size;
 }
 
+// predicates
 static inline BOOL
-Slice_isValid(struct Slice *s) {
+Slice_isMonotonic(const struct Slice *s) {
   return s->stride != 0;
 }
 
 static inline BOOL
-Slice_isContiguous(struct Slice *s) {
+Slice_isContiguous(const struct Slice *s) {
+  return s->stride == 1 || s->stride == -1;
+}
+
+static inline BOOL
+Slice_isPosContiguous(const struct Slice *s) {
   return s->stride == 1;
 }
 
-static inline struct Slice*
-Slice_fromRange(struct Slice *s, struct Range *r, U32 size)
-{
-  U32 start = index_abs(r->start, size);
-  U32 end   = index_abs(r->end  , size);
-
-  s->size   = (end - start + r->stride) / r->stride;
-  s->stride = r->stride;
-  s->start  = start;
-
-  return s;  
+static inline BOOL
+Slice_isNegContiguous(const struct Slice *s) {
+  return s->stride == -1;
 }
 
-/* NOTE-TODO: REMOVE (FROM JAN ?)
-static inline struct Slice*
-Slice_fromRange(struct Slice *s, struct Range *r, U32 size)
-{
-  U32 start;
-  U32 end;
-
-  if (r->stride < 0) {
-    end    = index_abs(r->start, size);
-    start  = index_abs(r->end  , size);
-    stride = -r->stride;
-  } else {
-    start  = index_abs(r->start, size);
-    end    = index_abs(r->end  , size);
-    stride = r->stride;
-  }
-
-  if (start < end) {
-    size = (end - start + stride) / stride;
-  } else {
-    size = (start - end + stride) / stride;
-  }
-
-  return s;
+static inline BOOL
+Slice_isEqual(const struct Slice *s1, const struct Slice *s2) {
+  return s1->start  == s2->start
+      && s1->size   == s2->size
+      && s1->stride == s2->stride;
 }
-*/
+
+// conversion
+#include <cos/Range.h>
+
+static inline struct Slice
+Slice_fromRange(const struct Range *r, U32 size)
+{
+  return *atSlice(Range_first(r, size), Range_size(r, size), r->stride);
+}
 
 #endif // COS_SLICE_H

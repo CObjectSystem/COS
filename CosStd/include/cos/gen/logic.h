@@ -32,13 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.6 2009/03/11 10:20:41 ldeniau Exp $
+ | $Id: logic.h,v 1.7 2009/06/30 07:59:35 ldeniau Exp $
  |
 */
 
+#ifndef COS_NOCOS
 #include <cos/gen/object.h>
+#endif
 
-defgeneric(OBJ, gnot    , _1);     
+defgeneric(OBJ, gnot    , _1);
 defgeneric(OBJ, gand    , _1, _2);
 defgeneric(OBJ, gor     , _1, _2);
 defgeneric(OBJ, gxor    , _1, _2); // not (_1 isEqual _2)
