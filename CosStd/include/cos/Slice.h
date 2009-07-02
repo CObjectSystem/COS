@@ -32,15 +32,28 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.10 2009/06/30 07:59:34 ldeniau Exp $
+ | $Id: Slice.h,v 1.11 2009/07/02 13:20:26 ldeniau Exp $
  |
 */
 
 #include <cos/Value.h>
 
+/* NOTE-USER: Slices
+  - Slices are objects useful to represent sliced views of sequence
+    aSlice([start],size,[stride])   ([] means optional, default: start=0, stride=1)
+    aSlice( 1,10, 2) = range from index  1 to 19 included with step  2 (size = 10)
+    aSlice( 5, 5,-1) = range from index  5 to  1 included with step -1 (size =  5)
+    aSlice(-5, 5, 1) = range from index -5 to -1 included with step  1 (size =  5)
+
+  - Slices with zero stride or negative size are considered as open intervals
+
+  - Slices can be converted to Ranges
+  - Ranges can be converted to Slices for some sequence
+*/
+
 defclass(Slice, Value)
   I32 start;
-  U32 size;
+  I32 size;
   I32 stride;
 endclass
 
@@ -57,9 +70,9 @@ endclass
 
 /* NOTE-USER: Slice indexing policy
    - start can be negative, zero or positive
-     (negative start means positive first element)
-   - size expresses the number of elements
-     (Slices can have zero size, but not Ranges)
+     (negative start means positive first index)
+   - size expresses the number of elements (i.e. seq = start..start+(size-1)*stride)
+   - validation and consitency checks are the user's responsibility
 */
 
 /***********************************************************
@@ -81,24 +94,20 @@ endclass
 
 // absolute index
 static inline I32
-Slice_eval(const struct Slice *s, I32 i) {
-  return s->start + i * s->stride;
+Slice_eval(const struct Slice *s, I32 idx) {
+  return s->start + idx * s->stride;
 }
 
+// absolute starting index
 static inline I32
 Slice_first(const struct Slice *s) {
   return s->start;
 }
 
+// absolute ending index
 static inline I32
 Slice_last(const struct Slice *s) {
   return Slice_eval(s, s->size-1);
-}
-
-// size
-static inline U32
-Slice_size(const struct Slice *s) {
-  return s->size;
 }
 
 // predicates
@@ -129,13 +138,25 @@ Slice_isEqual(const struct Slice *s1, const struct Slice *s2) {
       && s1->stride == s2->stride;
 }
 
-// conversion
+// closed vs open interval
+static inline BOOL
+Slice_isClosed(const struct Slice *s) {
+  return s->stride && s->size >= 0;
+}
+
+// slice's size
+static inline U32
+Slice_size(const struct Slice *s) {
+  return Slice_isClosed(s) ? s->size : 0;
+}
+
+// conversion (requires sequence's size)
 #include <cos/Range.h>
 
 static inline struct Slice
-Slice_fromRange(const struct Range *r, U32 size)
+Slice_fromRange(const struct Range *r, U32 seq_size)
 {
-  return *atSlice(Range_first(r, size), Range_size(r, size), r->stride);
+  return *atSlice(Range_first(r,seq_size), Range_size(r,seq_size), r->stride);
 }
 
 #endif // COS_SLICE_H

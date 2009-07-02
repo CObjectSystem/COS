@@ -29,14 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.4 2009/06/30 07:59:35 ldeniau Exp $
+ | $Id: Range.c,v 1.5 2009/07/02 13:20:27 ldeniau Exp $
  |
 */
 
 #include <cos/Range.h>
 
 #include <cos/gen/object.h>
-#include <cos/gen/value.h>
 #include <cos/gen/sequence.h>
 
 makclass(Range, Value);

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.9 2009/07/02 08:25:07 ldeniau Exp $
+ | $Id: Range.h,v 1.10 2009/07/02 13:20:26 ldeniau Exp $
  |
 */
 
@@ -40,18 +40,28 @@
 
 /* NOTE-USER: Ranges
   - Ranges are objects useful to represent relative strided interval of sequence
-    aRange( 1,10,2) = range from indexes 1      to 10     included with step 2
-    aRange(-5,-1,1) = range from indexes size-5 to size-1 included with step 1
+    aRange([start],end,[stride])   ([] means optional, default: start=0, stride=1)
+    aRange( 1,10, 2) = range from index 1      to 10     included with step  2
+    aRange(-5,-1, 1) = range from index size-5 to size-1 included with step  1
+    aRange(10, 1,-1) = range from index 10     to 1      included with step -1
+    aRange(-1,-9,-1) = range from index size-1 to size-9 included with step -1
 
   - Ranges can be normalized versus the sequence size
     negative relative indexes are converted to absolute indexes (abs_idx = size - neg_idx)
-    aRange(-5,-1,1) with seq_size = 10 -> aRange(5,9,1) with size = 5
+    normalization is not idempotent (cases where abs_idx is negative)
+    aRange( -5,-1,1) with seq_size = 10 -> aRange( 5,9,1) with size =  5
+    aRange(-15,-1,1) with seq_size = 10 -> aRange(-5,9,1) with size = 15
 
   - Ranges cannot have zero size, unless they represent open intervals
     aRange(0,5, 1) -> closed with size = 6
     aRange(0,0, 1) -> closed with size = 1
     aRange(0,5,-1) -> open   with size = 0
     aRange(0,0, 0) -> open   with size = 0 (non-monotonic)
+
+  - Ranges with zero stride are considered as open intervals
+
+  - Ranges can be converted to Slices for some sequence
+  - Slices can be converted to Ranges
 */
 
 defclass(Range, Value)
@@ -148,7 +158,7 @@ Range_isEqual(const struct Range *r1, const struct Range *r2) {
       && r1->stride == r2->stride;
 }
 
-// closed vs open range (requires sequence's size)
+// closed vs open interval (requires sequence's size)
 static inline BOOL
 Range_isClosed(const struct Range *r, U32 seq_size) {
   I32 start = Range_first(r, seq_size);
@@ -157,11 +167,11 @@ Range_isClosed(const struct Range *r, U32 seq_size) {
   return r->stride && (r->stride > 0 ? start <= end : start >= end);
 }
 
-// range size (requires sequence's size)
+// range's size (requires sequence's size)
 static inline U32
 Range_size(const struct Range *r, U32 seq_size) {
-  I32 start = Range_index(r->start, seq_size);
-  I32 end   = Range_index(r->end  , seq_size);
+  I32 start = Range_first(r, seq_size);
+  I32 end   = Range_last (r, seq_size);
   I32 size  = r->stride ? (end - start + r->stride) / r->stride : 0;
 
   return size > 0 ? size : 0;
