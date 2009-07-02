@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.5 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: Makefile,v 1.6 2009/07/02 08:25:12 ldeniau Exp $
 # |
 #
 
@@ -42,6 +42,9 @@ include $(cos)/prologue
 
 # project
 program := testCosStd
+
+# targets
+targets := debug.run
 
 # files and modules
 sources := $(wildcard src/*.c)

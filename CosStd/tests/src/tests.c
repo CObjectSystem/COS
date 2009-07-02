@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.5 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: tests.c,v 1.6 2009/07/02 08:25:12 ldeniau Exp $
  |
 */
 
@@ -55,11 +55,14 @@ int main(int argc, char *argv[])
   enum { bits = CHAR_BIT*sizeof(void*) };
   int init_time = NO;
   int speed_test = NO;
+  int debug_sym = NO;
   int i;
 
   cos_logmsg_set(COS_LOGMSG_DEBUG);
 
   for (i = 1; i < argc; i++) {
+    if (!strcmp(argv[i], "-d"))
+      debug_sym = YES;
     if (!strcmp(argv[i], "-i"))
       init_time = YES;
     if (!strcmp(argv[i], "-s"))
@@ -69,19 +72,31 @@ int main(int argc, char *argv[])
   }
 
   if (init_time) {
-    // must be loaded before first message is sent
+    // must be loaded before COS is initialized (and first message is sent)
     atexit(on_exit);
     cos_init(); // explicit initialization for measurement
     printf("** COS init duration: %.3f s\n", cos_initDuration());
-  }
-   
+  } else
+    cos_init();
+
   // convert signal to exception
   cos_signal_std();
 
+  // for debugging
+  if (debug_sym) {
+    cos_symbol_showSummary(0);
+    cos_symbol_showClasses(0);
+    cos_symbol_showProperties(0);
+    cos_symbol_showGenerics(0);
+    cos_symbol_showMethods(0);
+    cos_symbol_showClassProperties(0,YES);
+  }
+
   // testsuites
   printf("\n** C Object System Testsuite (%d bits) **\n", bits);
-  // ut_autoconst();
-  // ut_autovector();
+
+  ut_range();
+  ut_slice();
 
   cos_utest_stat();
 
@@ -89,6 +104,10 @@ int main(int argc, char *argv[])
   if (!speed_test) return EXIT_SUCCESS;
   
   printf("\n** C Object System Speed Testsuite (%d bits) **\n", bits);
+
+  // st_methods();
+  // st_nextmethods();
+  // st_multimethods();
 
   cos_stest_stat();
 

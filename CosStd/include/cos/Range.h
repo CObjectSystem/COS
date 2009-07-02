@@ -32,11 +32,27 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.8 2009/06/30 07:59:34 ldeniau Exp $
+ | $Id: Range.h,v 1.9 2009/07/02 08:25:07 ldeniau Exp $
  |
 */
 
 #include <cos/Value.h>
+
+/* NOTE-USER: Ranges
+  - Ranges are objects useful to represent relative strided interval of sequence
+    aRange( 1,10,2) = range from indexes 1      to 10     included with step 2
+    aRange(-5,-1,1) = range from indexes size-5 to size-1 included with step 1
+
+  - Ranges can be normalized versus the sequence size
+    negative relative indexes are converted to absolute indexes (abs_idx = size - neg_idx)
+    aRange(-5,-1,1) with seq_size = 10 -> aRange(5,9,1) with size = 5
+
+  - Ranges cannot have zero size, unless they represent open intervals
+    aRange(0,5, 1) -> closed with size = 6
+    aRange(0,0, 1) -> closed with size = 1
+    aRange(0,5,-1) -> open   with size = 0
+    aRange(0,0, 0) -> open   with size = 0 (non-monotonic)
+*/
 
 defclass(Range, Value)
   I32 start;
@@ -60,13 +76,13 @@ endclass
      (index 0 is the first element)
    - negative indexe starts from the end of the sequence
      (index -1 is the last element, require the sequence's size)
-   - end is included in the sequence
-   - Ranges cannot have zero size (Slices can have zero size)
-   - consitency checks must be explicit
+   - the end is included in the range (Ranges cannot have zero size)
+   - open ranges have zero size (consistent with conversion to Slice)
+   - validation and consitency checks are the user's responsibility
 */
 static inline I32
-Range_index(I32 index, U32 size) {
-  return index + (index < 0) * size;
+Range_index(I32 index, U32 seq_size) {
+  return index + (index < 0) * seq_size;
 }
 
 /***********************************************************
@@ -86,40 +102,22 @@ Range_index(I32 index, U32 size) {
 
 // --- inliners (low-level monorphic interface)
 
-// relative index
+// absolute/relative index (normalization should be performed before eval)
 static inline I32
-Range_eval(const struct Range *r, I32 i) {
-  return r->start + i * r->stride;
+Range_eval(const struct Range *r, I32 idx) {
+  return r->start + idx * r->stride;
 }
 
-// absolute index (requires sequence's size)
+// absolute starting index (normalized vs sequence's size)
 static inline I32
-Range_first(const struct Range *r, U32 size) {
-  return Range_index(r->start, size);
+Range_first(const struct Range *r, U32 seq_size) {
+  return Range_index(r->start, seq_size);
 }
 
+// absolute ending index (normalized vs sequence's size)
 static inline I32
-Range_last(const struct Range *r, U32 size) {
-  return Range_index(r->end, size);
-}
-
-// size (requires sequence's size)
-static inline U32
-Range_size(const struct Range *r, U32 size) {
-  I32 start = Range_index(r->start, size);
-  I32 end   = Range_index(r->end  , size);
-  I32 r_sz  = (end - start + r->stride) / r->stride;
-
-  return r_sz < 0 ? 0 : r_sz; 
-}
-
-// closed vs open (requires sequence's size)
-static inline BOOL
-Range_isClosed(const struct Range *r, U32 size) {
-  I32 start = Range_first(r, size);
-  I32 end   = Range_last (r, size);
-
-  return r->stride && (r->stride > 0 ? start <= end : start >= end);
+Range_last(const struct Range *r, U32 seq_size) {
+  return Range_index(r->end, seq_size);
 }
 
 // predicates
@@ -150,11 +148,30 @@ Range_isEqual(const struct Range *r1, const struct Range *r2) {
       && r1->stride == r2->stride;
 }
 
+// closed vs open range (requires sequence's size)
+static inline BOOL
+Range_isClosed(const struct Range *r, U32 seq_size) {
+  I32 start = Range_first(r, seq_size);
+  I32 end   = Range_last (r, seq_size);
+
+  return r->stride && (r->stride > 0 ? start <= end : start >= end);
+}
+
+// range size (requires sequence's size)
+static inline U32
+Range_size(const struct Range *r, U32 seq_size) {
+  I32 start = Range_index(r->start, seq_size);
+  I32 end   = Range_index(r->end  , seq_size);
+  I32 size  = r->stride ? (end - start + r->stride) / r->stride : 0;
+
+  return size > 0 ? size : 0;
+}
+
 // normalization (requires sequence's size)
 static inline struct Range
-Range_normalize(const struct Range *r, U32 size) {
-  I32 start = Range_first(r, size);
-  I32 end   = Range_last (r, size);
+Range_normalize(const struct Range *r, U32 seq_size) {
+  I32 start = Range_first(r, seq_size);
+  I32 end   = Range_last (r, seq_size);
 
   if ( (start <= end && r->stride >= 0)
     || (start >= end && r->stride <= 0) )
@@ -168,7 +185,7 @@ Range_normalize(const struct Range *r, U32 size) {
 
 static inline struct Range
 Range_fromSlice(const struct Slice *s) {
-  return *atRange(Slice_first(s), Slice_last(s), s->stride);  
+  return *atRange(Slice_first(s), Slice_last(s), s->stride);
 }
 
 #endif // COS_RANGE_H

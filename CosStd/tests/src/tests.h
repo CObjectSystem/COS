@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.h,v 1.1 2008/12/15 14:33:49 ldeniau Exp $
+ | $Id: tests.h,v 1.2 2009/07/02 08:25:12 ldeniau Exp $
  |
 */
 
-// void ut_autoconst(void);
-// void ut_autovector(void);
+void ut_range(void);
+void ut_slice(void);
 
 #endif // COS_TESTS_TESTS_H
