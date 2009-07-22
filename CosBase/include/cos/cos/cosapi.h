@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.29 2009/06/08 22:35:43 ldeniau Exp $
+ | $Id: cosapi.h,v 1.30 2009/07/22 13:28:56 ldeniau Exp $
  |
 */
 
@@ -142,6 +142,13 @@ void   cos_module_load(STR*); // null terminated array of module names
 
 void cos_logmsg_(int,STR,STR,int,STR,...) __attribute__((__format__(__printf__,5,6)));
 int  cos_logmsg_set(int lvl); // return previous level
+
+/* NOTE-INFO: auto ctor
+   the following function-like macro is useful to define automatic ctor
+*/
+
+#define cos_object_auto(cls) \
+  { COS_CLS_NAME(cls).Behavior.id, COS_RC_AUTO }
 
 /***********************************************************
  * Implementation

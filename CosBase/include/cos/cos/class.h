@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.12 2009/06/14 17:47:38 ldeniau Exp $
+ | $Id: class.h,v 1.13 2009/07/22 13:28:56 ldeniau Exp $
  |
 */
 
@@ -89,6 +89,7 @@
 #define COS_DISABLE_defclass
 #define COS_DISABLE_endclass
 #define COS_DISABLE_makclass
+#define COS_DISABLE_FINAL_CLASS
 #endif
 
 #ifndef COS_DISABLE_classref
@@ -109,6 +110,10 @@
 
 #ifndef COS_DISABLE_makclass
 #define makclass(...) COS_CLS_MAK(__VA_ARGS__)
+#endif
+
+#ifndef COS_DISABLE_FINAL_CLASS
+#define FINAL_CLASS COS_FINAL_CLASS
 #endif
 
 /***********************************************************
@@ -293,15 +298,20 @@ COS_STATIC_ASSERT( \
   COS_PP_CAT(NAME,__invalid_makclass_vs_defclass), \
   offsetof(struct NAME,SUPER) == 0);
 
-/* root class identification
- */
+// root class identification
 #define COS_CLS_ISROOT(NAME) \
   COS_PP_ISTUPLE(COS_PP_CAT_(COS_CLS_TOKEN_,NAME))
 #define COS_CLS_TOKEN__ ()
 
-/* class id getters
- */
+// class id getters
 #define COS_CLS_RNK(cls) ((cls)->Behavior.id >> COS_ID_RNKSHT)
 #define COS_CLS_TAG(cls) ((cls)->Behavior.id &  COS_ID_TAGMSK)
+
+// class final (c99)
+#ifdef COS_C89
+#define COS_FINAL_CLASS
+#else
+#define COS_FINAL_CLASS char cos_cls_final_[];
+#endif
 
 #endif // COS_COS_CLASS_H

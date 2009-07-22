@@ -32,13 +32,9 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utest.h,v 1.3 2009/06/25 17:05:30 ldeniau Exp $
+ | $Id: utest.h,v 1.4 2009/07/22 13:28:56 ldeniau Exp $
  |
 */
-
-#ifndef COS_OBJECT_H
-#include <cos/Object.h>
-#endif
 
 #define UTEST_START(name) \
   { \
@@ -46,14 +42,8 @@
     cos_utest_init(_utst_info, KEEP_FAILED_MAX, name, __FILE__); \
     {
 
-#define UTEST(...) \
-        COS_PP_CAT_NARG(COS_UTEST_,__VA_ARGS__)(__VA_ARGS__)
-
-#define COS_UTEST_1(C) \
-        COS_UTEST_2(C, COS_PP_STR(C))
-
-#define COS_UTEST_2(C,S) \
-        cos_utest_check(_utst_info, C, S, __LINE__)
+#define UTEST(cond) \
+      cos_utest_check(_utst_info, (cond), #cond, __LINE__)
 
 #define UTEST_END \
     } \

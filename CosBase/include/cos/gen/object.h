@@ -32,12 +32,19 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.21 2009/06/17 21:34:44 ldeniau Exp $
+ | $Id: object.h,v 1.22 2009/07/22 13:28:56 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Generic.h>
+
+/* NOTE-USER: generic predicates
+   generic predicates prefixed by 'is' return TrueFalse (i.e. True or False)
+   generic predicates without the prefix 'is' return a BOOL
+   - gisEmpty(_1) -> True | False
+   - gempty  (_1) -> YES  | NO
+*/
 
 // allocator, deallocator
 defgeneric(OBJ , galloc        , _1);
