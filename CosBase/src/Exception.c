@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.11 2009/03/25 16:36:34 ldeniau Exp $
+ | $Id: Exception.c,v 1.12 2009/07/23 13:28:58 ldeniau Exp $
  |
 */
 
@@ -150,7 +150,7 @@ extern const char* strsignal(int);
 #else
 static const char* strsignal(int sig)
 {
-  switch(sig) {
+  switch (sig) {
   case SIGABRT: return "Aborted";
   case SIGALRM: return "Alarm clock";
   case SIGBUS : return "Bus error";
@@ -184,7 +184,7 @@ ex_signal(int sig)
   if (cos_signal(sig) == SIG_ERR)
     test_errno();
 
-  switch(sig) {
+  switch (sig) {
   case SIGABRT:
   case SIGBUS :
   case SIGFPE :

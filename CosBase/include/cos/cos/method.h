@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.30 2009/06/20 00:27:48 ldeniau Exp $
+ | $Id: method.h,v 1.31 2009/07/23 13:28:56 ldeniau Exp $
  |
 */
 
@@ -325,7 +325,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
     COS_PP_IF(COS_PP_NOARG(__VA_ARGS__))(,COS_MTH_RETVAL = (__VA_ARGS__);) \
     COS_PP_IFNDEF(COS_METHOD_TRACE)(_cos_mth_line = __LINE__;,/* no trace */) \
     goto _cos_ctr_end; \
-  } while(0)
+  } while (0)
 
 #define COS_MTH_RETVAL (*(_ret_t)_ret)
 

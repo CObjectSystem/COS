@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.38 2009/06/25 17:05:36 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.39 2009/07/23 13:28:58 ldeniau Exp $
  |
 */
 
@@ -73,7 +73,7 @@ toPow2(U32 val)
 {
   U32 i = 1;
 
-  while(i < val)
+  while (i < val)
     i *= 2;
 
   return i;
@@ -556,7 +556,7 @@ sym_init(void)
     for (s = 0; tbl_sym[t][s]; s++) {
 
       // count symbols
-      switch(tbl_sym[t][s]->rc) {
+      switch (tbl_sym[t][s]->rc) {
       case cos_tag_class  : ++n_cls; break;
       case cos_tag_mclass : ++n_mcl; break;
       case cos_tag_pclass : ++n_pcl; break;
@@ -591,7 +591,7 @@ sym_init(void)
         U32 i = bhv->id & sym.msk;
 
         if (sym.bhv[i]) {
-          switch(bhv->Object.rc) {
+          switch (bhv->Object.rc) {
           case cos_tag_class :
           case cos_tag_mclass:
           case cos_tag_pclass: {
@@ -608,7 +608,7 @@ sym_init(void)
       }
 
       // finalize symbol information and store it
-      switch(tbl_sym[t][s]->rc) {
+      switch (tbl_sym[t][s]->rc) {
       case cos_tag_class: {
         struct Class *cls = STATIC_CAST(struct Class*, tbl_sym[t][s]);
         const struct Class *pcl = STATIC_CAST(const struct Class*, cls->name);
@@ -646,7 +646,7 @@ sym_init(void)
         sym.mth[sym.n_mth++] = mth;
         mth->Object.rc = COS_RC_STATIC;
         if (mth->arnd) mth->arnd = --arnd;
-        switch(COS_GEN_RNK(mth->gen)) {
+        switch (COS_GEN_RNK(mth->gen)) {
         case 1: mth->Object.id = cos_class_id(classref(Method1)); break;
         case 2: mth->Object.id = cos_class_id(classref(Method2)); break;
         case 3: mth->Object.id = cos_class_id(classref(Method3)); break;
@@ -864,7 +864,7 @@ cos_class_getWithStr(STR str)
   
   cls = *(struct Class**)cls;
 
-  switch(p-str) {
+  switch (p-str) {
   case 0: // normal class
     test_assert( cls_isClass(cls),
                  "classes not starting by 'm' or 'pm' should be a normal Class" );

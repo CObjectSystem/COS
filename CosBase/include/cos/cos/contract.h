@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.8 2009/03/18 15:47:27 ldeniau Exp $
+ | $Id: contract.h,v 1.9 2009/07/23 13:28:56 ldeniau Exp $
  |
 */
 
@@ -214,7 +214,7 @@
   do { \
     COS_PP_IF(COS_PP_NOARG(__VA_ARGS__))(,_ret = (__VA_ARGS__);) \
     goto _cos_ctr_end; \
-  } while(0)
+  } while (0)
 
 // contract pre
 #define COS_CTR_PRE \
