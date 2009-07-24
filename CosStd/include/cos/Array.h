@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.17 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Array.h,v 1.18 2009/07/24 20:49:58 ldeniau Exp $
  |
 */
 
@@ -123,8 +123,9 @@ struct Array* Array_alloc       (U32);
 struct Array* ArrayDynamic_alloc(U32);
 struct Array* ArrayView_alloc   (struct Array*,struct Slice*);
 
-void          ArrayDynamic_adjust (struct ArrayDynamic*);
-void          ArrayDynamic_enlarge(struct ArrayDynamic*,F64);
+void ArrayDynamic_adjust      (struct ArrayDynamic*);
+void ArrayDynamic_enlarge     (struct ArrayDynamic*,F64);
+void ArrayDynamic_enlargeFront(struct ArrayDynamic*,F64);
 
 // ----- automatic constructors
 

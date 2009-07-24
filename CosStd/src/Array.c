@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.29 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Array.c,v 1.30 2009/07/24 20:49:58 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,7 @@
 #include <cos/View.h>
 
 #include <cos/gen/container.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
@@ -85,6 +86,10 @@ defproperty(ArrayView,   array, (OBJ)); // return (OBJ)self->array
 #undef array_class
 
 // ---
+
+defmethod(struct Slice, gslice, Array)
+  retmethod( *atSlice(0,self->size,self->stride) );
+endmethod
 
 defmethod(U32, gsize, Array)
   retmethod(self->size);

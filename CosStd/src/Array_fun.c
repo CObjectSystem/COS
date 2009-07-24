@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.6 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.7 2009/07/24 20:49:58 ldeniau Exp $
  |
 */
 
@@ -189,7 +189,7 @@ defmethod(OBJ, gany, Array, Functor)
   retmethod(False);
 endmethod
 
-// ----- filter, reduce, accumulate
+// ----- filter, fold, scan
 
 defmethod(OBJ, gfilter, Array, Functor)
   struct Array* arr = ArrayDynamic_alloc(self->size);
@@ -210,9 +210,6 @@ defmethod(OBJ, gfilter, Array, Functor)
   UNPRT(_arr);
   retmethod(gautoRelease(_arr));
 endmethod
-
-defalias(OBJ, (gfoldl)greduce    , Array, Functor, Object);
-defalias(OBJ, (gscanl)gaccumulate, Array, Functor, Object);
 
 defmethod(OBJ, gfoldl, Array, Functor, Object)
   OBJ *src   = self->object;

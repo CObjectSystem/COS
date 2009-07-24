@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.8 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.9 2009/07/24 20:49:58 ldeniau Exp $
  |
 */
 
@@ -43,12 +43,15 @@
 
 // -----
 
-#define ARRAY_MIN_SIZE    16
+#define ARRAY_MIN_SIZE    10
 #define ARRAY_GROWTH_RATE 1.618034 // golden ratio
+
+STATIC_ASSERT(array_min_size_is_too_small   , ARRAY_MIN_SIZE    >= 4  );
+STATIC_ASSERT(array_growth_rate_is_too_small, ARRAY_GROWTH_RATE >= 1.5);
 
 useclass(Array, ExBadAlloc);
 
-// ----- helpers (alloc and deinit are in Array.c)
+// ----- memory management (alloc and deinit are in Array.c)
 
 void
 ArrayDynamic_adjust(struct ArrayDynamic *arrd)
@@ -74,8 +77,6 @@ ArrayDynamic_adjust(struct ArrayDynamic *arrd)
 void
 ArrayDynamic_enlarge(struct ArrayDynamic *arrd, F64 factor)
 {
-  enum { N = ARRAY_MIN_SIZE };
-
   if (factor <= 1.0) return;
 
   struct ArrayDynamicN *arrn = &arrd->ArrayDynamicN;
@@ -83,13 +84,30 @@ ArrayDynamic_enlarge(struct ArrayDynamic *arrd, F64 factor)
 
   ptrdiff_t offset = arr->object - arrn->_object;
 
-  U32   size   = arrd->capacity < N ? N : arrd->capacity * factor;
-  OBJ *_object = realloc(arrn->_object, size * sizeof *arrn->_object);
+  U32 capacity = (arrd->capacity < ARRAY_MIN_SIZE ? ARRAY_MIN_SIZE : arrd->capacity)*factor;
+  OBJ *_object = realloc(arrn->_object, capacity*sizeof *arrn->_object);
   if (!_object) THROW(ExBadAlloc);
 
   arr ->object   = _object + offset;
   arrn->_object  = _object;
-  arrd->capacity = size;
+  arrd->capacity = capacity;
+}
+
+void
+ArrayDynamic_enlargeFront(struct ArrayDynamic *arrd, F64 factor)
+{
+  if (factor <= 1.0) return;
+
+  struct ArrayDynamicN *arrn = &arrd->ArrayDynamicN;
+  struct Array         *arr  = &arrn->Array;
+
+  ptrdiff_t offset = arr->object - arrn->_object;
+
+  U32 old_capacity = arrd->capacity;
+
+  ArrayDynamic_enlarge(arrd, factor);
+  arr->object = arrn->_object + (arrd->capacity - old_capacity);
+  memmove(arr->object, arrn->_object + offset, arr->size*sizeof *arr->object);
 }
 
 // ----- adjustment (capacity -> size)
@@ -107,14 +125,13 @@ defmethod(void, gclear, ArrayDynamic)
   struct ArrayDynamicN *arrn = &self->ArrayDynamicN;
   struct Array         *arr  = &arrn->Array;
 
-  OBJ *obj = arr->object;
-  OBJ *end = arr->object + arr->size;
+  OBJ *obj = arr->object + arr->size;
+  OBJ *end = arr->object;
 
-  while (obj != end)
-    grelease(*obj++);
-
-  arr->object = arrn->_object;
-  arr->size   = 0;
+  while (obj != end) {
+    grelease(*--obj);
+    arr->size--;
+  }
 endmethod
 
 // ----- getters, setters
@@ -135,7 +152,8 @@ defmethod(void,  gput        , ArrayDynamic, Object)
   if (arr->size == self->capacity)
     ArrayDynamic_enlarge(self, ARRAY_GROWTH_RATE);
     
-  arr->object[arr->size++] = gretain(_2);
+  arr->object[arr->size] = gretain(_2);
+  arr->size++;
 endmethod
 
 defalias (void, (gdrop)gpop, ArrayDynamic);
@@ -148,59 +166,69 @@ endmethod
 
 // ----- prepend, append
 
-#if 0 // NOTE-TODO
-
 defmethod(void, gprepend, ArrayDynamic, Object)
-  // TODO, enlarge capacity if needed, move data by size diff
+  struct ArrayDynamicN *arrn = &self->ArrayDynamicN;
+  struct Array         *arr  = &arrn->Array;
+
+  if (arr->object == arrn->_object)
+    ArrayDynamic_enlargeFront(self, ARRAY_GROWTH_RATE);
+
+  arr->object[-1] = gretain(_2);
+  arr->object--;
+  arr->size++;
 endmethod
 
 defmethod(void, gprepend, ArrayDynamic, Array)
-  struct Array *arr = &self->ArrayDynamicN.Array;
+  struct ArrayDynamicN *arrn = &self->ArrayDynamicN;
+  struct Array         *arr  = &arrn->Array;
 
-  if (self->capacity - arr->size < self2->size) {
+  if (arr->object - arrn->_object < self2->size) {
     F64 factor = 1.0;
+    U32 capacity = (self->capacity < ARRAY_MIN_SIZE ? ARRAY_MIN_SIZE : self->capacity);
 
     do
       factor *= ARRAY_GROWTH_RATE;
-    while (self->capacity*factor - arr->size < self2->size);
+    while (capacity*(factor - 1.0) < self2->size);
 
-    ArrayDynamic_enlarge(self, factor);
+    ArrayDynamic_enlargeFront(self, factor);
   }
 
-  memcpy(arr->object+ self2->size,
-         arr->object, self2->size * sizeof *arr->object);
+  OBJ *src   = self2->object;
+  I32  src_s = self2->stride;
+  OBJ *end   = self2->object + self2->size*self2->stride;
 
-  OBJ *obj = arr  ->object;
-  OBJ *src = self2->object;
-  OBJ *end = self2->object+self2->size;
-
-  while (src < end)
-    *obj++ = gretain(*src++);
-
-  arr->size += self2->size;
+  while (src != end) {
+    arr->object[-1] = gretain(*src);
+    arr->object--;
+    arr->size++;
+    src += src_s;
+  }
 endmethod
 
 defmethod(void, gappend, ArrayDynamic, Array)
-  struct Array *arr = &self->ArrayDynamicN.Array;
+  struct ArrayDynamicN *arrn = &self->ArrayDynamicN;
+  struct Array         *arr  = &arrn->Array;
 
-  if (self->capacity - arr->size < self2->size) {
+  if (arr->object - arrn->_object < self2->size) {
     F64 factor = 1.0;
+    U32 capacity = (self->capacity < ARRAY_MIN_SIZE ? ARRAY_MIN_SIZE : self->capacity);
 
     do
       factor *= ARRAY_GROWTH_RATE;
-    while (self->capacity*factor - arr->size < self2->size);
+    while (capacity*(factor - 1.0) < self2->size);
 
     ArrayDynamic_enlarge(self, factor);
   }
 
-  OBJ *obj = arr  ->object+arr->size;
-  OBJ *src = self2->object;
-  OBJ *end = self2->object+self2->size;
+  OBJ *dst   = arr->object;
+  OBJ *src   = self2->object;
+  I32  src_s = self2->stride;
+  OBJ *end   = self2->object + self2->size*self2->stride;
 
-  while (src < end)
-    *obj++ = gretain(*src++);
-
-  arr->size += self2->size;
+  while (src != end) {
+    dst[arr->size] = gretain(*src);
+    arr->size++;
+    src += src_s;
+  }
 endmethod
 
-#endif

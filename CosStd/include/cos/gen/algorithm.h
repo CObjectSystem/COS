@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.11 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: algorithm.h,v 1.12 2009/07/24 20:49:58 ldeniau Exp $
  |
 */
 
@@ -53,14 +53,11 @@ defgeneric(OBJ , gmap4, fun, _1, _2, _3, _4);
 defgeneric(OBJ , gmapn, fun, _1);
 
 // filter, fold, scan
-defgeneric(OBJ , gfilter    , _1, fun);
-defgeneric(OBJ , greduce    , _1, fun, ini); // alias for foldl
-defgeneric(OBJ , gaccumulate, _1, fun, ini); // alias for scanl
-
-defgeneric(OBJ , gfoldl, _1, fun, ini);
-defgeneric(OBJ , gfoldr, _1, fun, ini);
-defgeneric(OBJ , gscanl, _1, fun, ini);
-defgeneric(OBJ , gscanr, _1, fun, ini);
+defgeneric(OBJ , gfilter, _1, fun);
+defgeneric(OBJ , gfoldl , _1, fun, ini);
+defgeneric(OBJ , gfoldr , _1, fun, ini);
+defgeneric(OBJ , gscanl , _1, fun, ini);
+defgeneric(OBJ , gscanr , _1, fun, ini);
 
 // zip
 defgeneric(OBJ , gzip , _1, _2);

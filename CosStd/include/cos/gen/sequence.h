@@ -32,13 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.1 2009/07/02 13:20:27 ldeniau Exp $
+ | $Id: sequence.h,v 1.2 2009/07/24 20:49:58 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#include <cos/Object.h>
-#endif 
+#include <cos/Slice.h>
+#include <cos/gen/object.h>
 
 // constructors
 defgeneric(OBJ, ginitWithRng1, _1, (I32)end);
@@ -48,6 +47,9 @@ defgeneric(OBJ, ginitWithRng3, _1, (I32)start, (I32)end, (I32)stride);
 defgeneric(OBJ, ginitWithSlc1, _1, (U32)size);
 defgeneric(OBJ, ginitWithSlc2, _1, (I32)start, (U32)size);
 defgeneric(OBJ, ginitWithSlc3, _1, (I32)start, (U32)size, (I32)stride);
+
+defgeneric(struct Range, grange, _1);
+defgeneric(struct Slice, gslice, _1);
 
 // ----- inliners -----
 
