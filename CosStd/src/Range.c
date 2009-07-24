@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.5 2009/07/02 13:20:27 ldeniau Exp $
+ | $Id: Range.c,v 1.6 2009/07/24 12:36:27 ldeniau Exp $
  |
 */
 
@@ -42,30 +42,22 @@ makclass(Range, Value);
 
 // ----- constructors
 
-defmethod(OBJ, ginitWithRng1, Object, (I32)end)
-  retmethod( ginitWithRng3(_1, 0, end, 1) );
+defmethod(OBJ, ginitWithRng1, Range, (I32)end)
+  retmethod( (OBJ)Range_init(self, 0, end, 1) );
 endmethod
 
-defmethod(OBJ, ginitWithRng2, Object, (I32)start, (I32)end)
-  retmethod( ginitWithRng3(_1, start, end, 1) );
+defmethod(OBJ, ginitWithRng2, Range, (I32)start, (I32)end)
+  retmethod( (OBJ)Range_init(self, start, end, 1) );
 endmethod
 
 defmethod(OBJ, ginitWithRng3, Range, (I32)start, (I32)end, (I32)stride)
-  self->start  = start;
-  self->end    = end;
-  self->stride = stride;
-
-  retmethod(_1);
+  retmethod( (OBJ)Range_init(self, start, end, stride) );
 endmethod
 
 // ----- copy
 
 defmethod(OBJ, ginitWith, Range, Range)
-  self1->start  = self2->start;
-  self1->end    = self2->end;
-  self1->stride = self2->stride;
-
-  retmethod(_1);
+  retmethod( (OBJ)Range_copy(self1, self2) );
 endmethod
 
 // ----- equality

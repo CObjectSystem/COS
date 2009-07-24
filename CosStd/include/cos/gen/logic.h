@@ -32,8 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.7 2009/06/30 07:59:35 ldeniau Exp $
+ | $Id: logic.h,v 1.8 2009/07/24 12:36:26 ldeniau Exp $
  |
+*/
+
+/* NOTE-USER: includes of generics
+   One can find hereafter a trick to avoid multiple definition of generics when
+   the instance generation is left to the COS makefiles (e.g automatic makgeneric).
 */
 
 #ifndef COS_NOCOS

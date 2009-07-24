@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.9 2009/06/30 07:59:34 ldeniau Exp $
+ | $Id: Sequence.h,v 1.10 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -48,9 +48,18 @@ endclass
  * Implementation (private)
  */
 
-#define Sequence_FSName(NAME,SIZE,...) \
-        COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),SIZE)) \
-                  (COS_PP_CAT(NAME,N), COS_PP_CAT_NARG(NAME,__VA_ARGS__))
+/* NOTE-INFO: Sized Name
+   Many sequences in COS provide "size-aware" types.
+   Sequence_SizedName build a type name by suffixing the type by the size
+   If the size of (__VA_ARGS__) >= S, then suffix from N is used.
+   Sequence_SizedName(Array,10,N,obj1,obj2,obj3) -> Array3 (with size == 3)
+   Sequence_SizedName(Array,10,N,obj1,...,obj10) -> ArrayN (with size == 10)
+   Sequence_SizedName(Array,2,Long,obj1,obj2) -> ArrayLong (with size == 2)
+*/
+
+#define Sequence_SizedName(T,S,N,...) \
+        COS_PP_IF(COS_PP_GE(COS_PP_NARG(__VA_ARGS__),S)) \
+                  (COS_PP_CAT(T,N), COS_PP_CAT_NARG(T,__VA_ARGS__))
 
 #endif // COS_SEQUENCE_H
 

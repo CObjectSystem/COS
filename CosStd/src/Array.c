@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.28 2009/03/11 10:20:41 ldeniau Exp $
+ | $Id: Array.c,v 1.29 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -37,7 +37,6 @@
 #include <cos/Functor.h>
 #include <cos/IntVector.h>
 #include <cos/Number.h>
-#include <cos/Slice.h>
 #include <cos/View.h>
 
 #include <cos/gen/container.h>
@@ -46,9 +45,9 @@
 #include <cos/gen/value.h>
 #include <cos/gen/init.h>
 #include <cos/prp/object.h>
+#include <cos/prp/sequence.h>
 
 #include <stdlib.h>
-#include <string.h>
 
 // -----
 
@@ -68,24 +67,24 @@ makclass(ArrayView    , Array);
 makclass(ArrayDynamicN, Array);
 makclass(ArrayDynamic , ArrayDynamicN);
 
-// NOTE-TODO: TO REMOVE
-makclass(Vector, ValueSequence);
-makclass(IntVector, Vector);
-
 // -----
 
 useclass(Array, ExBadAlloc);
 
 // ----- properties
 
-#define size_to_OBJ(size) gautoRelease(aInt(size))
-#define array_class(array) Array
+#define size_to_OBJ(siz) gautoRelease(aInt(siz))
+#define array_class(arr) Array
 
-defproperty(Array, size   , size_to_OBJ);
-defproperty(Array, ()class, array_class);
+defproperty(Array    ,   size , size_to_OBJ);
+defproperty(Array    , ()class, array_class);
+defproperty(Array    , ()array, (OBJ)); // return (OBJ)self
+defproperty(ArrayView,   array, (OBJ)); // return (OBJ)self->array
 
 #undef size_to_OBJ
 #undef array_class
+
+// ---
 
 defmethod(U32, gsize, Array)
   retmethod(self->size);
@@ -96,57 +95,34 @@ defmethod(OBJ, gisEmpty, Array)
 endmethod
 
 defmethod(OBJ, gclass, Array)
-  retmethod(Array); // class cluster
+  retmethod(Array); // class cluster: hide implementation details
 endmethod
 
 // ----- initializers
 
 struct Array*
-ArrayView_init(struct ArrayView *view, I32 idx)
+ArrayView_init(struct ArrayView *view, struct Array *arr, struct Slice *slc)
 {
-//  test_assert( cos_object_isKindOf(view->array, classref(Array)),
-//               "ArrayView accepts only arrays" );
+  test_assert( !cos_object_isa((OBJ)arr, classref(ArrayDynamic)),
+               "ArrayView accepts only non-dynamic Array" );
 
-  struct Array* arr = &view->Array;
-  struct Array* ref =  view->array;
+  U32 first = Slice_first(slc);
+  U32 last  = Slice_last (slc);
 
-  U32 start  = index_abs(idx, ref->size);
+  test_assert( first < arr->size &&
+               last  < arr->size, "slice out of range" );
 
-  test_assert( start < ref->size && 
-               start + arr->stride*(arr->size-1) < ref->size,
-               "ArrayView out of range" );
+  struct Array* avw = &view->Array;
 
-  arr->stride *= ref->stride;
-  arr->object  = ref->object + ref->stride * start;
+  avw->object = Slice_start (slc)*arr->stride + arr->object;
+  avw->size   = Slice_size  (slc);
+  avw->stride = Slice_stride(slc)*arr->stride;
+  view->array = arr;
 
-  return arr;
-}
-
-struct Array*
-ArraySubview_init(struct ArrayView *view, I32 idx)
-{
-//  test_assert( cos_object_isKindOf(view->array, classref(Array)),
-//               "ArrayView accepts only arrays" );
-
-  struct Array* arr = &view->Array;
-  struct Array* ref =  view->array;
-
-  U32 start  = index_abs(idx, ref->size);
-
-  test_assert( start < ref->size && 
-               start + arr->stride*(arr->size-1) <= ref->stride*(ref->size-1),
-               "ArrayView out of range" );
-
-  arr->object = ref->object + ref->stride * start;
-
-  return arr;
+  return avw;
 }
 
 // ----- allocators
-
-defmethod(OBJ, galloc, pmArray) // lazy alloc
-  retmethod(_1);
-endmethod
 
 struct Array*
 Array_alloc(U32 size)
@@ -165,30 +141,10 @@ Array_alloc(U32 size)
   struct ArrayN *arrn = STATIC_CAST(struct ArrayN*, _arr);
   struct Array  *arr  = &arrn->Array;
 
+  arr->object = arrn->_object;
   arr->size   = size;
   arr->stride = 1;
-  arr->object = arrn->base;
 
-  return arr;
-}
-
-struct Array*
-ArrayView_alloc(struct Array *ref, U32 start, U32 size, U32 stride)
-{
-  useclass(ArrayView);
-
-  OBJ _view = galloc(ArrayView); PRT(_view);
-  OBJ _ref  = gretain((OBJ)ref);
-  
-  struct ArrayView *view = STATIC_CAST(struct ArrayView*, _view);
-  struct Array     * arr = &view->Array;
-
-  view->array  = _ref;
-  arr ->size   = size;
-  arr ->stride = stride;
-  arr ->object = STATIC_CAST(struct Array*, _ref)->object + start;
-
-  UNPRT(_view);
   return arr;
 }
 
@@ -197,33 +153,52 @@ ArrayDynamic_alloc(U32 size)
 {
   useclass(ArrayDynamic);
 
-  OBJ _dyna = galloc(ArrayDynamic);
+  OBJ _arrd = galloc(ArrayDynamic); PRT(_arrd);
 
-  struct ArrayDynamic  *dyna = STATIC_CAST(struct ArrayDynamic*, _dyna);
-  struct ArrayDynamicN *dynn = &dyna->ArrayDynamicN;
-  struct Array         * arr = &dynn->Array;
+  struct ArrayDynamic  *arrd = STATIC_CAST(struct ArrayDynamic*, _arrd);
+  struct ArrayDynamicN *arrn = &arrd->ArrayDynamicN;
+  struct Array         *arr  = &arrn->Array;
 
-  dynn->base = malloc(size * sizeof *dynn->base);
-  
-  if (!dynn->base) {
-    gdealloc(_dyna);
-    THROW(ExBadAlloc);
-  }
+  arr->object = malloc(size * sizeof *arr->object);
+  if (!arr->object) THROW(ExBadAlloc);
 
-  dyna->capacity = size;
-  arr ->size     = 0;
-  arr ->object   = dynn->base;
+  arr->size      = 0;
+  arr->stride    = 1;
+  arrn->_object  = arr->object;
+  arrd->capacity = size;
 
+  UNPRT(_arrd);
   return arr;
 }
 
+struct Array*
+ArrayView_alloc(struct Array *ref, struct Slice *slc)
+{
+  useclass(ArrayView);
+
+  OBJ _avw = galloc(ArrayView); PRT(_avw);
+  OBJ _arr = gretain((OBJ)ref);
+
+  struct ArrayView* avw = STATIC_CAST(struct ArrayView*, _avw);
+  struct Array*     arr = STATIC_CAST(struct Array*    , _arr);
+
+  ArrayView_init(avw, arr, slc);
+
+  UNPRT(_avw);
+  return &avw->Array;
+}
+
 // ----- constructors
+
+defmethod(OBJ, galloc, pmArray) // lazy alloc
+  retmethod(_1);
+endmethod
 
 defmethod(OBJ, ginit, pmArray) // dynamic array
   retmethod( (OBJ)ArrayDynamic_alloc(0) );
 endmethod
 
-defmethod(OBJ, ginitWith, pmArray, Int) // dynarray with capacity
+defmethod(OBJ, ginitWith, pmArray, Int) // dynamic array with capacity
   test_assert(self2->value >= 0, "negative array size");
 
   retmethod( (OBJ)ArrayDynamic_alloc(self2->value) );
@@ -232,13 +207,16 @@ endmethod
 defmethod(OBJ, ginitWith, pmArray, Array) // clone
   struct Array* arr = Array_alloc(self2->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
-  
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+arr->size;
-  OBJ *src = self2->object;
 
-  while (obj < end)
-    *obj++ = gretain(*src++);
+  OBJ *dst   = arr->object;
+  OBJ *end   = arr->object + arr->size;
+  OBJ *src   = self2->object;
+  I32  src_s = self2->stride;
+
+  while (dst != end) {
+    *dst++ = gretain(*src);
+    src += src_s;
+  }
 
   UNPRT(_arr);
   retmethod(_arr);
@@ -249,11 +227,12 @@ defmethod(OBJ, ginitWith2, pmArray, Int, Object) // element
 
   struct Array* arr = Array_alloc(self2->value);
   OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr->object;
-  OBJ *end = arr->object+arr->size;
+
+  OBJ *dst = arr->object;
+  OBJ *end = arr->object + arr->size;
   
-  while (obj < end)
-    *obj++ = gretain(_3);
+  while (dst != end)
+    *dst++ = gretain(_3);
 
   UNPRT(_arr);
   retmethod(_arr);
@@ -264,125 +243,167 @@ defmethod(OBJ, ginitWith2, pmArray, Int, Functor) // generator
 
   struct Array* arr = Array_alloc(self2->value);
   OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr->object;
-  OBJ *end = arr->object+arr->size;
+
+  OBJ *dst = arr->object;
+  OBJ *end = arr->object + arr->size;
   int argc = garity(_3);
 
-  if (argc)
-    for (I32 i = 0; obj < end; i++)
-      *obj++ = gretain(geval1(_3, aInt(i)));
+  if (!argc)
+    while (dst != end)
+      *dst++ = gretain(geval(_3));
 
   else
-    while (obj < end)
-      *obj++ = gretain(geval (_3));
+    for (I32 i = 0; dst != end; i++)
+      *dst++ = gretain(geval1(_3, aInt(i)));
 
   UNPRT(_arr);
   retmethod(_arr);
 endmethod
 
 defmethod(OBJ, ginitWith2, pmArray, Array, Slice)  // sub array
-  test_assert( Slice_first(self3) < self2->size
-            && Slice_last (self3) < self2->size, "slice out of range" );
+  U32 first  = Slice_first (self3);
+  U32 last   = Slice_last  (self3);
+  U32 start  = Slice_first (self3)*self2->stride;
+  I32 stride = Slice_stride(self3)*self2->stride;
+
+  test_assert( first < self2->size &&
+               last  < self2->size, "slice out of range" );
 
   struct Array* arr = Array_alloc(self3->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+arr->size;
-  OBJ *src = self2->object+self3->start;
-  I32 step = self3->stride;
 
-  for (; obj < end; src += step)
-    *obj++ = gretain(*src);
+  OBJ *dst   = arr->object;
+  OBJ *end   = arr->object + arr->size;
+  OBJ *src   = self2->object + start;
+  I32  src_s = stride;
+
+  while (dst != end) {
+    *dst++ = gretain(*src);
+    src += src_s;
+  }
   
   UNPRT(_arr);
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Array, IntVector) // sequence
+defmethod(OBJ, ginitWith2, pmArray, Array, IntVector) // random sequence
   struct Array* arr = Array_alloc(self3->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+arr->size;
-  OBJ *src = self2->object;
-  U32 size = self2->size;
-  I32 *idx = self3->value;
 
-  while (obj < end) {
-    U32 i = index_abs(*idx++, size);
-    test_assert( i < size, "index out of range" );
-    *obj++ = gretain(src[i]);
+  OBJ *dst   = arr->object;
+  OBJ *end   = arr->object + arr->size;
+  OBJ *src   = self2->object;
+  U32  src_z = self2->size;
+  I32  src_s = self2->stride;
+  I32 *idx   = self3->value;
+  I32  idx_s = self3->stride;
+
+  while (dst != end) {
+    U32 i = Range_index(*idx, src_z);
+    test_assert( i < src_z, "index out of range" );
+    *dst++ = gretain(src[i*src_s]);
+    idx += idx_s;
   }
 
   UNPRT(_arr);
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWithObjPtr, pmArray, (OBJ*)obj, (U32)n) // clone buffer
-  retmethod( ginitWith(_1, aArrayRef(obj,n)) );
-endmethod
-
-defmethod(OBJ, ginitWith2, pmView, Array, Slice) // array view
-  test_assert( !cos_object_isa(_2, classref(ArrayDynamic)),
-               "ArrayView accepts only fixed size Array" );
-  test_assert( Slice_first(self3) < self2->size
-            && Slice_last (self3) < self2->size, "ArrayView slice out of range" );
-
-  retmethod( (OBJ)ArrayView_alloc(self2, self3->start, self3->size, self3->stride) );
+defmethod(OBJ, ginitWith2, mView, Array, Slice) // array view
+  retmethod( (OBJ)ArrayView_alloc(self2, self3) );
 endmethod
 
 // ----- destructors
 
 defmethod(OBJ, gdeinit, Array)
-  OBJ *obj = self1->object;
-  OBJ *end = self1->object+self1->size;
+  OBJ *obj = self->object;
+  OBJ *end = self->object + self->size;
 
-  while (obj < end && *obj) // take care of protection cases
+  while (obj != end && *obj) // take care of protection cases
     grelease(*obj++);
 
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdeinit, ArrayView)
-  if (self->array) // take care of protection cases
-    grelease(self->array);
+defmethod(OBJ, gdeinit, ArrayDynamicN)
+  next_method(self);
+  free(self->_object);
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdeinit, ArrayDynamicN)
-  next_method(self);
-  free(self->base);
+defmethod(OBJ, gdeinit, ArrayView)
+  if (self->array) // take care of protection cases
+    grelease( (OBJ)self->array );
   retmethod(_1);
+endmethod
+
+// ----- equality
+
+defmethod(OBJ, gisEqual, Array, Array)
+  if (self1 == self2)
+    retmethod(True);
+
+  if (self1->size != self2->size)
+    retmethod(False);
+
+  OBJ *obj1   = self1->object;
+  I32  obj1_s = self1->stride;
+  OBJ *end    = self1->object + self1->size*self1->stride;
+  OBJ *obj2   = self2->object;
+  I32  obj2_s = self2->stride;
+  
+  while (obj1 != end) {
+    if (gisEqual(*obj1,*obj2) != True)
+      retmethod(False);
+    obj1 += obj1_s;
+    obj2 += obj2_s;
+  }
+
+  retmethod(True);
 endmethod
 
 // ----- invariants
 
 defmethod(void, ginvariant, Array, (STR)func, (STR)file, (int)line)
-  OBJ *obj = self->object;
-  OBJ *end = self->object+self->size;
+  OBJ *obj   = self->object;
+  OBJ *end   = self->object + self->size*self->stride;
+  I32  obj_s = self->stride;
 
-  while (obj < end && *obj) ;
+  while (obj != end && *obj)
+    obj += obj_s;
 
   test_assert( obj == end,
                "Array contains null elements", func, file, line);
 endmethod
 
+defmethod(void, ginvariant, ArrayDynamic, (STR)func, (STR)file, (int)line)
+  test_assert( self->capacity >= self->ArrayDynamicN.Array.size,
+               "ArrayDynamic has capacity < size", func, file, line);
+
+  next_method(self, func, file, line);
+endmethod
+
 defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
-  test_assert( cos_object_isKindOf(self->array, classref(Array)),
+  test_assert( cos_object_isKindOf((OBJ)self->array, classref(Array)),
                "ArrayView points to something not an array", func, file, line);
-  test_assert( !cos_object_isa(self->array, classref(ArrayDynamic)),
+
+  test_assert( !cos_object_isa((OBJ)self->array, classref(ArrayDynamic)),
                "ArrayView points to a dynamic array", func, file, line);
 
   struct Array *arr = STATIC_CAST(struct Array*, self->array);
 
-  test_assert( self->Array.object                  >= arr->object &&
-               self->Array.object+self->Array.size <= arr->object+arr->size,
-               "ArrayView is out of range", func, file, line);
-  next_method(self, func, file, line);
-endmethod
+  I32 start  = (arr->object - self->Array.object)/arr->stride;
+  U32 size   = self->Array.size;
+  I32 stride = self->Array.stride/arr->stride;
 
-defmethod(void, ginvariant, ArrayDynamic, (STR)func, (STR)file, (int)line)
-  test_assert( self->capacity >= self->ArrayDynamicN.Array.size,
-               "ArrayDynamic has capacity < size", func, file, line);
+  struct Slice *slc = atSlice(start, size, stride);
+
+  U32 first = Slice_first(slc);
+  U32 last  = Slice_last (slc);
+
+  test_assert( first < self->array->size && last < self->array->size,
+               "ArrayView is out of range", func, file, line);
+
   next_method(self, func, file, line);
 endmethod
 

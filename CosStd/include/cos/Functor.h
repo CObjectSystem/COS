@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.10 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: Functor.h,v 1.11 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -118,17 +118,6 @@ endclass
 #define aCompose(...)   ( (OBJ)atCompose  (__VA_ARGS__) )
 #define aBiFunctor(...) ( (OBJ)atBiFunctor(__VA_ARGS__) )
 
-// --- shortcuts
-
-#ifndef COS_NOSHORTCUT
-
-#define aFun(...)    aFunctor  (__VA_ARGS__)
-#define aCmp(...)    aCompose  (__VA_ARGS__)
-#define aBiFun(...)  aBiFunctor(__VA_ARGS__)
-
-#endif
-
-
 /***********************************************************
  * Implementation (private)
  */
@@ -138,22 +127,20 @@ endclass
 
 #define atFunctorN(N,F,...) \
   COS_PP_CAT3(Functor,N,_init)( &(struct COS_PP_CAT(Functor,N)) { \
-    {{ COS_CLS_NAME(COS_PP_CAT(Functor,N)).Behavior.id, COS_RC_AUTO }}, \
+    { cos_object_auto(COS_PP_CAT(Functor,N)) }, \
     F, -1, COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
 
 // ---
 
 #define atCompose(...) \
-  ( &(struct Compose) { \
-    {{ COS_CLS_NAME(Compose).Behavior.id, COS_RC_AUTO }}, \
+  ( &(struct Compose) { { cos_object_auto(Compose) }, \
     COS_PP_NARG(__VA_ARGS__), \
     (OBJ[]){ COS_PP_SEQ(COS_PP_REV((__VA_ARGS__))) } })
 
 // ---
 
 #define atBiFunctor(F1,F2) \
-  ( &(struct BiFunctor) { \
-    {{ COS_CLS_NAME(BiFunctor).Behavior.id, COS_RC_AUTO }}, \
+  ( &(struct BiFunctor) { { cos_object_auto(BiFunctor) }, \
     F1, F2 })
 
 // ----- initializers
@@ -163,7 +150,7 @@ Functor1_init(struct Functor1* fun)
 {
   fun->arity = fun->arg != 0;
 
-  if (!fun->arity)
+  if (!fun->arity) // change type to function
     fun->Functor.Object.id = cos_class_id(classref(Function1));
 
   return fun;
@@ -175,7 +162,7 @@ Functor2_init(struct Functor2* fun)
   fun->arity = (fun->arg[0] != 0)
             | ((fun->arg[1] != 0) << 1);
 
-  if (!fun->arity)
+  if (!fun->arity) // change type to function
     fun->Functor.Object.id = cos_class_id(classref(Function2));
 
   return fun;
@@ -188,7 +175,7 @@ Functor3_init(struct Functor3* fun)
             | ((fun->arg[1] != 0) << 1)
             | ((fun->arg[2] != 0) << 2);
 
-  if (!fun->arity)
+  if (!fun->arity) // change type to function
     fun->Functor.Object.id = cos_class_id(classref(Function3));
 
   return fun;
@@ -202,7 +189,7 @@ Functor4_init(struct Functor4* fun)
             | ((fun->arg[2] != 0) << 2)
             | ((fun->arg[3] != 0) << 3);
 
-  if (!fun->arity)
+  if (!fun->arity) // change type to function
     fun->Functor.Object.id = cos_class_id(classref(Function4));
 
   return fun;
@@ -217,7 +204,7 @@ Functor5_init(struct Functor5* fun)
             | ((fun->arg[3] != 0) << 3)
             | ((fun->arg[4] != 0) << 4);
 
-  if (!fun->arity)
+  if (!fun->arity) // change type to function
     fun->Functor.Object.id = cos_class_id(classref(Function5));
 
   return fun;

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.8 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Value.h,v 1.9 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -54,6 +54,8 @@
          <- Float
          <- Complex
          <- BigFloat   (gmp)
+
+   <- DateTime
 
    <- Range
    <- Slice

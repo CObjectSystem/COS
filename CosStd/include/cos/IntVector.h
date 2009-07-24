@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.h,v 1.3 2009/03/11 10:20:41 ldeniau Exp $
+ | $Id: IntVector.h,v 1.4 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -40,32 +40,20 @@
 
 /* NOTE-USER: IntVector class cluster constructors
 
-   see cos/Vector.h
+   see also cos/Vector.h
 */
 
 defclass(IntVector, Vector)
+  I32 *value;
   U32  size;
   I32  stride;
-  I32 *value;
 endclass
 
 // ----- automatic constructors
 
-#define aIntVector(...)        ( (OBJ)atIntVector       (__VA_ARGS__) )
-#define aIntVectorRef(...)     ( (OBJ)atIntVectorRef    (__VA_ARGS__) )
-#define aIntVectorView(...)    ( (OBJ)atIntVectorView   (__VA_ARGS__) )
-#define aIntVectorSubview(...) ( (OBJ)atIntVectorSubview(__VA_ARGS__) )
-
-// --- shortcuts
-
-#ifndef COS_NOSHORTCUT
-
-#define aIntVec(...)        aIntVector       (__VA_ARGS__)
-#define aIntVecRef(...)     aIntVectorRef    (__VA_ARGS__)
-#define aIntVecView(...)    aIntVectorView   (__VA_ARGS__)
-#define aIntVecSubview(...) aIntVectorSubview(__VA_ARGS__)
-
-#endif
+#define aIntVector(...)     ( (OBJ)atIntVector    (__VA_ARGS__) )
+#define aIntVectorRef(...)  ( (OBJ)atIntVectorRef (__VA_ARGS__) )
+#define aIntVectorView(...) ( (OBJ)atIntVectorView(__VA_ARGS__) )
 
 /***********************************************************
  * Implementation (private)
@@ -80,7 +68,6 @@ endclass
 // ----- Dynamic vector
 
 defclass(IntVectorDynamicN, IntVector)
-  I32 *base;
 endclass
 
 // ---
@@ -105,19 +92,20 @@ defclass(IntVectorN, IntVector) I32 _value[]; endclass
 
 // ----- allocators and initializers
 
+struct IntVector* IntVectorRef_init (struct IntVector*,I32*,U32);
+struct IntVector* IntVectorView_init(struct IntVectorView*,struct IntVector*,struct Slice*);
+
 struct IntVector* IntVector_alloc         (U32);
-struct IntVector* IntVectorView_alloc     (struct IntVector*,U32,U32,U32);
-struct IntVector* IntVectorView_init      (struct IntVectorView*,I32);
-struct IntVector* IntVectorSubview_init   (struct IntVectorView*,I32);
 struct IntVector* IntVectorDynamic_alloc  (U32);
+struct IntVector* IntVectorView_alloc     (struct IntVector*,struct Slice*);
+
 void              IntVectorDynamic_adjust (struct IntVectorDynamic*);
 void              IntVectorDynamic_enlarge(struct IntVectorDynamic*,F64);
 
 // ----- automatic constructors
 
-#define atIntVector(...)         atVector       (Int,I32,__VA_ARGS__)
-#define atIntVectorRef(...)      atVectorRef    (Int,I32,__VA_ARGS__)
-#define atIntVectorView(...)     atVectorView   (Int,I32,__VA_ARGS__)
-#define atIntVectorSubview(...)  atVectorSubview(Int,I32,__VA_ARGS__)
+#define atIntVector(...)              atVector    (Int,I32,__VA_ARGS__)
+#define atIntVectorRef(buffer,slice)  atVectorRef (Int,buffer,slice)
+#define atIntVectorView(vector,slice) atVectorView(Int,vector,slice)
 
 #endif // COS_INTVECTOR_H

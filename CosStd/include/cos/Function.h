@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Function.h,v 1.6 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: Function.h,v 1.7 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -107,7 +107,7 @@ defclass(CpxFunction5,Function) C64FCT5 fct; endclass
 
 #define aFunctionT(T,F,N) \
   ((OBJ)&(struct COS_PP_CAT3(T,Function,N)) { \
-   {{{ COS_CLS_NAME(COS_PP_CAT3(T,Function,N)).Behavior.id, COS_RC_AUTO }}}, \
+   {{ cos_object_auto(COS_PP_CAT3(T,Function,N)) }}, \
    (F) })
 
 #endif // COS_FUNCTION_H

@@ -1,7 +1,10 @@
+#ifndef COS_PRP_SEQUENCE_H
+#define COS_PRP_SEQUENCE_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vector
+ | COS properties for sequences
  |
  o---------------------------------------------------------------------o
  |
@@ -29,50 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.5 2009/07/24 12:36:27 ldeniau Exp $
+ | $Id: sequence.h,v 1.1 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
-#include <cos/Vector.h>
+#include <cos/Property.h>
 
-// NOTE-TODO: to move to IntVector.h once ready
-#include <cos/IntVector.h>
+// sequence properties
+defproperty(array);
 
-#include <cos/gen/object.h>
-#include <cos/gen/init.h>
-
-makclass(Vector, ValueSequence);
-
-// NOTE-TODO: move to IntVector.c once ready
-makclass(IntVector, Vector);
-
-// ------ Vector cluster front-end
-
-defmethod(OBJ, galloc, mVector)
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gdeinit, Vector)
-  retmethod(_1);
-endmethod
-
-#if 0
-// ----- constructors from a vector
-
-defmethod(OBJ, ginitWithIntPtr, mVector, (U32)n, (I32*)val)
-  retmethod( ginitWith(_1, aIntVectorRef(n,val)) );
-endmethod
-
-defmethod(OBJ, ginitWithLngPtr, mVector, (U32)n, (I64*)val)
-  retmethod( ginitWith(_1, aLngVectorRef(n,val)) );
-endmethod
-
-defmethod(OBJ, ginitWithFltPtr, mVector, (U32)n, (F64*)val)
-  retmethod( ginitWith(_1, aFltVectorRef(n,val)) );
-endmethod
-
-defmethod(OBJ, ginitWithCpxPtr, mVector, (U32)n, (C64*)val)
-  retmethod( ginitWith(_1, aCpxVectorRef(n,val)) );
-endmethod
-
-#endif
+#endif // COS_PRP_SEQUENCE_H

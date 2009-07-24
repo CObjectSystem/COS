@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.5 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.6 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -43,14 +43,19 @@
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 
-// ----- apply (in place)
+#include <cos/carray.h>
 
-defmethod(void, gapply, Array, Functor)
-  OBJ *obj = self->object;
-  OBJ *end = self->object+self->size;
+// ----- foreach (in place)
 
-  while(obj < end)
-    geval1(_2, *obj++);
+defmethod(void, gforeach, Array, Functor)
+  OBJ *obj   = self->object;
+  I32  obj_s = self->stride;
+  OBJ *end   = self->object + self->size*self->stride;
+
+  while (obj != end) {
+    geval1(_2, *obj);
+    obj += obj_s;
+  }
 endmethod
 
 // ----- map, map2, map3, map4
@@ -58,12 +63,16 @@ endmethod
 defmethod(OBJ, gmap, Functor, Array)
   struct Array* arr = Array_alloc(self2->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+arr->size;
-  OBJ *src = self2->object;
 
-  while(obj < end)
-    *obj++ = gretain( geval1(_1,*src++) );
+  OBJ *dst   = arr->object;
+  OBJ *end   = arr->object + arr->size;
+  OBJ *src   = self2->object;
+  I32  src_s = self2->stride;
+
+  while (dst != end) {
+    *dst++ = gretain( geval1(_1,*src) );
+    src += src_s;
+  }
 
   UNPRT(_arr);
   retmethod(gautoRelease(_arr));
@@ -71,15 +80,22 @@ endmethod
 
 defmethod(OBJ, gmap2, Functor, Array, Array)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr  = (OBJ)arr; PRT(_arr);
-  OBJ *obj  = arr  ->object;
-  OBJ *end  = arr  ->object+arr->size; 
-  OBJ *src1 = self2->object;
-  OBJ *src2 = self3->object;
 
-  while(obj < end)
-    *obj++ = gretain( geval2(_1,*src1++,*src2++) );
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+
+  OBJ *dst    = arr->object;
+  OBJ *end    = arr->object + arr->size;
+  OBJ *src1   = self2->object;
+  I32  src1_s = self2->stride;
+  OBJ *src2   = self3->object;
+  I32  src2_s = self3->stride;
+
+  while (dst != end) {
+    *dst++ = gretain( geval2(_1,*src1,*src2) );
+    src1 += src1_s;
+    src2 += src2_s;
+  }
 
   UNPRT(_arr);
   retmethod(gautoRelease(_arr));
@@ -88,16 +104,25 @@ endmethod
 defmethod(OBJ, gmap3, Functor, Array, Array, Array)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
   if (size > self4->size) size = self4->size;
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr  = (OBJ)arr; PRT(_arr);
-  OBJ *obj  = arr  ->object;
-  OBJ *end  = arr  ->object+arr->size; 
-  OBJ *src1 = self2->object;
-  OBJ *src2 = self3->object;
-  OBJ *src3 = self4->object;
 
-  while(obj < end)
-    *obj++ = gretain( geval3(_1,*src1++,*src2++,*src3++) );
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+
+  OBJ *dst    = arr->object;
+  OBJ *end    = arr->object + arr->size;
+  OBJ *src1   = self2->object;
+  I32  src1_s = self2->stride;
+  OBJ *src2   = self3->object;
+  I32  src2_s = self3->stride;
+  OBJ *src3   = self4->object;
+  I32  src3_s = self4->stride;
+
+  while (dst != end) {
+    *dst++ = gretain( geval3(_1,*src1,*src2,*src3) );
+    src1 += src1_s;
+    src2 += src2_s;
+    src3 += src3_s;
+  }
 
   UNPRT(_arr);
   retmethod(gautoRelease(_arr));
@@ -107,17 +132,28 @@ defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
   if (size > self4->size) size = self4->size;
   if (size > self5->size) size = self5->size;
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr  = (OBJ)arr; PRT(_arr);
-  OBJ *obj  = arr  ->object;
-  OBJ *end  = arr  ->object+arr->size; 
-  OBJ *src1 = self2->object;
-  OBJ *src2 = self3->object;
-  OBJ *src3 = self4->object;
-  OBJ *src4 = self5->object;
 
-  while(obj < end)
-    *obj++ = gretain( geval4(_1,*src1++,*src2++,*src3++,*src4++) );
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+
+  OBJ *dst    = arr->object;
+  OBJ *end    = arr->object + arr->size;
+  OBJ *src1   = self2->object;
+  I32  src1_s = self2->stride;
+  OBJ *src2   = self3->object;
+  I32  src2_s = self3->stride;
+  OBJ *src3   = self4->object;
+  I32  src3_s = self4->stride;
+  OBJ *src4   = self5->object;
+  I32  src4_s = self5->stride;
+
+  while (dst != end) {
+    *dst++ = gretain( geval4(_1,*src1,*src2,*src3,*src4) );
+    src1 += src1_s;
+    src2 += src2_s;
+    src3 += src3_s;
+    src4 += src4_s;
+  }
 
   UNPRT(_arr);
   retmethod(gautoRelease(_arr));
@@ -126,23 +162,29 @@ endmethod
 // ----- all, any
 
 defmethod(OBJ, gall, Array, Functor)
-  OBJ *obj = self->object;
-  OBJ *end = self->object+self->size;
+  OBJ *obj   = self->object;
+  I32  obj_s = self->stride;
+  OBJ *end   = self->object + self->size*self->stride;
 
-  for (; obj < end; obj++)
-    if (geval1(_2, *obj) == False)
+  while (obj != end) {
+    if (geval1(_2, *obj) != True)
       retmethod(False);
+    obj += obj_s;
+  }
       
   retmethod(True);
 endmethod
 
 defmethod(OBJ, gany, Array, Functor)
-  OBJ *obj = self->object;
-  OBJ *end = self->object+self->size;
+  OBJ *obj   = self->object;
+  I32  obj_s = self->stride;
+  OBJ *end   = self->object + self->size*self->stride;
 
-  for (; obj < end; obj++)
+  while (obj != end) {
     if (geval1(_2, *obj) == True)
       retmethod(True);
+    obj += obj_s;
+  }
       
   retmethod(False);
 endmethod
@@ -152,41 +194,89 @@ endmethod
 defmethod(OBJ, gfilter, Array, Functor)
   struct Array* arr = ArrayDynamic_alloc(self->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *end = self->object+self->size;
-  OBJ *obj = arr ->object;
-  OBJ *src = self->object;
 
-  for (; src < end; src++)
+  OBJ *dst   = arr ->object;
+  OBJ *src   = self->object;
+  I32  src_s = self->stride;
+  OBJ *end   = self->object + self->size*self->stride;
+
+  while (src != end) {
     if (geval1(_2, *src) == True)
-      *obj++ = gretain(*src), ++arr->size;
+      *dst++ = gretain(*src), ++arr->size;
+    src += src_s;
+  }
 
   gadjust(_arr);
   UNPRT(_arr);
   retmethod(gautoRelease(_arr));
 endmethod
 
-defmethod(OBJ, greduce, Array, Functor, Object)
-  OBJ  obj = _3;
-  OBJ *src = self->object;
-  OBJ *end = self->object+self->size;
-  
-  while (src < end)
-    obj = geval2(_2, obj, *src++);
+defalias(OBJ, (gfoldl)greduce    , Array, Functor, Object);
+defalias(OBJ, (gscanl)gaccumulate, Array, Functor, Object);
 
-  retmethod(obj);
+defmethod(OBJ, gfoldl, Array, Functor, Object)
+  OBJ *src   = self->object;
+  I32  src_s = self->stride;
+  OBJ *end   = self->object + self->size*self->stride;
+  OBJ  res   = _3;
+  
+  while (src != end) {
+    res = geval2(_2, res, *src);
+    src += src_s;
+  }
+
+  retmethod(res);
 endmethod
 
-defmethod(OBJ, gaccumulate, Array, Functor, Object)
+defmethod(OBJ, gfoldr, Array, Functor, Object)
+  OBJ *src   = self->object + self->size*self->stride;
+  I32  src_s = self->stride;
+  OBJ *end   = self->object;
+  OBJ res    = _3;
+  
+  while (src != end) {
+    src -= src_s;
+    res = geval2(_2, *src, res);
+  }
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, gscanl, Array, Functor, Object)
   struct Array* arr = Array_alloc(self->size+1);
   OBJ _arr = (OBJ)arr; PRT(_arr);
-  OBJ *obj = arr  ->object;
-  OBJ *end = arr  ->object+arr->size;
-  OBJ *src = self->object;
 
-  *obj++ = gretain(_3);
+  OBJ *dst   = arr->object;
+  OBJ *end   = arr->object + arr->size;
+  OBJ *src   = self->object;
+  I32  src_s = self->stride;
+
+  *dst++ = gretain(_3);
   
-  for (; obj < end; obj++)
-    *obj = gretain( geval2(_2, obj[-1], *src++) );
+  while (dst != end) {
+    *dst = gretain( geval2(_2, *(dst-1), *src) );
+    src += src_s, dst++;
+  }
+
+  UNPRT(_arr);
+  retmethod(gautoRelease(_arr));
+endmethod
+
+defmethod(OBJ, gscanr, Array, Functor, Object)
+  struct Array* arr = Array_alloc(self->size+1);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+
+  OBJ *dst   = arr->object + arr->size;
+  OBJ *end   = arr->object;
+  OBJ *src   = self->object + self->size*self->stride;
+  I32  src_s = self->stride;
+
+  *--dst = gretain(_3);
+
+  while (dst != end) {
+    src -= src_s, dst--;
+    *dst = gretain( geval2(_2, *src, *(dst+1)) );
+  }
 
   UNPRT(_arr);
   retmethod(gautoRelease(_arr));
@@ -198,21 +288,25 @@ defmethod(OBJ, gfind, Array, Object, Functor)
   useclass(Lesser, Equal, Greater);
 
   if (self->size == 0)
-    retmethod(0);
+    retmethod(Nil);
 
-  OBJ *obj = self->object;
-  OBJ  res = geval2(_3, _2, *obj);
+  OBJ *obj   = self->object;
+  I32  obj_s = self->stride;
+  OBJ  res   = geval2(_3, _2, *obj); // bsearch order
 
   if (res == True || res == Equal) // found
     retmethod(*obj);
 
   // linear search
   if (res == False) {
-    OBJ *end = self->object+self->size;
-    
-    for (++obj; obj < end; obj++)
+    OBJ *end = self->object + self->size*self->stride;
+
+    obj += obj_s;
+    while (obj != end) {
       if (geval2(_3, _2, *obj) == True) // found
         retmethod(*obj);
+      obj += obj_s;
+    }
 
     retmethod(Nil);
   }
@@ -225,13 +319,13 @@ defmethod(OBJ, gfind, Array, Object, Functor)
     "gfind expects functor returning TrueFalse or Ordered predicates" );
 
   U32 lo = 1, hi = self->size-1;
-    
-  while(lo <= hi) {
+
+  while (lo <= hi) {
     U32 i = (lo + hi) / 2;
-    res = geval2(_3, _2, obj[i]);
+    res = geval2(_3, _2, obj[i*obj_s]);
 
     if (res == Equal)
-      retmethod(obj[i]); // found
+      retmethod(obj[i*obj_s]); // found
 
     if (res == Lesser)
       hi = i-1;
@@ -246,7 +340,7 @@ endmethod
 
 #define NETSORT(a,r) \
   do { \
-    switch(r) { \
+    switch (r) { \
     case 1: \
       SORT(a[0],a[1]); \
       return; \
@@ -280,7 +374,7 @@ endmethod
       SORT(a[1],a[2]); SORT(a[3],a[4]); \
       return; \
     } \
-  } while(0)
+  } while (0)
 
 /* from "Quicksort Is Optimal", R. Sedgwick & J. Bentley, 2002
    plus some practical improvements.
@@ -299,7 +393,7 @@ pivot(void)
 }
 
 static void
-quicksort_fun(OBJ a[], I32 r, OBJ fun)
+quicksort(OBJ a[], I32 r, OBJ fun)
 {
   useclass(Lesser, Equal);
   I32 i, j, p, q;
@@ -351,13 +445,9 @@ quicksort_fun(OBJ a[], I32 r, OBJ fun)
   else
     l = a, s = a+i, q = j, p = r-i;
 
-  quicksort_fun(s,p,fun);
-  quicksort_fun(l,q,fun); // tail recursion
+  quicksort(s,p,fun);
+  quicksort(l,q,fun); // tail recursion
 }
-
-defmethod(void, gsort, Array, Functor)
-  quicksort_fun(self->object, self->size-1, _2);
-endmethod
 
 // -----
 
@@ -365,7 +455,7 @@ endmethod
 #define GCMP(a,b) geval2(fun,o[a],o[b])
 
 static void
-iquicksort_fun(I32 a[], OBJ o[], I32 r, OBJ fun)
+iquicksort(I32 a[], OBJ o[], I32 r, OBJ fun)
 {
   useclass(Lesser, Equal);
   I32 i, j, p, q, t;
@@ -417,22 +507,57 @@ iquicksort_fun(I32 a[], OBJ o[], I32 r, OBJ fun)
   else
     l = a, s = a+i, q = j, p = r-i;
 
-  iquicksort_fun(s,o,p,fun);
-  iquicksort_fun(l,o,q,fun); // tail recursion
+  iquicksort(s,o,p,fun);
+  iquicksort(l,o,q,fun); // tail recursion
 }
+
+// -----
+
+defmethod(void, gsort, Array, Functor)
+  if (self->stride == 1) {
+    quicksort(self->object, self->size-1, _2);
+    return;
+  }
+
+  if (self->stride == -1) {
+    quicksort(self->object, self->size-1, _2);
+    greverse(_1);
+    return;
+  }
+
+  OBJ *obj   = self->object;
+  U32  obj_z = self->size;
+  I32  obj_s = self->stride;
+
+  TMPARRAY_CREATE(OBJ,buf,obj_z); // OBJ buf[obj_z];
+
+  OBJ *cur, *end = buf + obj_z;
+
+  // forward copy
+  for (cur = buf; cur != end; cur++)
+    *cur = *obj, obj += obj_s;
+
+  quicksort(buf, self->size-1, _2);
+
+  // backward copy
+  for (cur = buf; cur != end; cur++)
+    *obj = *cur, obj += obj_s;
+
+  TMPARRAY_DESTROY(buf);
+endmethod
 
 defmethod(OBJ, gisort, Array, Functor)
   useclass(IntVector);
 
   OBJ _vec = gnewWith2(IntVector, aInt(self->size), aInt(0)); PRT(_vec);
   struct IntVector *vec = STATIC_CAST(struct IntVector*, _vec);
-  
+
   for (U32 i = 0; i < self->size; i++)
-    vec->value[i] = i;
-    
-  iquicksort_fun(vec->value, self->object, self->size-1, _2);
+    vec->value[i] = i*self->stride;
+
+  iquicksort(vec->value, self->object, self->size-1, _2);
   
   UNPRT(_vec);
-  retmethod(_vec);
+  retmethod(gautoRelease(_vec));
 endmethod
 

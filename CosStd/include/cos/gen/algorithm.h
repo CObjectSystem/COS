@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.10 2009/02/12 08:47:52 ldeniau Exp $
+ | $Id: algorithm.h,v 1.11 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -41,8 +41,8 @@
 #endif 
 
 // in place (returned value of fun is discarded if any)
-defgeneric(void, gapply  , _1, fun);
-defgeneric(void, gpermute, _1, vec);
+defgeneric(void, gforeach, _1, fun);
+defgeneric(void, gpermute, _1, idx);
 defgeneric(void, greverse, _1);
 
 // map
@@ -50,11 +50,17 @@ defgeneric(OBJ , gmap , fun, _1);
 defgeneric(OBJ , gmap2, fun, _1, _2);
 defgeneric(OBJ , gmap3, fun, _1, _2, _3);
 defgeneric(OBJ , gmap4, fun, _1, _2, _3, _4);
+defgeneric(OBJ , gmapn, fun, _1);
 
-// filter, reduce
+// filter, fold, scan
 defgeneric(OBJ , gfilter    , _1, fun);
-defgeneric(OBJ , greduce    , _1, fun, res);
-defgeneric(OBJ , gaccumulate, _1, fun, acc);
+defgeneric(OBJ , greduce    , _1, fun, ini); // alias for foldl
+defgeneric(OBJ , gaccumulate, _1, fun, ini); // alias for scanl
+
+defgeneric(OBJ , gfoldl, _1, fun, ini);
+defgeneric(OBJ , gfoldr, _1, fun, ini);
+defgeneric(OBJ , gscanl, _1, fun, ini);
+defgeneric(OBJ , gscanr, _1, fun, ini);
 
 // zip
 defgeneric(OBJ , gzip , _1, _2);
@@ -68,12 +74,9 @@ defgeneric(OBJ , gcat3, _1, _2, _3);
 defgeneric(OBJ , gcat4, _1, _2, _3, _4);
 defgeneric(OBJ , gcatn, _1);
 
-// cut
-defgeneric(OBJ , gcut , _1, at);
-
 // all, any, min, max
-defgeneric(OBJ , gall, _1, fun);
-defgeneric(OBJ , gany, _1, fun);
+defgeneric(OBJ , gall, _1, fun); // fun should return TrueFalse
+defgeneric(OBJ , gany, _1, fun); // fun should return TrueFalse
 defgeneric(OBJ , gmin, _1);
 defgeneric(OBJ , gmax, _1);
 
@@ -82,20 +85,20 @@ defgeneric(void, gsort    , _1, fun); // in place
 defgeneric(OBJ , gisort   , _1, fun); // return an Array of indexes
 defgeneric(OBJ , gisSorted, _1, fun); // return True or False
 
-// linear      find if fun returns TrueFalse
-// logarithmic find if fun returns Ordered
+// linear search if fun returns TrueFalse
+// binary search if fun returns Ordered
 defgeneric(OBJ , gfind , _1, obj, fun);
 defgeneric(OBJ , gifind, _1, obj, fun); // return an index or a key
 
-// bag-like algorithms
-defgeneric(OBJ , gunique, _1, fun);
+// seq-like algorithms (fun must return TrueFalse)
+defgeneric(OBJ , gunique, _1, fun); // remove contiguous equal elements
 defgeneric(OBJ , ggroup , _1, fun);
 defgeneric(OBJ , gsplit , _1, fun);
 
 // set-like algorithms
-defgeneric(OBJ , gdiff     , _1, _2, fun);
-defgeneric(OBJ , gunion    , _1, _2, fun);
-defgeneric(OBJ , gintersect, _1, _2, fun);
+defgeneric(OBJ , gdiff     , _1, _2);
+defgeneric(OBJ , gunion    , _1, _2);
+defgeneric(OBJ , gintersect, _1, _2);
 
 #endif // COS_GEN_ALGORITHM_H
 

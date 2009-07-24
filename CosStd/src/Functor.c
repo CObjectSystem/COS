@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.9 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Functor.c,v 1.10 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -206,7 +206,7 @@ defmethod(OBJ, ginitWith, Compose, Compose) // copy
   OBJ *fun = self1->functor;
   OBJ *end = self1->functor+self1->size;
 
-  while(fun < end)
+  while (fun < end)
     *fun++ = gretain(*src++);
 
   retmethod(_1);
@@ -215,13 +215,16 @@ endmethod
 defmethod(OBJ, ginitWith, Compose, Array)
   test_assert(self->size == self2->size, "incompatible composition size");
 
-  OBJ *obj = self2->object;
-  OBJ *fun = self1->functor+self1->size;
-  OBJ *end = self1->functor;
+  OBJ *obj   = self2->object;
+  I32  obj_s = self2->stride;
+  OBJ *fun   = self1->functor+self1->size;
+  OBJ *end   = self1->functor;
 
-  while(fun-- > end) // reverse references
-    *fun = gretain(*obj++);
-  
+  while (fun-- > end) { // reverse references
+    *fun = gretain(*obj);
+    obj += obj_s;
+  }
+
   retmethod(_1);
 endmethod
 
@@ -292,51 +295,51 @@ static const U8 argc[32] = {
     4,  5
 };
 
-defmethod(U32, garity, Functor1)
+defmethod(I32, garity, Functor1)
   retmethod(0);
 endmethod
 
-defmethod(U32, garity, Functor2)
+defmethod(I32, garity, Functor2)
   retmethod(2-argc[self->arity]);
 endmethod
 
-defmethod(U32, garity, Functor3)
+defmethod(I32, garity, Functor3)
   retmethod(3-argc[self->arity]);
 endmethod
 
-defmethod(U32, garity, Functor4)
+defmethod(I32, garity, Functor4)
   retmethod(4-argc[self->arity]);
 endmethod
 
-defmethod(U32, garity, Functor5)
+defmethod(I32, garity, Functor5)
   retmethod(5-argc[self->arity]);
 endmethod
 
-defmethod(U32, garity, Function1)
+defmethod(I32, garity, Function1)
   retmethod(1);
 endmethod
 
-defmethod(U32, garity, Function2)
+defmethod(I32, garity, Function2)
   retmethod(2);
 endmethod
 
-defmethod(U32, garity, Function3)
+defmethod(I32, garity, Function3)
   retmethod(3);
 endmethod
 
-defmethod(U32, garity, Function4)
+defmethod(I32, garity, Function4)
   retmethod(4);
 endmethod
 
-defmethod(U32, garity, Function5)
+defmethod(I32, garity, Function5)
   retmethod(5);
 endmethod
 
-defmethod(U32, garity, BiFunctor)
+defmethod(I32, garity, BiFunctor)
   retmethod( garity(self->fun1) + garity(self->fun2) );
 endmethod
 
-defmethod(U32, garity, Compose)
+defmethod(I32, garity, Compose)
   retmethod( garity(self->functor[0]) );
 endmethod
 
@@ -355,7 +358,7 @@ endmethod
 // ----- Functor2  & Function2
 
 defmethod(OBJ, geval, Functor2)
-  switch(self->arity) {
+  switch (self->arity) {
   case 3: // 1 1
     retmethod(self->fct(self->arg[0],self->arg[1]));
   default:
@@ -364,7 +367,7 @@ defmethod(OBJ, geval, Functor2)
 endmethod
 
 defmethod(OBJ, geval1, Functor2, (OBJ)arg1)
-  switch(self->arity) {
+  switch (self->arity) {
   case 1: // 1 0
     retmethod(self->fct(self->arg[0],arg1        ));
   case 2: // 0 1
@@ -381,7 +384,7 @@ endmethod
 // ----- Functor3 & Function3
 
 defmethod(OBJ, geval, Functor3)
-  switch(self->arity) {
+  switch (self->arity) {
   case 7: // 1 1 1
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2]));
   default:
@@ -390,7 +393,7 @@ defmethod(OBJ, geval, Functor3)
 endmethod
 
 defmethod(OBJ, geval1, Functor3, (OBJ)arg1)
-  switch(self->arity) {
+  switch (self->arity) {
   case 3: // 1 1 0
     retmethod(self->fct(self->arg[0],self->arg[1],arg1        ));
   case 5: // 1 0 1
@@ -403,7 +406,7 @@ defmethod(OBJ, geval1, Functor3, (OBJ)arg1)
 endmethod
 
 defmethod(OBJ, geval2, Functor3, (OBJ)arg1, (OBJ)arg2)
-  switch(self->arity) {
+  switch (self->arity) {
   case 1: // 1 0 0
     retmethod(self->fct(self->arg[0],arg1        ,arg2        ));
   case 2: // 0 1 0
@@ -422,7 +425,7 @@ endmethod
 // ----- Functor4 & Function4
 
 defmethod(OBJ, geval, Functor4)
-  switch(self->arity) {
+  switch (self->arity) {
   case 15: // 1 1 1 1
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],self->arg[3]));
   default:
@@ -431,7 +434,7 @@ defmethod(OBJ, geval, Functor4)
 endmethod
 
 defmethod(OBJ, geval1, Functor4, (OBJ)arg1)
-  switch(self->arity) {
+  switch (self->arity) {
   case  7: // 1 1 1 0
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],arg1        ));
   case 11: // 1 1 0 1
@@ -446,7 +449,7 @@ defmethod(OBJ, geval1, Functor4, (OBJ)arg1)
 endmethod
 
 defmethod(OBJ, geval2, Functor4, (OBJ)arg1, (OBJ)arg2)
-  switch(self->arity) {
+  switch (self->arity) {
   case  3: // 1 1 0 0
     retmethod(self->fct(self->arg[0],self->arg[1],arg1        ,arg2        ));
   case  5: // 1 0 1 0
@@ -465,7 +468,7 @@ defmethod(OBJ, geval2, Functor4, (OBJ)arg1, (OBJ)arg2)
 endmethod
 
 defmethod(OBJ, geval3, Functor4, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3)
-  switch(self->arity) {
+  switch (self->arity) {
   case 1: // 1 0 0 0
     retmethod(self->fct(self->arg[0],arg1        ,arg2        ,arg3        ));
   case 2: // 0 1 0 0
@@ -486,7 +489,7 @@ endmethod
 // ----- Functor5 & Function5
 
 defmethod(OBJ, geval, Functor5)
-  switch(self->arity) {
+  switch (self->arity) {
   case 31: // 1 1 1 1 1
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],self->arg[3],self->arg[4]));
   default:
@@ -495,7 +498,7 @@ defmethod(OBJ, geval, Functor5)
 endmethod
 
 defmethod(OBJ, geval1, Functor5, (OBJ)arg1)
-  switch(self->arity) {
+  switch (self->arity) {
   case 15: // 1 1 1 1 0
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],self->arg[3],arg1        ));
   case 23: // 1 1 1 0 1
@@ -512,7 +515,7 @@ defmethod(OBJ, geval1, Functor5, (OBJ)arg1)
 endmethod
 
 defmethod(OBJ, geval2, Functor5, (OBJ)arg1, (OBJ)arg2)
-  switch(self->arity) {
+  switch (self->arity) {
   case  7: // 1 1 1 0 0
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],arg1        ,arg2        ));
   case 11: // 1 1 0 1 0
@@ -539,7 +542,7 @@ defmethod(OBJ, geval2, Functor5, (OBJ)arg1, (OBJ)arg2)
 endmethod
 
 defmethod(OBJ, geval3, Functor5, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3)
-  switch(self->arity) {
+  switch (self->arity) {
   case  3: // 1 1 0 0 0
     retmethod(self->fct(self->arg[0],self->arg[1],arg1        ,arg2        ,arg3        ));
   case  5: // 1 0 1 0 0
@@ -566,7 +569,7 @@ defmethod(OBJ, geval3, Functor5, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3)
 endmethod
 
 defmethod(OBJ, geval4, Functor5, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3, (OBJ)arg4)
-  switch(self->arity) {
+  switch (self->arity) {
   case  1: // 1 0 0 0 0
     retmethod(self->fct(self->arg[0],arg1        ,arg2        ,arg3        ,arg4        ));
   case  2: // 0 1 0 0 0

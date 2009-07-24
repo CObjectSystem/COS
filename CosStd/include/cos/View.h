@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: View.h,v 1.2 2009/02/27 23:28:53 ldeniau Exp $
+ | $Id: View.h,v 1.3 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -41,9 +41,6 @@
 #endif 
 
 defclass(View)
-endclass
-
-defclass(Subview, View)
 endclass
 
 #endif // COS_VIEW_H

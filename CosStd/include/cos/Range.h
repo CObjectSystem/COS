@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.10 2009/07/02 13:20:26 ldeniau Exp $
+ | $Id: Range.h,v 1.11 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -56,9 +56,7 @@
     aRange(0,5, 1) -> closed with size = 6
     aRange(0,0, 1) -> closed with size = 1
     aRange(0,5,-1) -> open   with size = 0
-    aRange(0,0, 0) -> open   with size = 0 (non-monotonic)
-
-  - Ranges with zero stride are considered as open intervals
+    aRange(0,0, 0) -> close  with size = 0 and stride = 1
 
   - Ranges can be converted to Slices for some sequence
   - Slices can be converted to Ranges
@@ -68,18 +66,13 @@ defclass(Range, Value)
   I32 start;
   I32 end;
   I32 stride;
+  COS_FINAL_CLASS
 endclass
-
-// ----- shortcuts
-
-#ifndef COS_NOSHORTCUT
-#define aRng(...) aRange(__VA_ARGS__)
-#endif
 
 // ----- automatic constructors
 
 #define aRange(...)  ( (OBJ)atRange(__VA_ARGS__) )
-#define atRange(...) COS_PP_CAT_NARG(atRange,__VA_ARGS__)(__VA_ARGS__)
+#define atRange(...) COS_PP_CAT_NARG(atRange_,__VA_ARGS__)(__VA_ARGS__)
 
 /* NOTE-USER: Range indexing policy
    - starts at zero
@@ -99,18 +92,59 @@ Range_index(I32 index, U32 seq_size) {
  * Implementation (private)
  */
 
-#define atRange1(end) \
-        atRange2(0,end)
+#define atRange_1(end) \
+        atRange_2(0,end)
 
-#define atRange2(start,end) \
-        atRange3(start,end,1)
+#define atRange_2(start,end) \
+        atRange_3(start,end,1)
 
-#define atRange3(start,end,stride) \
-  ( &(struct Range){ \
-    {{ COS_CLS_NAME(Range).Behavior.id, COS_RC_AUTO }}, \
-    start, end, stride })
+#define atRange_3(start,end,stride) \
+  ( &(struct Range){{ cos_object_auto(Range) }, \
+    start, end, stride ? stride : 1 })
 
-// --- inliners (low-level monorphic interface)
+// --- Range inliners (low-level monorphic interface)
+
+// constructor
+static inline struct Range
+Range_make(I32 start, I32 end, I32 stride) {
+  return *atRange(start, end, stride);
+}
+
+// initializer
+static inline struct Range*
+Range_init(struct Range *r, I32 start, I32 end, I32 stride) {
+  r->start  = start;
+  r->end    = end;
+  r->stride = stride ? stride : 1;
+
+  return r;
+}
+
+// copy
+static inline struct Range*
+Range_copy(struct Range *r1, const struct Range *r2) {
+  r1->start  = r2->start;
+  r1->end    = r2->end;
+  r1->stride = r2->stride;
+
+  return r1;
+}
+
+// getters
+static inline I32
+Range_start(const struct Range *r) {
+  return r->start;
+}
+
+static inline I32
+Range_end(const struct Range *r) {
+  return r->end;
+}
+
+static inline I32
+Range_stride(const struct Range *r) {
+  return r->stride;
+}
 
 // absolute/relative index (normalization should be performed before eval)
 static inline I32
@@ -124,7 +158,7 @@ Range_first(const struct Range *r, U32 seq_size) {
   return Range_index(r->start, seq_size);
 }
 
-// absolute ending index (normalized vs sequence's size)
+// absolute lasting index (normalized vs sequence's size) (included)
 static inline I32
 Range_last(const struct Range *r, U32 seq_size) {
   return Range_index(r->end, seq_size);
@@ -132,23 +166,8 @@ Range_last(const struct Range *r, U32 seq_size) {
 
 // predicates
 static inline BOOL
-Range_isMonotonic(const struct Range *r) {
-  return r->stride != 0;
-}
-
-static inline BOOL
 Range_isContiguous(const struct Range *r) {
   return r->stride == 1 || r->stride == -1;
-}
-
-static inline BOOL
-Range_isPosContiguous(const struct Range *r) {
-  return r->stride == 1;
-}
-
-static inline BOOL
-Range_isNegContiguous(const struct Range *r) {
-  return r->stride == -1;
 }
 
 static inline BOOL
@@ -164,15 +183,15 @@ Range_isClosed(const struct Range *r, U32 seq_size) {
   I32 start = Range_first(r, seq_size);
   I32 end   = Range_last (r, seq_size);
 
-  return r->stride && (r->stride > 0 ? start <= end : start >= end);
+  return r->stride > 0 ? start <= end : start >= end;
 }
 
-// range's size (requires sequence's size)
+// Range's size (requires sequence's size)
 static inline U32
 Range_size(const struct Range *r, U32 seq_size) {
   I32 start = Range_first(r, seq_size);
   I32 end   = Range_last (r, seq_size);
-  I32 size  = r->stride ? (end - start + r->stride) / r->stride : 0;
+  I32 size  = (end - start + r->stride) / r->stride;
 
   return size > 0 ? size : 0;
 }
@@ -195,7 +214,7 @@ Range_normalize(const struct Range *r, U32 seq_size) {
 
 static inline struct Range
 Range_fromSlice(const struct Slice *s) {
-  return *atRange(Slice_first(s), Slice_last(s), s->stride);
+  return *atRange(Slice_first(s), Slice_last(s), Slice_stride(s));
 }
 
 #endif // COS_RANGE_H

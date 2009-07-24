@@ -1,10 +1,10 @@
-#ifndef COS_GEN_FUNCTOR_H
-#define COS_GEN_FUNCTOR_H
+#ifndef COS_CARRAY_H
+#define COS_CARRAY_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS generics for functors
+ | COS C Array, C array utils
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.5 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: carray.h,v 1.1 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -40,14 +40,33 @@
 #include <cos/Object.h>
 #endif 
 
-defgeneric(I32, garity, fun);
-defgeneric(OBJ, geval , fun);
-defgeneric(OBJ, geval1, fun, (OBJ)arg1);
-defgeneric(OBJ, geval2, fun, (OBJ)arg1,(OBJ)arg2);
-defgeneric(OBJ, geval3, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
-defgeneric(OBJ, geval4, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
-defgeneric(OBJ, geval5, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
-defgeneric(OBJ, gevalN, fun, args); // rank 2
+#include <stdlib.h>
 
-#endif // COS_GEN_FUNCTOR_H
+/* NOTE-INFO: low level temporary C array
+   the array is allocated on the stack if its size < TMPARRAY_MAXCHARS
+   otherwise it is allocated on the heap.
+*/
 
+#define TMPARRAY_MAXCHARS (1024 * sizeof(void*))
+
+#define TMPARRAY_CREATE(T,name,nelem) \
+        TMPARRAY_CREATE_(T,name,nelem, \
+    /* local pointer */  COS_PP_CAT(_cos_tmp_array_p_,name), \
+    /* local array   */  COS_PP_CAT(_cos_tmp_array_a_,name), \
+    /* local size    */  COS_PP_CAT(_cos_tmp_array_s_,name))
+
+#define TMPARRAY_CREATE_(T,name,N,P,A,S) \
+  U32 S = N; T *P, \
+    A[S*sizeof(T) <= TMPARRAY_MAXCHARS ? S : 1]; \
+  if (S*sizeof(T) <= TMPARRAY_MAXCHARS) P = A; \
+  else { \
+    useclass(ExBadAlloc); \
+    if ( !(P = malloc(S * sizeof(T))) ) THROW(ExBadAlloc); \
+  } \
+  T *const name = P
+
+#define TMPARRAY_DESTROY(name) \
+  if (name != COS_PP_CAT(_cos_tmp_array_a_,name)) \
+   free(name)
+
+#endif // COS_CARRAY_H

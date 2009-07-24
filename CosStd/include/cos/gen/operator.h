@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: operator.h,v 1.4 2009/02/10 13:03:22 ldeniau Exp $
+ | $Id: operator.h,v 1.5 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,7 @@
 
 /* NOTE-USER: operators policy
    The policy of these methods is to return the operation result in a
-   new autoReleased object resulting from the promotion/coercion of _1
+   new autoDelete object resulting from the promotion/coercion of _1
    and _2 which follows the rules of C99 for primitive types.
 */
 defgeneric(OBJ, gneg , _1);     // return -_1    
@@ -56,19 +56,19 @@ defgeneric(OBJ, gpow , _1, _2); // return _1 ** _2
 defgeneric(OBJ, gmod , _1, _2); // return _1 % _2
 
 /* NOTE-USER: operators policy
-   The policy of these methods it to perform the operation 'in place'
+   The policy of these methods is to perform the operation 'in place'
    in _1 without any type promotion/coercion and return _1. Therefore if
    the types of _1 and _2 differ, some operations may not be available
    if they may induce a loss of information (e.g. gaddTo(Int,Long)).
 */
-defgeneric(void, gnegate   , _1);     // return _1 = -_1 
-defgeneric(void, ginvert   , _1);     // return _1 = 1/_1
-defgeneric(void, gconjugate, _1);     // return _1 = _1^*
-defgeneric(void, gaddTo    , _1, _2); // return _1 += _2 
-defgeneric(void, gsubTo    , _1, _2); // return _1 -= _2 
-defgeneric(void, gmulBy    , _1, _2); // return _1 *= _2 
-defgeneric(void, gdivBy    , _1, _2); // return _1 /= _2 
-defgeneric(void, gpower    , _1, _2); // return _1 = _1 ** _2
-defgeneric(void, gmodulo   , _1, _2); // return _1 %= _2 
+defgeneric(OBJ, gnegate   , _1);     // return _1 = -_1 
+defgeneric(OBJ, ginvert   , _1);     // return _1 = 1/_1
+defgeneric(OBJ, gconjugate, _1);     // return _1 = _1^*
+defgeneric(OBJ, gaddTo    , _1, _2); // return _1 += _2 
+defgeneric(OBJ, gsubTo    , _1, _2); // return _1 -= _2 
+defgeneric(OBJ, gmulBy    , _1, _2); // return _1 *= _2 
+defgeneric(OBJ, gdivBy    , _1, _2); // return _1 /= _2 
+defgeneric(OBJ, gpower    , _1, _2); // return _1 = _1 ** _2
+defgeneric(OBJ, gmodulo   , _1, _2); // return _1 %= _2 
 
 #endif // COS_GEN_OPERATOR_H

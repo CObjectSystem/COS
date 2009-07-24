@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.4 2009/06/30 07:59:35 ldeniau Exp $
+ | $Id: Slice.c,v 1.5 2009/07/24 12:36:27 ldeniau Exp $
  |
 */
 
@@ -42,30 +42,22 @@ makclass(Slice, Value);
 
 // ----- constructors
 
-defmethod(OBJ, ginitWithSlc1, Object, (U32)size)
-  retmethod( ginitWithSlc3(_1, 0, size, 1) );
+defmethod(OBJ, ginitWithSlc1, Slice, (U32)size)
+  retmethod( (OBJ)Slice_init(self, 0, size, 1) );
 endmethod
 
-defmethod(OBJ, ginitWithSlc2, Object, (I32)start, (U32)size)
-  retmethod( ginitWithSlc3(_1, start, size, 1) );
+defmethod(OBJ, ginitWithSlc2, Slice, (I32)start, (U32)size)
+  retmethod( (OBJ)Slice_init(self, start, size, 1));
 endmethod
 
 defmethod(OBJ, ginitWithSlc3, Slice, (I32)start, (U32)size, (I32)stride)
-  self->start  = start;
-  self->size   = size;
-  self->stride = stride;
-
-  retmethod(_1);
+  retmethod( (OBJ)Slice_init(self,start, size, stride) );
 endmethod
 
 // ----- copy
 
 defmethod(OBJ, ginitWith, Slice, Slice)
-  self1->start  = self2->start;
-  self1->size   = self2->size;
-  self1->stride = self2->stride;
-
-  retmethod(_1);
+  retmethod( (OBJ)Slice_copy(self1, self2) );
 endmethod
 
 // ----- equality

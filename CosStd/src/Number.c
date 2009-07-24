@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.10 2009/01/26 14:30:41 ldeniau Exp $
+ | $Id: Number.c,v 1.11 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -195,403 +195,413 @@ endmethod
 
 // ----- negate
 
-defmethod(void, gnegate, Int)
+defmethod(OBJ, gnegate, Int)
   self1->value = -self1->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gnegate, Long)
+defmethod(OBJ, gnegate, Long)
   self1->value = -self1->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gnegate, Float)
+defmethod(OBJ, gnegate, Float)
   self1->value = -self1->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gnegate, Complex)
+defmethod(OBJ, gnegate, Complex)
   self1->value = -self1->value;
+  retmethod(_1);
 endmethod
 
 // ----- invert
 
-defmethod(void, ginvert, Float)
+defmethod(OBJ, ginvert, Float)
   self1->value = 1/self1->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, ginvert, Complex)
+defmethod(OBJ, ginvert, Complex)
   self1->value = 1/self1->value;
+  retmethod(_1);
 endmethod
 
 // ----- addTo
 
-defmethod(void, gaddTo, Int, Int)
+defmethod(OBJ, gaddTo, Int, Int)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gaddTo, Long, Int)
+defmethod(OBJ, gaddTo, Long, Int)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gaddTo, Long, Long)
+defmethod(OBJ, gaddTo, Long, Long)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gaddTo, Float, Int)
+defmethod(OBJ, gaddTo, Float, Int)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gaddTo, Float, Long)
+defmethod(OBJ, gaddTo, Float, Long)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gaddTo, Float, Float)
+defmethod(OBJ, gaddTo, Float, Float)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gaddTo, Complex, Int)
+defmethod(OBJ, gaddTo, Complex, Int)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gaddTo, Complex, Long)
+defmethod(OBJ, gaddTo, Complex, Long)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gaddTo, Complex, Float)
+defmethod(OBJ, gaddTo, Complex, Float)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gaddTo, Complex, Complex)
+defmethod(OBJ, gaddTo, Complex, Complex)
   self1->value += self2->value;
+  retmethod(_1);
 endmethod
 
 // ----- subTo
 
-defmethod(void, gsubTo, Int, Int)
+defmethod(OBJ, gsubTo, Int, Int)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsubTo, Long, Int)
+defmethod(OBJ, gsubTo, Long, Int)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsubTo, Long, Long)
+defmethod(OBJ, gsubTo, Long, Long)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsubTo, Float, Int)
+defmethod(OBJ, gsubTo, Float, Int)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsubTo, Float, Long)
+defmethod(OBJ, gsubTo, Float, Long)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsubTo, Float, Float)
+defmethod(OBJ, gsubTo, Float, Float)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsubTo, Complex, Int)
+defmethod(OBJ, gsubTo, Complex, Int)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsubTo, Complex, Long)
+defmethod(OBJ, gsubTo, Complex, Long)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsubTo, Complex, Float)
+defmethod(OBJ, gsubTo, Complex, Float)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsubTo, Complex, Complex)
+defmethod(OBJ, gsubTo, Complex, Complex)
   self1->value -= self2->value;
+  retmethod(_1);
 endmethod
 
 // ----- mulBy
 
-defmethod(void, gmulBy, Int, Int)
+defmethod(OBJ, gmulBy, Int, Int)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmulBy, Long, Int)
+defmethod(OBJ, gmulBy, Long, Int)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmulBy, Long, Long)
+defmethod(OBJ, gmulBy, Long, Long)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmulBy, Float, Int)
+defmethod(OBJ, gmulBy, Float, Int)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmulBy, Float, Long)
+defmethod(OBJ, gmulBy, Float, Long)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmulBy, Float, Float)
+defmethod(OBJ, gmulBy, Float, Float)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmulBy, Complex, Int)
+defmethod(OBJ, gmulBy, Complex, Int)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmulBy, Complex, Long)
+defmethod(OBJ, gmulBy, Complex, Long)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmulBy, Complex, Float)
+defmethod(OBJ, gmulBy, Complex, Float)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmulBy, Complex, Complex)
+defmethod(OBJ, gmulBy, Complex, Complex)
   self1->value *= self2->value;
+  retmethod(_1);
 endmethod
 
 // ----- divBy
 
-defmethod(void, gdivBy, Int, Int)
+defmethod(OBJ, gdivBy, Int, Int)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdivBy, Long, Int)
+defmethod(OBJ, gdivBy, Long, Int)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdivBy, Long, Long)
+defmethod(OBJ, gdivBy, Long, Long)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdivBy, Float, Int)
+defmethod(OBJ, gdivBy, Float, Int)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdivBy, Float, Long)
+defmethod(OBJ, gdivBy, Float, Long)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdivBy, Float, Float)
+defmethod(OBJ, gdivBy, Float, Float)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdivBy, Complex, Int)
+defmethod(OBJ, gdivBy, Complex, Int)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdivBy, Complex, Long)
+defmethod(OBJ, gdivBy, Complex, Long)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdivBy, Complex, Float)
+defmethod(OBJ, gdivBy, Complex, Float)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdivBy, Complex, Complex)
+defmethod(OBJ, gdivBy, Complex, Complex)
   self1->value /= self2->value;
+  retmethod(_1);
 endmethod
 
 // ----- modulo
 
-defmethod(void, gmodulo, Int, Int)
+defmethod(OBJ, gmodulo, Int, Int)
   self1->value %= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmodulo, Long, Int)
+defmethod(OBJ, gmodulo, Long, Int)
   self1->value %= self2->value;
+  retmethod(_1);
 endmethod
 
-defmethod(void, gmodulo, Long, Long)
+defmethod(OBJ, gmodulo, Long, Long)
   self1->value %= self2->value;
+  retmethod(_1);
 endmethod
 
 // ----- conjugate
 
-defmethod(void, gconjugate, Complex)
+defmethod(OBJ, gconjugate, Complex)
   self->value = complex_make(complex_real(self->value),
                             -complex_imag(self->value));
+  retmethod(_1);
 endmethod
 
 // ----- power
 
-defmethod(void, gpower, Float, Int)
+defmethod(OBJ, gpower, Float, Int)
+  F64 v = self1->value;
   I32 n = self2->value;
   F64 a = 1.0;
   
   if (n < 0) {
     n = -n;
-    self->value = 1.0/self->value;
+    v = 1.0/v;
   }
 
   for (;;) {
     if (n & 1)
-      a *= self->value;
+      a *= v;
 
     if (n >>= 1)
-      self->value *= self->value;
+      v *= v;
     else
       break;
   }
+
+  retmethod(_1);
 endmethod
 
-defmethod(void, gpower, Complex, Int)
+defmethod(OBJ, gpower, Complex, Int)
+  C64 v = self1->value;
   I32 n = self2->value;
   C64 a = 1.0;
   
   if (n < 0) {
     n = -n;
-    self->value = 1.0/self->value;
+    v = 1.0/v;
   }
 
   for (;;) {
     if (n & 1)
-      a *= self->value;
+      a *= v;
 
     if (n >>= 1)
-      self->value *= self->value;
+      v *= v;
     else
       break;
   }
+
+  retmethod(_1);
 endmethod
 
 // ----- neg
 
 defmethod(OBJ, gneg, Number)
-  OBJ res = gclone(_1);
-  gnegate(res);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gnegate(gclone(_1)) ));
 endmethod
 
 // ----- inv
 
 defmethod(OBJ, ginv, Floating)
-  OBJ res = gclone(_1);
-  ginvert(res);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( ginvert(gclone(_1)) ));
 endmethod
 
 // ----- conj
 
 defmethod(OBJ, gconj, Complex)
-  OBJ res = gclone(_1);
-  gconjugate(res);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gconjugate(gclone(_1)) ));
 endmethod
 
 // ----- add
 
 defmethod(OBJ, gadd, Number, Number)
-  OBJ res = gclone(_1);
-  gaddTo(res,_2);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gaddTo(gclone(_1),_2) ));
 endmethod
 
 defmethod(OBJ, gadd, Integral, Long)
-  OBJ res = gclone(_2);
-  gaddTo(res,_1);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gaddTo(gclone(_2),_1) ));
 endmethod
 
 defmethod(OBJ, gadd, Integral, Floating)
-  OBJ res = gclone(_2);
-  gaddTo(res,_1);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gaddTo(gclone(_2),_1) ));
 endmethod
 
 defmethod(OBJ, gadd, Floating, Complex)
-  OBJ res = gclone(_2);
-  gaddTo(res,_1);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gaddTo(gclone(_2),_1) ));
 endmethod
 
 // ----- sub
 
 defmethod(OBJ, gsub, Number, Number)
-  OBJ res = gclone(_1);
-  gsubTo(res,_2);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gsubTo(gclone(_1),_2) ));
 endmethod
 
 defmethod(OBJ, gsub, Integral, Long)
-  OBJ res = gclone(_2);
-  gsubTo(res,_1);
-  gnegate(res);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gnegate(gsubTo(gclone(_2),_1)) ));
 endmethod
 
 defmethod(OBJ, gsub, Integral, Floating)
-  OBJ res = gclone(_2);
-  gsubTo(res,_1);
-  gnegate(res);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gnegate(gsubTo(gclone(_2),_1)) ));
 endmethod
 
 defmethod(OBJ, gsub, Floating, Complex)
-  OBJ res = gclone(_2);
-  gsubTo(res,_1);
-  gnegate(res);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gnegate(gsubTo(gclone(_2),_1)) ));
 endmethod
 
 // ----- mul
 
 defmethod(OBJ, gmul, Number, Number)
-  OBJ res = gclone(_1);
-  gmulBy(res,_2);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gmulBy(gclone(_1),_2) ));
 endmethod
 
 defmethod(OBJ, gmul, Integral, Long)
-  OBJ res = gclone(_2);
-  gmulBy(res,_1);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gmulBy(gclone(_2),_1) ));
 endmethod
 
 defmethod(OBJ, gmul, Integral, Floating)
-  OBJ res = gclone(_2);
-  gmulBy(res,_1);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gmulBy(gclone(_2),_1) ));
 endmethod
 
 defmethod(OBJ, gmul, Floating, Complex)
-  OBJ res = gclone(_2);
-  gmulBy(res,_1);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gmulBy(gclone(_2),_1) ));
 endmethod
 
 // ----- div
 
 defmethod(OBJ, gdiv, Number, Number)
-  OBJ res = gclone(_1);
-  gdivBy(res,_2);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gdivBy(gclone(_1),_2) ));
 endmethod
 
 defmethod(OBJ, gdiv, Integral, Long)
-  OBJ res = gclone(_2);
-  ginvert(res);
-  gmulBy(res,_1);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gmulBy(ginvert(gclone(_2)),_1) ));
 endmethod
 
 defmethod(OBJ, gdiv, Integral, Floating)
-  OBJ res = gclone(_2);
-  ginvert(res);
-  gmulBy(res,_1);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gmulBy(ginvert(gclone(_2)),_1) ));
 endmethod
 
 defmethod(OBJ, gdiv, Floating, Complex)
-  OBJ res = gclone(_2);
-  ginvert(res);
-  gmulBy(res,_1);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gmulBy(ginvert(gclone(_2)),_1) ));
 endmethod
 
 // ----- mod
 
 defmethod(OBJ, gmod, Integral, Integral)
-  OBJ res = gclone(_1);
-  gmodulo(res,_2);
-  retmethod(gautoRelease(res));
+  retmethod(gautoRelease( gmodulo(gclone(_1),_2) ));
 endmethod
 
 // ----- compare
@@ -654,11 +664,11 @@ defmethod(OBJ, gnot, Long)
 endmethod
 
 defmethod(OBJ, gnot, Float)
-  retmethod(float_equal(self->value,0) ? False : True);
+  retmethod(float_isEqual(self->value,0) ? False : True);
 endmethod
 
 defmethod(OBJ, gnot, Complex)
-  retmethod(complex_equal(self->value,0) ? False : True);
+  retmethod(complex_isEqual(self->value,0) ? False : True);
 endmethod
 
 // ----- isEqual
@@ -672,11 +682,11 @@ defmethod(OBJ, gisEqual, Int, Long)
 endmethod
 
 defmethod(OBJ, gisEqual, Int, Float)
-  retmethod(float_equal(self1->value,self2->value) ? True : False);
+  retmethod(float_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Int, Complex)
-  retmethod(complex_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Long, Int)
@@ -688,42 +698,42 @@ defmethod(OBJ, gisEqual, Long, Long)
 endmethod
 
 defmethod(OBJ, gisEqual, Long, Float)
-  retmethod(float_equal(self1->value,self1->value) ? True : False);
+  retmethod(float_isEqual(self1->value,self1->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Long, Complex)
-  retmethod(complex_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Float, Int)
-  retmethod(float_equal(self1->value,self2->value) ? True : False);
+  retmethod(float_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Float, Long)
-  retmethod(float_equal(self1->value,self2->value) ? True : False);
+  retmethod(float_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Float, Float)
-  retmethod(float_equal(self1->value,self2->value) ? True : False);
+  retmethod(float_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Float, Complex)
-  retmethod(complex_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Complex, Int)
-  retmethod(complex_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Complex, Long)
-  retmethod(complex_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Complex, Float)
-  retmethod(complex_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 
 defmethod(OBJ, gisEqual, Complex, Complex)
-  retmethod(complex_equal(self1->value,self2->value) ? True : False);
+  retmethod(complex_isEqual(self1->value,self2->value) ? True : False);
 endmethod
 

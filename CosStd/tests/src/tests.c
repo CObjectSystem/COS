@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.6 2009/07/02 08:25:12 ldeniau Exp $
+ | $Id: tests.c,v 1.7 2009/07/24 12:36:27 ldeniau Exp $
  |
 */
 
@@ -93,17 +93,18 @@ int main(int argc, char *argv[])
   }
 
   // testsuites
-  printf("\n** C Object System Testsuite (%d bits) **\n", bits);
+  printf("\n** C Object System Library Testsuite (%d bits) **\n", bits);
 
   ut_range();
   ut_slice();
+  ut_array();
 
   cos_utest_stat();
 
   // speed testsuites
   if (!speed_test) return EXIT_SUCCESS;
   
-  printf("\n** C Object System Speed Testsuite (%d bits) **\n", bits);
+  printf("\n** C Object System Library Speed Testsuite (%d bits) **\n", bits);
 
   // st_methods();
   // st_nextmethods();

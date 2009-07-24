@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_range.c,v 1.1 2009/07/02 13:20:27 ldeniau Exp $
+ | $Id: ut_range.c,v 1.2 2009/07/24 12:36:27 ldeniau Exp $
  |
 */
 
@@ -66,20 +66,20 @@ ut_range(void)
     UTEST( Range_isEqual(atRange(0,10), atRange(0,10, 1))  );
     UTEST(!Range_isEqual(atRange(0,10), atRange(0,10,-1))  );
 
-    UTEST( gisEqual(aRng(10)  , aRng(0,10, 1)) == True  );
-    UTEST( gisEqual(aRng(0,10), aRng(0,10, 1)) == True  );
-    UTEST( gisEqual(aRng(0,10), aRng(0,10,-1)) == False );
+    UTEST( gisEqual(aRange(10)  , aRange(0,10, 1)) == True  );
+    UTEST( gisEqual(aRange(0,10), aRange(0,10, 1)) == True  );
+    UTEST( gisEqual(aRange(0,10), aRange(0,10,-1)) == False );
 
     // new vs auto
-    UTEST( isEq(gnewWithRng1(Range, 10), aRng(0,10,1)) );
-    UTEST( isEq(gnewWithRng2(Range, 0, 10), aRng(0,10,1)) );
-    UTEST( isEq(gnewWithRng3(Range, 0, 10, 1), aRng(0,10,1)) );
-    UTEST(!isEq(gnewWithRng1(Range, 10), aRng(0,10,-1)) );
+    UTEST( isEq(gnewWithRng1(Range, 10), aRange(0,10,1)) );
+    UTEST( isEq(gnewWithRng2(Range, 0, 10), aRange(0,10,1)) );
+    UTEST( isEq(gnewWithRng3(Range, 0, 10, 1), aRange(0,10,1)) );
+    UTEST(!isEq(gnewWithRng1(Range, 10), aRange(0,10,-1)) );
 
     // clone vs auto
-    UTEST( isEq(gclone(aRng(10)), aRng(10)) );
-    UTEST( isEq(gclone(aRng(0,10)), aRng(0,10)) );
-    UTEST( isEq(gclone(aRng(0,10,-1)), aRng(0,10,-1)) );
+    UTEST( isEq(gclone(aRange(10)), aRange(10)) );
+    UTEST( isEq(gclone(aRange(0,10)), aRange(0,10)) );
+    UTEST( isEq(gclone(aRange(0,10,-1)), aRange(0,10,-1)) );
 
     // index
     UTEST( Range_index(3,0) == 3 );

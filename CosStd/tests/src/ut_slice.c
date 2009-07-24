@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_slice.c,v 1.1 2009/07/02 13:20:27 ldeniau Exp $
+ | $Id: ut_slice.c,v 1.2 2009/07/24 12:36:27 ldeniau Exp $
  |
 */
 
@@ -66,20 +66,20 @@ ut_slice(void)
     UTEST( Slice_isEqual(atSlice(0,10), atSlice(0,10, 1))  );
     UTEST(!Slice_isEqual(atSlice(0,10), atSlice(0,10,-1))  );
 
-    UTEST( gisEqual(aSlc(10)  , aSlc(0,10, 1)) == True  );
-    UTEST( gisEqual(aSlc(0,10), aSlc(0,10, 1)) == True  );
-    UTEST( gisEqual(aSlc(0,10), aSlc(0,10,-1)) == False );
+    UTEST( gisEqual(aSlice(10)  , aSlice(0,10, 1)) == True  );
+    UTEST( gisEqual(aSlice(0,10), aSlice(0,10, 1)) == True  );
+    UTEST( gisEqual(aSlice(0,10), aSlice(0,10,-1)) == False );
 
     // new vs auto
-    UTEST( isEq(gnewWithSlc1(Slice, 10), aSlc(0,10,1)) );
-    UTEST( isEq(gnewWithSlc2(Slice, 0, 10), aSlc(0,10,1)) );
-    UTEST( isEq(gnewWithSlc3(Slice, 0, 10, 1), aSlc(0,10,1)) );
-    UTEST(!isEq(gnewWithSlc1(Slice, 10), aSlc(0,10,-1)) );
+    UTEST( isEq(gnewWithSlc1(Slice, 10), aSlice(0,10,1)) );
+    UTEST( isEq(gnewWithSlc2(Slice, 0, 10), aSlice(0,10,1)) );
+    UTEST( isEq(gnewWithSlc3(Slice, 0, 10, 1), aSlice(0,10,1)) );
+    UTEST(!isEq(gnewWithSlc1(Slice, 10), aSlice(0,10,-1)) );
 
     // clone vs auto
-    UTEST( isEq(gclone(aSlc(10)), aSlc(10)) );
-    UTEST( isEq(gclone(aSlc(0,10)), aSlc(0,10)) );
-    UTEST( isEq(gclone(aSlc(0,10,-1)), aSlc(0,10,-1)) );
+    UTEST( isEq(gclone(aSlice(10)), aSlice(10)) );
+    UTEST( isEq(gclone(aSlice(0,10)), aSlice(0,10)) );
+    UTEST( isEq(gclone(aSlice(0,10,-1)), aSlice(0,10,-1)) );
     
     // eval
     UTEST( Slice_eval(atSlice(10),0) == 0 );
@@ -120,17 +120,6 @@ ut_slice(void)
     UTEST( Slice_size(atSlice(10,1,-2)) == 1 );
     UTEST( Slice_size(atSlice(10,1,-3)) == 1 );
     UTEST( Slice_size(atSlice(9,1,-3)) == 1 );
-
-    // closed
-    UTEST( Slice_isClosed(atSlice(0,10,1)) );
-    UTEST( Slice_isClosed(atSlice(0,10,-1)) );
-    UTEST( Slice_isClosed(atSlice(10,0,1)) );
-    UTEST( Slice_isClosed(atSlice(10,0,-1)) );
-
-    UTEST( Slice_isClosed(atSlice(-1,1,-1)) );
-    UTEST(!Slice_isClosed(atSlice(1,-1,-1)) );
-    UTEST( Slice_isClosed(atSlice(-1,1,1)) );
-    UTEST(!Slice_isClosed(atSlice(1,-1,1)) );
 
     // convert
     UTEST( eq(Slice_fromRange(atRange(1,-1,1),10), atSlice(1,9,1)) );

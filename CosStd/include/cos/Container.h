@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Container.h,v 1.3 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: Container.h,v 1.4 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -66,6 +66,7 @@
         <- ObjVector
 
   - All containers own (gretain) their elements (and keys if any)
+  - All containers do swallow copy
 */
 
 defclass(Container)

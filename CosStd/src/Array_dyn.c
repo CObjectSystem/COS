@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array - accessors
+ | COS Array - dynamic array
  |
  o---------------------------------------------------------------------o
  |
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.7 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.8 2009/07/24 12:36:26 ldeniau Exp $
  |
 */
 
@@ -43,52 +43,53 @@
 
 // -----
 
+#define ARRAY_MIN_SIZE    16
 #define ARRAY_GROWTH_RATE 1.618034 // golden ratio
 
 useclass(Array, ExBadAlloc);
 
-// ----- helpers
+// ----- helpers (alloc and deinit are in Array.c)
 
 void
-ArrayDynamic_adjust(struct ArrayDynamic *dyna)
+ArrayDynamic_adjust(struct ArrayDynamic *arrd)
 {
-  struct ArrayDynamicN *dynn = &dyna->ArrayDynamicN;
-  struct Array         * arr = &dynn->Array;
+  struct ArrayDynamicN *arrn = &arrd->ArrayDynamicN;
+  struct Array         *arr  = &arrn->Array;
 
-  if (arr->object != dynn->base)
-    arr->object = memmove(dynn->base, arr->object, arr->size * sizeof *dynn->base);
+  // move data to storage base
+  if (arr->object != arrn->_object)
+    arr->object = memmove(arrn->_object, arr->object, arr->size * sizeof *arrn->_object);
 
-  if (arr->size != dyna->capacity) {
-    OBJ *base = realloc(dynn->base, arr->size * sizeof *dynn->base);
+  // shrink storage
+  if (arr->size != arrd->capacity) {
+    OBJ *_object = realloc(arrn->_object, arr->size * sizeof *arrn->_object);
+    if (!_object) THROW(ExBadAlloc);
 
-    if (!base) return;
-
-    arr ->object   = base;
-    dynn->base     = base;
-    dyna->capacity = arr->size;
+    arr ->object   = _object;
+    arrn->_object  = _object;
+    arrd->capacity = arr->size;
   }
 }
 
 void
-ArrayDynamic_enlarge(struct ArrayDynamic *dyna, F64 factor)
+ArrayDynamic_enlarge(struct ArrayDynamic *arrd, F64 factor)
 {
-  enum { N = 10 };
-  
+  enum { N = ARRAY_MIN_SIZE };
+
   if (factor <= 1.0) return;
 
-  struct ArrayDynamicN *dynn = &dyna->ArrayDynamicN;
-  struct Array         * arr = &dynn->Array;
+  struct ArrayDynamicN *arrn = &arrd->ArrayDynamicN;
+  struct Array         *arr  = &arrn->Array;
 
-  ptrdiff_t offset = arr->object - dynn->base;
+  ptrdiff_t offset = arr->object - arrn->_object;
 
-  U32  size = dyna->capacity < N ? N : dyna->capacity * factor;
-  OBJ *base = realloc(dynn->base, size * sizeof *dynn->base);
+  U32   size   = arrd->capacity < N ? N : arrd->capacity * factor;
+  OBJ *_object = realloc(arrn->_object, size * sizeof *arrn->_object);
+  if (!_object) THROW(ExBadAlloc);
 
-  if (!base) THROW(ExBadAlloc);
-
-  arr ->object   = base + offset;
-  dynn->base     = base;
-  dyna->capacity = size;
+  arr ->object   = _object + offset;
+  arrn->_object  = _object;
+  arrd->capacity = size;
 }
 
 // ----- adjustment (capacity -> size)
@@ -103,30 +104,32 @@ endmethod
 // ----- clear (size -> 0)
 
 defmethod(void, gclear, ArrayDynamic)
-  struct ArrayDynamicN *dynn = &self->ArrayDynamicN;
-  struct Array         *arr  = &dynn->Array;
+  struct ArrayDynamicN *arrn = &self->ArrayDynamicN;
+  struct Array         *arr  = &arrn->Array;
 
   OBJ *obj = arr->object;
-  OBJ *end = arr->object+arr->size;
+  OBJ *end = arr->object + arr->size;
 
-  while (obj < end)
+  while (obj != end)
     grelease(*obj++);
 
-  arr->object = dynn->base;
+  arr->object = arrn->_object;
   arr->size   = 0;
 endmethod
 
 // ----- getters, setters
 
-defalias (OBJ, (gget)gtop, ArrayDynamic);
-defmethod(OBJ,  gget     , ArrayDynamic)
+defalias (OBJ, (gget)glast, ArrayDynamic);
+defalias (OBJ, (gget)gtop , ArrayDynamic);
+defmethod(OBJ,  gget      , ArrayDynamic)
   struct Array *arr = &self->ArrayDynamicN.Array;
 
-  retmethod( arr->size ? arr->object[arr->size-1] : 0 );
+  retmethod( arr->size ? arr->object[arr->size-1] : Nil );
 endmethod
 
-defalias (void, (gput)gpush, ArrayDynamic, Object);
-defmethod(void,  gput      , ArrayDynamic, Object)
+defalias (void, (gput)gappend, ArrayDynamic, Object);
+defalias (void, (gput)gpush  , ArrayDynamic, Object);
+defmethod(void,  gput        , ArrayDynamic, Object)
   struct Array *arr = &self->ArrayDynamicN.Array;
 
   if (arr->size == self->capacity)
@@ -144,6 +147,12 @@ defmethod(void,  gdrop     , ArrayDynamic)
 endmethod
 
 // ----- prepend, append
+
+#if 0 // NOTE-TODO
+
+defmethod(void, gprepend, ArrayDynamic, Object)
+  // TODO, enlarge capacity if needed, move data by size diff
+endmethod
 
 defmethod(void, gprepend, ArrayDynamic, Array)
   struct Array *arr = &self->ArrayDynamicN.Array;
@@ -194,4 +203,4 @@ defmethod(void, gappend, ArrayDynamic, Array)
   arr->size += self2->size;
 endmethod
 
-
+#endif
