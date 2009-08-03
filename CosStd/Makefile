@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.11 2009/08/03 12:12:28 ldeniau Exp $
+# | $Id: Makefile,v 1.12 2009/08/03 12:18:05 ldeniau Exp $
 # |
 #
 
@@ -40,10 +40,14 @@ cos := ../CosBase/include/cos
 
 include $(cos)/prologue
 
+# project
 library := CosStd
 version := 0.1
 release := 200905
 package := $(library)-$(version)_$(release)
+
+# targets
+targets := all
 
 # files and modules
 sources := $(wildcard src/*.c)
@@ -52,11 +56,14 @@ defgens := $(wildcard include/cos/gen/*.h)
 defprps := $(wildcard include/cos/prp/*.h)
 
 # project dependencies (as with -lname)
+libdeps := 
 moddeps := CosBase
 
 # project dependencies (as with -Ipath or -Lpath)
 incdirs := src include ../CosBase/include
+bindirs :=
 libdirs := ../CosBase/$(OSNAME)/lib
+moddirs :=
 
 include $(cos)/epilogue
 
