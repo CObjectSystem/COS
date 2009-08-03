@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.12 2009/07/24 20:49:58 ldeniau Exp $
+ | $Id: algorithm.h,v 1.13 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -40,10 +40,12 @@
 #include <cos/Object.h>
 #endif 
 
-// in place (returned value of fun is discarded if any)
-defgeneric(void, gforeach, _1, fun);
+// in place
+defgeneric(void, gforeach, _1, fun); // fun return value is discarded
 defgeneric(void, gpermute, _1, idx);
 defgeneric(void, greverse, _1);
+
+defgeneric(void, gapply, fun, _1); // "in place" map
 
 // map
 defgeneric(OBJ , gmap , fun, _1);
@@ -53,11 +55,18 @@ defgeneric(OBJ , gmap4, fun, _1, _2, _3, _4);
 defgeneric(OBJ , gmapn, fun, _1);
 
 // filter, fold, scan
-defgeneric(OBJ , gfilter, _1, fun);
-defgeneric(OBJ , gfoldl , _1, fun, ini);
-defgeneric(OBJ , gfoldr , _1, fun, ini);
-defgeneric(OBJ , gscanl , _1, fun, ini);
-defgeneric(OBJ , gscanr , _1, fun, ini);
+defgeneric(OBJ , gfilter , _1, fun);
+defgeneric(OBJ , gnfilter, _1, fun);
+defgeneric(OBJ , gfoldl  , _1, fun, ini);
+defgeneric(OBJ , gfoldr  , _1, fun, ini);
+defgeneric(OBJ , gscanl  , _1, fun, ini);
+defgeneric(OBJ , gscanr  , _1, fun, ini);
+
+// filterOut
+defgeneric(OBJ , gfilterOut, _1, fun);
+
+// repeat (iterate -> functor.h)
+defgeneric(OBJ , grepeat, _1, num);
 
 // zip
 defgeneric(OBJ , gzip , _1, _2);
@@ -71,11 +80,9 @@ defgeneric(OBJ , gcat3, _1, _2, _3);
 defgeneric(OBJ , gcat4, _1, _2, _3, _4);
 defgeneric(OBJ , gcatn, _1);
 
-// all, any, min, max
+// all, any
 defgeneric(OBJ , gall, _1, fun); // fun should return TrueFalse
 defgeneric(OBJ , gany, _1, fun); // fun should return TrueFalse
-defgeneric(OBJ , gmin, _1);
-defgeneric(OBJ , gmax, _1);
 
 // sorting (fun must return Ordered)
 defgeneric(void, gsort    , _1, fun); // in place
@@ -93,9 +100,10 @@ defgeneric(OBJ , ggroup , _1, fun);
 defgeneric(OBJ , gsplit , _1, fun);
 
 // set-like algorithms
-defgeneric(OBJ , gdiff     , _1, _2);
-defgeneric(OBJ , gunion    , _1, _2);
-defgeneric(OBJ , gintersect, _1, _2);
+defgeneric(OBJ , gdiff     , _1, _2, fun);
+defgeneric(OBJ , gunion    , _1, _2, fun);
+defgeneric(OBJ , gmerge    , _1, _2, fun);
+defgeneric(OBJ , gintersect, _1, _2, fun);
 
 #endif // COS_GEN_ALGORITHM_H
 

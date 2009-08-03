@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Function.c,v 1.2 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: Function.c,v 1.3 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -38,31 +38,33 @@
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
 
-makclass(Function);
+makclass(GenFunction ,Functor);
 
-makclass(GenFunction ,Function);
+makclass(IntFunction ,Functor);
+makclass(IntFunction1,IntFunction);
+makclass(IntFunction2,IntFunction);
+makclass(IntFunction3,IntFunction);
+makclass(IntFunction4,IntFunction);
+makclass(IntFunction5,IntFunction);
 
-makclass(IntFunction1,Function);
-makclass(IntFunction2,Function);
-makclass(IntFunction3,Function);
-makclass(IntFunction4,Function);
-makclass(IntFunction5,Function);
+makclass(LngFunction ,Functor    );
+makclass(LngFunction1,LngFunction);
+makclass(LngFunction2,LngFunction);
+makclass(LngFunction3,LngFunction);
+makclass(LngFunction4,LngFunction);
+makclass(LngFunction5,LngFunction);
 
-makclass(LngFunction1,Function);
-makclass(LngFunction2,Function);
-makclass(LngFunction3,Function);
-makclass(LngFunction4,Function);
-makclass(LngFunction5,Function);
+makclass(FltFunction ,Functor    );
+makclass(FltFunction1,FltFunction);
+makclass(FltFunction2,FltFunction);
+makclass(FltFunction3,FltFunction);
+makclass(FltFunction4,FltFunction);
+makclass(FltFunction5,FltFunction);
 
-makclass(FltFunction1,Function);
-makclass(FltFunction2,Function);
-makclass(FltFunction3,Function);
-makclass(FltFunction4,Function);
-makclass(FltFunction5,Function);
-
-makclass(CpxFunction1,Function);
-makclass(CpxFunction2,Function);
-makclass(CpxFunction3,Function);
-makclass(CpxFunction4,Function);
-makclass(CpxFunction5,Function);
+makclass(CpxFunction ,Functor    );
+makclass(CpxFunction1,CpxFunction);
+makclass(CpxFunction2,CpxFunction);
+makclass(CpxFunction3,CpxFunction);
+makclass(CpxFunction4,CpxFunction);
+makclass(CpxFunction5,CpxFunction);
 

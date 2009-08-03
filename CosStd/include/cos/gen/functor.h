@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.5 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: functor.h,v 1.6 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -48,6 +48,9 @@ defgeneric(OBJ, geval3, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 defgeneric(OBJ, geval4, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 defgeneric(OBJ, geval5, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
 defgeneric(OBJ, gevalN, fun, args); // rank 2
+
+defgeneric(OBJ, gcompose, _1);      // compose array of functors
+defgeneric(OBJ, giterate, _1, num); // compose functor num times
 
 #endif // COS_GEN_FUNCTOR_H
 

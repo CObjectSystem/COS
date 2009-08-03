@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.12 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Slice.h,v 1.13 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -126,28 +126,26 @@ Slice_stride(const struct Slice *s) {
   return s->stride;
 }
 
-// absolute index
 static inline I32
 Slice_eval(const struct Slice *s, I32 idx) {
   return s->start + idx * s->stride;
 }
 
-// absolute starting index
 static inline I32
-Slice_first(const struct Slice *s) {
-  return s->start;
-}
-
-// absolute lasting index (included)
-static inline I32
-Slice_last(const struct Slice *s) {
+Slice_end(const struct Slice *s) {
   return Slice_eval(s, s->size-1);
 }
 
-// absolute ending index (excluded)
+// sequence first index (alias for start)
 static inline I32
-Slice_end(const struct Slice *s) {
-  return Slice_eval(s, s->size);
+Slice_first(const struct Slice *s) {
+  return Slice_start(s);
+}
+
+// sequence last index (alias for end )
+static inline I32
+Slice_last(const struct Slice *s) {
+  return Slice_end(s);
 }
 
 // predicates
@@ -173,17 +171,17 @@ Slice_addTo(struct Slice *s1, const struct Slice *s2) {
   return s1;
 }
 
-// conversion (requires sequence's size)
+// conversion
 #include <cos/Range.h>
 
 static inline struct Slice
-Slice_fromRange(const struct Range *r, U32 seq_size)
+Slice_fromRange(const struct Range *r)
 {
-  I32 first  = Range_first (r,seq_size);
-  U32 size   = Range_size  (r,seq_size);
+  I32 start  = Range_start (r);
+  U32 size   = Range_size  (r);
   I32 stride = Range_stride(r);
 
-  return *atSlice(first, size, stride);
+  return *atSlice(start, size, stride);
 }
 
 #endif // COS_SLICE_H

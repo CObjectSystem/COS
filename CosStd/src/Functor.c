@@ -29,16 +29,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.10 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Functor.c,v 1.11 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Array.h>
+#include <cos/Number.h>
 #include <cos/Functor.h>
 #include <cos/gen/value.h>
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
+#include <cos/gen/algorithm.h>
 
 makclass(Functor);
 
@@ -48,15 +50,15 @@ makclass(Functor3 , Functor);
 makclass(Functor4 , Functor);
 makclass(Functor5 , Functor);
 
-makclass(Function1, Functor);
-makclass(Function2, Functor);
-makclass(Function3, Functor);
-makclass(Function4, Functor);
-makclass(Function5, Functor);
-
-makclass(BiFunctor, Functor);
+makclass(Function , Functor);
+makclass(Function1, Function);
+makclass(Function2, Function);
+makclass(Function3, Function);
+makclass(Function4, Function);
+makclass(Function5, Function);
 
 makclass(Compose  , Functor);
+makclass(Iterate  , Functor);
 
 // -----
 
@@ -158,15 +160,6 @@ defmethod(OBJ, ginitWith, Function5, Function5)
   retmethod(_1);
 endmethod
 
-// ----- bifunctor
-
-defmethod(OBJ, ginitWith, BiFunctor, BiFunctor)
-  self->fun1 = gretain(self2->fun1);
-  self->fun2 = gretain(self2->fun2);
-  
-  retmethod(_1);
-endmethod
-
 // ----- composition
 
 useclass(Compose);
@@ -177,7 +170,7 @@ Compose_alloc(U32 size)
   OBJ _cmp = gallocWithSize(Compose, size * sizeof(OBJ));
   struct Compose *cmp = STATIC_CAST(struct Compose*, _cmp);
 
-  cmp->size = size;
+  cmp->size    = size;
   cmp->functor = cmp->_functor;
   
   return cmp;
@@ -185,10 +178,6 @@ Compose_alloc(U32 size)
 
 defmethod(OBJ, galloc, pmCompose)
   retmethod(_1); // lazy alloc
-endmethod
-
-defmethod(OBJ, gclass, Compose)
-  retmethod(Compose); // class cluster
 endmethod
 
 defmethod(OBJ, ginitWith, pmCompose, Compose) // clone
@@ -268,17 +257,15 @@ defmethod(OBJ, gdeinit, Functor5)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdeinit, BiFunctor)
-  grelease(self->fun1);
-  grelease(self->fun2);
-  
-  retmethod(_1);
-endmethod
-
 defmethod(OBJ, gdeinit, Compose)
   for (U32 i = 0; i < self->size; i++)
     grelease(self->functor[i]);
 
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gdeinit, Iterate)
+  grelease(self->fun);
   retmethod(_1);
 endmethod
 
@@ -335,12 +322,58 @@ defmethod(I32, garity, Function5)
   retmethod(5);
 endmethod
 
-defmethod(I32, garity, BiFunctor)
-  retmethod( garity(self->fun1) + garity(self->fun2) );
-endmethod
-
 defmethod(I32, garity, Compose)
   retmethod( garity(self->functor[0]) );
+endmethod
+
+defmethod(I32, garity, Iterate)
+  retmethod( garity(self->fun) ); // should be one
+endmethod
+
+// ----- Compose
+
+defmethod(OBJ, gcompose, Functor)
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gcompose, Array)
+  retmethod(gautoDelete(gnewWith(Compose,_1)));
+endmethod
+
+defmethod(OBJ, grepeat, Functor, Int)
+  test_assert(self2->value > 0, "invalid number of repeat");
+
+  struct Compose *cmp = Compose_alloc(self2->value);
+  OBJ _cmp = (OBJ)cmp; PRT(_cmp);
+
+  OBJ *fun = cmp->functor;
+  OBJ *end = cmp->functor + cmp->size;
+
+  while (fun != end)
+    *fun++ = gretain(_1);
+
+  UNPRT(_cmp);
+  retmethod(_cmp);
+endmethod
+
+// ----- Iterate
+
+defmethod(OBJ, giterate, Functor, Int)
+  useclass(Iterate);
+
+  test_assert(self2->value > 0, "invalid number of iteration");
+
+  OBJ _itr = galloc(Iterate);
+  struct Iterate *itr = STATIC_CAST(struct Iterate*, _itr);
+
+  itr->num = self2->value;
+  itr->fun = _1;
+  itr->fct =  0;
+
+  if ( cos_object_isKindOf(_1, classref(Function1)) )
+    itr->fct = STATIC_CAST(struct Function1*, _1)->fct;
+
+  retmethod(_itr);
 endmethod
 
 // ----- Eval
@@ -593,44 +626,44 @@ endmethod
 
 defmethod(OBJ, geval1, Compose, (OBJ))
   OBJ *fun = self->functor;
-  OBJ *end = self->functor+self->size;
+  OBJ *end = self->functor + self->size;
 
   forward_message(*fun++);
 
-  while (fun < end)
+  while (fun != end)
     RETVAL = geval1(*fun++, RETVAL);
 
 endmethod
 
 defmethod(OBJ, geval2, Compose, (OBJ), (OBJ))
   OBJ *fun = self->functor;
-  OBJ *end = self->functor+self->size;
+  OBJ *end = self->functor + self->size;
   
   forward_message(*fun++);
 
-  while (fun < end)
+  while (fun != end)
     RETVAL = geval1(*fun++, RETVAL);
 
 endmethod
 
 defmethod(OBJ, geval3, Compose, (OBJ), (OBJ), (OBJ))
   OBJ *fun = self->functor;
-  OBJ *end = self->functor+self->size;
+  OBJ *end = self->functor + self->size;
   
   forward_message(*fun++);
 
-  while (fun < end)
+  while (fun != end)
     RETVAL = geval1(*fun++, RETVAL);
 
 endmethod
 
 defmethod(OBJ, geval4, Compose, (OBJ), (OBJ), (OBJ), (OBJ))
   OBJ *fun = self->functor;
-  OBJ *end = self->functor+self->size;
+  OBJ *end = self->functor + self->size;
   
   forward_message(*fun++);
 
-  while (fun < end)
+  while (fun != end)
     RETVAL = geval1(*fun++, RETVAL);
 
 endmethod
@@ -641,8 +674,25 @@ defmethod(OBJ, geval5, Compose, (OBJ), (OBJ), (OBJ), (OBJ), (OBJ))
   
   forward_message(*fun++);
 
-  while (fun < end)
+  while (fun != end)
     RETVAL = geval1(*fun++, RETVAL);
 
+endmethod
+
+// ----- Iterate
+
+defmethod(OBJ, geval1, Iterate, (OBJ))
+  forward_message(self->fun);
+
+  if (self->fct) {
+    OBJFCT1 fct = self->fct;
+    for (int i = self->num-1; i; i--)
+      RETVAL = fct(RETVAL);
+  }
+  else {
+    OBJ fun = self->fun;
+    for (int i = self->num-1; i; i--)
+      RETVAL = geval1(fun, RETVAL);
+  }
 endmethod
 

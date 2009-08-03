@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.10 2009/07/24 12:36:27 ldeniau Exp $
+ | $Id: Sequence.c,v 1.11 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #include <cos/Slice.h>
 #include <cos/View.h>
 
+#include <cos/gen/accessor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 
@@ -48,22 +49,26 @@ makclass(ValueSequence, Sequence );
 // -----
 
 defmethod(OBJ, ginitWith2, mSequence, Sequence, Range)
-  struct Slice slice = Slice_fromRange(self3, gsize(_2));
+  struct Range range = Range_normalize(self3,gsize(_2));
+  struct Slice slice = Slice_fromRange(&range);
   retmethod( ginitWith2(_1,_2,(OBJ)&slice) );  
 endmethod
 
 defmethod(OBJ, ginitWith2, mView, Sequence, Range)
-  struct Slice slice = Slice_fromRange(self3, gsize(_2));
+  struct Range range = Range_normalize(self3,gsize(_2));
+  struct Slice slice = Slice_fromRange(&range);
   retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
 endmethod
 
 defmethod(OBJ, ggetAt, Sequence, Range)
-  struct Slice slice = Slice_fromRange(self2, gsize(_1));
+  struct Range range = Range_normalize(self2,gsize(_1));
+  struct Slice slice = Slice_fromRange(&range);
   retmethod( ggetAt(_1,(OBJ)&slice) );
 endmethod
 
 defmethod(void, gputAt, Sequence, Range, Sequence)
-  struct Slice slice = Slice_fromRange(self2, gsize(_1));
+  struct Range range = Range_normalize(self2,gsize(_1));
+  struct Slice slice = Slice_fromRange(&range);
   gputAt(_1,(OBJ)&slice,_3);
 endmethod
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.11 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Range.h,v 1.12 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -74,7 +74,7 @@ endclass
 #define aRange(...)  ( (OBJ)atRange(__VA_ARGS__) )
 #define atRange(...) COS_PP_CAT_NARG(atRange_,__VA_ARGS__)(__VA_ARGS__)
 
-/* NOTE-USER: Range indexing policy
+/* NOTE-USER: Range and Sequence indexing policy
    - starts at zero
      (index 0 is the first element)
    - negative indexe starts from the end of the sequence
@@ -82,6 +82,7 @@ endclass
    - the end is included in the range (Ranges cannot have zero size)
    - open ranges have zero size (consistent with conversion to Slice)
    - validation and consitency checks are the user's responsibility
+   - stride must never be zero! (never happens if you use the ctor)
 */
 static inline I32
 Range_index(I32 index, U32 seq_size) {
@@ -146,22 +147,15 @@ Range_stride(const struct Range *r) {
   return r->stride;
 }
 
-// absolute/relative index (normalization should be performed before eval)
 static inline I32
 Range_eval(const struct Range *r, I32 idx) {
   return r->start + idx * r->stride;
 }
 
-// absolute starting index (normalized vs sequence's size)
-static inline I32
-Range_first(const struct Range *r, U32 seq_size) {
-  return Range_index(r->start, seq_size);
-}
-
-// absolute lasting index (normalized vs sequence's size) (included)
-static inline I32
-Range_last(const struct Range *r, U32 seq_size) {
-  return Range_index(r->end, seq_size);
+static inline U32
+Range_size(const struct Range *r) {
+  I32 size  = (r->end - r->start + r->stride) / r->stride;
+  return size > 0 ? size : 0;
 }
 
 // predicates
@@ -179,24 +173,25 @@ Range_isEqual(const struct Range *r1, const struct Range *r2) {
 
 // closed vs open interval (requires sequence's size)
 static inline BOOL
-Range_isClosed(const struct Range *r, U32 seq_size) {
-  I32 start = Range_first(r, seq_size);
-  I32 end   = Range_last (r, seq_size);
-
-  return r->stride > 0 ? start <= end : start >= end;
+Range_isClosed(const struct Range *r) {
+  return r->stride > 0 ? r->start <= r->end : r->start >= r->end;
 }
 
-// Range's size (requires sequence's size)
-static inline U32
-Range_size(const struct Range *r, U32 seq_size) {
-  I32 start = Range_first(r, seq_size);
-  I32 end   = Range_last (r, seq_size);
-  I32 size  = (end - start + r->stride) / r->stride;
+// normalization
 
-  return size > 0 ? size : 0;
+// sequence first index (normalized vs sequence's size)
+static inline I32
+Range_first(const struct Range *r, U32 seq_size) {
+  return Range_index(r->start, seq_size);
 }
 
-// normalization (requires sequence's size)
+// sequence last index (normalized vs sequence's size) (included)
+static inline I32
+Range_last(const struct Range *r, U32 seq_size) {
+  return Range_index(r->end, seq_size);
+}
+
+// normalization (requires sequence's size, preserves stride)
 static inline struct Range
 Range_normalize(const struct Range *r, U32 seq_size) {
   I32 start = Range_first(r, seq_size);

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.7 2009/07/24 20:49:58 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.8 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -45,7 +45,7 @@
 
 #include <cos/carray.h>
 
-// ----- foreach (in place)
+// ----- foreach (in place, discard fun returned value)
 
 defmethod(void, gforeach, Array, Functor)
   OBJ *obj   = self->object;
@@ -54,6 +54,24 @@ defmethod(void, gforeach, Array, Functor)
 
   while (obj != end) {
     geval1(_2, *obj);
+    obj += obj_s;
+  }
+endmethod
+
+// ----- apply (in place map)
+
+defmethod(void, gapply, Functor, Array)
+  OBJ *obj   = self2->object;
+  I32  obj_s = self2->stride;
+  OBJ *end   = self2->object + self2->size*self2->stride;
+
+  while (obj != end) {
+    OBJ new = geval1(_1, *obj);
+    if (new != *obj) {
+      OBJ old = *obj;
+      *obj = gretain(new);
+      grelease(old);
+    }
     obj += obj_s;
   }
 endmethod
@@ -75,7 +93,7 @@ defmethod(OBJ, gmap, Functor, Array)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gmap2, Functor, Array, Array)
@@ -98,7 +116,7 @@ defmethod(OBJ, gmap2, Functor, Array, Array)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gmap3, Functor, Array, Array, Array)
@@ -125,7 +143,7 @@ defmethod(OBJ, gmap3, Functor, Array, Array, Array)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
@@ -156,7 +174,7 @@ defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 // ----- all, any
@@ -189,7 +207,7 @@ defmethod(OBJ, gany, Array, Functor)
   retmethod(False);
 endmethod
 
-// ----- filter, fold, scan
+// ----- filter, filterOut fold, scan
 
 defmethod(OBJ, gfilter, Array, Functor)
   struct Array* arr = ArrayDynamic_alloc(self->size);
@@ -208,7 +226,27 @@ defmethod(OBJ, gfilter, Array, Functor)
 
   gadjust(_arr);
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
+endmethod
+
+defmethod(OBJ, gfilterOut, Array, Functor)
+  struct Array* arr = ArrayDynamic_alloc(self->size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+
+  OBJ *dst   = arr ->object;
+  OBJ *src   = self->object;
+  I32  src_s = self->stride;
+  OBJ *end   = self->object + self->size*self->stride;
+
+  while (src != end) {
+    if (geval1(_2, *src) == False)
+      *dst++ = gretain(*src), ++arr->size;
+    src += src_s;
+  }
+
+  gadjust(_arr);
+  UNPRT(_arr);
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gfoldl, Array, Functor, Object)
@@ -256,7 +294,7 @@ defmethod(OBJ, gscanl, Array, Functor, Object)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gscanr, Array, Functor, Object)
@@ -276,7 +314,7 @@ defmethod(OBJ, gscanr, Array, Functor, Object)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 // ----- finding
@@ -517,7 +555,7 @@ defmethod(void, gsort, Array, Functor)
   }
 
   if (self->stride == -1) {
-    quicksort(self->object, self->size-1, _2);
+    quicksort(self->object-self->size+1, self->size-1, _2);
     greverse(_1);
     return;
   }
@@ -546,15 +584,58 @@ endmethod
 defmethod(OBJ, gisort, Array, Functor)
   useclass(IntVector);
 
-  OBJ _vec = gnewWith2(IntVector, aInt(self->size), aInt(0)); PRT(_vec);
+  OBJ _vec = gnewWith(IntVector, aSlice(0,self->size,1)); PRT(_vec);
   struct IntVector *vec = STATIC_CAST(struct IntVector*, _vec);
-
-  for (U32 i = 0; i < self->size; i++)
-    vec->value[i] = i*self->stride;
 
   iquicksort(vec->value, self->object, self->size-1, _2);
   
   UNPRT(_vec);
-  retmethod(gautoRelease(_vec));
+  retmethod(gautoDelete(_vec));
+endmethod
+
+// ----- isSorted
+
+defmethod(OBJ, gisSorted, Array, Functor)
+  if (self->size < 2)
+    retmethod(True);
+
+  OBJ *obj   = self->object;
+  I32  obj_s = self->stride;
+  OBJ *end   = self->object + (self->size-1)*self->stride;
+
+  while (obj != end) {
+    if (geval2(_2, *obj, *(obj+obj_s)) == False)
+      retmethod(False);
+    obj += obj_s;
+  }
+
+  retmethod(True);
+endmethod
+
+// unique
+
+defmethod(OBJ, gunique, Array, Functor)
+  struct Array* arr = ArrayDynamic_alloc(self->size);
+
+  if (self->size < 1)
+    retmethod((OBJ)arr);
+
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+
+  OBJ *dst   = arr ->object;
+  OBJ *src   = self->object;
+  I32  src_s = self->stride;
+  OBJ *end   = self->object + (self->size-1)*self->stride;
+
+  while (src != end) {
+    if (geval2(_2, *src, *(src+src_s)) != True)
+      *dst++ = gretain(*src), ++arr->size;
+    src += src_s;
+  }
+  *dst++ = gretain(*src);
+
+  gadjust(_arr);
+  UNPRT(_arr);
+  retmethod(gautoDelete(_arr));
 endmethod
 

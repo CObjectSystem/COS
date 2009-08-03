@@ -32,59 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.8 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: logic.h,v 1.9 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
-
-/* NOTE-USER: includes of generics
-   One can find hereafter a trick to avoid multiple definition of generics when
-   the instance generation is left to the COS makefiles (e.g automatic makgeneric).
-*/
-
-#ifndef COS_NOCOS
-#include <cos/gen/object.h>
-#endif
 
 defgeneric(OBJ, gnot    , _1);
 defgeneric(OBJ, gand    , _1, _2);
 defgeneric(OBJ, gor     , _1, _2);
 defgeneric(OBJ, gxor    , _1, _2); // not (_1 isEqual _2)
 defgeneric(OBJ, gimplies, _1, _2); // (not _1) or _2
-
-// inliners
-
-static always_inline BOOL
-gequal(OBJ _1, OBJ _2) {
-  return gisEqual(_1,_2) == True;
-}
-
-static always_inline BOOL
-glesser(OBJ _1, OBJ _2) {
-  useclass(Lesser);
-  return gcompare(_1,_2) == Lesser;
-}
-
-static always_inline BOOL
-ggreater(OBJ _1, OBJ _2) {
-  useclass(Greater);
-  return gcompare(_1,_2) == Greater;
-}
-
-static always_inline BOOL
-gnotEqual(OBJ _1, OBJ _2) {
-  return gisEqual(_1,_2) != True;
-}
-
-static always_inline BOOL
-glesserOrEqual(OBJ _1, OBJ _2) {
-  useclass(Greater);
-  return gcompare(_1,_2) != Greater;
-}
-
-static always_inline BOOL
-ggreaterOrEqual(OBJ _1, OBJ _2) {
-  useclass(Lesser);
-  return gcompare(_1,_2) != Lesser;
-}
 
 #endif // COS_GEN_LOGIC_H

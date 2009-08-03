@@ -29,11 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.1 2009/07/24 12:37:16 ldeniau Exp $
+ | $Id: ut_array.c,v 1.2 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
+#include <cos/gen/compare.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/utest.h>

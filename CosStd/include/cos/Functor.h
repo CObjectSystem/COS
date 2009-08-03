@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.11 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Functor.h,v 1.12 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -77,23 +77,26 @@ endclass
 
 // ----- Functor with zero arity
 
-defclass(Function1, Functor)
+defclass(Function, Functor)
+endclass
+
+defclass(Function1, Function)
   OBJFCT1 fct;
 endclass
 
-defclass(Function2, Functor)
+defclass(Function2, Function)
   OBJFCT2 fct;
 endclass
 
-defclass(Function3, Functor)
+defclass(Function3, Function)
   OBJFCT3 fct;
 endclass
 
-defclass(Function4, Functor)
+defclass(Function4, Function)
   OBJFCT4 fct;
 endclass
 
-defclass(Function5, Functor)
+defclass(Function5, Function)
   OBJFCT5 fct;
 endclass
 
@@ -105,18 +108,17 @@ defclass(Compose, Functor)
   OBJ _functor[];
 endclass
 
-// ----- Parallel functors
+// ----- Iterates of functor
 
-defclass(BiFunctor, Functor)
-  OBJ fun1;
-  OBJ fun2;
+defclass(Iterate, Functor)
+  U32     num;
+  OBJ     fun;
+  OBJFCT1 fct;
 endclass
 
 // ----- automatic constructors
 
-#define aFunctor(...)   ( (OBJ)atFunctor  (__VA_ARGS__) )
-#define aCompose(...)   ( (OBJ)atCompose  (__VA_ARGS__) )
-#define aBiFunctor(...) ( (OBJ)atBiFunctor(__VA_ARGS__) )
+#define aFunctor(...) ( (OBJ)atFunctor(__VA_ARGS__) )
 
 /***********************************************************
  * Implementation (private)
@@ -129,19 +131,6 @@ endclass
   COS_PP_CAT3(Functor,N,_init)( &(struct COS_PP_CAT(Functor,N)) { \
     { cos_object_auto(COS_PP_CAT(Functor,N)) }, \
     F, -1, COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
-
-// ---
-
-#define atCompose(...) \
-  ( &(struct Compose) { { cos_object_auto(Compose) }, \
-    COS_PP_NARG(__VA_ARGS__), \
-    (OBJ[]){ COS_PP_SEQ(COS_PP_REV((__VA_ARGS__))) } })
-
-// ---
-
-#define atBiFunctor(F1,F2) \
-  ( &(struct BiFunctor) { { cos_object_auto(BiFunctor) }, \
-    F1, F2 })
 
 // ----- initializers
 

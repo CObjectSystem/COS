@@ -29,11 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_slice.c,v 1.2 2009/07/24 12:36:27 ldeniau Exp $
+ | $Id: ut_slice.c,v 1.3 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
 #include <cos/Slice.h>
+#include <cos/gen/compare.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/utest.h>
@@ -122,11 +123,11 @@ ut_slice(void)
     UTEST( Slice_size(atSlice(9,1,-3)) == 1 );
 
     // convert
-    UTEST( eq(Slice_fromRange(atRange(1,-1,1),10), atSlice(1,9,1)) );
-    UTEST( eq(Slice_fromRange(atRange(1,-1,2),10), atSlice(1,5,2)) );
-    UTEST( eq(Slice_fromRange(atRange(0,-1,3),10), atSlice(0,4,3)) );
-    UTEST( eq(Slice_fromRange(atRange(1,-1,3),10), atSlice(1,3,3)) );
-    UTEST( eq(Slice_fromRange(atRange(1,-9,3),10), atSlice(1,1,3)) );
+    UTEST( eq(Slice_fromRange(atRange(-1,1,1)), atSlice(-1,3,1)) );
+    UTEST( eq(Slice_fromRange(atRange(-1,1,2)), atSlice(-1,2,2)) );
+    UTEST( eq(Slice_fromRange(atRange(-1,5,3)), atSlice(-1,3,3)) );
+    UTEST( eq(Slice_fromRange(atRange(-1,4,3)), atSlice(-1,2,3)) );
+    UTEST( eq(Slice_fromRange(atRange( 1,5,3)), atSlice( 1,2,3)) );
 
   UTEST_END
 }

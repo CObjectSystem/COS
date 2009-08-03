@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.5 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.6 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -38,6 +38,7 @@
 #include <cos/Number.h>
 #include <cos/Slice.h>
 
+#include <cos/gen/accessor.h>
 #include <cos/gen/container.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
@@ -55,11 +56,11 @@ defmethod(OBJ, ggetAt, Array, Int)
 endmethod
 
 defmethod(OBJ, ggetAt, Array, Slice)
-  retmethod( gautoRelease(ginitWith2(Array,_1,_2)) );
+  retmethod( gautoDelete(ginitWith2(Array,_1,_2)) );
 endmethod
 
 defmethod(OBJ, ggetAt, Array, IntVector)
-  retmethod( gautoRelease(ginitWith2(Array,_1,_2)) );
+  retmethod( gautoDelete(ginitWith2(Array,_1,_2)) );
 endmethod
 
 // ---

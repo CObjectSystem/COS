@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Function.h,v 1.7 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Function.h,v 1.8 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#include <cos/Object.h>
-#endif 
+#include <cos/Functor.h>
 
 // ----- aliases
 
@@ -69,33 +67,35 @@ typedef C64 (*C64FCT5)(C64,C64,C64,C64,C64);
 
 // ----- definitions
 
-defclass(Function) endclass
+defclass(GenFunction ,Functor    ) FUNC    fct; endclass
 
-defclass(GenFunction ,Function) FUNC    fct; endclass
+defclass(IntFunction ,Functor    )              endclass
+defclass(IntFunction1,IntFunction) I32FCT1 fct; endclass
+defclass(IntFunction2,IntFunction) I32FCT2 fct; endclass
+defclass(IntFunction3,IntFunction) I32FCT3 fct; endclass
+defclass(IntFunction4,IntFunction) I32FCT4 fct; endclass
+defclass(IntFunction5,IntFunction) I32FCT5 fct; endclass
 
-defclass(IntFunction1,Function) I32FCT1 fct; endclass
-defclass(IntFunction2,Function) I32FCT2 fct; endclass
-defclass(IntFunction3,Function) I32FCT3 fct; endclass
-defclass(IntFunction4,Function) I32FCT4 fct; endclass
-defclass(IntFunction5,Function) I32FCT5 fct; endclass
+defclass(LngFunction ,Functor    )              endclass
+defclass(LngFunction1,LngFunction) I64FCT1 fct; endclass
+defclass(LngFunction2,LngFunction) I64FCT2 fct; endclass
+defclass(LngFunction3,LngFunction) I64FCT3 fct; endclass
+defclass(LngFunction4,LngFunction) I64FCT4 fct; endclass
+defclass(LngFunction5,LngFunction) I64FCT5 fct; endclass
 
-defclass(LngFunction1,Function) I64FCT1 fct; endclass
-defclass(LngFunction2,Function) I64FCT2 fct; endclass
-defclass(LngFunction3,Function) I64FCT3 fct; endclass
-defclass(LngFunction4,Function) I64FCT4 fct; endclass
-defclass(LngFunction5,Function) I64FCT5 fct; endclass
+defclass(FltFunction ,Functor    )              endclass
+defclass(FltFunction1,FltFunction) F64FCT1 fct; endclass
+defclass(FltFunction2,FltFunction) F64FCT2 fct; endclass
+defclass(FltFunction3,FltFunction) F64FCT3 fct; endclass
+defclass(FltFunction4,FltFunction) F64FCT4 fct; endclass
+defclass(FltFunction5,FltFunction) F64FCT5 fct; endclass
 
-defclass(FltFunction1,Function) F64FCT1 fct; endclass
-defclass(FltFunction2,Function) F64FCT2 fct; endclass
-defclass(FltFunction3,Function) F64FCT3 fct; endclass
-defclass(FltFunction4,Function) F64FCT4 fct; endclass
-defclass(FltFunction5,Function) F64FCT5 fct; endclass
-
-defclass(CpxFunction1,Function) C64FCT1 fct; endclass
-defclass(CpxFunction2,Function) C64FCT2 fct; endclass
-defclass(CpxFunction3,Function) C64FCT3 fct; endclass
-defclass(CpxFunction4,Function) C64FCT4 fct; endclass
-defclass(CpxFunction5,Function) C64FCT5 fct; endclass
+defclass(CpxFunction ,Functor    )              endclass
+defclass(CpxFunction1,CpxFunction) C64FCT1 fct; endclass
+defclass(CpxFunction2,CpxFunction) C64FCT2 fct; endclass
+defclass(CpxFunction3,CpxFunction) C64FCT3 fct; endclass
+defclass(CpxFunction4,CpxFunction) C64FCT4 fct; endclass
+defclass(CpxFunction5,CpxFunction) C64FCT5 fct; endclass
 
 // ----- automatic constructors
 

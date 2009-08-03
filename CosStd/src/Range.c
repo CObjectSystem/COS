@@ -29,12 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.6 2009/07/24 12:36:27 ldeniau Exp $
+ | $Id: Range.c,v 1.7 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
 #include <cos/Range.h>
 
+#include <cos/gen/compare.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 

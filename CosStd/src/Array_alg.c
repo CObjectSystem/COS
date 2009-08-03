@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.8 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.9 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -113,46 +113,22 @@ defmethod(void, gpermute, Array, IntVector)
   }
 endmethod
 
-// ----- min/max
+// ----- repeat
 
-defmethod(OBJ, gmin, Array)
-  useclass(Greater);
+defmethod(OBJ, grepeat, Object, Int)
+  test_assert(self2->value >= 0, "invalid number of repeat");
+
+  struct Array* arr = Array_alloc(self2->value);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+
+  OBJ *dst = arr->object;
+  OBJ *end = arr->object + arr->size;
   
-  if (self->size == 0)
-    retmethod(Nil);
+  while (dst != end)
+    *dst++ = gretain(_1);
 
-  OBJ *obj   = self->object + self->stride;
-  I32  obj_s = self->stride;
-  OBJ *end   = self->object + self->size*self->stride;
-  OBJ  min   = self->object[0];
-
-  while (obj != end) {
-    if (gcompare(min, *obj) == Greater)
-      min = *obj;
-    obj += obj_s;
-  }
-
-  retmethod(min);
-endmethod
-
-defmethod(OBJ, gmax, Array)
-  useclass(Lesser);
-  
-  if (self->size == 0)
-    retmethod(Nil);
-
-  OBJ *obj   = self->object + self->stride;
-  I32  obj_s = self->stride;
-  OBJ *end   = self->object + self->size*self->stride;
-  OBJ  max   = self->object[0];
-
-  while (obj != end) {
-    if (gcompare(max, *obj) == Lesser)
-      max = *obj;
-    obj += obj_s;
-  }
-      
-  retmethod(max);
+  UNPRT(_arr);
+  retmethod(gautoDelete(_arr));
 endmethod
 
 // ----- zip, zip3, zip4, zipn
@@ -176,7 +152,7 @@ defmethod(OBJ, gzip, Array, Array)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gzip3, Array, Array, Array)
@@ -202,7 +178,7 @@ defmethod(OBJ, gzip3, Array, Array, Array)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gzip4, Array, Array, Array, Array)
@@ -232,7 +208,7 @@ defmethod(OBJ, gzip4, Array, Array, Array, Array)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gzipn, Array)
@@ -265,7 +241,7 @@ defmethod(OBJ, gzipn, Array)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 // ----- cat, cat3, cat4, catn
@@ -292,7 +268,7 @@ defmethod(OBJ, gcat, Array, Array)
     *dst++ = gretain(*src), src += src_s;
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gcat3, Array, Array, Array)
@@ -324,7 +300,7 @@ defmethod(OBJ, gcat3, Array, Array, Array)
     *dst++ = gretain(*src), src += src_s;
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gcat4, Array, Array, Array, Array)
@@ -363,7 +339,7 @@ defmethod(OBJ, gcat4, Array, Array, Array, Array)
     *dst++ = gretain(*src), src += src_s;
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 
 defmethod(OBJ, gcatn, Array)
@@ -402,6 +378,6 @@ defmethod(OBJ, gcatn, Array)
   }
 
   UNPRT(_arr);
-  retmethod(gautoRelease(_arr));
+  retmethod(gautoDelete(_arr));
 endmethod
 

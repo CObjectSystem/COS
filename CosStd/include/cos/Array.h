@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.18 2009/07/24 20:49:58 ldeniau Exp $
+ | $Id: Array.h,v 1.19 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -47,6 +47,8 @@
    gnew     (Array)              -> Dynamic array
    gnewWith (Array,capacity)     -> Dynamic array    (pre-allocated)
    gnewWith (Array,array)        -> Fixed size array (clone, whatever array is!)
+   gnewWith (Array,slice)        -> Fixed size array (Ints)
+   gnewWith (Array,range)        -> Fixed size array (Ints)
    gnewWith2(Array,size,obj)     -> Fixed size array (element)
    gnewWith2(Array,size,fun)     -> Fixed size array (generator)
    gnewWith2(Array,array,slice)  -> Fixed size array (subarray)

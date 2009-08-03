@@ -29,11 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_range.c,v 1.2 2009/07/24 12:36:27 ldeniau Exp $
+ | $Id: ut_range.c,v 1.3 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
 #include <cos/Range.h>
+#include <cos/gen/compare.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/utest.h>
@@ -116,62 +117,62 @@ ut_range(void)
     UTEST( Range_last(atRange(-1,-10),10) == 0 );
 
     // size (seq size independant)
-    UTEST( Range_size(atRange(0,9,1),0) == 10 );
-    UTEST( Range_size(atRange(1,10,1),0) == 10 );
-    UTEST( Range_size(atRange(1,10,2),0) == 5 );
-    UTEST( Range_size(atRange(1,10,3),0) == 4 );
-    UTEST( Range_size(atRange(1,9,3),0) == 3 );
+    UTEST( Range_size(atRange(0,9,1)) == 10 );
+    UTEST( Range_size(atRange(1,10,1)) == 10 );
+    UTEST( Range_size(atRange(1,10,2)) == 5 );
+    UTEST( Range_size(atRange(1,10,3)) == 4 );
+    UTEST( Range_size(atRange(1,9,3)) == 3 );
 
-    UTEST( Range_size(atRange(9,0,-1),0) == 10 );
-    UTEST( Range_size(atRange(10,1,-1),0) == 10 );
-    UTEST( Range_size(atRange(10,1,-2),0) == 5 );
-    UTEST( Range_size(atRange(10,1,-3),0) == 4 );
-    UTEST( Range_size(atRange(9,1,-3),0) == 3 );
+    UTEST( Range_size(atRange(9,0,-1)) == 10 );
+    UTEST( Range_size(atRange(10,1,-1)) == 10 );
+    UTEST( Range_size(atRange(10,1,-2)) == 5 );
+    UTEST( Range_size(atRange(10,1,-3)) == 4 );
+    UTEST( Range_size(atRange(9,1,-3)) == 3 );
 
     // size (seq size dependant)
-    UTEST( Range_size(atRange(-1,-10,-1),10) == 10 );
-    UTEST( Range_size(atRange(-1,-10,-2),10) == 5 );
-    UTEST( Range_size(atRange(-1,-10,-3),10) == 4 );
-    UTEST( Range_size(atRange(-1,-9,-3),10) == 3 );
+    UTEST( Range_size(atRange(-1,-10,-1)) == 10 );
+    UTEST( Range_size(atRange(-1,-10,-2)) == 5 );
+    UTEST( Range_size(atRange(-1,-10,-3)) == 4 );
+    UTEST( Range_size(atRange(-1,-9,-3)) == 3 );
 
-    UTEST( Range_size(atRange(-10,-1,1),10) == 10 );
-    UTEST( Range_size(atRange(-10,-1,2),10) == 5 );
-    UTEST( Range_size(atRange(-10,-1,3),10) == 4 );
-    UTEST( Range_size(atRange(-9,-1,3),10) == 3 );
+    UTEST( Range_size(atRange(-10,-1,1)) == 10 );
+    UTEST( Range_size(atRange(-10,-1,2)) == 5 );
+    UTEST( Range_size(atRange(-10,-1,3)) == 4 );
+    UTEST( Range_size(atRange(-9,-1,3)) == 3 );
 
-    UTEST( Range_size(atRange(-10,-1,-1),10) == 0 );
-    UTEST( Range_size(atRange(-10,-1,-2),10) == 0 );
-    UTEST( Range_size(atRange(-10,-1,-3),10) == 0 );
-    UTEST( Range_size(atRange(-9,-1,-3),10) == 0 );
+    UTEST( Range_size(atRange(-10,-1,-1)) == 0 );
+    UTEST( Range_size(atRange(-10,-1,-2)) == 0 );
+    UTEST( Range_size(atRange(-10,-1,-3)) == 0 );
+    UTEST( Range_size(atRange(-9,-1,-3)) == 0 );
 
-    UTEST( Range_size(atRange(1,-1,1),10) == 9 );
-    UTEST( Range_size(atRange(1,-1,2),10) == 5 );
-    UTEST( Range_size(atRange(0,-1,3),10) == 4 );
-    UTEST( Range_size(atRange(1,-1,3),10) == 3 );
-    UTEST( Range_size(atRange(1,-9,3),10) == 1 );
+    UTEST( Range_size(atRange(1,-1,1)) == 0 );
+    UTEST( Range_size(atRange(1,-1,2)) == 0 );
+    UTEST( Range_size(atRange(0,-1,3)) == 0 );
+    UTEST( Range_size(atRange(1,-1,3)) == 0 );
+    UTEST( Range_size(atRange(1,-9,3)) == 0 );
 
-    UTEST( Range_size(atRange(-1,1,-1),10) == 9 );
-    UTEST( Range_size(atRange(-1,1,-2),10) == 5 );
-    UTEST( Range_size(atRange(-1,0,-3),10) == 4 );
-    UTEST( Range_size(atRange(-1,1,-3),10) == 3 );
-    UTEST( Range_size(atRange(-1,9,-3),10) == 1 );
+    UTEST( Range_size(atRange(-1,1,-1)) == 0 );
+    UTEST( Range_size(atRange(-1,1,-2)) == 0 );
+    UTEST( Range_size(atRange(-1,0,-3)) == 0 );
+    UTEST( Range_size(atRange(-1,1,-3)) == 0 );
+    UTEST( Range_size(atRange(-1,9,-3)) == 0 );
 
-    UTEST( Range_size(atRange(-1,1,1),10) == 0 );
-    UTEST( Range_size(atRange(-1,1,2),10) == 0 );
-    UTEST( Range_size(atRange(-1,0,3),10) == 0 );
-    UTEST( Range_size(atRange(-1,1,3),10) == 0 );
-    UTEST( Range_size(atRange(-1,9,3),10) == 1 );
+    UTEST( Range_size(atRange(-1,1,1)) == 3 );
+    UTEST( Range_size(atRange(-1,1,2)) == 2 );
+    UTEST( Range_size(atRange(-1,0,3)) == 1 );
+    UTEST( Range_size(atRange(-1,1,3)) == 1 );
+    UTEST( Range_size(atRange(-1,9,3)) == 4 );
 
     // closed
-    UTEST( Range_isClosed(atRange(0,10,1),0) );
-    UTEST(!Range_isClosed(atRange(0,10,-1),0) );
-    UTEST(!Range_isClosed(atRange(10,0,1),0) );
-    UTEST( Range_isClosed(atRange(10,0,-1),0) );
+    UTEST( Range_isClosed(atRange(0,10,1)) );
+    UTEST(!Range_isClosed(atRange(0,10,-1)) );
+    UTEST(!Range_isClosed(atRange(10,0,1)) );
+    UTEST( Range_isClosed(atRange(10,0,-1)) );
 
-    UTEST( Range_isClosed(atRange(-1,1,-1),10) );
-    UTEST(!Range_isClosed(atRange(1,-1,-1),10) );
-    UTEST(!Range_isClosed(atRange(-1,1,1),10) );
-    UTEST( Range_isClosed(atRange(1,-1,1),10) );
+    UTEST(!Range_isClosed(atRange(-1,1,-1)) );
+    UTEST( Range_isClosed(atRange(1,-1,-1)) );
+    UTEST( Range_isClosed(atRange(-1,1,1)) );
+    UTEST(!Range_isClosed(atRange(1,-1,1)) );
 
     // normalize (seq size independant)
     UTEST( eq(Range_normalize(atRange(0,9,1),0), atRange(0,9,1)) );
@@ -186,7 +187,7 @@ ut_range(void)
     UTEST( eq(Range_normalize(atRange(10,1,-3),0), atRange(10,1,-3)) );
     UTEST( eq(Range_normalize(atRange(9,1,-3),0), atRange(9,1,-3)) );
 
-    // normalize (seq size dependant)
+    // normalize (seq size dependant: negative indexes)
     UTEST( eq(Range_normalize(atRange(-1,-10,-1),10), atRange(9,0,-1)) );
     UTEST( eq(Range_normalize(atRange(-1,-10,-2),10), atRange(9,0,-2)) );
     UTEST( eq(Range_normalize(atRange(-1,-10,-3),10), atRange(9,0,-3)) );

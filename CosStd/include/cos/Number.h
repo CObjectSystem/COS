@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.9 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Number.h,v 1.10 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -66,9 +66,9 @@ defclass(Complex , Floating) C64 value; endclass
 #define atInt(a)        atNumber (Int    , a)
 #define atLong(a)       atNumber (Long   , a)
 #define atFloat(a)      atNumber (Float  , a)
+#define atComplex(...)  COS_PP_CAT_NARG(atComplex,__VA_ARGS__)(__VA_ARGS__)
 #define atComplex1(a)   atNumber (Complex, a)
 #define atComplex2(r,i) atNumber (Complex, complex_make(r,i))
-#define atComplex(...)  COS_PP_CAT_NARG(atComplex,__VA_ARGS__)(__VA_ARGS__)
 
 // --- shortcuts
 
@@ -95,7 +95,7 @@ defclass(Complex , Floating) C64 value; endclass
 // ---- float inliners
 
 static inline BOOL
-float_isEqual(FLOAT x, FLOAT y)
+float_equal(FLOAT x, FLOAT y)
 {
   return x <= y && x >= y;
 }
@@ -121,10 +121,10 @@ complex_imag(COMPLEX x)
 }
 
 static inline BOOL
-complex_isEqual(COMPLEX x, COMPLEX y)
+complex_equal(COMPLEX x, COMPLEX y)
 {
-  return float_isEqual(complex_real(x), complex_real(y)) &&
-         float_isEqual(complex_imag(x), complex_imag(y));
+  return float_equal(complex_real(x), complex_real(y)) &&
+         float_equal(complex_imag(x), complex_imag(y));
 }
 
 #endif // COS_NUMBER_H

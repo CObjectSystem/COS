@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.30 2009/07/24 20:49:58 ldeniau Exp $
+ | $Id: Array.c,v 1.31 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
@@ -39,12 +39,14 @@
 #include <cos/Number.h>
 #include <cos/View.h>
 
+#include <cos/gen/compare.h>
 #include <cos/gen/container.h>
-#include <cos/gen/sequence.h>
 #include <cos/gen/functor.h>
-#include <cos/gen/object.h>
-#include <cos/gen/value.h>
 #include <cos/gen/init.h>
+#include <cos/gen/object.h>
+#include <cos/gen/sequence.h>
+#include <cos/gen/value.h>
+
 #include <cos/prp/object.h>
 #include <cos/prp/sequence.h>
 
@@ -74,7 +76,7 @@ useclass(Array, ExBadAlloc);
 
 // ----- properties
 
-#define size_to_OBJ(siz) gautoRelease(aInt(siz))
+#define size_to_OBJ(siz) gautoDelete(aInt(siz))
 #define array_class(arr) Array
 
 defproperty(Array    ,   size , size_to_OBJ);
@@ -225,6 +227,28 @@ defmethod(OBJ, ginitWith, pmArray, Array) // clone
 
   UNPRT(_arr);
   retmethod(_arr);
+endmethod
+
+defmethod(OBJ, ginitWith, pmArray, Slice) // Int sequence
+  U32 size = Slice_size(self2);
+
+  struct Array* arr = Array_alloc(size);
+
+  for (U32 i = 0; i < size; i++)
+    arr->object[i] = gretain(aInt(Slice_eval(self2,i)));
+
+  retmethod((OBJ)arr);
+endmethod
+
+defmethod(OBJ, ginitWith, pmArray, Range) // Int sequence
+  U32 size = Range_size(self2);
+
+  struct Array* arr = Array_alloc(size);
+
+  for (U32 i = 0; i < size; i++)
+    arr->object[i] = gretain(aInt(Range_eval(self2,i)));
+
+  retmethod((OBJ)arr);
 endmethod
 
 defmethod(OBJ, ginitWith2, pmArray, Int, Object) // element

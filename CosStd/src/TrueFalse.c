@@ -29,14 +29,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: TrueFalse.c,v 1.3 2009/01/22 16:45:08 ldeniau Exp $
+ | $Id: TrueFalse.c,v 1.4 2009/08/03 12:12:32 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/TrueFalse.h>
-#include <cos/gen/object.h>
+
+#include <cos/gen/compare.h>
 #include <cos/gen/logic.h>
+#include <cos/gen/object.h>
 
 // ----- Tristate boolean logic (with uncertain/indeterminate state)
 
