@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.12 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Functor.h,v 1.13 2009/08/03 21:20:39 ldeniau Exp $
  |
 */
 
@@ -102,15 +102,14 @@ endclass
 
 // ----- Composition of functors
 
-defclass(Compose, Functor)
-  U32  size;
-  OBJ *functor;
-  OBJ _functor[];
+defclass(ComposeFun, Functor)
+  U32 size;
+  OBJ functor[];
 endclass
 
 // ----- Iterates of functor
 
-defclass(Iterate, Functor)
+defclass(IterateFun, Functor)
   U32     num;
   OBJ     fun;
   OBJFCT1 fct;

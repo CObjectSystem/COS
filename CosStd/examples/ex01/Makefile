@@ -1,7 +1,7 @@
 #
 # o---------------------------------------------------------------------o
 # |
-# | COS Standard Library
+# | COS example
 # |
 # o---------------------------------------------------------------------o
 # |
@@ -29,52 +29,35 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.14 2009/08/03 21:20:39 ldeniau Exp $
+# | $Id: Makefile,v 1.1 2009/08/03 21:20:39 ldeniau Exp $
 # |
 #
 
 # bootstrap, normally $(cos) = cos
-cos := ../CosBase/include/cos
+cos := ../../../CosBase/include/cos
 
-#
 # standard COS makefile
-#
 
 include $(cos)/prologue
 
 # project
-library := CosStd
-version := 0.1
-release := 200908
-package := $(library)-$(version)_$(release)
+program := cos-ex01
 
 # targets
-targets := all
+targets := release.run # debug.run
 
-# files and modules
-sources := $(wildcard src/*.c)
-headers := $(wildcard include/cos/*.h include/cos/*/*.h)
-defgens := $(wildcard include/cos/gen/*.h)
-defprps := $(wildcard include/cos/prp/*.h)
+# files & modules
+sources := $(wildcard *.c)
+defgens := $(wildcard generics.h)
+defprps := $(wildcard properties.h)
 
 # project dependencies (as with -lname)
-libdeps := 
-moddeps := CosBase
+moddeps := CosBase CosStd
 
 # project dependencies (as with -Ipath or -Lpath)
-incdirs := src include ../CosBase/include
-bindirs :=
-libdirs := ../CosBase/$(OSNAME)/lib
-moddirs :=
-
-# documentation
-auxdocs :=
-
-# patterns (clean, install-excluded, tar-excluded)
-cleanpat :=
-tarexpat :=
-insexpat :=
+incdirs := ../../../CosBase/include ../../include .
+libdirs := ../../../CosBase/$(OSNAME)/lib ../../$(OSNAME)/lib
 
 include $(cos)/epilogue
 
-# end of makefile
+# end of COS example makefile

@@ -29,18 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.11 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Functor.c,v 1.12 2009/08/03 21:20:39 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
-#include <cos/Array.h>
-#include <cos/Number.h>
 #include <cos/Functor.h>
-#include <cos/gen/value.h>
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
-#include <cos/gen/algorithm.h>
 
 makclass(Functor);
 
@@ -50,38 +45,9 @@ makclass(Functor3 , Functor);
 makclass(Functor4 , Functor);
 makclass(Functor5 , Functor);
 
-makclass(Function , Functor);
-makclass(Function1, Function);
-makclass(Function2, Function);
-makclass(Function3, Function);
-makclass(Function4, Function);
-makclass(Function5, Function);
-
-makclass(Compose  , Functor);
-makclass(Iterate  , Functor);
-
-// -----
-
-STATIC_ASSERT(functor1_to_function1_compatibility,
-              COS_FIELD_COMPATIBILITY(Function1,Functor1,fct));
-
-STATIC_ASSERT(functor2_to_function2_compatibility,
-              COS_FIELD_COMPATIBILITY(Function2,Functor2,fct));
-
-STATIC_ASSERT(functor3_to_function3_compatibility,
-              COS_FIELD_COMPATIBILITY(Function3,Functor3,fct));
-
-STATIC_ASSERT(functor4_to_function4_compatibility,
-              COS_FIELD_COMPATIBILITY(Function4,Functor4,fct));
-
-STATIC_ASSERT(functor5_to_function5_compatibility,
-              COS_FIELD_COMPATIBILITY(Function5,Functor5,fct));
-
-// -----
-
 useclass(ExBadArity);
 
-// ----- functors
+// ----- Functors
 
 defmethod(OBJ, ginitWith, Functor1, Functor1)
   self->fct   = self2->fct;
@@ -130,95 +96,6 @@ defmethod(OBJ, ginitWith, Functor5, Functor5)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, Function1, Function1)
-  self->fct = self2->fct;
-  
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Function2, Function2)
-  self->fct = self2->fct;
-  
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Function3, Function3)
-  self->fct = self2->fct;
-  
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Function4, Function4)
-  self->fct = self2->fct;
-  
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Function5, Function5)
-  self->fct = self2->fct;
-  
-  retmethod(_1);
-endmethod
-
-// ----- composition
-
-useclass(Compose);
-
-static inline struct Compose*
-Compose_alloc(U32 size)
-{
-  OBJ _cmp = gallocWithSize(Compose, size * sizeof(OBJ));
-  struct Compose *cmp = STATIC_CAST(struct Compose*, _cmp);
-
-  cmp->size    = size;
-  cmp->functor = cmp->_functor;
-  
-  return cmp;
-}
-
-defmethod(OBJ, galloc, pmCompose)
-  retmethod(_1); // lazy alloc
-endmethod
-
-defmethod(OBJ, ginitWith, pmCompose, Compose) // clone
-  retmethod( ginitWith((OBJ)Compose_alloc(self2->size),_2) );
-endmethod
-
-defmethod(OBJ, ginitWith, pmCompose, Array) // clone
-  retmethod( ginitWith((OBJ)Compose_alloc(self2->size),_2) );
-endmethod
-
-defmethod(OBJ, ginitWith, Compose, Compose) // copy
-  test_assert(self->size == self2->size, "incompatible composition size");
-
-  OBJ *src = self2->functor;
-  OBJ *fun = self1->functor;
-  OBJ *end = self1->functor+self1->size;
-
-  while (fun < end)
-    *fun++ = gretain(*src++);
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Compose, Array)
-  test_assert(self->size == self2->size, "incompatible composition size");
-
-  OBJ *obj   = self2->object;
-  I32  obj_s = self2->stride;
-  OBJ *fun   = self1->functor+self1->size;
-  OBJ *end   = self1->functor;
-
-  while (fun-- > end) { // reverse references
-    *fun = gretain(*obj);
-    obj += obj_s;
-  }
-
-  retmethod(_1);
-endmethod
-
-// ----- dtors
-
 defmethod(OBJ, gdeinit, Functor)
   retmethod(_1);
 endmethod
@@ -257,19 +134,7 @@ defmethod(OBJ, gdeinit, Functor5)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdeinit, Compose)
-  for (U32 i = 0; i < self->size; i++)
-    grelease(self->functor[i]);
-
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gdeinit, Iterate)
-  grelease(self->fun);
-  retmethod(_1);
-endmethod
-
-// ----- Arity
+// ----- arity
 
 static const U8 argc[32] = {
 //  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
@@ -302,93 +167,16 @@ defmethod(I32, garity, Functor5)
   retmethod(5-argc[self->arity]);
 endmethod
 
-defmethod(I32, garity, Function1)
-  retmethod(1);
-endmethod
+// ----- eval
 
-defmethod(I32, garity, Function2)
-  retmethod(2);
-endmethod
 
-defmethod(I32, garity, Function3)
-  retmethod(3);
-endmethod
-
-defmethod(I32, garity, Function4)
-  retmethod(4);
-endmethod
-
-defmethod(I32, garity, Function5)
-  retmethod(5);
-endmethod
-
-defmethod(I32, garity, Compose)
-  retmethod( garity(self->functor[0]) );
-endmethod
-
-defmethod(I32, garity, Iterate)
-  retmethod( garity(self->fun) ); // should be one
-endmethod
-
-// ----- Compose
-
-defmethod(OBJ, gcompose, Functor)
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gcompose, Array)
-  retmethod(gautoDelete(gnewWith(Compose,_1)));
-endmethod
-
-defmethod(OBJ, grepeat, Functor, Int)
-  test_assert(self2->value > 0, "invalid number of repeat");
-
-  struct Compose *cmp = Compose_alloc(self2->value);
-  OBJ _cmp = (OBJ)cmp; PRT(_cmp);
-
-  OBJ *fun = cmp->functor;
-  OBJ *end = cmp->functor + cmp->size;
-
-  while (fun != end)
-    *fun++ = gretain(_1);
-
-  UNPRT(_cmp);
-  retmethod(_cmp);
-endmethod
-
-// ----- Iterate
-
-defmethod(OBJ, giterate, Functor, Int)
-  useclass(Iterate);
-
-  test_assert(self2->value > 0, "invalid number of iteration");
-
-  OBJ _itr = galloc(Iterate);
-  struct Iterate *itr = STATIC_CAST(struct Iterate*, _itr);
-
-  itr->num = self2->value;
-  itr->fun = _1;
-  itr->fct =  0;
-
-  if ( cos_object_isKindOf(_1, classref(Function1)) )
-    itr->fct = STATIC_CAST(struct Function1*, _1)->fct;
-
-  retmethod(_itr);
-endmethod
-
-// ----- Eval
-
-// Functor1 & Function1
+// --- Functor1
 
 defmethod(OBJ, geval, Functor1)
   retmethod(self->fct(self->arg));
 endmethod
 
-defmethod(OBJ, geval1, Function1, (OBJ)arg1)
-  retmethod(self->fct(arg1));
-endmethod
-
-// ----- Functor2  & Function2
+// --- Functor2
 
 defmethod(OBJ, geval, Functor2)
   switch (self->arity) {
@@ -410,11 +198,7 @@ defmethod(OBJ, geval1, Functor2, (OBJ)arg1)
   }
 endmethod
 
-defmethod(OBJ, geval2, Function2, (OBJ)arg1, (OBJ)arg2)
-  retmethod(self->fct(arg1,arg2));
-endmethod
-
-// ----- Functor3 & Function3
+// --- Functor3
 
 defmethod(OBJ, geval, Functor3)
   switch (self->arity) {
@@ -451,11 +235,7 @@ defmethod(OBJ, geval2, Functor3, (OBJ)arg1, (OBJ)arg2)
   }
 endmethod
 
-defmethod(OBJ, geval3, Function3, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3)
-  retmethod(self->fct(arg1,arg2,arg3));
-endmethod
-
-// ----- Functor4 & Function4
+// --- Functor4
 
 defmethod(OBJ, geval, Functor4)
   switch (self->arity) {
@@ -515,11 +295,7 @@ defmethod(OBJ, geval3, Functor4, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3)
   }
 endmethod
 
-defmethod(OBJ, geval4, Function4, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3, (OBJ)arg4)
-  retmethod(self->fct(arg1,arg2,arg3,arg4));
-endmethod
-
-// ----- Functor5 & Function5
+// --- Functor5
 
 defmethod(OBJ, geval, Functor5)
   switch (self->arity) {
@@ -615,84 +391,6 @@ defmethod(OBJ, geval4, Functor5, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3, (OBJ)arg4)
     retmethod(self->fct(arg1        ,arg2        ,arg3        ,arg4        ,self->arg[4]));
   default:
     THROW( gnewWithStr(ExBadArity, "geval4(Functor5)") );
-  }
-endmethod
-
-defmethod(OBJ, geval5, Function5, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3, (OBJ)arg4, (OBJ)arg5)
-  retmethod(self->fct(arg1,arg2,arg3,arg4,arg5));
-endmethod
-
-// ----- Compose
-
-defmethod(OBJ, geval1, Compose, (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor + self->size;
-
-  forward_message(*fun++);
-
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
-
-endmethod
-
-defmethod(OBJ, geval2, Compose, (OBJ), (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor + self->size;
-  
-  forward_message(*fun++);
-
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
-
-endmethod
-
-defmethod(OBJ, geval3, Compose, (OBJ), (OBJ), (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor + self->size;
-  
-  forward_message(*fun++);
-
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
-
-endmethod
-
-defmethod(OBJ, geval4, Compose, (OBJ), (OBJ), (OBJ), (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor + self->size;
-  
-  forward_message(*fun++);
-
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
-
-endmethod
-
-defmethod(OBJ, geval5, Compose, (OBJ), (OBJ), (OBJ), (OBJ), (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor+self->size;
-  
-  forward_message(*fun++);
-
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
-
-endmethod
-
-// ----- Iterate
-
-defmethod(OBJ, geval1, Iterate, (OBJ))
-  forward_message(self->fun);
-
-  if (self->fct) {
-    OBJFCT1 fct = self->fct;
-    for (int i = self->num-1; i; i--)
-      RETVAL = fct(RETVAL);
-  }
-  else {
-    OBJ fun = self->fun;
-    for (int i = self->num-1; i; i--)
-      RETVAL = geval1(fun, RETVAL);
   }
 endmethod
 

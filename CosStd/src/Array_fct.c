@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fct.c,v 1.8 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Array_fct.c,v 1.9 2009/08/03 21:20:39 ldeniau Exp $
  |
 */
 
@@ -63,7 +63,7 @@ endmethod
 
 static inline void
 foreach(OBJ *obj, OBJFCT1 fct, int n) {
-  for (int i = 0; i < n; i++)
+  for (int i = 0; i != n; i++)
     fct(obj[i]);
 }
 
@@ -703,7 +703,7 @@ defmethod(OBJ, gunique, Array, Function2)
   struct Array* arr = ArrayDynamic_alloc(self->size);
 
   if (self->size < 1)
-    retmethod((OBJ)arr);
+    goto exit;
 
   OBJ _arr = (OBJ)arr; PRT(_arr);
 
@@ -720,6 +720,7 @@ defmethod(OBJ, gunique, Array, Function2)
   }
   *dst++ = gretain(*src);
 
+exit:
   gadjust(_arr);
   UNPRT(_arr);
   retmethod(gautoDelete(_arr));
