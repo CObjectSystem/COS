@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.3 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: Makefile,v 1.4 2009/08/03 21:07:13 ldeniau Exp $
 # |
 #
 
@@ -44,7 +44,7 @@ include $(cos)/prologue
 program := cos-ex01
 
 # targets
-targets := debug.run
+targets := release.run # debug.run
 
 # files & modules
 sources := $(wildcard *.c)

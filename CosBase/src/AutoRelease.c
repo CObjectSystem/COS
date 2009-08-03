@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.40 2009/08/03 10:07:00 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.41 2009/08/03 21:07:13 ldeniau Exp $
  |
 */
 
@@ -281,6 +281,7 @@ endmethod
 // -----
 
 defmethod(OBJ, ginit, AutoRelease)
+  self->Object.rc = COS_RC_AUTO; // AutoRelease pools are linked to the stack
   self->stk = self->_stk;
   self->top = self->_stk;
   self->end = self->_stk + COS_ARRLEN(self->_stk);

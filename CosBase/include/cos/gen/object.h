@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.23 2009/08/03 10:07:00 ldeniau Exp $
+ | $Id: object.h,v 1.24 2009/08/03 21:07:13 ldeniau Exp $
  |
 */
 
@@ -93,43 +93,79 @@ defgeneric(void, gdeinitialize , _1);
 // inliner gnewXXX (= galloc() + ginitXXX())
 static always_inline OBJ
 gnew(OBJ _1) {
-  return ginit(galloc(_1)); COS_UNUSED(gnew);
+  return ginit(galloc(_1));
+  COS_UNUSED(gnew);
 }
 
 static always_inline OBJ
 gnewWith(OBJ _1, OBJ _2) {
-  return ginitWith(galloc(_1),_2);  COS_UNUSED(gnewWith);
+  return ginitWith(galloc(_1),_2);
+  COS_UNUSED(gnewWith);
 }
 
 static always_inline OBJ
 gnewWith2(OBJ _1, OBJ _2, OBJ _3) {
-  return ginitWith2(galloc(_1),_2,_3);  COS_UNUSED(gnewWith2);
+  return ginitWith2(galloc(_1),_2,_3);
+  COS_UNUSED(gnewWith2);
 }
 
 static always_inline OBJ
 gnewWith3(OBJ _1, OBJ _2, OBJ _3, OBJ _4) {
-  return ginitWith3(galloc(_1),_2,_3,_4);  COS_UNUSED(gnewWith3);
+  return ginitWith3(galloc(_1),_2,_3,_4);
+  COS_UNUSED(gnewWith3);
 }
 
 static always_inline OBJ
 gnewWith4(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5) {
-  return ginitWith4(galloc(_1),_2,_3,_4,_5);  COS_UNUSED(gnewWith4);
+  return ginitWith4(galloc(_1),_2,_3,_4,_5);
+  COS_UNUSED(gnewWith4);
 }
 
 static always_inline OBJ
 gnewWithLoc(OBJ _1, OBJ _2, STR func, STR file, int line) {
-  return ginitWithLoc(galloc(_1),_2,func,file,line);  COS_UNUSED(gnewWithLoc);
+  return ginitWithLoc(galloc(_1),_2,func,file,line);
+  COS_UNUSED(gnewWithLoc);
 }
 
 static always_inline OBJ
 gnewWithStr(OBJ _1, STR str) {
-  return ginitWithStr(galloc(_1),str);  COS_UNUSED(gnewWithStr);
+  return ginitWithStr(galloc(_1),str);
+  COS_UNUSED(gnewWithStr);
 }
 
 // inliner gclone
 static always_inline OBJ
 gclone(OBJ _1) {
-  return ginitWith(galloc(gclass(_1)),_1);  COS_UNUSED(gclone);
+  return ginitWith(galloc(gclass(_1)),_1);
+  COS_UNUSED(gclone);
 }
+
+// ----- wrappers -----
+
+#ifndef COS_RC_NOINLINE
+
+#define gretain(obj)  gretain_inline (obj)
+#define grelease(obj) grelease_inline(obj)
+
+static always_inline OBJ
+gretain_inline(OBJ _1) {
+  struct Object *obj = STATIC_CAST(struct Object*, _1);
+  return obj->rc >= COS_RC_UNIT ? (obj->rc++, _1) : (gretain)(_1);
+  COS_UNUSED(gretain_inline);
+}
+
+static always_inline void
+grelease_inline(OBJ _1) {
+  struct Object *obj = STATIC_CAST(struct Object*, _1);
+
+  if (obj->rc > COS_RC_UNIT)
+    obj->rc--;
+  else
+    (grelease)(_1);
+
+  COS_UNUSED(grelease_inline);
+}
+
+#endif // !COS_RC_NOINLINE
 
 #endif // COS_GEN_OBJECT_H
