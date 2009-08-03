@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.39 2009/06/17 21:34:45 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.40 2009/08/03 10:07:00 ldeniau Exp $
  |
 */
 
@@ -226,22 +226,33 @@ endmethod
 
 defalias (void, (grelease)gdelete, Object);
 defmethod(void,  grelease        , Object)
-  if (self->rc > COS_RC_UNIT) {
+  if (self->rc > COS_RC_UNIT)
     --self->rc;
-    retmethod();
-  }
-
+  
+  else
   if (self->rc == COS_RC_UNIT) {
     self->rc = COS_RC_STATIC; // avoid cyclic dependencies
     gdealloc(gdeinit(_1));
-    retmethod();
   }
-  
-  if (self->rc == COS_RC_STATIC)
-    retmethod();
 
-  // self->rc < COS_RC_STATIC || self->rc == COS_RC_AUTO
-  THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
+  else
+  if (self->rc < COS_RC_STATIC)
+    THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
+endmethod
+
+// ----- Class ownership (always static)
+
+defmethod(OBJ, gretain, Class)
+  retmethod(_1);
+endmethod
+
+defalias (OBJ, (gautoRelease)gautoDelete, Class);
+defmethod(OBJ,  gautoRelease            , Class)
+  retmethod(_1);
+endmethod
+
+defalias (void, (grelease)gdelete, Class);
+defmethod(void,  grelease        , Class)
 endmethod
 
 // ----- AutoRelease ownership

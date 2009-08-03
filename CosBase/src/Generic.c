@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.3 2009/02/22 23:32:50 ldeniau Exp $
+ | $Id: Generic.c,v 1.4 2009/08/03 10:07:00 ldeniau Exp $
  |
 */
 
@@ -37,9 +37,11 @@
 #include <cos/Generic.h>
 #include <cos/gen/value.h>
 
-makclass(Generic,     Behavior);
-makclass(GenAccessor, Generic);
-makclass(GenOperator, Generic);
+makclass(Generic      , Behavior);
+
+makclass(GenAccessor  , Generic);
+makclass(GenComparator, Generic);
+makclass(GenOperator  , Generic);
 
 // -----
 

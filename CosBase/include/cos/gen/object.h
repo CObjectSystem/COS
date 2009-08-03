@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.22 2009/07/22 13:28:56 ldeniau Exp $
+ | $Id: object.h,v 1.23 2009/08/03 10:07:00 ldeniau Exp $
  |
 */
 
@@ -42,8 +42,9 @@
 /* NOTE-USER: generic predicates
    generic predicates prefixed by 'is' return TrueFalse (i.e. True or False)
    generic predicates without the prefix 'is' return a BOOL
-   - gisEmpty(_1) -> True | False
-   - gempty  (_1) -> YES  | NO
+   - gisEqual(_1) -> True | False
+   - gequal  (_1) -> YES  | NO
+   most of the time, the later is implemented as an inliner on top of the former.
 */
 
 // allocator, deallocator
@@ -76,15 +77,6 @@ defgeneric(OBJ , gisInstanceOf , _1, _2); // returns True or False
 defgeneric(OBJ , gclass        , _1);
 defgeneric(STR , gclassName    , _1);
 defgeneric(OBJ , gsuperClass   , _1);
-defgeneric(U32 , ghash         , _1);
-
-// properties, keys
-defgeneric(OBJ , (GenAccessor)ggetAt, _1, at);
-defgeneric(void, (GenAccessor)gputAt, _1, at, what);
-
-// comparison
-defgeneric(OBJ , (GenOperator)gisEqual, _1, _2); // return True or False
-defgeneric(OBJ , (GenOperator)gcompare, _1, _2); // return Equal,Lesser,Greater
 
 // contract
 defgeneric(void, ginvariant    , _1, (STR)func, (STR)file, (int)line);

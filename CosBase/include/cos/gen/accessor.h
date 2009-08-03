@@ -1,16 +1,16 @@
-#ifndef COS_GENERIC_H
-#define COS_GENERIC_H
+#ifndef COS_GEN_ACCESSOR_H
+#define COS_GEN_ACCESSOR_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS Generic
+ | COS accessor generics
  |
  o---------------------------------------------------------------------o
  |
  | C Object System
  |
- | Copyright (c) 2006+ Laurent Deniau, laurent.deniau@cern.ch
+ | Copyright (c) 2006+ Laurent Deniau, laurent.deniau*cern.ch
  |
  | For more information, see:
  | http://cern.ch/laurent.deniau/cos.html
@@ -32,19 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.h,v 1.5 2009/08/03 10:07:00 ldeniau Exp $
+ | $Id: accessor.h,v 1.4 2009/08/03 10:07:00 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#include <cos/Object.h>
+#ifndef COS_GENERIC_H
+#include <cos/Generic.h>
 #endif 
 
-// Generic is a core class, see cos/cos/coscls.h
+// getters, setters, properties, keys
+defgeneric(OBJ , (GenAccessor)ggetAt, _1, at);
+defgeneric(void, (GenAccessor)gputAt, _1, at, what);
 
-// generics classification
-defclass(GenAccessor  , Generic) endclass
-defclass(GenComparator, Generic) endclass
-defclass(GenOperator  , Generic) endclass
-
-#endif // COS_GENERIC_H
+#endif // COS_GEN_ACCESSOR_H

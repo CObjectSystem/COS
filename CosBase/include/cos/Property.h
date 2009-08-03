@@ -32,14 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Property.h,v 1.3 2009/02/25 23:06:08 ldeniau Exp $
+ | $Id: Property.h,v 1.4 2009/08/03 10:07:00 ldeniau Exp $
  |
 */
 
 #include <cos/Nil.h>
 
-#ifndef COS_GEN_OBJECT_H
-#include <cos/gen/object.h>
+#ifndef COS_GEN_ACCESSOR_H
+#include <cos/gen/accessor.h>
 #endif
 
 /* NOTE-USER: Property
