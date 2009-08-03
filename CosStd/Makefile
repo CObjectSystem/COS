@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.12 2009/08/03 12:18:05 ldeniau Exp $
+# | $Id: Makefile,v 1.13 2009/08/03 12:20:57 ldeniau Exp $
 # |
 #
 
@@ -64,6 +64,11 @@ incdirs := src include ../CosBase/include
 bindirs :=
 libdirs := ../CosBase/$(OSNAME)/lib
 moddirs :=
+
+# patterns (clean, install-excluded, tar-excluded)
+cleanpat :=
+tarexpat :=
+insexpat :=
 
 include $(cos)/epilogue
 
