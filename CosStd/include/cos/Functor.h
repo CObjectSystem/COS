@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.13 2009/08/03 21:20:39 ldeniau Exp $
+ | $Id: Functor.h,v 1.14 2009/08/05 09:58:59 ldeniau Exp $
  |
 */
 
@@ -107,7 +107,7 @@ defclass(ComposeFun, Functor)
   OBJ functor[];
 endclass
 
-// ----- Iterates of functor
+// ----- Iteration of functor
 
 defclass(IterateFun, Functor)
   U32     num;
@@ -115,7 +115,7 @@ defclass(IterateFun, Functor)
   OBJFCT1 fct;
 endclass
 
-// ----- automatic constructors
+// ----- automatic constructor
 
 #define aFunctor(...) ( (OBJ)atFunctor(__VA_ARGS__) )
 

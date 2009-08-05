@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Functor (closure)
+ | COS Functor iteration
  |
  o---------------------------------------------------------------------o
  |
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_itr.c,v 1.1 2009/08/03 21:20:39 ldeniau Exp $
+ | $Id: Functor_itr.c,v 1.2 2009/08/05 09:58:59 ldeniau Exp $
  |
 */
 
@@ -39,6 +39,21 @@
 #include <cos/gen/functor.h>
 
 makclass(IterateFun, Functor);
+
+// ----- ator
+
+static inline struct IterateFun*
+IterateFun_alloc(I32 num)
+{
+  useclass(IterateFun);
+
+  OBJ _itr = galloc(IterateFun);
+  struct IterateFun *itr = STATIC_CAST(struct IterateFun*, _itr);
+
+  itr->num = num;
+  
+  return itr;
+}
 
 // ----- dtor
 
@@ -50,19 +65,28 @@ endmethod
 // ----- builder - ctor
 
 defmethod(OBJ, giterate, Functor, Int)
-  useclass(IterateFun);
 
   test_assert(self2->value > 0, "invalid number of iteration");
+  test_assert(garity(_1)  == 1, "invalid arity");
 
-  OBJ _itr = galloc(IterateFun); PRT(_itr);
-  struct IterateFun *itr = STATIC_CAST(struct IterateFun*, _itr);
+  struct IterateFun *itr = IterateFun_alloc(self2->value);
+  OBJ _itr = (OBJ)itr; PRT(_itr);
 
-  itr->num = self2->value;
   itr->fun = gretain(_1);
   itr->fct =  0;
 
-  if ( cos_object_isKindOf(itr->fun, classref(Function1)) )
-    itr->fct = STATIC_CAST(struct Function1*, itr->fun)->fct;
+  UNPRT(_itr);
+  retmethod(gautoDelete(_itr));
+endmethod
+
+defmethod(OBJ, giterate, Function1, Int)
+  test_assert(self2->value > 0, "invalid number of iteration");
+
+  struct IterateFun *itr = IterateFun_alloc(self2->value);
+  OBJ _itr = (OBJ)itr; PRT(_itr);
+
+  itr->fun = gretain(_1);
+  itr->fct = STATIC_CAST(struct Function1*, itr->fun)->fct;
 
   UNPRT(_itr);
   retmethod(gautoDelete(_itr));
@@ -71,7 +95,7 @@ endmethod
 // ----- arity
 
 defmethod(I32, garity, IterateFun)
-  retmethod( garity(self->fun) ); // should be one
+  retmethod(1);
 endmethod
 
 // ----- eval

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.12 2009/08/03 21:20:39 ldeniau Exp $
+ | $Id: Functor.c,v 1.13 2009/08/05 09:58:59 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@ makclass(Functor5 , Functor);
 
 useclass(ExBadArity);
 
-// ----- Functors
+// ----- ctors
 
 defmethod(OBJ, ginitWith, Functor1, Functor1)
   self->fct   = self2->fct;
@@ -95,6 +95,8 @@ defmethod(OBJ, ginitWith, Functor5, Functor5)
 
   retmethod(_1);
 endmethod
+
+// ----- dtors
 
 defmethod(OBJ, gdeinit, Functor)
   retmethod(_1);
@@ -168,7 +170,6 @@ defmethod(I32, garity, Functor5)
 endmethod
 
 // ----- eval
-
 
 // --- Functor1
 
