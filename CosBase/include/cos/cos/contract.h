@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.10 2009/08/05 10:42:24 ldeniau Exp $
+ | $Id: contract.h,v 1.11 2009/08/05 10:54:45 ldeniau Exp $
  |
 */
 
@@ -244,13 +244,13 @@
         COS_CTR_ASS_2(#__VA_ARGS__,__VA_ARGS__))
 
 #define COS_CTR_ASS_2(CS,C) \
-        COS_CTR_ASS_6(CS,C,CS,__FUNC__,__FILE__,__LINE__)
+        COS_CTR_ASS_3(CS,C,CS)
 
 #define COS_CTR_ASS_3(CS,C,S) \
         COS_CTR_ASS_6(CS,C,S,__FUNC__,__FILE__,__LINE__)
 
 #define COS_CTR_ASS_5(CS,C,M,F,L) \
-        COS_CTR_ASS_6(CS,C,#C,M,F,L) // cannot avoid macro expansion
+        COS_CTR_ASS_6(CS,C,#C,M,F,L) // cannot avoid macro expansion in #C
 
 #define COS_CTR_ASS_6(CS,C,S,M,F,L) \
         ((void)((C) || (cos_exception_assert(S,M,F,L),0)))
