@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.9 2009/07/23 13:28:56 ldeniau Exp $
+ | $Id: contract.h,v 1.10 2009/08/05 10:42:24 ldeniau Exp $
  |
 */
 
@@ -158,7 +158,7 @@
 #endif
 
 #ifndef COS_DISABLE_test_assert
-#define test_assert(...) COS_CTR_ASS(__VA_ARGS__)
+#define test_assert(...) COS_CTR_ASS(#__VA_ARGS__,__VA_ARGS__)
 #endif
 
 #ifndef COS_DISABLE_test_invariant
@@ -239,18 +239,20 @@
 
 // test assert
 #define COS_CTR_ASS(...) \
-        COS_PP_CAT_NARG(COS_CTR_ASS_,__VA_ARGS__)(__VA_ARGS__)
+  COS_PP_IF(COS_PP_2ARGS(__VA_ARGS__))( \
+        COS_PP_CAT_NARG(COS_CTR_ASS_,__VA_ARGS__)(__VA_ARGS__), \
+        COS_CTR_ASS_2(#__VA_ARGS__,__VA_ARGS__))
 
-#define COS_CTR_ASS_1(C) \
-        COS_CTR_ASS_5(C,COS_PP_STR(C),__FUNC__,__FILE__,__LINE__)
+#define COS_CTR_ASS_2(CS,C) \
+        COS_CTR_ASS_6(CS,C,CS,__FUNC__,__FILE__,__LINE__)
 
-#define COS_CTR_ASS_2(C,S) \
-        COS_CTR_ASS_5(C,S,__FUNC__,__FILE__,__LINE__)
+#define COS_CTR_ASS_3(CS,C,S) \
+        COS_CTR_ASS_6(CS,C,S,__FUNC__,__FILE__,__LINE__)
 
-#define COS_CTR_ASS_4(C,M,F,L) \
-        COS_CTR_ASS_5(C,COS_PP_STR(C),M,F,L)
+#define COS_CTR_ASS_5(CS,C,M,F,L) \
+        COS_CTR_ASS_6(CS,C,#C,M,F,L) // cannot avoid macro expansion
 
-#define COS_CTR_ASS_5(C,S,M,F,L) \
+#define COS_CTR_ASS_6(CS,C,S,M,F,L) \
         ((void)((C) || (cos_exception_assert(S,M,F,L),0)))
 
 // test invariant
