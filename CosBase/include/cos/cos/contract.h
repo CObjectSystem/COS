@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.11 2009/08/05 10:54:45 ldeniau Exp $
+ | $Id: contract.h,v 1.12 2009/08/05 13:13:27 ldeniau Exp $
  |
 */
 
@@ -157,12 +157,14 @@
 #define BODY COS_CTR_BODY
 #endif
 
-#ifndef COS_DISABLE_test_assert
-#define test_assert(...) COS_CTR_ASS(#__VA_ARGS__,__VA_ARGS__)
-#endif
-
 #ifndef COS_DISABLE_test_invariant
 #define test_invariant(...) COS_CTR_INV(__VA_ARGS__)
+#endif
+
+#ifndef COS_DISABLE_test_assert
+#define test_assert(...) COS_CTR_ASS_(#__VA_ARGS__,__VA_ARGS__)
+#else
+#define COS_CTR_ASS(...) COS_CTR_ASS_(#__VA_ARGS__,__VA_ARGS__)
 #endif
 
 /***********************************************************
@@ -238,10 +240,8 @@
     }
 
 // test assert
-#define COS_CTR_ASS(...) \
-  COS_PP_IF(COS_PP_2ARGS(__VA_ARGS__))( \
-        COS_PP_CAT_NARG(COS_CTR_ASS_,__VA_ARGS__)(__VA_ARGS__), \
-        COS_CTR_ASS_2(#__VA_ARGS__,__VA_ARGS__))
+#define COS_CTR_ASS_(...) \
+        COS_PP_CAT_NARG(COS_CTR_ASS_,__VA_ARGS__)(__VA_ARGS__)
 
 #define COS_CTR_ASS_2(CS,C) \
         COS_CTR_ASS_3(CS,C,CS)
