@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.13 2009/07/22 13:28:56 ldeniau Exp $
+ | $Id: class.h,v 1.14 2009/08/07 10:51:03 ldeniau Exp $
  |
 */
 
@@ -113,7 +113,7 @@
 #endif
 
 #ifndef COS_DISABLE_FINAL_CLASS
-#define FINAL_CLASS COS_FINAL_CLASS
+#define FINAL_CLASS COS_CLS_FINAL
 #endif
 
 /***********************************************************
@@ -309,9 +309,9 @@ COS_STATIC_ASSERT( \
 
 // class final (c99)
 #ifdef COS_C89
-#define COS_FINAL_CLASS
+#define COS_CLS_FINAL
 #else
-#define COS_FINAL_CLASS char cos_cls_final_[];
+#define COS_CLS_FINAL char cos_cls_final_[];
 #endif
 
 #endif // COS_COS_CLASS_H

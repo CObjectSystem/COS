@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.12 2009/07/23 13:28:58 ldeniau Exp $
+ | $Id: Exception.c,v 1.13 2009/08/07 10:51:03 ldeniau Exp $
  |
 */
 
@@ -41,6 +41,7 @@
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 #include <cos/gen/init.h>
+#include <cos/gen/new.h>
 
 #include <stdlib.h>
 #include <string.h>

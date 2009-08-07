@@ -32,34 +32,33 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.24 2009/08/03 21:07:13 ldeniau Exp $
+ | $Id: object.h,v 1.25 2009/08/07 10:51:03 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <cos/Generic.h>
-
-/* NOTE-USER: generic predicates
-   generic predicates prefixed by 'is' return TrueFalse (i.e. True or False)
-   generic predicates without the prefix 'is' return a BOOL
-   - gisEqual(_1) -> True | False
-   - gequal  (_1) -> YES  | NO
-   most of the time, the later is implemented as an inliner on top of the former.
-*/
 
 // allocator, deallocator
 defgeneric(OBJ , galloc        , _1);
 defgeneric(OBJ , gallocWithSize, _1, (size_t)extra);
 defgeneric(void, gdealloc      , _1);
 
-// constructors, destructor, clearing
+// new, clone
+defgeneric(OBJ , gnew          , _1);
+defgeneric(OBJ , gnewWith      , _1, _2);
+defgeneric(OBJ , gnewWith2     , _1, _2, _3);
+defgeneric(OBJ , gnewWith3     , _1, _2, _3, _4);
+defgeneric(OBJ , gnewWith4     , _1, _2, _3, _4, _5);
+defgeneric(OBJ , gclone        , _1);
+
+// constructors
 defgeneric(OBJ , ginit         , _1);
 defgeneric(OBJ , ginitWith     , _1, _2); // includes copy ctor: ginitWith(T,T)
 defgeneric(OBJ , ginitWith2    , _1, _2, _3);
 defgeneric(OBJ , ginitWith3    , _1, _2, _3, _4);
 defgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
-defgeneric(OBJ , ginitWithLoc  , _1, _2, (STR)func, (STR)file, (int)line);
-defgeneric(OBJ , ginitWithStr  , _1, (STR)str);
+
+// destructor, clearing
 defgeneric(OBJ , gdeinit       , _1);
 defgeneric(void, gclear        , _1);
 
@@ -84,63 +83,7 @@ defgeneric(void, ginvariant    , _1, (STR)func, (STR)file, (int)line);
 // exception
 defgeneric(void, gthrow        , _1, (STR)func, (STR)file, (int)line);
 
-// initialization
-defgeneric(void, ginitialize   , _1);
-defgeneric(void, gdeinitialize , _1);
-
-// ----- inliners -----
-
-// inliner gnewXXX (= galloc() + ginitXXX())
-static always_inline OBJ
-gnew(OBJ _1) {
-  return ginit(galloc(_1));
-  COS_UNUSED(gnew);
-}
-
-static always_inline OBJ
-gnewWith(OBJ _1, OBJ _2) {
-  return ginitWith(galloc(_1),_2);
-  COS_UNUSED(gnewWith);
-}
-
-static always_inline OBJ
-gnewWith2(OBJ _1, OBJ _2, OBJ _3) {
-  return ginitWith2(galloc(_1),_2,_3);
-  COS_UNUSED(gnewWith2);
-}
-
-static always_inline OBJ
-gnewWith3(OBJ _1, OBJ _2, OBJ _3, OBJ _4) {
-  return ginitWith3(galloc(_1),_2,_3,_4);
-  COS_UNUSED(gnewWith3);
-}
-
-static always_inline OBJ
-gnewWith4(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5) {
-  return ginitWith4(galloc(_1),_2,_3,_4,_5);
-  COS_UNUSED(gnewWith4);
-}
-
-static always_inline OBJ
-gnewWithLoc(OBJ _1, OBJ _2, STR func, STR file, int line) {
-  return ginitWithLoc(galloc(_1),_2,func,file,line);
-  COS_UNUSED(gnewWithLoc);
-}
-
-static always_inline OBJ
-gnewWithStr(OBJ _1, STR str) {
-  return ginitWithStr(galloc(_1),str);
-  COS_UNUSED(gnewWithStr);
-}
-
-// inliner gclone
-static always_inline OBJ
-gclone(OBJ _1) {
-  return ginitWith(galloc(gclass(_1)),_1);
-  COS_UNUSED(gclone);
-}
-
-// ----- wrappers -----
+// ----- inlined wrappers -----
 
 #ifndef COS_RC_NOINLINE
 

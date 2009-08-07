@@ -32,25 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.h,v 1.3 2009/02/25 23:06:08 ldeniau Exp $
+ | $Id: Object.h,v 1.4 2009/08/07 10:51:02 ldeniau Exp $
  |
 */
 
-/*
- * --------------------------------------
- * Standard markers used inside the code:
- * --------------------------------------
- * NOTE-USER: mark the presence of comments for user
- * NOTE-INFO: mark the presence of comments for developer
- * NOTE-CONF: mark where configuration matters
- * NOTE-PORT: mark where portability matters
- * NOTE-TODO: mark where something needs to be done
- * --------------------------------------
- */
-
 /* NOTE-USER: cos/Object.h
    <cos/Object.h> is a prefered alternative to <cos/cos/cos.h>
- */
+*/
 
 #ifndef COS_COS_COS_H
 #include <cos/cos/cos.h>

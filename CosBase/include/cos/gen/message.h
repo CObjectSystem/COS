@@ -32,11 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: message.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: message.h,v 1.3 2009/08/07 10:51:03 ldeniau Exp $
  |
 */
 
+#ifndef COS_OBJECT_H
 #include <cos/Object.h>
+#endif
 
 // errors and forwarding
 defgeneric(void, gunrecognizedMessage1, _1);
@@ -52,7 +54,7 @@ defgeneric(OBJ , gunderstandMessage3, _1, _2, _3, (SEL)msg);
 defgeneric(OBJ , gunderstandMessage4, _1, _2, _3, _4, (SEL)msg);
 defgeneric(OBJ , gunderstandMessage5, _1, _2, _3, _4, _5, (SEL)msg);
 
-// behavior of class instances, return True or False
+// behavior of instances of, return True or False
 defgeneric(OBJ , ginstancesUnderstandMessage1, _1, (SEL)msg);
 defgeneric(OBJ , ginstancesUnderstandMessage2, _1, _2, (SEL)msg);
 defgeneric(OBJ , ginstancesUnderstandMessage3, _1, _2, _3, (SEL)msg);

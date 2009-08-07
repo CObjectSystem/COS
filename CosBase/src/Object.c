@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.12 2009/06/16 21:43:45 ldeniau Exp $
+ | $Id: Object.c,v 1.13 2009/08/07 10:51:03 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,8 @@
 #include <cos/prp/object.h>
 #include <cos/gen/object.h>
 #include <cos/gen/message.h>
+#include <cos/gen/init.h>
+#include <cos/gen/new.h>
 
 #include <stdlib.h>
 
@@ -54,7 +56,7 @@ defproperty(Object, (id)class, (OBJ)cos_class_get);
 
 // ----- allocator, deallocator
 
-static inline void*
+static always_inline void*
 object_alloc(OBJ _cls, size_t extra)
 {
   struct Class *cls = STATIC_CAST(struct Class*, _cls);
@@ -82,13 +84,125 @@ defmethod(void, gdealloc, Object)
   free(_1);
 endmethod
 
+// ----- new
+
+defmethod(OBJ, gnew, Object)
+  retmethod( ginit(galloc(_1)) );
+endmethod
+
+defmethod(OBJ, gnewWith, Object, Object)
+  retmethod( ginitWith(galloc(_1),_2) );
+endmethod
+
+defmethod(OBJ, gnewWith2, Object, Object, Object)
+  retmethod( ginitWith2(galloc(_1),_2,_3) );
+endmethod
+
+defmethod(OBJ, gnewWith3, Object, Object, Object, Object)
+  retmethod( ginitWith3(galloc(_1),_2,_3,_4) );
+endmethod
+
+defmethod(OBJ, gnewWith4, Object, Object, Object, Object, Object)
+  retmethod( ginitWith4(galloc(_1),_2,_3,_4,_5) );
+endmethod
+
+defmethod(OBJ, gnewWithLoc, Object, Object, (STR)func, (STR)file, (int)line)
+  retmethod( ginitWithLoc(galloc(_1),_2,func,file,line) );
+endmethod
+
+defmethod(OBJ, gnewWithStr, Object, (STR)str)
+  retmethod( ginitWithStr(galloc(_1),str) );
+endmethod
+
+defmethod(OBJ, gnewWithObj, Object, (OBJ)obj1)
+  retmethod( ginitWithObj(galloc(_1),obj1) );
+endmethod
+
+defmethod(OBJ, gnewWithObj2, Object, (OBJ)obj1, (OBJ)obj2)
+  retmethod( ginitWithObj2(galloc(_1),obj1,obj2) );
+endmethod
+
+defmethod(OBJ, gnewWithObj3, Object, (OBJ)obj1, (OBJ)obj2, (OBJ)obj3)
+  retmethod( ginitWithObj3(galloc(_1),obj1,obj2,obj3) );
+endmethod
+
+defmethod(OBJ, gnewWithObj4, Object, (OBJ)obj1, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4)
+  retmethod( ginitWithObj4(galloc(_1),obj1,obj2,obj3,obj4) );
+endmethod
+
+defmethod(OBJ, gnewWithObj5, Object, (OBJ)obj1, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5)
+  retmethod( ginitWithObj5(galloc(_1),obj1,obj2,obj3,obj4,obj5) );
+endmethod
+
+defmethod(OBJ, gnewWithChr, Object, (I32)val)
+  retmethod( ginitWithChr(galloc(_1),val) );
+endmethod
+
+defmethod(OBJ, gnewWithSht, Object, (I32)val)
+  retmethod( ginitWithSht(galloc(_1),val) );
+endmethod
+
+defmethod(OBJ, gnewWithInt, Object, (I32)val)
+  retmethod( ginitWithInt(galloc(_1),val) );
+endmethod
+
+defmethod(OBJ, gnewWithLng, Object, (I64)val)
+  retmethod( ginitWithLng(galloc(_1),val) );
+endmethod
+
+defmethod(OBJ, gnewWithFlt, Object, (F64)val)
+  retmethod( ginitWithFlt(galloc(_1),val) );
+endmethod
+
+defmethod(OBJ, gnewWithCpx, Object, (C64)val)
+  retmethod( ginitWithCpx(galloc(_1),val) );
+endmethod
+
+defmethod(OBJ, gnewWithChrPtr, Object, (I8*)ref, (U32)n)
+  retmethod( ginitWithChrPtr(galloc(_1),ref,n) );
+endmethod
+
+defmethod(OBJ, gnewWithShtPtr, Object, (I16*)ref, (U32)n)
+  retmethod( ginitWithShtPtr(galloc(_1),ref,n) );
+endmethod
+
+defmethod(OBJ, gnewWithIntPtr, Object, (I32*)ref, (U32)n)
+  retmethod( ginitWithIntPtr(galloc(_1),ref,n) );
+endmethod
+
+defmethod(OBJ, gnewWithLngPtr, Object, (I64*)ref, (U32)n)
+  retmethod( ginitWithLngPtr(galloc(_1),ref,n) );
+endmethod
+
+defmethod(OBJ, gnewWithFltPtr, Object, (F64*)ref, (U32)n)
+  retmethod( ginitWithFltPtr(galloc(_1),ref,n) );
+endmethod
+
+defmethod(OBJ, gnewWithCpxPtr, Object, (C64*)ref, (U32)n)
+  retmethod( ginitWithCpxPtr(galloc(_1),ref,n) );
+endmethod
+
+defmethod(OBJ, gnewWithObjPtr, Object, (OBJ*)ref, (U32)n)
+  retmethod( ginitWithObjPtr(galloc(_1),ref,n) );
+endmethod
+
+defmethod(OBJ, gnewWithVoidPtr, Object, (void*)ref, (U32)n, (size_t)esize)
+  retmethod( ginitWithVoidPtr(galloc(_1),ref,n,esize) );
+endmethod
+
+// ----- clone
+
+defmethod(OBJ, gclone, Object)
+  retmethod( ginitWith(galloc(gclass(_1)),_1) );
+endmethod
+
 // ----- ownership
 
 defmethod(U32, gretainCount, Object)
   retmethod( self->rc );
 endmethod
 
-// ----- identity, conversion, coercion
+// ----- identity
 
 defmethod(OBJ, gisInstanceOf, Object, Class)
   retmethod( self1->id == self2->Behavior.id ? True : False );

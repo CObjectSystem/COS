@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.39 2009/07/23 13:28:58 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.40 2009/08/07 10:51:03 ldeniau Exp $
  |
 */
 
@@ -39,6 +39,7 @@
 #include <cos/Property.h>
 #include <cos/Method.h>
 #include <cos/gen/object.h>
+#include <cos/gen/class.h>
 
 #include <string.h>
 #include <stdlib.h>

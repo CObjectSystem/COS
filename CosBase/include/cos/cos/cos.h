@@ -32,9 +32,21 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.12 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: cos.h,v 1.13 2009/08/07 10:51:03 ldeniau Exp $
  |
 */
+
+/*
+ * --------------------------------------
+ * Standard markers used inside the code:
+ * --------------------------------------
+ * NOTE-USER: mark the presence of comments for user
+ * NOTE-INFO: mark the presence of comments for developer
+ * NOTE-CONF: mark where configuration matters
+ * NOTE-PORT: mark where portability matters
+ * NOTE-TODO: mark where something needs to be done
+ * --------------------------------------
+ */
 
 /* NOTE-USER: ISO C89/C99 Compliance
    The preprocessor *must* be C99 compliant.

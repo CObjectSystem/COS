@@ -29,15 +29,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.20 2009/06/17 18:12:55 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.21 2009/08/07 10:51:03 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Exception.h>
 #include <cos/gen/object.h>
-#include <cos/gen/message.h>
+#include <cos/gen/class.h>
 #include <cos/gen/value.h>
+#include <cos/gen/message.h>
 
 #include <stdlib.h>
 
