@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.25 2009/08/07 10:51:03 ldeniau Exp $
+ | $Id: object.h,v 1.26 2009/08/07 10:53:52 ldeniau Exp $
  |
 */
 
@@ -76,6 +76,10 @@ defgeneric(OBJ , gisInstanceOf , _1, _2); // returns True or False
 defgeneric(OBJ , gclass        , _1);
 defgeneric(STR , gclassName    , _1);
 defgeneric(OBJ , gsuperClass   , _1);
+
+// initialization
+defgeneric(void, ginitialize   , _1);
+defgeneric(void, gdeinitialize , _1);
 
 // contract
 defgeneric(void, ginvariant    , _1, (STR)func, (STR)file, (int)line);

@@ -29,13 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.42 2009/08/07 10:51:03 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.43 2009/08/07 10:53:52 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
-#include <cos/gen/class.h>
 #include <cos/gen/value.h>
 #include <cos/gen/new.h>
 
