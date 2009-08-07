@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generics.h,v 1.2 2009/08/03 21:17:28 ldeniau Exp $
+ | $Id: generics.h,v 1.3 2009/08/07 10:56:35 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,8 @@
 
 #ifndef COS_NOCOS
 #include <cos/gen/object.h>
+#include <cos/gen/init.h>
+#include <cos/gen/new.h>
 #endif
 
 defgeneric(void, gprint, _1, _2);

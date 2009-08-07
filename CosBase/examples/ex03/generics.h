@@ -32,13 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generics.h,v 1.1 2009/04/02 23:33:13 ldeniau Exp $
+ | $Id: generics.h,v 1.2 2009/08/07 10:56:35 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
+#include <cos/gen/init.h>
+#include <cos/gen/new.h>
 
 #endif
 
