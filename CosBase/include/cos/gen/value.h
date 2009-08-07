@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.13 2009/03/22 13:51:04 ldeniau Exp $
+ | $Id: value.h,v 1.14 2009/08/07 14:21:28 ldeniau Exp $
  |
 */
 
@@ -43,14 +43,14 @@ defgeneric(U32  , gsize, _1);
 defgeneric(BOOL , gbool, _1);     
 defgeneric(void*, gptr , _1);
 defgeneric(FUNC , gfct , _1);
-defgeneric(OBJ  , gobj , _1);
 
-defgeneric(I32  , gchr, _1);
-defgeneric(I32  , gsht, _1);
-defgeneric(I32  , gint, _1);
-defgeneric(I64  , glng, _1);
-defgeneric(F64  , gflt, _1);
-defgeneric(C64  , gcpx, _1);
+defgeneric(I32  , gchr , _1);
+defgeneric(I32  , gsht , _1);
+defgeneric(I32  , gint , _1);
+defgeneric(I64  , glng , _1);
+defgeneric(F64  , gflt , _1);
+defgeneric(C64  , gcpx , _1);
+defgeneric(OBJ  , gobj , _1);
 
 defgeneric(I32  , gchrAt, _1, at);
 defgeneric(I32  , gshtAt, _1, at);
@@ -59,11 +59,13 @@ defgeneric(I64  , glngAt, _1, at);
 defgeneric(F64  , gfltAt, _1, at);
 defgeneric(C64  , gcpxAt, _1, at);
 
-defgeneric(I8*  , gchrPtr, _1);
-defgeneric(I16* , gshtPtr, _1);
-defgeneric(I32* , gintPtr, _1);
-defgeneric(I64* , glngPtr, _1);
-defgeneric(F64* , gfltPtr, _1);
-defgeneric(C64* , gcpxPtr, _1);
+defgeneric(I8*  , gchrPtr , _1);
+defgeneric(I16* , gshtPtr , _1);
+defgeneric(I32* , gintPtr , _1);
+defgeneric(I64* , glngPtr , _1);
+defgeneric(F64* , gfltPtr , _1);
+defgeneric(C64* , gcpxPtr , _1);
+defgeneric(OBJ* , gobjPtr , _1);
+defgeneric(void*, gvoidPtr, _1);
 
 #endif // COS_GEN_VALUE_H
