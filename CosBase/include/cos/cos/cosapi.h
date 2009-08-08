@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.30 2009/07/22 13:28:56 ldeniau Exp $
+ | $Id: cosapi.h,v 1.31 2009/08/08 16:16:30 ldeniau Exp $
  |
 */
 
@@ -366,14 +366,14 @@ cos_exception_protect(struct cos_exception_protect *ptr, OBJ const *obj)
 
 static always_inline struct cos_exception_extendedProtect
 cos_exception_objectProtect(struct cos_exception_extendedProtect *ptr,
-                            OBJ const *alt, VOFUNC fct)
+                            OBJ const *alt, FUNCO fct)
 {
   struct cos_exception_context *cxt = cos_exception_context();
 
   ptr->prv = cxt->stk;
   ptr->obj = (OBJ*)COS_YES;
   ptr->alt = (void *const*)alt;
-  ptr->fct = (VPFUNC)fct;
+  ptr->fct = (FUNCV)fct;
   cxt->stk = (void*)ptr;
 
   return *ptr;
@@ -382,7 +382,7 @@ cos_exception_objectProtect(struct cos_exception_extendedProtect *ptr,
 
 static always_inline struct cos_exception_extendedProtect
 cos_exception_extendedProtect(struct cos_exception_extendedProtect *ptr,
-                              void * const*alt, VPFUNC fct)
+                              void * const*alt, FUNCV fct)
 {
   struct cos_exception_context *cxt = cos_exception_context();
 
