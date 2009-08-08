@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Tracer.c,v 1.5 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Tracer.c,v 1.6 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #include <cos/Tracer.h>
 #include <cos/gen/object.h>
 #include <cos/gen/message.h>
+#include <cos/gen/init.h>
 
 // -----
 

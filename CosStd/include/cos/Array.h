@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array, Dynamic Array and Array View
+ | COS Array, Dynamic Array, Lazy Array  and Array View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.19 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Array.h,v 1.20 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -42,10 +42,8 @@
 
    aArray    (obj,...)           -> Fixed size array (automatic)
    aArrayRef (buffer,size)       -> Array            (automatic)
-   aArrayView(array ,slice) 	 -> Array view       (automatic)
+   aArrayView(array ,slice) 	   -> Array view       (automatic)
 
-   gnew     (Array)              -> Dynamic array
-   gnewWith (Array,capacity)     -> Dynamic array    (pre-allocated)
    gnewWith (Array,array)        -> Fixed size array (clone, whatever array is!)
    gnewWith (Array,slice)        -> Fixed size array (Ints)
    gnewWith (Array,range)        -> Fixed size array (Ints)
@@ -54,6 +52,12 @@
    gnewWith2(Array,array,slice)  -> Fixed size array (subarray)
    gnewWith2(Array,array,range)  -> Fixed size array (subarray)
    gnewWith2(Array,array,intvec) -> Fixed size array (sequence)
+
+   gnew     (Array)              -> Dynamic array
+   gnewWith (Array,capacity)     -> Dynamic array    (pre-allocated)
+
+   gnewWith (Array,fun)          -> Lazy array       (generator)
+   gnewWith2(Array,fun,init)     -> Lazy array       (generator)
 
    gnewWith2(View,array,slice)   -> Array view       (view)
    gnewWith2(View,array,range)   -> Array view       (view)
@@ -64,6 +68,7 @@
    - Fixed size arrays will be one of Array0 to Array9 if size is < 10.
    - Dynamic arrays can shrink and grow (gappend, gpreprend)
    - Dynamic arrays can be converted to fixed size array (gadjust)
+   - Lazy arrays are Dynamic arrays growing automatically using a generator
    - Array views work only on non-dynamic arrays
    - Array views clone are fixed size arrays (copy), not views
 */
@@ -76,15 +81,13 @@ endclass
 
 // ----- automatic constructors
 
-#define aArray(...)     ( (OBJ)atArray       (__VA_ARGS__) )
-#define aArrayRef(...)  ( (OBJ)atArrayRef    (__VA_ARGS__) )
-#define aArrayView(...) ( (OBJ)atArrayView   (__VA_ARGS__) )
+#define aArray(...)     ( (OBJ)atArray    (__VA_ARGS__) )
+#define aArrayRef(...)  ( (OBJ)atArrayRef (__VA_ARGS__) )
+#define aArrayView(...) ( (OBJ)atArrayView(__VA_ARGS__) )
 
 /***********************************************************
  * Implementation (private)
  */
-
-#include <cos/Slice.h>
 
 // ----- Array view
 
@@ -92,14 +95,18 @@ defclass(ArrayView, Array)
   struct Array *array;
 endclass
 
-// ----- Dynamic array
+// ----- Lazy array, Dynamic array and Adjusted array
 
-defclass(ArrayDynamicN, Array)
+defclass(ArrayAdj, Array)
   OBJ *_object;
 endclass
 
-defclass(ArrayDynamic, ArrayDynamicN)
+defclass(ArrayDyn, ArrayAdj)
   U32 capacity;
+endclass
+
+defclass(ArrayLazy, ArrayDyn)
+  OBJ generator;
 endclass
 
 // ----- Fixed size array
@@ -116,18 +123,24 @@ defclass(Array8, Array) OBJ _object[]; endclass
 defclass(Array9, Array) OBJ _object[]; endclass
 defclass(ArrayN, Array) OBJ _object[]; endclass
 
-// ----- initializers, allocators and utilities (class cluster)
+// ----- initializers, allocators and utilities (for the class cluster)
 
-struct Array* ArrayRef_init (struct Array*,OBJ*,U32);
-struct Array* ArrayView_init(struct ArrayView*,struct Array*,struct Slice*);
+struct Slice;
+struct Functor;
 
-struct Array* Array_alloc       (U32);
-struct Array* ArrayDynamic_alloc(U32);
-struct Array* ArrayView_alloc   (struct Array*,struct Slice*);
+struct Array* Array_init      (struct Array*,U32);
+struct Array* ArrayDyn_init   (struct ArrayDyn*,U32);
+struct Array* ArrayLazy_init  (struct ArrayLazy*,U32,struct Functor*);
+struct Array* ArrayView_init  (struct ArrayView*,struct Array*,struct Slice*);
 
-void ArrayDynamic_adjust      (struct ArrayDynamic*);
-void ArrayDynamic_enlarge     (struct ArrayDynamic*,F64);
-void ArrayDynamic_enlargeFront(struct ArrayDynamic*,F64);
+struct Array* Array_alloc     (U32);
+struct Array* ArrayDyn_alloc  (U32);
+struct Array* ArrayLazy_alloc (U32,struct Functor*);
+struct Array* ArrayView_alloc (struct Array*,struct Slice*);
+
+void   ArrayDyn_adjust        (struct ArrayDyn*);
+void   ArrayDyn_enlarge       (struct ArrayDyn*,F64);
+void   ArrayDyn_enlargeFront  (struct ArrayDyn*,F64);
 
 // ----- automatic constructors
 

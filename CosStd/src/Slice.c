@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.6 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Slice.c,v 1.7 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,20 @@
 #include <cos/gen/sequence.h>
 
 makclass(Slice, Value);
+
+// ----- new
+
+defmethod(OBJ, gnewWithSlc1, mSlice, (U32)size)
+  retmethod( ginitWithSlc1(galloc(_1), size) );
+endmethod
+
+defmethod(OBJ, gnewWithSlc2, mSlice, (I32)start, (U32)size)
+  retmethod( ginitWithSlc2(galloc(_1), start, size) );
+endmethod
+
+defmethod(OBJ, gnewWithSlc3, mSlice, (I32)start, (U32)size, (I32)stride)
+  retmethod( ginitWithSlc3(galloc(_1), start, size, stride) );
+endmethod
 
 // ----- constructors
 

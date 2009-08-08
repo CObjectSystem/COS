@@ -32,19 +32,26 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: carray.h,v 1.1 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: carray.h,v 1.2 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif 
 
 #include <stdlib.h>
 
 /* NOTE-INFO: low level temporary C array
    the array is allocated on the stack if its size < TMPARRAY_MAXCHARS
    otherwise it is allocated on the heap.
+
+   {
+     TMPARRAY_CREATE(OBJ, buf, 1000);
+
+     buf[100] = gnew(Object);
+     grelease(buf[100]);
+
+     TMPARRAY_DESTROY(buf);
+   }
 */
 
 #define TMPARRAY_MAXCHARS (1024 * sizeof(void*))
@@ -57,7 +64,7 @@
 
 #define TMPARRAY_CREATE_(T,name,N,P,A,S) \
   U32 S = N; T *P, \
-    A[S*sizeof(T) <= TMPARRAY_MAXCHARS ? S : 1]; \
+    A[S*sizeof(T) <= TMPARRAY_MAXCHARS ? S : 0]; \
   if (S*sizeof(T) <= TMPARRAY_MAXCHARS) P = A; \
   else { \
     useclass(ExBadAlloc); \
@@ -67,6 +74,6 @@
 
 #define TMPARRAY_DESTROY(name) \
   if (name != COS_PP_CAT(_cos_tmp_array_a_,name)) \
-   free(name)
+    free(name)
 
 #endif // COS_CARRAY_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.10 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Number.h,v 1.11 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -95,33 +95,33 @@ defclass(Complex , Floating) C64 value; endclass
 // ---- float inliners
 
 static inline BOOL
-float_equal(FLOAT x, FLOAT y)
+float_equal(F64 x, F64 y)
 {
   return x <= y && x >= y;
 }
 
 // ---- complex inliners
 
-static inline COMPLEX
-complex_make(FLOAT x, FLOAT y)
+static inline C64
+complex_make(F64 x, F64 y)
 {
-  return *(FLOAT[]){ x, y };
+  return *(F64[]){ x, y };
 }
 
-static inline FLOAT
-complex_real(COMPLEX x)
+static inline F64
+complex_real(C64 x)
 {
-  return ((FLOAT*)&x)[0];
+  return ((F64*)&x)[0];
 }
 
-static inline FLOAT
-complex_imag(COMPLEX x)
+static inline F64
+complex_imag(C64 x)
 {
-  return ((FLOAT*)&x)[1];
+  return ((F64*)&x)[1];
 }
 
 static inline BOOL
-complex_equal(COMPLEX x, COMPLEX y)
+complex_equal(C64 x, C64 y)
 {
   return float_equal(complex_real(x), complex_real(y)) &&
          float_equal(complex_imag(x), complex_imag(y));

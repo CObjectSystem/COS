@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.9 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.10 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -38,6 +38,7 @@
 #include <cos/Number.h>
 
 #include <cos/gen/algorithm.h>
+#include <cos/gen/compare.h>
 #include <cos/gen/container.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
@@ -47,6 +48,31 @@
 // -----
 
 useclass(Array, ExBadAlloc);
+
+// ----- equality
+
+defmethod(OBJ, gisEqual, Array, Array)
+  if (self1 == self2)
+    retmethod(True);
+
+  if (self1->size != self2->size)
+    retmethod(False);
+
+  OBJ *obj1   = self1->object;
+  I32  obj1_s = self1->stride;
+  OBJ *end    = self1->object + self1->size*self1->stride;
+  OBJ *obj2   = self2->object;
+  I32  obj2_s = self2->stride;
+  
+  while (obj1 != end) {
+    if (gisEqual(*obj1,*obj2) != True)
+      retmethod(False);
+    obj1 += obj1_s;
+    obj2 += obj2_s;
+  }
+
+  retmethod(True);
+endmethod
 
 // ----- in place
 

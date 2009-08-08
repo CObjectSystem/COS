@@ -29,11 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Ordered.c,v 1.4 2009/02/27 20:14:26 ldeniau Exp $
+ | $Id: Ordered.c,v 1.5 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
 #include <cos/Ordered.h>
+#include <cos/gen/compare.h>
 
 // -----
 
@@ -42,3 +43,47 @@ makclass(Ordered, Predicate);
 makclass(Equal  , Ordered);
 makclass(Lesser , Ordered);
 makclass(Greater, Ordered);
+
+// -----
+
+useclass(Lesser, Equal, Greater);
+
+// -----
+
+defmethod(OBJ, gisEqual, Object, Object)
+  retmethod( gcompare(_1,_2) == Equal   ? True : False );
+endmethod
+
+defmethod(OBJ, gisLesser, Object, Object)
+  retmethod( gcompare(_1,_2) == Lesser  ? True : False );
+endmethod
+
+defmethod(OBJ, gisGreater, Object, Object)
+  retmethod( gcompare(_1,_2) == Greater ? True : False );
+endmethod
+
+defmethod(OBJ, gisLesserOrEqual, Object, Object)
+  retmethod( gcompare(_1,_2) == Greater ? False : True );
+endmethod
+
+defmethod(OBJ, gisGreaterOrEqual, Object, Object)
+  retmethod( gcompare(_1,_2) == Lesser  ? False : True );
+endmethod
+
+// -----
+
+defmethod(OBJ, gisNotEqual, Object, Object)
+  retmethod( gisEqual(_1,_2) == False ? True : False );
+endmethod
+
+// -----
+
+defmethod(OBJ, gmin, Object, Object)
+  retmethod( gcompare(_1,_2) == Lesser  ? _1 : _2 );
+endmethod
+
+defmethod(OBJ, gmax, Object, Object)
+  retmethod( gcompare(_1,_2) == Greater ? _1 : _2 );
+endmethod
+
+

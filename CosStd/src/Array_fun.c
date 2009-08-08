@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.8 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.9 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -210,7 +210,7 @@ endmethod
 // ----- filter, filterOut fold, scan
 
 defmethod(OBJ, gfilter, Array, Functor)
-  struct Array* arr = ArrayDynamic_alloc(self->size);
+  struct Array* arr = ArrayDyn_alloc(self->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
 
   OBJ *dst   = arr ->object;
@@ -230,7 +230,7 @@ defmethod(OBJ, gfilter, Array, Functor)
 endmethod
 
 defmethod(OBJ, gfilterOut, Array, Functor)
-  struct Array* arr = ArrayDynamic_alloc(self->size);
+  struct Array* arr = ArrayDyn_alloc(self->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
 
   OBJ *dst   = arr ->object;
@@ -486,6 +486,41 @@ quicksort(OBJ a[], I32 r, OBJ fun)
 
 // -----
 
+defmethod(void, gsort, Array, Functor)
+  if (self->stride == 1) {
+    quicksort(self->object, self->size-1, _2);
+    return;
+  }
+
+  if (self->stride == -1) {
+    quicksort(self->object-self->size+1, self->size-1, _2);
+    greverse(_1);
+    return;
+  }
+
+  OBJ *obj   = self->object;
+  U32  obj_z = self->size;
+  I32  obj_s = self->stride;
+
+  TMPARRAY_CREATE(OBJ,buf,obj_z); // OBJ buf[obj_z];
+
+  OBJ *cur, *end = buf + obj_z;
+
+  // forward copy
+  for (cur = buf; cur != end; cur++)
+    *cur = *obj, obj += obj_s;
+
+  quicksort(buf, self->size-1, _2);
+
+  // backward copy
+  for (cur = buf; cur != end; cur++)
+    *obj = *cur, obj += obj_s;
+
+  TMPARRAY_DESTROY(buf);
+endmethod
+
+// ----- indirect sorting (permutation)
+
 #undef  GCMP
 #define GCMP(a,b) geval2(fun,o[a],o[b])
 
@@ -546,41 +581,6 @@ iquicksort(I32 a[], OBJ o[], I32 r, OBJ fun)
   iquicksort(l,o,q,fun); // tail recursion
 }
 
-// -----
-
-defmethod(void, gsort, Array, Functor)
-  if (self->stride == 1) {
-    quicksort(self->object, self->size-1, _2);
-    return;
-  }
-
-  if (self->stride == -1) {
-    quicksort(self->object-self->size+1, self->size-1, _2);
-    greverse(_1);
-    return;
-  }
-
-  OBJ *obj   = self->object;
-  U32  obj_z = self->size;
-  I32  obj_s = self->stride;
-
-  TMPARRAY_CREATE(OBJ,buf,obj_z); // OBJ buf[obj_z];
-
-  OBJ *cur, *end = buf + obj_z;
-
-  // forward copy
-  for (cur = buf; cur != end; cur++)
-    *cur = *obj, obj += obj_s;
-
-  quicksort(buf, self->size-1, _2);
-
-  // backward copy
-  for (cur = buf; cur != end; cur++)
-    *obj = *cur, obj += obj_s;
-
-  TMPARRAY_DESTROY(buf);
-endmethod
-
 defmethod(OBJ, gisort, Array, Functor)
   useclass(IntVector);
 
@@ -593,7 +593,7 @@ defmethod(OBJ, gisort, Array, Functor)
   retmethod(gautoDelete(_vec));
 endmethod
 
-// ----- isSorted
+// ----- is sorted predicate
 
 defmethod(OBJ, gisSorted, Array, Functor)
   if (self->size < 2)
@@ -612,13 +612,13 @@ defmethod(OBJ, gisSorted, Array, Functor)
   retmethod(True);
 endmethod
 
-// unique
+// ----- unique (remove contiguous duplicates)
 
 defmethod(OBJ, gunique, Array, Functor)
-  struct Array* arr = ArrayDynamic_alloc(self->size);
+  struct Array* arr = ArrayDyn_alloc(self->size);
 
   if (self->size < 1)
-    retmethod((OBJ)arr);
+    goto exit;
 
   OBJ _arr = (OBJ)arr; PRT(_arr);
 
@@ -634,6 +634,7 @@ defmethod(OBJ, gunique, Array, Functor)
   }
   *dst++ = gretain(*src);
 
+exit:
   gadjust(_arr);
   UNPRT(_arr);
   retmethod(gautoDelete(_arr));

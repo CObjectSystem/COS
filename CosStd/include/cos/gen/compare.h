@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: compare.h,v 1.1 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: compare.h,v 1.2 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -67,83 +67,19 @@
 */
 
 // comparison
-defgeneric(OBJ, (GenComparator)gisEqual, _1, _2); // return True or False
-defgeneric(OBJ, (GenComparator)gcompare, _1, _2); // return Equal,Lesser,Greater
-defgeneric(U32, (GenOperator  )ghash   , _1);
+defgeneric(OBJ, (GenComparator)gcompare         , _1, _2);
+defgeneric(OBJ, (GenComparator)gisEqual         , _1, _2);
+defgeneric(OBJ, (GenComparator)gisLesser        , _1, _2);
+defgeneric(OBJ, (GenComparator)gisGreater       , _1, _2);
+defgeneric(OBJ, (GenComparator)gisLesserOrEqual , _1, _2);
+defgeneric(OBJ, (GenComparator)gisGreaterOrEqual, _1, _2);
+defgeneric(OBJ, (GenComparator)gisNotEqual      , _1, _2);
 
-// inliners
+// min, max
+defgeneric(OBJ, gmin, _1, _2);
+defgeneric(OBJ, gmax, _1, _2);
 
-static always_inline BOOL
-gequal(OBJ _1, OBJ _2) {
-  return gisEqual(_1,_2) == True;
-}
-
-static always_inline BOOL
-gnotEqual(OBJ _1, OBJ _2) {
-  return gisEqual(_1,_2) != True;
-}
-
-static always_inline BOOL
-glesser(OBJ _1, OBJ _2) {
-  useclass(Lesser);
-  return gcompare(_1,_2) == Lesser;
-}
-
-static always_inline BOOL
-ggreater(OBJ _1, OBJ _2) {
-  useclass(Greater);
-  return gcompare(_1,_2) == Greater;
-}
-
-static always_inline BOOL
-glesserOrEqual(OBJ _1, OBJ _2) {
-  useclass(Greater);
-  return gcompare(_1,_2) != Greater;
-}
-
-static always_inline BOOL
-ggreaterOrEqual(OBJ _1, OBJ _2) {
-  useclass(Lesser);
-  return gcompare(_1,_2) != Lesser;
-}
-
-// ---
-
-static always_inline OBJ
-gisNotEqual(OBJ _1, OBJ _2) {
-  return gnotEqual(_1,_2) ? True : False;
-}
-
-static always_inline OBJ
-gisLesser(OBJ _1, OBJ _2) {
-  return glesser(_1,_2) ? True : False;
-}
-
-static always_inline OBJ
-gisGreater(OBJ _1, OBJ _2) {
-  return ggreater(_1,_2) ? True : False;
-}
-
-static always_inline OBJ
-gisLesserOrEqual(OBJ _1, OBJ _2) {
-  return glesserOrEqual(_1,_2) ? True : False;
-}
-
-static always_inline OBJ
-gisGreaterOrEqual(OBJ _1, OBJ _2) {
-  return ggreaterOrEqual(_1,_2) ? True : False;
-}
-
-// ---
-
-static always_inline OBJ
-gmin(OBJ _1, OBJ _2) {
-  return ggreater(_1,_2) ? _2 : _1;
-}
-
-static always_inline OBJ
-gmax(OBJ _1, OBJ _2) {
-  return glesser(_1,_2) ? _2 : _1;
-}
+// hash
+defgeneric(U32, (GenOperator)ghash, _1);
 
 #endif // COS_GEN_COMPARE_H

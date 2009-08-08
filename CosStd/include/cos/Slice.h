@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.13 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Slice.h,v 1.14 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -53,7 +53,7 @@ defclass(Slice, Value)
   I32 start;
   U32 size;
   I32 stride;
-  COS_FINAL_CLASS
+  FINAL_CLASS
 endclass
 
 // ----- automatic constructors

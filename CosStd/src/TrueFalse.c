@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: TrueFalse.c,v 1.4 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: TrueFalse.c,v 1.5 2009/08/08 16:36:10 ldeniau Exp $
  |
 */
 
@@ -39,28 +39,35 @@
 #include <cos/gen/compare.h>
 #include <cos/gen/logic.h>
 #include <cos/gen/object.h>
+#include <cos/gen/value.h>
 
 // ----- Tristate boolean logic (with uncertain/indeterminate state)
 
 useclass(TrueFalse);
 
-/*
- NOT | F | T | ?
- ----+---+---+---
-     | T | F | ?
- */
+// ----- conversion
 
-defmethod(OBJ, gnot, mFalse)
-  retmethod(True);
+defmethod(BOOL, gbool, mTrue)
+  retmethod(YES);
 endmethod
 
-defmethod(OBJ, gnot, mTrue)
-  retmethod(False);
+defmethod(BOOL, gbool, mTrueFalse)
+  retmethod(NO);
 endmethod
 
-defmethod(OBJ, gnot, mTrueFalse)
-  retmethod(TrueFalse);
+defmethod(I32, gint, mTrue)
+  retmethod(1);
 endmethod
+
+defmethod(I32, gint, mFalse)
+  retmethod(0);
+endmethod
+
+defmethod(I32, gint, mTrueFalse)
+  retmethod(-1);
+endmethod
+
+// ----- tables
 
 /*
  EQU | F | T | ?
@@ -84,6 +91,48 @@ endmethod
 
 defmethod(OBJ, gisEqual, mFalse, mFalse)
   retmethod(True);
+endmethod
+
+/*
+ NEQ | F | T | ?
+ ----+---+---+---
+   F | F | T | ?
+   T | T | F | ?
+   ? | ? | ? | ?
+ */
+
+defmethod(OBJ, gisNotEqual, mTrueFalse, mTrueFalse)
+  retmethod(TrueFalse);
+endmethod
+
+defmethod(OBJ, gisNotEqual, mFalse, mTrueFalse)
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gisNotEqual, mTrueFalse, mFalse)
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gisNotEqual, mTrue, mTrue)
+  retmethod(False);
+endmethod
+
+/*
+ NOT | F | T | ?
+ ----+---+---+---
+     | T | F | ?
+ */
+
+defmethod(OBJ, gnot, mFalse)
+  retmethod(True);
+endmethod
+
+defmethod(OBJ, gnot, mTrue)
+  retmethod(False);
+endmethod
+
+defmethod(OBJ, gnot, mTrueFalse)
+  retmethod(TrueFalse);
 endmethod
 
 /*

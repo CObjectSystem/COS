@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.3 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: sequence.h,v 1.4 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -51,6 +51,15 @@
 defgeneric(struct Range, grange, _1);
 defgeneric(struct Slice, gslice, _1);
 
+// new
+defgeneric(OBJ, gnewWithRng1, _1, (I32)end);
+defgeneric(OBJ, gnewWithRng2, _1, (I32)start, (I32)end);
+defgeneric(OBJ, gnewWithRng3, _1, (I32)start, (I32)end, (I32)stride);
+
+defgeneric(OBJ, gnewWithSlc1, _1, (U32)size);
+defgeneric(OBJ, gnewWithSlc2, _1, (I32)start, (U32)size);
+defgeneric(OBJ, gnewWithSlc3, _1, (I32)start, (U32)size, (I32)stride);
+
 // constructors
 defgeneric(OBJ, ginitWithRng1, _1, (I32)end);
 defgeneric(OBJ, ginitWithRng2, _1, (I32)start, (I32)end);
@@ -59,37 +68,5 @@ defgeneric(OBJ, ginitWithRng3, _1, (I32)start, (I32)end, (I32)stride);
 defgeneric(OBJ, ginitWithSlc1, _1, (U32)size);
 defgeneric(OBJ, ginitWithSlc2, _1, (I32)start, (U32)size);
 defgeneric(OBJ, ginitWithSlc3, _1, (I32)start, (U32)size, (I32)stride);
-
-// ----- inliners -----
-
-static always_inline OBJ
-gnewWithRng1(OBJ _1, I32 end) {
-  return ginitWithRng1(galloc(_1), end);
-}
-
-static always_inline OBJ
-gnewWithRng2(OBJ _1, I32 start, I32 end) {
-  return ginitWithRng2(galloc(_1), start, end);
-}
-
-static always_inline OBJ
-gnewWithRng3(OBJ _1, I32 start, I32 end, I32 stride) {
-  return ginitWithRng3(galloc(_1), start, end, stride);
-}
-
-static always_inline OBJ
-gnewWithSlc1(OBJ _1, U32 size) {
-  return ginitWithSlc1(galloc(_1), size);
-}
-
-static always_inline OBJ
-gnewWithSlc2(OBJ _1, I32 start, U32 size) {
-  return ginitWithSlc2(galloc(_1), start, size);
-}
-
-static always_inline OBJ
-gnewWithSlc3(OBJ _1, I32 start, U32 size, I32 stride) {
-  return ginitWithSlc3(galloc(_1), start, size, stride);
-}
 
 #endif // COS_GEN_CONTAINER_H

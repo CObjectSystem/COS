@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: main.c,v 1.1 2009/08/03 21:20:39 ldeniau Exp $
+ | $Id: main.c,v 1.2 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -138,3 +138,24 @@ int main(int argc, char *argv[])
 
   return EXIT_SUCCESS;
 }
+
+/* COS OUTPUT:
+*** functional sum (repeat + eval)
+count [n] = 1000000 [1000000]
+time init = 0.04 sec
+time eval = 0.02 sec
+time fini = 0.03 sec
+time all  = 0.09 sec
+*** functional sum (iterate + eval)
+count [n] = 1000000 [1000000]
+time init = 0.00 sec
+time eval = 0.01 sec
+time fini = 0.00 sec
+time all  = 0.01 sec
+*** object-oriented sum (repeat + foldl)
+count [n] = 1000000 [1000000]
+time init = 0.02 sec
+time eval = 0.02 sec
+time fini = 0.00 sec
+time all  = 0.04 sec
+*/

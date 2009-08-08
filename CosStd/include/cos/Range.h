@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.12 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Range.h,v 1.13 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
@@ -66,7 +66,7 @@ defclass(Range, Value)
   I32 start;
   I32 end;
   I32 stride;
-  COS_FINAL_CLASS
+  FINAL_CLASS
 endclass
 
 // ----- automatic constructors

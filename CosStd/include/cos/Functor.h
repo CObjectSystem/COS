@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.14 2009/08/05 09:58:59 ldeniau Exp $
+ | $Id: Functor.h,v 1.15 2009/08/08 16:36:09 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif 
 
 // ----- definitions
 
