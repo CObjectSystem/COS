@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.15 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Functor.h,v 1.16 2009/08/08 19:56:53 ldeniau Exp $
  |
 */
 
@@ -45,31 +45,31 @@ endclass
 
 defclass(Functor1,Functor)
   OBJFCT1 fct;
-  int     arity;
+  I32     arity;
   OBJ     arg;
 endclass
 
 defclass(Functor2,Functor)
   OBJFCT2 fct;
-  int     arity;
+  I32     arity;
   OBJ     arg[2];
 endclass
 
 defclass(Functor3,Functor)
   OBJFCT3 fct;
-  int     arity;
+  I32     arity;
   OBJ     arg[3];
 endclass
 
 defclass(Functor4,Functor)
   OBJFCT4 fct;
-  int     arity;
+  I32     arity;
   OBJ     arg[4];
 endclass
 
 defclass(Functor5,Functor)
   OBJFCT5 fct;
-  int     arity;
+  I32     arity;
   OBJ     arg[5];
 endclass
 

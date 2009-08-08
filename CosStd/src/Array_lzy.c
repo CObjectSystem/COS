@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Sequence
+ | COS Array - Dyn array
  |
  o---------------------------------------------------------------------o
  |
@@ -29,48 +29,58 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.12 2009/08/08 19:56:53 ldeniau Exp $
+ | $Id: Array_lzy.c,v 1.1 2009/08/08 19:56:53 ldeniau Exp $
  |
 */
 
-#include <cos/Sequence.h>
-#include <cos/Slice.h>
-#include <cos/View.h>
-
+#include <cos/Array.h>
+#include <cos/Range.h>
+#include <cos/Number.h>
 #include <cos/gen/accessor.h>
+#include <cos/gen/container.h>
+#include <cos/gen/functor.h>
 #include <cos/gen/object.h>
-#include <cos/gen/value.h>
+#include <cos/gen/new.h>
 
-// -----
+// ----- exception
 
-makclass(Sequence     , Container);
-makclass(ValueSequence, Sequence );
+useclass(ExBadArity);
 
-// -----
+// ----- adjustment (capacity -> size)
 
-defmethod(OBJ, ginitWith2, mSequence, Sequence, Range)
-  struct Range range = Range_normalize(self3,gsize(_2));
-  struct Slice slice = Slice_fromRange(&range);
-  retmethod( ginitWith2(_1,_2,(OBJ)&slice) );  
+defmethod(void, gadjust, ArrayLazy)
+  if (self->generator)
+    grelease(self->generator);
+  next_method(self);
 endmethod
 
-defmethod(OBJ, ginitWith2, mView, Sequence, Range)
-  struct Range range = Range_normalize(self3,gsize(_2));
-  struct Slice slice = Slice_fromRange(&range);
-  retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
+// ----- getter
+
+defmethod(OBJ, ggetAt, ArrayLazy, Int)
+  struct Array *arr = &self->ArrayDyn.ArrayAdj.Array;
+  U32 i = Range_index(self2->value, arr->size);
+
+  switch(self->arity) {
+  case 0:
+    while (arr->size <= i)
+      gappend(_1, geval(self->generator));
+    break;
+
+  case 1:
+    while (arr->size <= i)
+      gappend(_1, geval1(self->generator, _1));
+    break;
+
+  case 2:
+    while (arr->size <= i)
+      gappend(_1, geval2(self->generator, _1, aInt(arr->size)));
+    break;
+
+  default:
+    THROW( gnewWithStr(ExBadArity, "Lazy array generator eval") );
+  }
+
+  retmethod( arr->object[i*arr->stride] );
 endmethod
 
-// -----
-
-defmethod(OBJ, ggetAt, Sequence, Range)
-  struct Range range = Range_normalize(self2,gsize(_1));
-  struct Slice slice = Slice_fromRange(&range);
-  retmethod( ggetAt(_1,(OBJ)&slice) );
-endmethod
-
-defmethod(void, gputAt, Sequence, Range, Sequence)
-  struct Range range = Range_normalize(self2,gsize(_1));
-  struct Slice slice = Slice_fromRange(&range);
-  gputAt(_1,(OBJ)&slice,_3);
-endmethod
 

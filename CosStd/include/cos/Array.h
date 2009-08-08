@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.20 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Array.h,v 1.21 2009/08/08 19:56:53 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,7 @@
 
    aArray    (obj,...)           -> Fixed size array (automatic)
    aArrayRef (buffer,size)       -> Array            (automatic)
-   aArrayView(array ,slice) 	   -> Array view       (automatic)
+   aArrayView(array ,slice)      -> Array view       (automatic)
 
    gnewWith (Array,array)        -> Fixed size array (clone, whatever array is!)
    gnewWith (Array,slice)        -> Fixed size array (Ints)
@@ -57,13 +57,13 @@
    gnewWith (Array,capacity)     -> Dynamic array    (pre-allocated)
 
    gnewWith (Array,fun)          -> Lazy array       (generator)
-   gnewWith2(Array,fun,init)     -> Lazy array       (generator)
+   gnewWith2(Array,fun,array)    -> Lazy array       (generator)
 
    gnewWith2(View,array,slice)   -> Array view       (view)
    gnewWith2(View,array,range)   -> Array view       (view)
 
    where:
-   - All arrays are mutable
+   - All arrays are mutable and strided
    - All arrays own their elements (gretain) except automatic arrays
    - Fixed size arrays will be one of Array0 to Array9 if size is < 10.
    - Dynamic arrays can shrink and grow (gappend, gpreprend)
@@ -75,8 +75,8 @@
 
 defclass(Array, Sequence)
   OBJ *object;
-  U32 size;
-  I32 stride;
+  U32  size;
+  I32  stride;
 endclass
 
 // ----- automatic constructors
@@ -88,26 +88,6 @@ endclass
 /***********************************************************
  * Implementation (private)
  */
-
-// ----- Array view
-
-defclass(ArrayView, Array)
-  struct Array *array;
-endclass
-
-// ----- Lazy array, Dynamic array and Adjusted array
-
-defclass(ArrayAdj, Array)
-  OBJ *_object;
-endclass
-
-defclass(ArrayDyn, ArrayAdj)
-  U32 capacity;
-endclass
-
-defclass(ArrayLazy, ArrayDyn)
-  OBJ generator;
-endclass
 
 // ----- Fixed size array
 
@@ -122,6 +102,27 @@ defclass(Array7, Array) OBJ _object[]; endclass
 defclass(Array8, Array) OBJ _object[]; endclass
 defclass(Array9, Array) OBJ _object[]; endclass
 defclass(ArrayN, Array) OBJ _object[]; endclass
+
+// ----- Array view
+
+defclass(ArrayView, Array)
+  struct Array *array;
+endclass
+
+// ----- Adjusted array, Dynamic array and Lazy array
+
+defclass(ArrayAdj, Array)
+  OBJ *_object;
+endclass
+
+defclass(ArrayDyn, ArrayAdj)
+  U32 capacity;
+endclass
+
+defclass(ArrayLazy, ArrayDyn)
+  OBJ generator;
+  I32 arity;
+endclass
 
 // ----- initializers, allocators and utilities (for the class cluster)
 

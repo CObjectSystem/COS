@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.10 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.11 2009/08/08 19:56:53 ldeniau Exp $
  |
 */
 
@@ -128,21 +128,13 @@ defmethod(void, gclear, ArrayDyn)
   OBJ *obj = arr->object + arr->size;
   OBJ *end = arr->object;
 
-  while (obj != end) {
-    grelease(*--obj);
-    arr->size--;
-  }
+  while (obj != end)
+    grelease(*--obj), *obj = 0;
+
+  arr->size = 0;
 endmethod
 
 // ----- getters, setters
-
-defalias (OBJ, (gget)glast, ArrayDyn);
-defalias (OBJ, (gget)gtop , ArrayDyn);
-defmethod(OBJ,  gget      , ArrayDyn)
-  struct Array *arr = &self->ArrayAdj.Array;
-
-  retmethod( arr->size ? arr->object[arr->size-1] : Nil );
-endmethod
 
 defalias (void, (gput)gappend, ArrayDyn, Object);
 defalias (void, (gput)gpush  , ArrayDyn, Object);
@@ -220,13 +212,12 @@ defmethod(void, gappend, ArrayDyn, Array)
     ArrayDyn_enlarge(self, factor);
   }
 
-  OBJ *dst   = arr->object;
   OBJ *src   = self2->object;
   I32  src_s = self2->stride;
   OBJ *end   = self2->object + self2->size*self2->stride;
 
   while (src != end) {
-    dst[arr->size] = gretain(*src);
+    arr->object[arr->size] = gretain(*src);
     arr->size++;
     src += src_s;
   }

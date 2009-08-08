@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.32 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Array.c,v 1.33 2009/08/08 19:56:53 ldeniau Exp $
  |
 */
 
@@ -72,7 +72,8 @@ makclass(ArrayLazy, ArrayDyn);
 
 // -----
 
-useclass(Array, ExBadAlloc);
+useclass(ExBadAlloc);
+useclass(Array, ArrayDyn, ArrayLazy, ArrayView);
 
 // ----- properties
 
@@ -87,7 +88,7 @@ defproperty(ArrayView,   array, (OBJ)); // return (OBJ)self->array
 #undef size_to_OBJ
 #undef array_class
 
-// ---
+// --- getters
 
 defmethod(struct Slice, gslice, Array)
   retmethod( *atSlice(0,self->size,self->stride) );
@@ -106,7 +107,7 @@ defmethod(OBJ, gisEmpty, Array)
 endmethod
 
 defmethod(OBJ, gclass, Array)
-  retmethod(Array); // class cluster: hide implementation details
+  retmethod(Array);     // class cluster: hide implementation details
 endmethod
 
 // ----- initializers
@@ -123,8 +124,6 @@ Array_init(struct Array *arr, U32 size)
 struct Array*
 ArrayView_init(struct ArrayView *arrv, struct Array *arr, struct Slice *slc)
 {
-  OBJ _arrv = (OBJ)arrv; PRT(_arrv);
-
   U32 first = Slice_first(slc);
   U32 last  = Slice_last (slc);
 
@@ -138,15 +137,12 @@ ArrayView_init(struct ArrayView *arrv, struct Array *arr, struct Slice *slc)
   avw->stride = Slice_stride(slc)*arr->stride;
   arrv->array = arr;
 
-  UNPRT(_arrv);
   return avw;
 }
 
 struct Array*
 ArrayDyn_init(struct ArrayDyn *arrd, U32 size)
 {
-  OBJ _arrd = (OBJ)arrd; PRT(_arrd);
-
   struct ArrayAdj *arrn = &arrd->ArrayAdj;
   struct Array    *arr  = &arrn->Array;
 
@@ -158,7 +154,6 @@ ArrayDyn_init(struct ArrayDyn *arrd, U32 size)
   arrn->_object  = arr->object;
   arrd->capacity = size;
 
-  UNPRT(_arrd);
   return arr;
 }
 
@@ -168,6 +163,9 @@ ArrayLazy_init(struct ArrayLazy *arrl, U32 size, struct Functor *fun)
   ArrayDyn_init(&arrl->ArrayDyn, size);
 
   arrl->generator = (OBJ)fun;
+  arrl->arity     = garity((OBJ)fun);
+
+  test_assert( (U32)arrl->arity < 3, "invalid generator arity" );
 
   return &arrl->ArrayDyn.ArrayAdj.Array;
 }
@@ -196,43 +194,45 @@ Array_alloc(U32 size)
 }
 
 struct Array*
-ArrayView_alloc(struct Array *arr, struct Slice *slc)
-{
-  useclass(ArrayView);
-
-  return ArrayView_init( STATIC_CAST(struct ArrayView*, galloc(ArrayView)), arr, slc );
-}
-
-struct Array*
 ArrayDyn_alloc(U32 size)
 {
-  useclass(ArrayDyn);
+  OBJ _arrd = galloc(ArrayDyn); PRT(_arrd);
+  struct ArrayDyn *arrd = STATIC_CAST(struct ArrayDyn*, _arrd);
 
-  return ArrayDyn_init( STATIC_CAST(struct ArrayDyn*, galloc(ArrayDyn)), size );
+  ArrayDyn_init( arrd, size );
+
+  UNPRT(_arrd);
+  return &arrd->ArrayAdj.Array;
 }
 
 struct Array*
 ArrayLazy_alloc(U32 size, struct Functor *fun)
 {
-  useclass(ArrayLazy);
+  OBJ _arrl = galloc(ArrayLazy); PRT(_arrl);
+  struct ArrayLazy *arrl = STATIC_CAST(struct ArrayLazy*, _arrl);
 
-  return ArrayLazy_init( STATIC_CAST(struct ArrayLazy*, galloc(ArrayLazy)), size, fun );
+  ArrayLazy_init( arrl, size, fun );
+
+  UNPRT(_arrl);
+  return &arrl->ArrayDyn.ArrayAdj.Array;
 }
 
-// ----- constructors
+struct Array*
+ArrayView_alloc(struct Array *arr, struct Slice *slc)
+{
+  OBJ _arrv = galloc(ArrayView); PRT(_arrv);
+  struct ArrayView *arrv = STATIC_CAST(struct ArrayView*, _arrv);
+
+  ArrayView_init( arrv, arr, slc );
+  
+  UNPRT(_arrv);
+  return &arrv->Array;
+}
+
+// ----- constructors fixed size array
 
 defmethod(OBJ, galloc, pmArray) // lazy alloc
   retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginit, pmArray) // Dyn array
-  retmethod( (OBJ)ArrayDyn_alloc(0) );
-endmethod
-
-defmethod(OBJ, ginitWith, pmArray, Int) // Dyn array with capacity
-  test_assert(self2->value >= 0, "negative array size");
-
-  retmethod( (OBJ)ArrayDyn_alloc(self2->value) );
 endmethod
 
 defmethod(OBJ, ginitWith, pmArray, Array) // clone
@@ -255,24 +255,26 @@ endmethod
 
 defmethod(OBJ, ginitWith, pmArray, Slice) // Int sequence
   U32 size = Slice_size(self2);
-
   struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < size; i++)
     arr->object[i] = gretain(aInt(Slice_eval(self2,i)));
 
-  retmethod((OBJ)arr);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, ginitWith, pmArray, Range) // Int sequence
   U32 size = Range_size(self2);
-
   struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < size; i++)
     arr->object[i] = gretain(aInt(Range_eval(self2,i)));
 
-  retmethod((OBJ)arr);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, ginitWith2, pmArray, Int, Object) // element
@@ -361,6 +363,35 @@ defmethod(OBJ, ginitWith2, pmArray, Array, IntVector) // random sequence
   UNPRT(_arr);
   retmethod(_arr);
 endmethod
+
+// ----- constructors dynamic array
+
+defmethod(OBJ, ginit, pmArray) // Dyn array
+  retmethod( (OBJ)ArrayDyn_alloc(0) );
+endmethod
+
+defmethod(OBJ, ginitWith, pmArray, Int) // Dyn array with capacity
+  test_assert(self2->value >= 0, "negative array size");
+
+  retmethod( (OBJ)ArrayDyn_alloc(self2->value) );
+endmethod
+
+// ----- constructors lazy array
+
+defmethod(OBJ, ginitWith, pmArray, Functor)
+  retmethod( (OBJ)ArrayLazy_alloc(0, self2) );
+endmethod
+
+defmethod(OBJ, ginitWith2, pmArray, Functor, Array)
+  OBJ arrl = (OBJ)ArrayLazy_alloc(self3->size*2, self2); PRT(arrl);
+
+  gappend(arrl,_3);
+
+  UNPRT(arrl);
+  retmethod(arrl);
+endmethod
+
+// ----- constructors array view
 
 defmethod(OBJ, ginitWith2, mView, Array, Slice) // array view
   test_assert( !cos_object_isa(_2, classref(ArrayDyn))

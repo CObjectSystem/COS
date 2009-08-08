@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.6 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.7 2009/08/08 19:56:53 ldeniau Exp $
  |
 */
 
@@ -65,12 +65,14 @@ endmethod
 
 // ---
 
-defmethod(OBJ, gfirst, Array)
-  retmethod( self->size ? self->object[0] : Nil );
+defalias (OBJ, (gget)glast, Array);
+defalias (OBJ, (gget)gtop , Array);
+defmethod(OBJ,  gget      , Array)
+  retmethod( self->size ? self->object[(self->size-1)*self->stride] : Nil );
 endmethod
 
-defmethod(OBJ, glast, Array)
-  retmethod( self->size ? self->object[(self->size-1)*self->stride] : Nil );
+defmethod(OBJ, gfirst, Array)
+  retmethod( self->size ? self->object[0] : Nil );
 endmethod
 
 // ----- setters (index, slice, intvector)
