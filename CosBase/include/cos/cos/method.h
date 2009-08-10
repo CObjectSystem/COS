@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.31 2009/07/23 13:28:56 ldeniau Exp $
+ | $Id: method.h,v 1.32 2009/08/10 16:29:15 ldeniau Exp $
  |
 */
 
@@ -335,8 +335,8 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   (0 ? next_method(__VA_ARGS__) : \
   ( COS_MTH_NXT_INIT, _cos_mth_nxt_ind ? \
   /* indirect invocation, normal */ \
-   _cos_mth_nxt_g(__VA_ARGS__,_sel,_ret,_cos_mth_nxt_p) : \
-  /* direct invocation, if gum */ \
+   _cos_mth_nxt_g(__VA_ARGS__,_cos_mth_nxt_sel,_ret,_cos_mth_nxt_p) : \
+  /* direct invocation, if GUM */ \
    ((_cos_mth_nxt_d)_cos_mth_nxt_p)(_sel,__VA_ARGS__,_arg,_ret)))
 
 #define COS_MTH_NXT_P \
