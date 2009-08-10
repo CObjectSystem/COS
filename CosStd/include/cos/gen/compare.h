@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: compare.h,v 1.2 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: compare.h,v 1.3 2009/08/10 21:02:15 ldeniau Exp $
  |
 */
 
@@ -40,30 +40,22 @@
 
 /* NOTE-USER: object comparison
 
-   gcompare(a,b) =
-     | a < b     -> Lesser
-     | a > b     -> Geater
-     | otherwise -> Equal
+   gcompare(a,b)
+     | a < b     = Lesser
+     | a > b     = Geater
+     | otherwise = Equal
 
-   gisEqual(a,b) =
-     | a == b    -> True
-     | otherwise -> False
+   gisEqual(a,b)
+     | a == b    = True
+     | otherwise = False
 
-   gisLesser(a,b) =
-     | a < b     -> True
-     | otherwise -> False
+   gisLesser(a,b)
+     | a < b     = True
+     | otherwise = False
 
-   gisGreater(a,b) =
-     | a > b     -> True
-     | otherwise -> False
-
-   gmin(a,b) =
-     | a > b     -> b
-     | otherwise -> a
-
-   gmax(a,b) =
-     | a < b     -> b
-     | otherwise -> a
+   gisGreater(a,b)
+     | a > b     = True
+     | otherwise = False
 */
 
 // comparison
@@ -75,11 +67,7 @@ defgeneric(OBJ, (GenComparator)gisLesserOrEqual , _1, _2);
 defgeneric(OBJ, (GenComparator)gisGreaterOrEqual, _1, _2);
 defgeneric(OBJ, (GenComparator)gisNotEqual      , _1, _2);
 
-// min, max
-defgeneric(OBJ, gmin, _1, _2);
-defgeneric(OBJ, gmax, _1, _2);
-
 // hash
-defgeneric(U32, (GenOperator)ghash, _1);
+defgeneric(U32, (GenOperator  )ghash, _1);
 
 #endif // COS_GEN_COMPARE_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.33 2009/08/08 19:56:53 ldeniau Exp $
+ | $Id: Array.c,v 1.34 2009/08/10 21:02:15 ldeniau Exp $
  |
 */
 
@@ -42,6 +42,7 @@
 #include <cos/gen/container.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/init.h>
+#include <cos/gen/new.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
@@ -110,16 +111,32 @@ defmethod(OBJ, gclass, Array)
   retmethod(Array);     // class cluster: hide implementation details
 endmethod
 
-// ----- initializers
+// ----- allocator
 
 struct Array*
-Array_init(struct Array *arr, U32 size)
+Array_alloc(U32 size)
 {
+  enum { N = 10 };
+  static struct Class* cls[] = {
+    classref(Array0,Array1,Array2,Array3,Array4,
+             Array5,Array6,Array7,Array8,Array9,
+             ArrayN)
+  };
+
+  OBJ _cls = (OBJ)cls[size > N ? N : size];
+  OBJ _arr = gallocWithSize(_cls, size * sizeof(OBJ));
+
+  struct ArrayN *arrn = STATIC_CAST(struct ArrayN*, _arr);
+  struct Array  *arr  = &arrn->Array;
+
+  arr->object = arrn->_object;
   arr->size   = size;
   arr->stride = 1;
 
   return arr;
 }
+
+// ----- initializer
 
 struct Array*
 ArrayView_init(struct ArrayView *arrv, struct Array *arr, struct Slice *slc)
@@ -140,102 +157,14 @@ ArrayView_init(struct ArrayView *arrv, struct Array *arr, struct Slice *slc)
   return avw;
 }
 
-struct Array*
-ArrayDyn_init(struct ArrayDyn *arrd, U32 size)
-{
-  struct ArrayAdj *arrn = &arrd->ArrayAdj;
-  struct Array    *arr  = &arrn->Array;
-
-  arr->object = malloc(size * sizeof *arr->object);
-  if (!arr->object) THROW(ExBadAlloc);
-
-  arr->size      = 0;
-  arr->stride    = 1;
-  arrn->_object  = arr->object;
-  arrd->capacity = size;
-
-  return arr;
-}
-
-struct Array*
-ArrayLazy_init(struct ArrayLazy *arrl, U32 size, struct Functor *fun)
-{
-  ArrayDyn_init(&arrl->ArrayDyn, size);
-
-  arrl->generator = (OBJ)fun;
-  arrl->arity     = garity((OBJ)fun);
-
-  test_assert( (U32)arrl->arity < 3, "invalid generator arity" );
-
-  return &arrl->ArrayDyn.ArrayAdj.Array;
-}
-
-// ----- allocators
-
-struct Array*
-Array_alloc(U32 size)
-{
-  enum { N = 10 };
-  static struct Class* cls[] = {
-    classref(Array0,Array1,Array2,Array3,Array4,
-             Array5,Array6,Array7,Array8,Array9,
-             ArrayN)
-  };
-
-  OBJ _cls = (OBJ)cls[size > N ? N : size];
-  OBJ _arr = gallocWithSize(_cls, size * sizeof(OBJ));
-
-  struct ArrayN *arrn = STATIC_CAST(struct ArrayN*, _arr);
-  struct Array  *arr  = &arrn->Array;
-
-  arr->object = arrn->_object;
-
-  return Array_init(arr, size);
-}
-
-struct Array*
-ArrayDyn_alloc(U32 size)
-{
-  OBJ _arrd = galloc(ArrayDyn); PRT(_arrd);
-  struct ArrayDyn *arrd = STATIC_CAST(struct ArrayDyn*, _arrd);
-
-  ArrayDyn_init( arrd, size );
-
-  UNPRT(_arrd);
-  return &arrd->ArrayAdj.Array;
-}
-
-struct Array*
-ArrayLazy_alloc(U32 size, struct Functor *fun)
-{
-  OBJ _arrl = galloc(ArrayLazy); PRT(_arrl);
-  struct ArrayLazy *arrl = STATIC_CAST(struct ArrayLazy*, _arrl);
-
-  ArrayLazy_init( arrl, size, fun );
-
-  UNPRT(_arrl);
-  return &arrl->ArrayDyn.ArrayAdj.Array;
-}
-
-struct Array*
-ArrayView_alloc(struct Array *arr, struct Slice *slc)
-{
-  OBJ _arrv = galloc(ArrayView); PRT(_arrv);
-  struct ArrayView *arrv = STATIC_CAST(struct ArrayView*, _arrv);
-
-  ArrayView_init( arrv, arr, slc );
-  
-  UNPRT(_arrv);
-  return &arrv->Array;
-}
-
 // ----- constructors fixed size array
 
 defmethod(OBJ, galloc, pmArray) // lazy alloc
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, ginitWith, pmArray, Array) // clone
+defalias (OBJ, (ginitWith)gnewWith, pmArray, Array);
+defmethod(OBJ,  ginitWith         , pmArray, Array) // clone
   struct Array* arr = Array_alloc(self2->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
 
@@ -253,8 +182,10 @@ defmethod(OBJ, ginitWith, pmArray, Array) // clone
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith, pmArray, Slice) // Int sequence
+defalias (OBJ, (ginitWith)gnewWith, pmArray, Slice);
+defmethod(OBJ,  ginitWith         , pmArray, Slice) // Int sequence
   U32 size = Slice_size(self2);
+  
   struct Array* arr = Array_alloc(size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
 
@@ -265,8 +196,10 @@ defmethod(OBJ, ginitWith, pmArray, Slice) // Int sequence
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith, pmArray, Range) // Int sequence
+defalias (OBJ, (ginitWith)gnewWith, pmArray, Range);
+defmethod(OBJ,  ginitWith         , pmArray, Range) // Int sequence
   U32 size = Range_size(self2);
+  
   struct Array* arr = Array_alloc(size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
 
@@ -277,7 +210,8 @@ defmethod(OBJ, ginitWith, pmArray, Range) // Int sequence
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Int, Object) // element
+defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Int, Object);
+defmethod(OBJ,  ginitWith2          , pmArray, Int, Object) // element
   test_assert(self2->value >= 0, "negative array size");
 
   struct Array* arr = Array_alloc(self2->value);
@@ -293,7 +227,8 @@ defmethod(OBJ, ginitWith2, pmArray, Int, Object) // element
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Int, Functor) // generator
+defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Int, Functor);
+defmethod(OBJ,  ginitWith2          , pmArray, Int, Functor) // generator
   test_assert(self2->value >= 0, "negative array size");
 
   struct Array* arr = Array_alloc(self2->value);
@@ -315,7 +250,8 @@ defmethod(OBJ, ginitWith2, pmArray, Int, Functor) // generator
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Array, Slice)  // sub array
+defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, Slice);
+defmethod(OBJ,  ginitWith2          , pmArray, Array, Slice) // sub array
   U32 first  = Slice_first (self3);
   U32 last   = Slice_last  (self3);
   U32 start  = Slice_first (self3)*self2->stride;
@@ -341,7 +277,8 @@ defmethod(OBJ, ginitWith2, pmArray, Array, Slice)  // sub array
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Array, IntVector) // random sequence
+defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, IntVector);
+defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random sequence
   struct Array* arr = Array_alloc(self3->size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
 
@@ -366,39 +303,87 @@ endmethod
 
 // ----- constructors dynamic array
 
-defmethod(OBJ, ginit, pmArray) // Dyn array
-  retmethod( (OBJ)ArrayDyn_alloc(0) );
+defalias (OBJ, (ginit)gnew, pmArray);
+defmethod(OBJ,  ginit     , pmArray) // Dyn array
+  retmethod( ginit(galloc(ArrayDyn)) );
 endmethod
 
-defmethod(OBJ, ginitWith, pmArray, Int) // Dyn array with capacity
-  test_assert(self2->value >= 0, "negative array size");
+defmethod(OBJ, ginit, ArrayDyn)
+  retmethod( ginitWith(_1,aInt(0)) );
+endmethod
 
-  retmethod( (OBJ)ArrayDyn_alloc(self2->value) );
+defalias (OBJ, (ginitWith)gnewWith, pmArray, Int);
+defmethod(OBJ,  ginitWith         , pmArray, Int) // Dyn array with capacity
+  retmethod( ginitWith(galloc(ArrayDyn),_2) );
+endmethod
+
+defmethod(OBJ, ginitWith, ArrayDyn, Int)
+  enum { MIN_SIZE = 1024 };
+  I32 capacity = self2->value;
+  test_assert(capacity >= 0, "negative array capacity");
+  if (capacity < MIN_SIZE) capacity = MIN_SIZE;
+
+  struct ArrayAdj *arra = &self->ArrayAdj;
+  struct Array    *arr  = &arra->Array;
+
+  arr->object = malloc(capacity * sizeof *arr->object);
+  if (!arr->object) THROW(ExBadAlloc);
+
+  arr->size      = 0;
+  arr->stride    = 1;
+  arra->_object  = arr->object;
+  self->capacity = capacity;
+
+  retmethod(_1);
 endmethod
 
 // ----- constructors lazy array
 
-defmethod(OBJ, ginitWith, pmArray, Functor)
-  retmethod( (OBJ)ArrayLazy_alloc(0, self2) );
+defalias (OBJ, (ginitWith)gnewWith, pmArray, Functor);
+defmethod(OBJ,  ginitWith         , pmArray, Functor) // generator
+  retmethod( ginitWith(galloc(ArrayLazy),_2) );
 endmethod
 
-defmethod(OBJ, ginitWith2, pmArray, Functor, Array)
-  OBJ arrl = (OBJ)ArrayLazy_alloc(self3->size*2, self2); PRT(arrl);
+defmethod(OBJ, ginitWith, ArrayLazy, Functor)
+  retmethod( ginitWith2(_1,_2,aArrayRef(0,0)) );
+endmethod
 
-  gappend(arrl,_3);
+defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Functor, Array);
+defmethod(OBJ,  ginitWith2          , pmArray, Functor, Array) // generator
+  retmethod( ginitWith2(galloc(ArrayLazy),_2,_3) );
+endmethod
 
-  UNPRT(arrl);
-  retmethod(arrl);
+defmethod(OBJ, ginitWith2, ArrayLazy, Functor, Array)
+  defnext(OBJ, ginitWith , ArrayLazy, Int); // dynamic array
+  
+  next_method(self, atInt(self3->size*2));
+
+  self->generator = gretain(_2);
+  self->arity     = garity (_2);
+
+  test_assert( (U32)self->arity < 3, "invalid generator arity" );
+
+  if (self3->size > 0)
+    gappend(_1,_3);
+
+  retmethod(_1);
 endmethod
 
 // ----- constructors array view
 
-defmethod(OBJ, ginitWith2, mView, Array, Slice) // array view
+defalias (OBJ, (ginitWith2)gnewWith2, mView, Array, Slice);
+defmethod(OBJ,  ginitWith2          , mView, Array, Slice) // array view
+  retmethod( ginitWith2(galloc(ArrayView),_2,_3) );
+endmethod
+
+defmethod(OBJ, ginitWith2, ArrayView, Array, Slice)
   test_assert( !cos_object_isa(_2, classref(ArrayDyn))
             && !cos_object_isa(_2, classref(ArrayLazy   )),
                "Array views accept only non-Dyn arrays" );
 
-  retmethod( (OBJ)ArrayView_alloc( STATIC_CAST(struct Array*, gretain(_2)), self3 ) );
+  ArrayView_init(self, self2, self3);
+
+  retmethod(_1);
 endmethod
 
 // ----- destructors

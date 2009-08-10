@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.13 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: algorithm.h,v 1.14 2009/08/10 21:02:15 ldeniau Exp $
  |
 */
 
@@ -44,8 +44,19 @@
 defgeneric(void, gforeach, _1, fun); // fun return value is discarded
 defgeneric(void, gpermute, _1, idx);
 defgeneric(void, greverse, _1);
+defgeneric(void, gapply  , fun, _1); // "in place" map
 
-defgeneric(void, gapply, fun, _1); // "in place" map
+// cat
+defgeneric(OBJ , gcat , _1, _2);
+defgeneric(OBJ , gcat3, _1, _2, _3);
+defgeneric(OBJ , gcat4, _1, _2, _3, _4);
+defgeneric(OBJ , gcatn, _1);
+
+// zip
+defgeneric(OBJ , gzip , _1, _2);
+defgeneric(OBJ , gzip3, _1, _2, _3);
+defgeneric(OBJ , gzip4, _1, _2, _3, _4);
+defgeneric(OBJ , gzipn, _1);
 
 // map
 defgeneric(OBJ , gmap , fun, _1);
@@ -55,12 +66,11 @@ defgeneric(OBJ , gmap4, fun, _1, _2, _3, _4);
 defgeneric(OBJ , gmapn, fun, _1);
 
 // filter, fold, scan
-defgeneric(OBJ , gfilter , _1, fun);
-defgeneric(OBJ , gnfilter, _1, fun);
-defgeneric(OBJ , gfoldl  , _1, fun, ini);
-defgeneric(OBJ , gfoldr  , _1, fun, ini);
-defgeneric(OBJ , gscanl  , _1, fun, ini);
-defgeneric(OBJ , gscanr  , _1, fun, ini);
+defgeneric(OBJ , gfilter, _1, fun);
+defgeneric(OBJ , gfoldl , _1, fun, ini);
+defgeneric(OBJ , gfoldr , _1, fun, ini);
+defgeneric(OBJ , gscanl , _1, fun, ini);
+defgeneric(OBJ , gscanr , _1, fun, ini);
 
 // filterOut
 defgeneric(OBJ , gfilterOut, _1, fun);
@@ -68,21 +78,14 @@ defgeneric(OBJ , gfilterOut, _1, fun);
 // repeat (iterate -> functor.h)
 defgeneric(OBJ , grepeat, _1, num);
 
-// zip
-defgeneric(OBJ , gzip , _1, _2);
-defgeneric(OBJ , gzip3, _1, _2, _3);
-defgeneric(OBJ , gzip4, _1, _2, _3, _4);
-defgeneric(OBJ , gzipn, _1);
-
-// cat
-defgeneric(OBJ , gcat , _1, _2);
-defgeneric(OBJ , gcat3, _1, _2, _3);
-defgeneric(OBJ , gcat4, _1, _2, _3, _4);
-defgeneric(OBJ , gcatn, _1);
-
 // all, any
 defgeneric(OBJ , gall, _1, fun); // fun should return TrueFalse
 defgeneric(OBJ , gany, _1, fun); // fun should return TrueFalse
+
+// min, max
+defgeneric(OBJ, gmin, _1, _2 or fun); // fun should return Ordered or the min
+defgeneric(OBJ, gmax, _1, _2 or fun); // fun should return Ordered or the min
+               // note: gmin(array, aFun(gmin,0,0) ) should work like a foldl
 
 // sorting (fun must return Ordered)
 defgeneric(void, gsort    , _1, fun); // in place

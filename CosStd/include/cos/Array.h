@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.21 2009/08/08 19:56:53 ldeniau Exp $
+ | $Id: Array.h,v 1.22 2009/08/10 21:02:14 ldeniau Exp $
  |
 */
 
@@ -129,19 +129,8 @@ endclass
 struct Slice;
 struct Functor;
 
-struct Array* Array_init      (struct Array*,U32);
-struct Array* ArrayDyn_init   (struct ArrayDyn*,U32);
-struct Array* ArrayLazy_init  (struct ArrayLazy*,U32,struct Functor*);
-struct Array* ArrayView_init  (struct ArrayView*,struct Array*,struct Slice*);
-
-struct Array* Array_alloc     (U32);
-struct Array* ArrayDyn_alloc  (U32);
-struct Array* ArrayLazy_alloc (U32,struct Functor*);
-struct Array* ArrayView_alloc (struct Array*,struct Slice*);
-
-void   ArrayDyn_adjust        (struct ArrayDyn*);
-void   ArrayDyn_enlarge       (struct ArrayDyn*,F64);
-void   ArrayDyn_enlargeFront  (struct ArrayDyn*,F64);
+struct Array* Array_alloc   (U32);
+struct Array* ArrayView_init(struct ArrayView*,struct Array*,struct Slice*);
 
 // ----- automatic constructors
 
@@ -155,7 +144,7 @@ void   ArrayDyn_enlargeFront  (struct ArrayDyn*,F64);
 // --- ArrayRef
 
 #define atArrayRef(buffer,size) \
-  (&(struct Array) {{ {{ cos_object_auto(Array) }}, (buffer), (size), 1 } })
+  ( &(struct Array) { {{ cos_object_auto(Array) }}, (buffer), (size), 1 } )
 
 // --- ArrayView
 

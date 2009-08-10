@@ -32,46 +32,41 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.11 2009/03/11 10:20:41 ldeniau Exp $
+ | $Id: container.h,v 1.12 2009/08/10 21:02:15 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif 
 
 // stream-like accessors
-defgeneric(OBJ , gget       , _1);
-defgeneric(void, gput       , _1, what);
-defgeneric(void, gdrop      , _1);
-defgeneric(void, ginsert    , _1, what);
-defgeneric(void, gremove    , _1);
+defgeneric(OBJ , gget     , _1);
+defgeneric(void, gput     , _1, what);
+defgeneric(void, gdrop    , _1);
+defgeneric(void, ginsert  , _1, what);
+defgeneric(void, gremove  , _1);
 
 // stack-like accessors
-defgeneric(void, gpush      , _1, what);  // alias for gput
-defgeneric(OBJ , gtop       , _1);        // alias for gget
-defgeneric(void, gpop       , _1);        // alias for gdrop
+defgeneric(void, gpush    , _1, what);  // alias for gput
+defgeneric(OBJ , gtop     , _1);        // alias for gget
+defgeneric(void, gpop     , _1);        // alias for gdrop
 
 // list-like accessor
-defgeneric(void, ginsertAt  , _1, at, what);
-defgeneric(void, gremoveAt  , _1, at);
+defgeneric(void, ginsertAt, _1, at, what);
+defgeneric(void, gremoveAt, _1, at);
 
 // seq-like accessor
-defgeneric(void, gprepend   , _1, what);
-defgeneric(void, gappend    , _1, what);
-defgeneric(OBJ , gfirst     , _1);
-defgeneric(OBJ , glast      , _1);
+defgeneric(void, gprepend , _1, what);
+defgeneric(void, gappend  , _1, what);
+defgeneric(OBJ , gfirst   , _1);
+defgeneric(OBJ , glast    , _1);
 
 // check for elements
-defgeneric(OBJ , gisEmpty   , _1);
+defgeneric(OBJ , gisEmpty , _1);
 
 // adjust object (e.g. capacity to size)
-defgeneric(void, gadjust    , _1);
+defgeneric(void, gadjust  , _1);
 
-// inliner
-static always_inline BOOL
-gempty(OBJ _1) { 
-  return gisEmpty(_1) == True; 
-}
+// englarge object (e.g. book some capacity)
+defgeneric(void, genlarge , _1, by);
 
 #endif // COS_GEN_CONTAINER_H

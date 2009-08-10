@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.9 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Value.h,v 1.10 2009/08/10 21:02:14 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif 
 
 /* NOTE-USER: Values subclasses
 

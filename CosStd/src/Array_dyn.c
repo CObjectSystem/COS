@@ -29,11 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.11 2009/08/08 19:56:53 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.12 2009/08/10 21:02:15 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
+#include <cos/Number.h>
 
 #include <cos/gen/object.h>
 #include <cos/gen/container.h>
@@ -43,20 +44,51 @@
 
 // -----
 
-#define ARRAY_MIN_SIZE    10
 #define ARRAY_GROWTH_RATE 1.618034 // golden ratio
 
-STATIC_ASSERT(array_min_size_is_too_small   , ARRAY_MIN_SIZE    >= 4  );
 STATIC_ASSERT(array_growth_rate_is_too_small, ARRAY_GROWTH_RATE >= 1.5);
 
 useclass(Array, ExBadAlloc);
 
-// ----- memory management (alloc and deinit are in Array.c)
+// ----- memory management
 
-void
-ArrayDyn_adjust(struct ArrayDyn *arrd)
-{
-  struct ArrayAdj *arra = &arrd->ArrayAdj;
+defmethod(void, genlarge, ArrayDyn, Float)
+  F64 factor   = self2->value;
+  U32 capacity = self->capacity;
+
+  if (factor > 1.0)
+    genlarge(_1, aInt(capacity * (factor-1)));
+  else if (factor < 1.0)
+    genlarge(_1, aInt(capacity * (1-factor)));
+endmethod
+
+defmethod(void, genlarge, ArrayDyn, Int)
+  struct ArrayAdj *arra = &self->ArrayAdj;
+  struct Array    *arr  = &arra->Array;
+  U32          capacity = self->capacity;
+  ptrdiff_t      offset = arr->object - arra->_object;
+  BOOL            front = self2->value < 0;
+  I32             addon = front ? -self2->value : self2->value;
+  
+  if (addon > 0) {
+    U32 capacity = self->capacity + addon;
+    OBJ *_object = realloc(arra->_object, capacity*sizeof *arra->_object);
+    if (!_object) THROW(ExBadAlloc);
+
+    arr ->object   = _object + offset;
+    arra->_object  = _object;
+    self->capacity = capacity;
+  }
+  if (front) { // move data to book the new space front
+    arr->object = arra->_object + (self->capacity - capacity);
+    memmove(arr->object, arra->_object + offset, arr->size*sizeof *arr->object);
+  }
+endmethod
+
+// ----- adjustment (capacity -> size)
+
+defmethod(void, gadjust, ArrayDyn)
+  struct ArrayAdj *arra = &self->ArrayAdj;
   struct Array    *arr  = &arra->Array;
 
   // move data to storage base
@@ -64,56 +96,14 @@ ArrayDyn_adjust(struct ArrayDyn *arrd)
     arr->object = memmove(arra->_object, arr->object, arr->size * sizeof *arra->_object);
 
   // shrink storage
-  if (arr->size != arrd->capacity) {
+  if (arr->size != self->capacity) {
     OBJ *_object = realloc(arra->_object, arr->size * sizeof *arra->_object);
     if (!_object) THROW(ExBadAlloc);
 
     arr ->object   = _object;
     arra->_object  = _object;
-    arrd->capacity = arr->size;
+    self->capacity = arr->size;
   }
-}
-
-void
-ArrayDyn_enlarge(struct ArrayDyn *arrd, F64 factor)
-{
-  if (factor <= 1.0) return;
-
-  struct ArrayAdj *arra = &arrd->ArrayAdj;
-  struct Array    *arr  = &arra->Array;
-
-  ptrdiff_t offset = arr->object - arra->_object;
-
-  U32 capacity = (arrd->capacity < ARRAY_MIN_SIZE ? ARRAY_MIN_SIZE : arrd->capacity)*factor;
-  OBJ *_object = realloc(arra->_object, capacity*sizeof *arra->_object);
-  if (!_object) THROW(ExBadAlloc);
-
-  arr ->object   = _object + offset;
-  arra->_object  = _object;
-  arrd->capacity = capacity;
-}
-
-void
-ArrayDyn_enlargeFront(struct ArrayDyn *arrd, F64 factor)
-{
-  if (factor <= 1.0) return;
-
-  struct ArrayAdj *arra = &arrd->ArrayAdj;
-  struct Array    *arr  = &arra->Array;
-
-  ptrdiff_t offset = arr->object - arra->_object;
-
-  U32 old_capacity = arrd->capacity;
-
-  ArrayDyn_enlarge(arrd, factor);
-  arr->object = arra->_object + (arrd->capacity - old_capacity);
-  memmove(arr->object, arra->_object + offset, arr->size*sizeof *arr->object);
-}
-
-// ----- adjustment (capacity -> size)
-
-defmethod(void, gadjust, ArrayDyn)
-  ArrayDyn_adjust(self);
 
   test_assert( cos_object_changeClass(_1, classref(ArrayAdj)),
                "unable to change Dyn array to fixed size array" );
@@ -142,7 +132,7 @@ defmethod(void,  gput        , ArrayDyn, Object)
   struct Array *arr = &self->ArrayAdj.Array;
 
   if (arr->size == self->capacity)
-    ArrayDyn_enlarge(self, ARRAY_GROWTH_RATE);
+    genlarge(_1, aFloat(ARRAY_GROWTH_RATE));
     
   arr->object[arr->size] = gretain(_2);
   arr->size++;
@@ -163,7 +153,7 @@ defmethod(void, gprepend, ArrayDyn, Object)
   struct Array    *arr  = &arra->Array;
 
   if (arr->object == arra->_object)
-    ArrayDyn_enlargeFront(self, ARRAY_GROWTH_RATE);
+    genlarge(_1, aFloat(-ARRAY_GROWTH_RATE));
 
   arr->object[-1] = gretain(_2);
   arr->object--;
@@ -176,13 +166,13 @@ defmethod(void, gprepend, ArrayDyn, Array)
 
   if (arr->object - arra->_object < self2->size) {
     F64 factor = 1.0;
-    U32 capacity = (self->capacity < ARRAY_MIN_SIZE ? ARRAY_MIN_SIZE : self->capacity);
+    U32 capacity = self->capacity;
 
     do
       factor *= ARRAY_GROWTH_RATE;
     while (capacity*(factor - 1.0) < self2->size);
 
-    ArrayDyn_enlargeFront(self, factor);
+    genlarge(_1, aFloat(-factor));
   }
 
   OBJ *src   = self2->object;
@@ -203,13 +193,13 @@ defmethod(void, gappend, ArrayDyn, Array)
 
   if (arr->object - arra->_object < self2->size) {
     F64 factor = 1.0;
-    U32 capacity = (self->capacity < ARRAY_MIN_SIZE ? ARRAY_MIN_SIZE : self->capacity);
+    U32 capacity = self->capacity;
 
     do
       factor *= ARRAY_GROWTH_RATE;
     while (capacity*(factor - 1.0) < self2->size);
 
-    ArrayDyn_enlarge(self, factor);
+    genlarge(_1, aFloat(factor));
   }
 
   OBJ *src   = self2->object;

@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Container.h,v 1.4 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Container.h,v 1.5 2009/08/10 21:02:14 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif 
 
 /* NOTE-USER: Container subclasses
 

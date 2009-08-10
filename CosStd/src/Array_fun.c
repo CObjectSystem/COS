@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.9 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.10 2009/08/10 21:02:15 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,10 @@
 #include <cos/gen/object.h>
 
 #include <cos/carray.h>
+
+// ----- 
+
+useclass(Array);
 
 // ----- foreach (in place, discard fun returned value)
 
@@ -210,8 +214,8 @@ endmethod
 // ----- filter, filterOut fold, scan
 
 defmethod(OBJ, gfilter, Array, Functor)
-  struct Array* arr = ArrayDyn_alloc(self->size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  OBJ _arr = gnewWith(Array,aInt(self->size)); PRT(_arr);
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   OBJ *dst   = arr ->object;
   OBJ *src   = self->object;
@@ -230,8 +234,8 @@ defmethod(OBJ, gfilter, Array, Functor)
 endmethod
 
 defmethod(OBJ, gfilterOut, Array, Functor)
-  struct Array* arr = ArrayDyn_alloc(self->size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  OBJ _arr = gnewWith(Array,aInt(self->size)); PRT(_arr);
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   OBJ *dst   = arr ->object;
   OBJ *src   = self->object;
@@ -615,12 +619,11 @@ endmethod
 // ----- unique (remove contiguous duplicates)
 
 defmethod(OBJ, gunique, Array, Functor)
-  struct Array* arr = ArrayDyn_alloc(self->size);
-
   if (self->size < 1)
-    goto exit;
+    retmethod( gautoDelete(gclone(_1)) );
 
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  OBJ _arr = gnewWith(Array,aInt(self->size)); PRT(_arr);
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   OBJ *dst   = arr ->object;
   OBJ *src   = self->object;
@@ -634,7 +637,6 @@ defmethod(OBJ, gunique, Array, Functor)
   }
   *dst++ = gretain(*src);
 
-exit:
   gadjust(_arr);
   UNPRT(_arr);
   retmethod(gautoDelete(_arr));
