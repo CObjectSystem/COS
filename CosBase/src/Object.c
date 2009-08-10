@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.14 2009/08/07 14:21:29 ldeniau Exp $
+ | $Id: Object.c,v 1.15 2009/08/10 16:29:40 ldeniau Exp $
  |
 */
 
@@ -82,6 +82,12 @@ endmethod
 
 defmethod(void, gdealloc, Object)
   free(_1);
+endmethod
+
+// ----- clone
+
+defmethod(OBJ, gclone, Object)
+  retmethod( gnewWith(gclass(_1),_1) );
 endmethod
 
 // ----- new
@@ -188,12 +194,6 @@ endmethod
 
 defmethod(OBJ, gnewWithVoidPtr, mObject, (void*)ref, (U32)n, (size_t)esize)
   retmethod( ginitWithVoidPtr(galloc(_1),ref,n,esize) );
-endmethod
-
-// ----- clone
-
-defmethod(OBJ, gclone, Object)
-  retmethod( ginitWith(galloc(gclass(_1)),_1) );
 endmethod
 
 // ----- ownership
