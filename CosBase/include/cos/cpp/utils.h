@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utils.h,v 1.2 2009/01/23 15:12:28 ldeniau Exp $
+ | $Id: utils.h,v 1.3 2009/08/11 20:33:38 ldeniau Exp $
  |
  o
 */
@@ -63,11 +63,16 @@
 #define COS_PP_ARG8(a,b,c,d,e,f,g,h,  ...)  h
 #define COS_PP_ARG9(a,b,c,d,e,f,g,h,i,...)  i
 
-#define COS_PP_STR(...)        COS_PP_STR_ (      __VA_ARGS__)
+#define COS_PP_STR(...)        COS_PP_STR_(__VA_ARGS__)
+#define COS_PP_STR1(a,...)     #a
+#define COS_PP_STR2(a,b,...)   #b
+#define COS_PP_STR3(a,b,c,...) #c
+
 #define COS_PP_CAT(a,...)      COS_PP_CAT_ (a,    __VA_ARGS__)
 #define COS_PP_CAT3(a,b,...)   COS_PP_CAT3_(a,b,  __VA_ARGS__)
 #define COS_PP_CAT4(a,b,c,...) COS_PP_CAT4_(a,b,c,__VA_ARGS__)
-#define COS_PP_CAT_NARG(a,...) COS_PP_CAT  (a,COS_PP_NARG(__VA_ARGS__))
+
+#define COS_PP_CAT_NARG(a,...) COS_PP_CAT(a,COS_PP_NARG(__VA_ARGS__))
 
 #define COS_PP_DUP(n,...)      COS_PP_CAT_(COS_PP_DUP_,n)(__VA_ARGS__)
 
@@ -76,6 +81,7 @@
  */
 
 #define COS_PP_STR_(...)        #__VA_ARGS__
+
 #define COS_PP_CAT_(a,...)      a##__VA_ARGS__
 #define COS_PP_CAT3_(a,b,...)   a##b##__VA_ARGS__
 #define COS_PP_CAT4_(a,b,c,...) a##b##c##__VA_ARGS__

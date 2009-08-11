@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.3 2009/02/23 09:59:15 ldeniau Exp $
+ | $Id: logic.h,v 1.4 2009/08/11 20:33:38 ldeniau Exp $
  |
  o
 */
@@ -88,6 +88,10 @@
 // m == n
 #define COS_PP_EQ(m,n) \
         COS_PP_AND(COS_PP_GE(m,n),COS_PP_GE(n,m))
+
+// m != n
+#define COS_PP_NE(m,n) \
+        COS_PP_NOT(COS_PP_EQ(m,n))
 
 // min(m,n)
 #define COS_PP_MIN(m,n) \
