@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array - ctors & dtors
+ | COS Array - basic arrays
  |
  o---------------------------------------------------------------------o
  |
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.34 2009/08/10 21:02:15 ldeniau Exp $
+ | $Id: Array.c,v 1.35 2009/08/14 21:47:55 ldeniau Exp $
  |
 */
 
@@ -37,7 +37,6 @@
 #include <cos/Functor.h>
 #include <cos/IntVector.h>
 #include <cos/Number.h>
-#include <cos/View.h>
 
 #include <cos/gen/container.h>
 #include <cos/gen/functor.h>
@@ -54,37 +53,32 @@
 
 // -----
 
-makclass(Array    , Sequence);
-makclass(Array0   , Array);
-makclass(Array1   , Array);
-makclass(Array2   , Array);
-makclass(Array3   , Array);
-makclass(Array4   , Array);
-makclass(Array5   , Array);
-makclass(Array6   , Array);
-makclass(Array7   , Array);
-makclass(Array8   , Array);
-makclass(Array9   , Array);
-makclass(ArrayN   , Array);
-makclass(ArrayView, Array);
-makclass(ArrayAdj , Array);
-makclass(ArrayDyn , ArrayAdj);
-makclass(ArrayLazy, ArrayDyn);
+makclass(Array, Sequence);
+
+makclass(Array0, Array);
+makclass(Array1, Array);
+makclass(Array2, Array);
+makclass(Array3, Array);
+makclass(Array4, Array);
+makclass(Array5, Array);
+makclass(Array6, Array);
+makclass(Array7, Array);
+makclass(Array8, Array);
+makclass(Array9, Array);
+makclass(ArrayN, Array);
 
 // -----
 
 useclass(ExBadAlloc);
-useclass(Array, ArrayDyn, ArrayLazy, ArrayView);
+useclass(Array, ArrayView);
 
 // ----- properties
 
 #define size_to_OBJ(siz) gautoDelete(aInt(siz))
 #define array_class(arr) Array
 
-defproperty(Array    ,   size , size_to_OBJ);
-defproperty(Array    , ()class, array_class);
-defproperty(Array    , ()array, (OBJ)); // return (OBJ)self
-defproperty(ArrayView,   array, (OBJ)); // return (OBJ)self->array
+defproperty(Array,   size , size_to_OBJ);
+defproperty(Array, ()class, array_class);
 
 #undef size_to_OBJ
 #undef array_class
@@ -136,28 +130,7 @@ Array_alloc(U32 size)
   return arr;
 }
 
-// ----- initializer
-
-struct Array*
-ArrayView_init(struct ArrayView *arrv, struct Array *arr, struct Slice *slc)
-{
-  U32 first = Slice_first(slc);
-  U32 last  = Slice_last (slc);
-
-  test_assert( first < arr->size &&
-               last  < arr->size, "slice out of range" );
-
-  struct Array* avw = &arrv->Array;
-
-  avw->object = Slice_start (slc)*arr->stride + arr->object;
-  avw->size   = Slice_size  (slc);
-  avw->stride = Slice_stride(slc)*arr->stride;
-  arrv->array = arr;
-
-  return avw;
-}
-
-// ----- constructors fixed size array
+// ----- constructors
 
 defmethod(OBJ, galloc, pmArray) // lazy alloc
   retmethod(_1);
@@ -301,92 +274,7 @@ defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random seque
   retmethod(_arr);
 endmethod
 
-// ----- constructors dynamic array
-
-defalias (OBJ, (ginit)gnew, pmArray);
-defmethod(OBJ,  ginit     , pmArray) // Dyn array
-  retmethod( ginit(galloc(ArrayDyn)) );
-endmethod
-
-defmethod(OBJ, ginit, ArrayDyn)
-  retmethod( ginitWith(_1,aInt(0)) );
-endmethod
-
-defalias (OBJ, (ginitWith)gnewWith, pmArray, Int);
-defmethod(OBJ,  ginitWith         , pmArray, Int) // Dyn array with capacity
-  retmethod( ginitWith(galloc(ArrayDyn),_2) );
-endmethod
-
-defmethod(OBJ, ginitWith, ArrayDyn, Int)
-  enum { MIN_SIZE = 1024 };
-  I32 capacity = self2->value;
-  test_assert(capacity >= 0, "negative array capacity");
-  if (capacity < MIN_SIZE) capacity = MIN_SIZE;
-
-  struct ArrayAdj *arra = &self->ArrayAdj;
-  struct Array    *arr  = &arra->Array;
-
-  arr->object = malloc(capacity * sizeof *arr->object);
-  if (!arr->object) THROW(ExBadAlloc);
-
-  arr->size      = 0;
-  arr->stride    = 1;
-  arra->_object  = arr->object;
-  self->capacity = capacity;
-
-  retmethod(_1);
-endmethod
-
-// ----- constructors lazy array
-
-defalias (OBJ, (ginitWith)gnewWith, pmArray, Functor);
-defmethod(OBJ,  ginitWith         , pmArray, Functor) // generator
-  retmethod( ginitWith(galloc(ArrayLazy),_2) );
-endmethod
-
-defmethod(OBJ, ginitWith, ArrayLazy, Functor)
-  retmethod( ginitWith2(_1,_2,aArrayRef(0,0)) );
-endmethod
-
-defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Functor, Array);
-defmethod(OBJ,  ginitWith2          , pmArray, Functor, Array) // generator
-  retmethod( ginitWith2(galloc(ArrayLazy),_2,_3) );
-endmethod
-
-defmethod(OBJ, ginitWith2, ArrayLazy, Functor, Array)
-  defnext(OBJ, ginitWith , ArrayLazy, Int); // dynamic array
-  
-  next_method(self, atInt(self3->size*2));
-
-  self->generator = gretain(_2);
-  self->arity     = garity (_2);
-
-  test_assert( (U32)self->arity < 3, "invalid generator arity" );
-
-  if (self3->size > 0)
-    gappend(_1,_3);
-
-  retmethod(_1);
-endmethod
-
-// ----- constructors array view
-
-defalias (OBJ, (ginitWith2)gnewWith2, mView, Array, Slice);
-defmethod(OBJ,  ginitWith2          , mView, Array, Slice) // array view
-  retmethod( ginitWith2(galloc(ArrayView),_2,_3) );
-endmethod
-
-defmethod(OBJ, ginitWith2, ArrayView, Array, Slice)
-  test_assert( !cos_object_isa(_2, classref(ArrayDyn))
-            && !cos_object_isa(_2, classref(ArrayLazy   )),
-               "Array views accept only non-Dyn arrays" );
-
-  ArrayView_init(self, self2, self3);
-
-  retmethod(_1);
-endmethod
-
-// ----- destructors
+// ----- destructor
 
 defmethod(OBJ, gdeinit, Array)
   OBJ *obj = self->object;
@@ -398,23 +286,17 @@ defmethod(OBJ, gdeinit, Array)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdeinit, ArrayAdj)
-  if (self->_object)            // take care of protection cases
-    free(self->_object);
-  next_method(self);
-  retmethod(_1);
-endmethod
+// ----- invariant
 
-defmethod(OBJ, gdeinit, ArrayLazy)
-  if (self->generator)          // take care of protection cases
-    grelease(self->generator);
-  next_method(self);
-  retmethod(_1);
-endmethod
+defmethod(void, ginvariant, Array, (STR)func, (STR)file, (int)line)
+  OBJ *obj   = self->object;
+  OBJ *end   = self->object + self->size*self->stride;
+  I32  obj_s = self->stride;
 
-defmethod(OBJ, gdeinit, ArrayView)
-  if (self->array)              // take care of protection cases
-    grelease( (OBJ)self->array );
-  retmethod(_1);
+  while (obj != end && *obj)
+    obj += obj_s;
+
+  test_assert( obj == end,
+               "Array contains null elements", func, file, line);
 endmethod
 

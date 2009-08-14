@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array - Dyn array
+ | COS Array - Lazy dynamic array
  |
  o---------------------------------------------------------------------o
  |
@@ -29,22 +29,69 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_lzy.c,v 1.1 2009/08/08 19:56:53 ldeniau Exp $
+ | $Id: Array_lzy.c,v 1.2 2009/08/14 21:47:55 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
-#include <cos/Range.h>
+#include <cos/Functor.h>
 #include <cos/Number.h>
+#include <cos/Slice.h>
+
 #include <cos/gen/accessor.h>
 #include <cos/gen/container.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/new.h>
 
+// -----
+
+makclass(ArrayLazy, ArrayDyn);
+
 // ----- exception
 
-useclass(ExBadArity);
+useclass(ExBadArity, ArrayLazy);
+
+// ----- constructors
+
+defalias (OBJ, (ginitWith)gnewWith, pmArray, Functor);
+defmethod(OBJ,  ginitWith         , pmArray, Functor) // generator
+  retmethod( ginitWith(galloc(ArrayLazy),_2) );
+endmethod
+
+defmethod(OBJ, ginitWith, ArrayLazy, Functor)
+  retmethod( ginitWith2(_1,_2,aArrayRef(0,0)) );
+endmethod
+
+defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Functor, Array);
+defmethod(OBJ,  ginitWith2          , pmArray, Functor, Array) // generator
+  retmethod( ginitWith2(galloc(ArrayLazy),_2,_3) );
+endmethod
+
+defmethod(OBJ, ginitWith2, ArrayLazy, Functor, Array)
+  defnext(OBJ, ginitWith , ArrayLazy, Int); // dynamic array
+  
+  next_method(self, atInt(self3->size*2));
+
+  self->generator = gretain(_2);
+  self->arity     = garity (_2);
+
+  test_assert( (U32)self->arity < 3, "invalid generator arity" );
+
+  if (self3->size > 0)
+    gappend(_1,_3);
+
+  retmethod(_1);
+endmethod
+
+// ----- destructor
+
+defmethod(OBJ, gdeinit, ArrayLazy)
+  if (self->generator)          // take care of protection cases
+    grelease(self->generator);
+  next_method(self);
+  retmethod(_1);
+endmethod
 
 // ----- adjustment (capacity -> size)
 

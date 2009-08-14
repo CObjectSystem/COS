@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array - invariants
+ | COS Array - Array view
  |
  o---------------------------------------------------------------------o
  |
@@ -29,32 +29,72 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_inv.c,v 1.1 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Array_vw.c,v 1.1 2009/08/14 21:47:55 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
 #include <cos/Slice.h>
+#include <cos/View.h>
+
 #include <cos/gen/object.h>
 
-defmethod(void, ginvariant, Array, (STR)func, (STR)file, (int)line)
-  OBJ *obj   = self->object;
-  OBJ *end   = self->object + self->size*self->stride;
-  I32  obj_s = self->stride;
+// -----
 
-  while (obj != end && *obj)
-    obj += obj_s;
+makclass(ArrayView, Array);
 
-  test_assert( obj == end,
-               "Array contains null elements", func, file, line);
+// -----
+
+useclass(ExBadAlloc);
+useclass(Array, ArrayView);
+
+// ----- initializer
+
+struct Array*
+ArrayView_init(struct ArrayView *arrv, struct Array *arr, struct Slice *slc)
+{
+  U32 first = Slice_first(slc);
+  U32 last  = Slice_last (slc);
+
+  test_assert( first < arr->size &&
+               last  < arr->size, "slice out of range" );
+
+  struct Array* avw = &arrv->Array;
+
+  avw->object = Slice_start (slc)*arr->stride + arr->object;
+  avw->size   = Slice_size  (slc);
+  avw->stride = Slice_stride(slc)*arr->stride;
+  arrv->array = arr;
+
+  return avw;
+}
+
+// ----- constructors
+
+defalias (OBJ, (ginitWith2)gnewWith2, mView, Array, Slice);
+defmethod(OBJ,  ginitWith2          , mView, Array, Slice) // array view
+  retmethod( ginitWith2(galloc(ArrayView),_2,_3) );
 endmethod
 
-defmethod(void, ginvariant, ArrayDyn, (STR)func, (STR)file, (int)line)
-  test_assert( self->capacity >= self->ArrayAdj.Array.size,
-               "ArrayDyn has capacity < size", func, file, line);
+defmethod(OBJ, ginitWith2, ArrayView, Array, Slice)
+  test_assert( !cos_object_isa(_2, classref(ArrayDyn))
+            && !cos_object_isa(_2, classref(ArrayLazy   )),
+               "Array views accept only non-Dyn arrays" );
 
-  next_method(self, func, file, line);
+  ArrayView_init(self, self2, self3);
+
+  retmethod(_1);
 endmethod
+
+// ----- destructor
+
+defmethod(OBJ, gdeinit, ArrayView)
+  if (self->array)              // take care of protection cases
+    grelease( (OBJ)self->array );
+  retmethod(_1);
+endmethod
+
+// ----- invariant
 
 defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
   test_assert( cos_object_isKindOf((OBJ)self->array, classref(Array)),

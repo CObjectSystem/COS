@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array - Dyn array
+ | COS Array - Dynamic array
  |
  o---------------------------------------------------------------------o
  |
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.12 2009/08/10 21:02:15 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.13 2009/08/14 21:47:55 ldeniau Exp $
  |
 */
 
@@ -44,11 +44,70 @@
 
 // -----
 
+makclass(ArrayAdj, Array);
+makclass(ArrayDyn, ArrayAdj);
+
+// -----
+
 #define ARRAY_GROWTH_RATE 1.618034 // golden ratio
 
 STATIC_ASSERT(array_growth_rate_is_too_small, ARRAY_GROWTH_RATE >= 1.5);
 
-useclass(Array, ExBadAlloc);
+useclass(Array, ArrayDyn, ExBadAlloc);
+
+// ----- constructors
+
+defalias (OBJ, (ginit)gnew, pmArray);
+defmethod(OBJ,  ginit     , pmArray) // Dyn array
+  retmethod( ginit(galloc(ArrayDyn)) );
+endmethod
+
+defmethod(OBJ, ginit, ArrayDyn)
+  retmethod( ginitWith(_1,aInt(0)) );
+endmethod
+
+defalias (OBJ, (ginitWith)gnewWith, pmArray, Int);
+defmethod(OBJ,  ginitWith         , pmArray, Int) // Dyn array with capacity
+  retmethod( ginitWith(galloc(ArrayDyn),_2) );
+endmethod
+
+defmethod(OBJ, ginitWith, ArrayDyn, Int)
+  enum { MIN_SIZE = 1024 };
+  I32 capacity = self2->value;
+  test_assert(capacity >= 0, "negative array capacity");
+  if (capacity < MIN_SIZE) capacity = MIN_SIZE;
+
+  struct ArrayAdj *arra = &self->ArrayAdj;
+  struct Array    *arr  = &arra->Array;
+
+  arr->object = malloc(capacity * sizeof *arr->object);
+  if (!arr->object) THROW(ExBadAlloc);
+
+  arr->size      = 0;
+  arr->stride    = 1;
+  arra->_object  = arr->object;
+  self->capacity = capacity;
+
+  retmethod(_1);
+endmethod
+
+// ----- destructor
+
+defmethod(OBJ, gdeinit, ArrayAdj)
+  if (self->_object)            // take care of protection cases
+    free(self->_object);
+  next_method(self);
+  retmethod(_1);
+endmethod
+
+// ----- invariant
+
+defmethod(void, ginvariant, ArrayDyn, (STR)func, (STR)file, (int)line)
+  test_assert( self->capacity >= self->ArrayAdj.Array.size,
+               "ArrayDyn has capacity < size", func, file, line);
+
+  next_method(self, func, file, line);
+endmethod
 
 // ----- memory management
 
