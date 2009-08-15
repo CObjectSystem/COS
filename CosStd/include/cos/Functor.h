@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.16 2009/08/08 19:56:53 ldeniau Exp $
+ | $Id: Functor.h,v 1.17 2009/08/15 14:54:57 ldeniau Exp $
  |
 */
 
@@ -116,6 +116,14 @@ endclass
 // ----- automatic constructor
 
 #define aFunctor(...) ( (OBJ)atFunctor(__VA_ARGS__) )
+
+// --- shortcuts
+
+#ifndef COS_NOSHORTCUT
+
+#define aFun(...)  aFunctor(__VA_ARGS__)
+
+#endif
 
 /***********************************************************
  * Implementation (private)

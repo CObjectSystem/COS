@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.35 2009/08/14 21:47:55 ldeniau Exp $
+ | $Id: Array.c,v 1.36 2009/08/15 14:54:58 ldeniau Exp $
  |
 */
 
@@ -138,140 +138,182 @@ endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Array);
 defmethod(OBJ,  ginitWith         , pmArray, Array) // clone
-  struct Array* arr = Array_alloc(self2->size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  PRE
+  POST
+    // automatically trigger ginvariant
 
-  OBJ *dst   = arr->object;
-  OBJ *end   = arr->object + arr->size;
-  OBJ *src   = self2->object;
-  I32  src_s = self2->stride;
+  BODY
+    struct Array* arr = Array_alloc(self2->size);
+    OBJ _arr = (OBJ)arr; PRT(_arr);
 
-  while (dst != end) {
-    *dst++ = gretain(*src);
-    src += src_s;
-  }
+    OBJ *dst   = arr->object;
+    OBJ *end   = arr->object + arr->size;
+    OBJ *src   = self2->object;
+    I32  src_s = self2->stride;
 
-  UNPRT(_arr);
-  retmethod(_arr);
+    while (dst != end) {
+      *dst++ = gretain(*src);
+      src += src_s;
+    }
+
+    UNPRT(_arr);
+    retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Slice);
 defmethod(OBJ,  ginitWith         , pmArray, Slice) // Int sequence
-  U32 size = Slice_size(self2);
+  struct Array* arr;
+
+  PRE
+  POST
+    U32 size = Slice_size(self2);
+    for (U32 i = 0; i < size; i++)
+      test_assert( gint(arr->object[i]) == Slice_eval(self2,i) );
+
+  BODY
+    U32 size = Slice_size(self2);
+    arr = Array_alloc(size);
+    OBJ _arr = (OBJ)arr; PRT(_arr);
   
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+    for (U32 i = 0; i < size; i++)
+      arr->object[i] = gretain(aInt(Slice_eval(self2,i)));
 
-  for (U32 i = 0; i < size; i++)
-    arr->object[i] = gretain(aInt(Slice_eval(self2,i)));
-
-  UNPRT(_arr);
-  retmethod(_arr);
+    UNPRT(_arr);
+    retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Range);
 defmethod(OBJ,  ginitWith         , pmArray, Range) // Int sequence
-  U32 size = Range_size(self2);
+  struct Array* arr;
+
+  PRE
+  POST
+    U32 size = Range_size(self2);
+    for (U32 i = 0; i < size; i++)
+      test_assert( gint(arr->object[i]) == Range_eval(self2,i) );
+
+  BODY
+    U32 size = Range_size(self2);
+    arr = Array_alloc(size);
+    OBJ _arr = (OBJ)arr; PRT(_arr);
   
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+    for (U32 i = 0; i < size; i++)
+      arr->object[i] = gretain(aInt(Range_eval(self2,i)));
 
-  for (U32 i = 0; i < size; i++)
-    arr->object[i] = gretain(aInt(Range_eval(self2,i)));
-
-  UNPRT(_arr);
-  retmethod(_arr);
+    UNPRT(_arr);
+    retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Int, Object);
 defmethod(OBJ,  ginitWith2          , pmArray, Int, Object) // element
-  test_assert(self2->value >= 0, "negative array size");
+  PRE
+    test_assert(self2->value >= 0, "negative array size");
 
-  struct Array* arr = Array_alloc(self2->value);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  POST
+    // automatically trigger ginvariant
 
-  OBJ *dst = arr->object;
-  OBJ *end = arr->object + arr->size;
+  BODY
+    struct Array* arr = Array_alloc(self2->value);
+    OBJ _arr = (OBJ)arr; PRT(_arr);
 
-  while (dst != end)
-    *dst++ = gretain(_3);
+    OBJ *dst = arr->object;
+    OBJ *end = arr->object + arr->size;
 
-  UNPRT(_arr);
-  retmethod(_arr);
+    while (dst != end)
+      *dst++ = gretain(_3);
+
+    UNPRT(_arr);
+    retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Int, Functor);
 defmethod(OBJ,  ginitWith2          , pmArray, Int, Functor) // generator
-  test_assert(self2->value >= 0, "negative array size");
+  PRE
+    test_assert(self2->value >= 0, "negative array size");
 
-  struct Array* arr = Array_alloc(self2->value);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  POST
+    // automatically trigger ginvariant
 
-  OBJ *dst = arr->object;
-  OBJ *end = arr->object + arr->size;
-  int argc = garity(_3);
+  BODY
+    struct Array* arr = Array_alloc(self2->value);
+    OBJ _arr = (OBJ)arr; PRT(_arr);
 
-  if (!argc)
-    while (dst != end)
-      *dst++ = gretain(geval(_3));
+    OBJ *dst = arr->object;
+    OBJ *end = arr->object + arr->size;
+    int argc = garity(_3);
 
-  else
-    for (I32 i = 0; dst != end; i++)
-      *dst++ = gretain(geval1(_3, aInt(i)));
+    if (!argc)
+      while (dst != end)
+        *dst++ = gretain(geval(_3));
 
-  UNPRT(_arr);
-  retmethod(_arr);
+    else
+      for (I32 i = 0; dst != end; i++)
+        *dst++ = gretain(geval1(_3, aInt(i)));
+
+    UNPRT(_arr);
+    retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, Slice);
 defmethod(OBJ,  ginitWith2          , pmArray, Array, Slice) // sub array
-  U32 first  = Slice_first (self3);
-  U32 last   = Slice_last  (self3);
-  U32 start  = Slice_first (self3)*self2->stride;
-  I32 stride = Slice_stride(self3)*self2->stride;
+  PRE
+    U32 first = Slice_first (self3);
+    U32 last  = Slice_last  (self3);
 
-  test_assert( first < self2->size &&
-               last  < self2->size, "slice out of range" );
+    test_assert( first < self2->size &&
+                 last  < self2->size, "slice out of range" );
 
-  struct Array* arr = Array_alloc(self3->size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  POST
+    // automatically trigger ginvariant
 
-  OBJ *dst   = arr->object;
-  OBJ *end   = arr->object + arr->size;
-  OBJ *src   = self2->object + start;
-  I32  src_s = stride;
+  BODY
+    U32 start  = Slice_first (self3)*self2->stride;
+    I32 stride = Slice_stride(self3)*self2->stride;
 
-  while (dst != end) {
-    *dst++ = gretain(*src);
-    src += src_s;
-  }
+    struct Array* arr = Array_alloc(self3->size);
+    OBJ _arr = (OBJ)arr; PRT(_arr);
 
-  UNPRT(_arr);
-  retmethod(_arr);
+    OBJ *dst   = arr->object;
+    OBJ *end   = arr->object + arr->size;
+    OBJ *src   = self2->object + start;
+    I32  src_s = stride;
+
+    while (dst != end) {
+      *dst++ = gretain(*src);
+      src += src_s;
+    }
+
+    UNPRT(_arr);
+    retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, IntVector);
 defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random sequence
-  struct Array* arr = Array_alloc(self3->size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  PRE
+  POST
+    // automatically trigger ginvariant
 
-  OBJ *dst   = arr->object;
-  OBJ *end   = arr->object + arr->size;
-  OBJ *src   = self2->object;
-  U32  src_z = self2->size;
-  I32  src_s = self2->stride;
-  I32 *idx   = self3->value;
-  I32  idx_s = self3->stride;
+  BODY
+    struct Array* arr = Array_alloc(self3->size);
+    OBJ _arr = (OBJ)arr; PRT(_arr);
 
-  while (dst != end) {
-    U32 i = Range_index(*idx, src_z);
-    test_assert( i < src_z, "index out of range" );
-    *dst++ = gretain(src[i*src_s]);
-    idx += idx_s;
-  }
+    OBJ *dst   = arr->object;
+    OBJ *end   = arr->object + arr->size;
+    OBJ *src   = self2->object;
+    U32  src_z = self2->size;
+    I32  src_s = self2->stride;
+    I32 *idx   = self3->value;
+    I32  idx_s = self3->stride;
 
-  UNPRT(_arr);
-  retmethod(_arr);
+    while (dst != end) {
+      U32 i = Range_index(*idx, src_z);
+      test_assert( i < src_z, "index out of range" );
+      *dst++ = gretain(src[i*src_s]);
+      idx += idx_s;
+    }
+
+    UNPRT(_arr);
+    retmethod(_arr);
 endmethod
 
 // ----- destructor

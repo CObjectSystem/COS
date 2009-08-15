@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.14 2009/08/03 21:20:39 ldeniau Exp $
+# | $Id: Makefile,v 1.15 2009/08/15 14:54:57 ldeniau Exp $
 # |
 #
 
@@ -58,7 +58,7 @@ defgens := $(wildcard include/cos/gen/*.h)
 defprps := $(wildcard include/cos/prp/*.h)
 
 # project dependencies (as with -lname)
-libdeps := 
+libdeps := m
 moddeps := CosBase
 
 # project dependencies (as with -Ipath or -Lpath)

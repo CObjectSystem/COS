@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.22 2009/08/10 21:02:14 ldeniau Exp $
+ | $Id: Array.h,v 1.23 2009/08/15 14:54:57 ldeniau Exp $
  |
 */
 
@@ -44,7 +44,7 @@
    aArrayRef (buffer,size)       -> Array            (automatic)
    aArrayView(array ,slice)      -> Array view       (automatic)
 
-   gnewWith (Array,array)        -> Fixed size array (clone, whatever array is!)
+   gnewWith (Array,array)        -> Fixed size array (clone)
    gnewWith (Array,slice)        -> Fixed size array (Ints)
    gnewWith (Array,range)        -> Fixed size array (Ints)
    gnewWith2(Array,size,obj)     -> Fixed size array (element)
@@ -127,10 +127,8 @@ endclass
 // ----- initializers, allocators and utilities (for the class cluster)
 
 struct Slice;
-struct Functor;
-
-struct Array* Array_alloc   (U32);
-struct Array* ArrayView_init(struct ArrayView*,struct Array*,struct Slice*);
+struct Array* Array_alloc(U32);
+struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*);
 
 // ----- automatic constructors
 
@@ -148,10 +146,8 @@ struct Array* ArrayView_init(struct ArrayView*,struct Array*,struct Slice*);
 
 // --- ArrayView
 
-#define atArrayView(array,slice) \
-  ArrayView_init(atArrayView_Default(),array,slice)
-
-#define atArrayView_Default() \
-  (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 })
+#define atArrayView(array,slice) ArrayView_init( \
+  (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \
+  array,slice)
 
 #endif // COS_ARRAY_H

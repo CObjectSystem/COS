@@ -32,28 +32,27 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: operator.h,v 1.5 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: operator.h,v 1.6 2009/08/15 14:54:57 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
-#include <cos/Object.h>
-#endif 
+#include <cos/Generic.h>
 
 /* NOTE-USER: operators policy
    The policy of these methods is to return the operation result in a
    new autoDelete object resulting from the promotion/coercion of _1
    and _2 which follows the rules of C99 for primitive types.
 */
-defgeneric(OBJ, gneg , _1);     // return -_1    
-defgeneric(OBJ, ginv , _1);     // return 1/_1   
-defgeneric(OBJ, gconj, _1);     // return _1^*   
-defgeneric(OBJ, gadd , _1, _2); // return _1 + _2
-defgeneric(OBJ, gsub , _1, _2); // return _1 - _2
-defgeneric(OBJ, gmul , _1, _2); // return _1 * _2
-defgeneric(OBJ, gdiv , _1, _2); // return _1 / _2
-defgeneric(OBJ, gpow , _1, _2); // return _1 ** _2
-defgeneric(OBJ, gmod , _1, _2); // return _1 % _2
+defgeneric(OBJ, (GenOperator) gabs, _1);     // return |_1|    
+defgeneric(OBJ, (GenOperator) gneg, _1);     // return -_1    
+defgeneric(OBJ, (GenOperator) gsqr, _1);     // return _1 * _1   
+defgeneric(OBJ, (GenOperator) ginv, _1);     // return 1/_1   
+defgeneric(OBJ, (GenOperator) gadd, _1, _2); // return _1 + _2
+defgeneric(OBJ, (GenOperator) gsub, _1, _2); // return _1 - _2
+defgeneric(OBJ, (GenOperator) gmul, _1, _2); // return _1 * _2
+defgeneric(OBJ, (GenOperator) gdiv, _1, _2); // return _1 / _2
+defgeneric(OBJ, (GenOperator) gpow, _1, _2); // return _1 ** _2
+defgeneric(OBJ, (GenOperator) gmod, _1, _2); // return _1 % _2
 
 /* NOTE-USER: operators policy
    The policy of these methods is to perform the operation 'in place'
@@ -61,14 +60,14 @@ defgeneric(OBJ, gmod , _1, _2); // return _1 % _2
    the types of _1 and _2 differ, some operations may not be available
    if they may induce a loss of information (e.g. gaddTo(Int,Long)).
 */
-defgeneric(OBJ, gnegate   , _1);     // return _1 = -_1 
-defgeneric(OBJ, ginvert   , _1);     // return _1 = 1/_1
-defgeneric(OBJ, gconjugate, _1);     // return _1 = _1^*
-defgeneric(OBJ, gaddTo    , _1, _2); // return _1 += _2 
-defgeneric(OBJ, gsubTo    , _1, _2); // return _1 -= _2 
-defgeneric(OBJ, gmulBy    , _1, _2); // return _1 *= _2 
-defgeneric(OBJ, gdivBy    , _1, _2); // return _1 /= _2 
-defgeneric(OBJ, gpower    , _1, _2); // return _1 = _1 ** _2
-defgeneric(OBJ, gmodulo   , _1, _2); // return _1 %= _2 
+defgeneric(OBJ, (GenOperator) gabsolute, _1);     // return _1 = |_1| 
+defgeneric(OBJ, (GenOperator) gnegate  , _1);     // return _1 = -_1 
+defgeneric(OBJ, (GenOperator) ginvert  , _1);     // return _1 = 1/_1
+defgeneric(OBJ, (GenOperator) gaddTo   , _1, _2); // return _1 += _2 
+defgeneric(OBJ, (GenOperator) gsubTo   , _1, _2); // return _1 -= _2 
+defgeneric(OBJ, (GenOperator) gmulBy   , _1, _2); // return _1 *= _2 
+defgeneric(OBJ, (GenOperator) gdivBy   , _1, _2); // return _1 /= _2 
+defgeneric(OBJ, (GenOperator) gpower   , _1, _2); // return _1 = _1 ** _2
+defgeneric(OBJ, (GenOperator) gmodulo  , _1, _2); // return _1 %= _2 
 
 #endif // COS_GEN_OPERATOR_H
