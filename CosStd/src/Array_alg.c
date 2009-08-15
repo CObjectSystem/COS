@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.10 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.11 2009/08/15 22:29:49 ldeniau Exp $
  |
 */
 
@@ -82,7 +82,7 @@ defmethod(void, greverse, Array)
 
   OBJ *obj   = self->object;
   I32  obj_s = self->stride;
-  OBJ *end   = self->object+(self->size-1)*self->stride;
+  OBJ *end   = self->object + (self->size-1)*self->stride;
   OBJ  tmp;
 
   while (obj != end) {
@@ -93,71 +93,75 @@ defmethod(void, greverse, Array)
 endmethod
 
 defmethod(void, gpermute, Array, IntVector)
-  test_assert( self1->size == self2->size, "incompatible array sizes" );
+  PRE
+    test_assert( self1->size == self2->size, "incompatible array sizes" );
 
-  if (self1->size < 2)
-    retmethod();
+  BODY
+    if (self1->size < 2)
+      retmethod();
 
-  OBJ *obj   = self1->object;
-  U32  obj_z = self1->size;
-  I32  obj_s = self1->stride;
-  I32 *idx   = self2->value;
-  I32  idx_s = self2->stride;
+    OBJ *obj   = self1->object;
+    U32  obj_z = self1->size;
+    I32  obj_s = self1->stride;
+    I32 *idx   = self2->value;
+    I32  idx_s = self2->stride;
 
-  TMPARRAY_CREATE(OBJ,buf,obj_z); // OBJ buf[obj_z];
+    TMPARRAY_CREATE(OBJ,buf,obj_z); // OBJ buf[obj_z];
 
-  OBJ *cur, *end = buf + obj_z;
-  U32  i = 0;
+    OBJ *cur, *end = buf + obj_z;
+    U32  i = 0;
 
-  // permute
-  for (cur = buf; cur != end; cur++) {
-    i = Range_index(*idx, obj_z);
-    if ( !(i < obj_z && obj[i*obj_s]) ) break;
-    *cur = obj[i*obj_s], obj[i*obj_s] = 0;
-     idx += idx_s;
-  }
-
-  if (cur == end) {
-    // copy back
-    for (cur = buf; cur != end; cur++)
-      *obj = *cur, obj += obj_s;
-
-    TMPARRAY_DESTROY(buf);
-  } else {
-    // rollback (error)
-    BOOL iiir = i < obj_z; // last index-is-in-range flag
-
-    while (cur != buf) {
-      idx -= idx_s;
+    // permute
+    for (cur = buf; cur != end; cur++) {
       i = Range_index(*idx, obj_z);
-      obj[i*obj_s] = *--cur;
+      if ( !(i < obj_z && obj[i*obj_s]) ) break;
+      *cur = obj[i*obj_s], obj[i*obj_s] = 0;
+       idx += idx_s;
     }
 
-    TMPARRAY_DESTROY(buf);
-    test_assert( iiir, "index out of range"  );
-    test_assert(    0, "invalid permutation" );
-  }
+    if (cur == end) {
+      // copy back
+      for (cur = buf; cur != end; cur++)
+        *obj = *cur, obj += obj_s;
+
+      TMPARRAY_DESTROY(buf);
+    } else {
+      // rollback (error)
+      BOOL iiir = i < obj_z; // last index-is-in-range flag
+
+      while (cur != buf) {
+        idx -= idx_s;
+        i = Range_index(*idx, obj_z);
+        obj[i*obj_s] = *--cur;
+      }
+
+      TMPARRAY_DESTROY(buf);
+      test_assert( iiir, "index out of range"  );
+      test_assert(    0, "invalid permutation" );
+    }
 endmethod
 
 // ----- repeat
 
 defmethod(OBJ, grepeat, Object, Int)
-  test_assert(self2->value >= 0, "invalid number of repeat");
+  PRE
+    test_assert(self2->value >= 0, "invalid number of repeat");
 
-  struct Array* arr = Array_alloc(self2->value);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  BODY
+    struct Array* arr = Array_alloc(self2->value);
+    OBJ _arr = (OBJ)arr; PRT(_arr);
 
-  OBJ *dst = arr->object;
-  OBJ *end = arr->object + arr->size;
-  
-  while (dst != end)
-    *dst++ = gretain(_1);
+    OBJ *dst = arr->object;
+    OBJ *end = arr->object + arr->size;
+    
+    while (dst != end)
+      *dst++ = gretain(_1);
 
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+    UNPRT(_arr);
+    retmethod(gautoDelete(_arr));
 endmethod
 
-// ----- zip, zip3, zip4, zipn
+// ----- zip, zip3, zip4
 
 defmethod(OBJ, gzip, Array, Array)
   U32 size = self1->size < self2->size ? self1->size : self2->size;
@@ -237,40 +241,7 @@ defmethod(OBJ, gzip4, Array, Array, Array, Array)
   retmethod(gautoDelete(_arr));
 endmethod
 
-defmethod(OBJ, gzipn, Array)
-  OBJ *obj   = self->object;
-  I32  obj_s = self->stride;
-  OBJ *obj_e = self->object + self->size*self->stride;
-  U32  size  = -1;
-
-  while (obj != obj_e) {
-    test_assert( cos_object_isKindOf(*obj, classref(Array)),
-                 "invalid array element (should be an Array)" );
-    U32 sz = STATIC_CAST(struct Array*, *obj)->size;
-    if (sz < size) size = sz;
-    obj += obj_s;
-  }
-
-  struct Array* arr = Array_alloc(size*self->size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-
-  OBJ *dst = arr->object;
-  OBJ *end = arr->object + arr->size;
-
-  for (U32 i = 0; dst != end; i++) {
-    obj = self->object;
-    while (obj != obj_e) {
-       struct Array* src = STATIC_CAST(struct Array*, *obj);
-       *dst++ = gretain( src->object[i*src->stride] );
-       obj += obj_s;
-    }
-  }
-
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
-endmethod
-
-// ----- cat, cat3, cat4, catn
+// ----- cat, cat3, cat4, cat5
 
 defmethod(OBJ, gcat, Array, Array)
   U32 size = self1->size + self2->size;
@@ -368,40 +339,48 @@ defmethod(OBJ, gcat4, Array, Array, Array, Array)
   retmethod(gautoDelete(_arr));
 endmethod
 
-defmethod(OBJ, gcatn, Array)
-  OBJ *obj   = self->object;
-  I32  obj_s = self->stride;
-  OBJ *obj_e = self->object + self->size*self->stride;
-  U32  size  = 0;
-
-  while (obj != obj_e) {
-    test_assert( cos_object_isKindOf(*obj, classref(Array)),
-                 "invalid array element (should be an Array)" );
-    size += STATIC_CAST(struct Array*, *obj)->size;
-    obj += obj_s;
-  }
+defmethod(OBJ, gcat5, Array, Array, Array, Array, Array)
+  U32 size = self1->size + self2->size +
+             self3->size + self4->size + self5->size;
 
   struct Array *arr = Array_alloc(size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
 
-  OBJ *dst = arr->object;
-  OBJ *end = arr->object;
-  OBJ *src;
-  I32  src_s;
+  OBJ *dst   = arr->object;
+  OBJ *end   = arr->object + self1->size;
+  OBJ *src   = self1->object;
+  I32  src_s = self1->stride;
 
-  obj = self->object;
-
-  while (obj != obj_e) {
-    struct Array *arr = STATIC_CAST(struct Array*, *obj);
-    end  += arr->size;
-    src   = arr->object;
-    src_s = arr->stride;
+  while (dst != end)
+    *dst++ = gretain(*src), src += src_s;
   
-    while (dst != end)
-      *dst++ = gretain(*src), src += src_s;
+  end  += self2->size;
+  src   = self2->object;
+  src_s = self2->stride;
 
-    obj += obj_s;
-  }
+  while (dst != end)
+    *dst++ = gretain(*src), src += src_s;
+
+  end  += self3->size;
+  src   = self3->object;
+  src_s = self3->stride;
+  
+  while (dst != end)
+    *dst++ = gretain(*src), src += src_s;
+
+  end  += self4->size;
+  src   = self4->object;
+  src_s = self4->stride;
+  
+  while (dst != end)
+    *dst++ = gretain(*src), src += src_s;
+
+  end  += self5->size;
+  src   = self5->object;
+  src_s = self5->stride;
+  
+  while (dst != end)
+    *dst++ = gretain(*src), src += src_s;
 
   UNPRT(_arr);
   retmethod(gautoDelete(_arr));

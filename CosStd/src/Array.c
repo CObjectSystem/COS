@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.36 2009/08/15 14:54:58 ldeniau Exp $
+ | $Id: Array.c,v 1.37 2009/08/15 22:29:49 ldeniau Exp $
  |
 */
 
@@ -257,8 +257,8 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, Slice);
 defmethod(OBJ,  ginitWith2          , pmArray, Array, Slice) // sub array
   PRE
-    U32 first = Slice_first (self3);
-    U32 last  = Slice_last  (self3);
+    U32 first = Slice_first(self3);
+    U32 last  = Slice_last (self3);
 
     test_assert( first < self2->size &&
                  last  < self2->size, "slice out of range" );

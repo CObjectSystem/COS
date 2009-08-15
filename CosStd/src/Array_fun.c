@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.10 2009/08/10 21:02:15 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.11 2009/08/15 22:29:49 ldeniau Exp $
  |
 */
 
@@ -293,7 +293,7 @@ defmethod(OBJ, gscanl, Array, Functor, Object)
   *dst++ = gretain(_3);
   
   while (dst != end) {
-    *dst = gretain( geval2(_2, *(dst-1), *src) );
+    *dst = gretain( geval2(_2, dst[-1], *src) );
     src += src_s, dst++;
   }
 
@@ -314,7 +314,7 @@ defmethod(OBJ, gscanr, Array, Functor, Object)
 
   while (dst != end) {
     src -= src_s, dst--;
-    *dst = gretain( geval2(_2, *src, *(dst+1)) );
+    *dst = gretain( geval2(_2, *src, dst[1]) );
   }
 
   UNPRT(_arr);
@@ -631,7 +631,7 @@ defmethod(OBJ, gunique, Array, Functor)
   OBJ *end   = self->object + (self->size-1)*self->stride;
 
   while (src != end) {
-    if (geval2(_2, *src, *(src+src_s)) != True)
+    if (geval2(_2, src[0], src[src_s]) != True)
       *dst++ = gretain(*src), ++arr->size;
     src += src_s;
   }

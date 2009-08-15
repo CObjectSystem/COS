@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.12 2009/08/08 19:56:53 ldeniau Exp $
+ | $Id: Sequence.c,v 1.13 2009/08/15 22:29:49 ldeniau Exp $
  |
 */
 
@@ -58,6 +58,12 @@ defmethod(OBJ, ginitWith2, mView, Sequence, Range)
   struct Range range = Range_normalize(self3,gsize(_2));
   struct Slice slice = Slice_fromRange(&range);
   retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
+endmethod
+
+// -----
+
+defmethod(OBJ, gdeinit, ValueSequence)
+  retmethod(_1);
 endmethod
 
 // -----

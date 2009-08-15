@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.14 2009/08/10 21:02:15 ldeniau Exp $
+ | $Id: algorithm.h,v 1.15 2009/08/15 22:29:49 ldeniau Exp $
  |
 */
 
@@ -50,20 +50,19 @@ defgeneric(void, gapply  , fun, _1); // "in place" map
 defgeneric(OBJ , gcat , _1, _2);
 defgeneric(OBJ , gcat3, _1, _2, _3);
 defgeneric(OBJ , gcat4, _1, _2, _3, _4);
-defgeneric(OBJ , gcatn, _1);
+defgeneric(OBJ , gcat5, _1, _2, _3, _4, _5);
 
 // zip
 defgeneric(OBJ , gzip , _1, _2);
 defgeneric(OBJ , gzip3, _1, _2, _3);
 defgeneric(OBJ , gzip4, _1, _2, _3, _4);
-defgeneric(OBJ , gzipn, _1);
+defgeneric(OBJ , gzip5, _1, _2, _3, _4, _5);
 
 // map
 defgeneric(OBJ , gmap , fun, _1);
 defgeneric(OBJ , gmap2, fun, _1, _2);
 defgeneric(OBJ , gmap3, fun, _1, _2, _3);
 defgeneric(OBJ , gmap4, fun, _1, _2, _3, _4);
-defgeneric(OBJ , gmapn, fun, _1);
 
 // filter, fold, scan
 defgeneric(OBJ , gfilter, _1, fun);

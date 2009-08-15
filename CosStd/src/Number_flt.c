@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.1 2009/08/15 14:56:10 ldeniau Exp $
+ | $Id: Number_flt.c,v 1.2 2009/08/15 22:29:49 ldeniau Exp $
  |
 */
 
@@ -177,15 +177,14 @@ DEFMETHOD(gatanh, gatangenth  )
 // ----- subSqr
 
 defmethod(OBJ, gsubSqr, Floating, Floating)
-  OBJ tmp = gsubTo(gclone(_1),_2);
-  retmethod(gautoDelete( gmulBy(tmp,tmp) ));
+  OBJ flt = gsubTo(gclone(_1),_2);
+  retmethod(gautoDelete( gmulBy(flt,flt) ));
 endmethod
 
 // avoid subTo(Float,Complex)
 defmethod(OBJ, gsubSqr, Float, Complex)
-  struct Complex *cpx = STATIC_CAST(struct Complex*, gclone(_2));
-  cpx->value  = self->value - cpx->value;
-  cpx->value *= cpx->value;
+  struct Complex *cpx = STATIC_CAST(struct Complex*, galloc(Complex));
+  cpx->value  = (self->value - self2->value) * (self->value - self2->value);
   retmethod(gautoDelete( (OBJ)cpx ));
 endmethod
 
@@ -205,4 +204,10 @@ defmethod(OBJ, gmulAdd, Float, Float, Complex)
   retmethod(gautoDelete( gaddTo(gmulBy(gnewWithCpx(Complex,self->value),_2),_3) ));
 endmethod
 
+// use C99 fma
+defmethod(OBJ, gmulAdd, Float, Float, Float)
+  struct Float *flt = STATIC_CAST(struct Float*, galloc(Float));
+  flt->value = fma(self->value,self2->value,self3->value);
+  retmethod(gautoDelete( (OBJ)flt ));
+endmethod
 
