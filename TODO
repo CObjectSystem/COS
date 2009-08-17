@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: TODO,v 1.1 2009/06/16 21:44:19 ldeniau Exp $
+# | $Id: TODO,v 1.2 2009/08/17 13:09:06 ldeniau Exp $
 # |
 #
 
@@ -37,6 +37,7 @@ TODO-CosBase
   - more OO (interface) and classes for introspection
   - more platform support (Cygwin)
   - refactoring of cos_symbols.c (hugly code)
+  - region-based allocator 
   - much more unit tests
   - manuals (still looking for a web-complian media: LaTeX or not LaTeX)
   - icc support on Linux and MacOSX x86 and x86_64
@@ -50,4 +51,4 @@ TODO-CosStd (and other modules?)
   - support JSON(-RPC) and/or YAML serialization based on class properties 
   - support for libOpenGL or alternatives for plot and data visualization (?)
   - support for libodbc (Oracle)
-
+  - check COS vs Io interfaces
