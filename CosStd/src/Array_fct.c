@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fct.c,v 1.11 2009/08/10 21:02:15 ldeniau Exp $
+ | $Id: Array_fct.c,v 1.12 2009/08/17 09:10:37 ldeniau Exp $
  |
 */
 
@@ -39,6 +39,7 @@
 #include <cos/Number.h>
 
 #include <cos/gen/algorithm.h>
+#include <cos/gen/compare.h>
 #include <cos/gen/container.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
@@ -383,21 +384,49 @@ defmethod(OBJ, gscanr, Array, Function2, Object)
   retmethod(gautoDelete(_arr));
 endmethod
 
+// ----- unique (remove contiguous duplicates)
+
+defmethod(OBJ, gunique, Array, Function2)
+  if (self->size < 1)
+    retmethod( gautoDelete(gclone(_1)) );
+
+  OBJ _arr = gnewWith(Array,aInt(self->size)); PRT(_arr);
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+
+  OBJ *dst    = arr ->object;
+  OBJ *src    = self->object;
+  I32  src_s  = self->stride;
+  OBJ *end    = self->object + (self->size-1)*self->stride;
+  OBJFCT2 fct = self2->fct;
+
+  while (src != end) {
+    if (fct(*src, *(src+src_s)) != True)
+      *dst++ = gretain(*src), ++arr->size;
+    src += src_s;
+  }
+  *dst++ = gretain(*src);
+
+  gadjust(_arr);
+  UNPRT(_arr);
+  retmethod(gautoDelete(_arr));
+endmethod
+
 // ----- finding
 
-defmethod(OBJ, gfind, Array, Object, Function2)
+static I32
+ifind(struct Array *self, OBJFCT1 fct)
+{
   useclass(Lesser, Equal, Greater);
 
   if (self->size == 0)
-    retmethod(Nil);
+    return(-1);
 
-  OBJ *obj    = self->object;
-  I32  obj_s  = self->stride;
-  OBJFCT2 fct = self3->fct;
-  OBJ res     = fct(_2, *obj); // bsearch order
+  OBJ *obj   = self->object;
+  I32  obj_s = self->stride;
+  OBJ  res   = fct(*obj); // bsearch order
 
   if (res == True || res == Equal) // found
-    retmethod(*obj);
+    return(0);
 
   // linear search
   if (res == False) {
@@ -405,29 +434,29 @@ defmethod(OBJ, gfind, Array, Object, Function2)
     
     obj += obj_s;
     while (obj != end) {
-      if (fct(_2, *obj) == True) // found
-        retmethod(*obj);
+      if (fct(*obj) == True) // found
+        return( (obj-self->object) / obj_s );
       obj += obj_s;
     }
 
-    retmethod(Nil);
+    return(-1);
   }
 
   // binary search
   if (res == Lesser)
-    retmethod(Nil);
-  
+    return(-1);
+
   test_assert( res == Greater,
-    "gfind expects functor returning TrueFalse or Ordered predicates" );
+    "find expects functor returning TrueFalse or Ordered predicates" );
 
   U32 lo = 1, hi = self->size-1;
 
   while (lo <= hi) {
     U32 i = (lo + hi) / 2;
-    res = fct(_2, obj[i*obj_s]);
+    res = fct(obj[i*obj_s]);
 
     if (res == Equal)
-      retmethod(obj[i*obj_s]); // found
+      return(i); // found
 
     if (res == Lesser)
       hi = i-1;
@@ -435,7 +464,21 @@ defmethod(OBJ, gfind, Array, Object, Function2)
       lo = i+1;
   }
 
-  retmethod(Nil);
+  return(-1);
+}
+
+// ---
+
+defmethod(OBJ, gfind, Array, Function1)
+  I32 i = ifind(self,self2->fct);
+  
+  retmethod(i >= 0 ? self->object[i*self->stride] : Nil);  
+endmethod
+
+defmethod(OBJ, gifind, Array, Function1)
+  I32 i = ifind(self,self2->fct);
+
+  retmethod(i >= 0 ? gautoDelete( aInt(i) ) : Nil);
 endmethod
 
 // ----- sorting (in place)
@@ -720,32 +763,5 @@ defmethod(OBJ, gisSorted, Array, Function2)
   }
 
   retmethod(True);
-endmethod
-
-// ----- unique (remove contiguous duplicates)
-
-defmethod(OBJ, gunique, Array, Function2)
-  if (self->size < 1)
-    retmethod( gautoDelete(gclone(_1)) );
-
-  OBJ _arr = gnewWith(Array,aInt(self->size)); PRT(_arr);
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
-
-  OBJ *dst    = arr ->object;
-  OBJ *src    = self->object;
-  I32  src_s  = self->stride;
-  OBJ *end    = self->object + (self->size-1)*self->stride;
-  OBJFCT2 fct = self2->fct;
-
-  while (src != end) {
-    if (fct(*src, *(src+src_s)) != True)
-      *dst++ = gretain(*src), ++arr->size;
-    src += src_s;
-  }
-  *dst++ = gretain(*src);
-
-  gadjust(_arr);
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
 endmethod
 

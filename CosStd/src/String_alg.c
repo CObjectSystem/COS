@@ -29,9 +29,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.1 2009/08/15 22:29:49 ldeniau Exp $
+ | $Id: String_alg.c,v 1.2 2009/08/17 09:10:37 ldeniau Exp $
  |
 */
+
+#define _GNU_SOURCE // enable memmem
 
 #include <cos/String.h>
 #include <cos/IntVector.h>
@@ -181,5 +183,39 @@ defmethod(OBJ, gcat5, String, String, String, String, String)
   memcpy(dst,self5->value,self5->size);
 
   retmethod(gautoDelete( (OBJ)str ));
+endmethod
+
+// ----- search (char)
+
+defmethod(OBJ, gfind, String, Char)
+  char *p = memchr(self->value, self2->Int.value, self->size);
+  
+  retmethod(p ? gautoDelete(aChar(*p)) : Nil);  
+endmethod
+
+defmethod(OBJ, gifind, String, Char)
+  char *p = memchr(self->value, self2->Int.value, self->size);
+  
+  retmethod(p ? gautoDelete(aInt(self->value-p)) : Nil);  
+endmethod
+
+// ----- search (string)
+// NOTE-TODO: implement memmem from two-way
+
+defmethod(OBJ, gfind, String, String)
+  char *p = memmem(self->value, self->size, self2->value, self2->size);
+  
+  if (!p)
+    retmethod(Nil);
+    
+  OBJ svw = aStringView(self, atSlice(self->value-p,self2->size,1) );
+  
+  retmethod(gautoDelete( svw ));  
+endmethod
+
+defmethod(OBJ, gifind, String, String)
+  char *p = memmem(self->value, self->size, self2->value, self2->size);
+  
+  retmethod(p ? gautoDelete(aSlice(self->value-p,self2->size,1)) : Nil);  
 endmethod
 

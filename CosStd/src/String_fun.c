@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.1 2009/08/15 22:29:49 ldeniau Exp $
+ | $Id: String_fun.c,v 1.2 2009/08/17 09:10:37 ldeniau Exp $
  |
 */
 
@@ -292,4 +292,74 @@ defmethod(OBJ, gunique, String, Functor)
   UNPRT(_str);
   retmethod(gautoDelete(_str));
 endmethod
+
+// ----- search (functor)
+
+static I32
+ifind(struct String *self, OBJ _2)
+{
+  useclass(Lesser, Equal, Greater);
+
+  if (self->size == 0)
+    return(-1);
+
+  char *val = self->value;
+  OBJ   res = geval1(_2, aChar(*val)); // bsearch order
+
+  if (res == True || res == Equal) // found
+    return(0);
+
+  // linear search
+  if (res == False) {
+    char *end = self->value + self->size;
+    
+    val++;
+    while (val != end) {
+      if (geval1(_2, aChar(*val)) == True) // found
+        return(val-self->value);
+      val++;
+    }
+
+    return(-1);
+  }
+
+  // binary search
+  if (res == Lesser)
+    return(-1);
+
+  test_assert( res == Greater,
+    "find expects functor returning TrueFalse or Ordered predicates" );
+
+  U32 lo = 1, hi = self->size-1;
+
+  while (lo <= hi) {
+    U32 i = (lo + hi) / 2;
+    res = geval1(_2, aChar(val[i]));
+
+    if (res == Equal)
+      return(i); // found
+
+    if (res == Lesser)
+      hi = i-1;
+    else
+      lo = i+1;
+  }
+
+  return(-1);
+}
+
+// ---
+
+defmethod(OBJ, gfind, String, Functor)
+  I32 i = ifind(self,_2);
+  
+  retmethod(i >= 0 ? gautoDelete(aChar(self->value[i])) : Nil);  
+endmethod
+
+defmethod(OBJ, gifind, String, Functor)
+  I32 i = ifind(self,_2);
+
+  retmethod(i >= 0 ? gautoDelete( aInt(i) ) : Nil);
+endmethod
+
 

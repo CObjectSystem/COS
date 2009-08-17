@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.1 2009/08/15 22:52:16 ldeniau Exp $
+ | $Id: String_vw.c,v 1.2 2009/08/17 09:10:37 ldeniau Exp $
  |
 */
 
@@ -42,6 +42,11 @@
 // -----
 
 makclass(StringView, String);
+
+// NOTE-TODO: move to String_dyn and String_lzy ASAP
+makclass(StringAdj , String);
+makclass(StringDyn , StringAdj);
+makclass(StringLazy, StringDyn);
 
 // -----
 
