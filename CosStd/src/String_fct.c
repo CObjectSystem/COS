@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fct.c,v 1.2 2009/08/17 09:10:37 ldeniau Exp $
+ | $Id: String_fct.c,v 1.3 2009/08/17 12:57:13 ldeniau Exp $
  |
 */
 
@@ -52,8 +52,8 @@ useclass(String);
 // ----- foreach (in place)
 
 defmethod(void, gforeach, String, IntFunction1)
-  char *val = self->value;
-  char *end = self->value + self->size;
+  U8* val = self->value;
+  U8* end = self->value + self->size;
   I32FCT1 fct = self2->fct;
 
   while (val != end)
@@ -61,8 +61,8 @@ defmethod(void, gforeach, String, IntFunction1)
 endmethod
 
 defmethod(void, gforeach, String, Function1)
-  char *val = self->value;
-  char *end = self->value + self->size;
+  U8* val = self->value;
+  U8* end = self->value + self->size;
   OBJFCT1 fct = self2->fct;
 
   while (val != end)
@@ -72,8 +72,8 @@ endmethod
 // ----- apply (in place map)
 
 defmethod(void, gapply, IntFunction1, String)
-  char *val = self2->value;
-  char *end = self2->value + self2->size;
+  U8* val = self2->value;
+  U8* end = self2->value + self2->size;
   I32FCT1 fct = self->fct;
 
   while (val != end)
@@ -86,9 +86,9 @@ defmethod(OBJ, gmap, IntFunction1, String)
   struct String* str = String_alloc(self2->size);
   OBJ _str = (OBJ)str; PRT(_str);
 
-  char *dst = str->value;
-  char *end = str->value + str->size;
-  char *src = self2->value;
+  U8* dst = str->value;
+  U8* end = str->value + str->size;
+  U8* src = self2->value;
   I32FCT1 fct = self->fct;
 
   while (dst != end)
@@ -104,10 +104,10 @@ defmethod(OBJ, gmap2, IntFunction2, String, String)
   struct String* str = String_alloc(size);
   OBJ _str = (OBJ)str; PRT(_str);
 
-  char *dst  = str->value;
-  char *end  = str->value + str->size;
-  char *src1 = self2->value;
-  char *src2 = self3->value;
+  U8* dst  = str->value;
+  U8* end  = str->value + str->size;
+  U8* src1 = self2->value;
+  U8* src2 = self3->value;
   I32FCT2 fct = self->fct;
 
   while (dst != end)
@@ -124,11 +124,11 @@ defmethod(OBJ, gmap3, IntFunction3, String, String, String)
   struct String* str = String_alloc(size);
   OBJ _str = (OBJ)str; PRT(_str);
 
-  char *dst  = str->value;
-  char *end  = str->value + str->size;
-  char *src1 = self2->value;
-  char *src2 = self3->value;
-  char *src3 = self4->value;
+  U8* dst  = str->value;
+  U8* end  = str->value + str->size;
+  U8* src1 = self2->value;
+  U8* src2 = self3->value;
+  U8* src3 = self4->value;
   I32FCT3 fct = self->fct;
 
   while (dst != end)
@@ -146,12 +146,12 @@ defmethod(OBJ, gmap4, IntFunction4, String, String, String, String)
   struct String* str = String_alloc(size);
   OBJ _str = (OBJ)str; PRT(_str);
 
-  char *dst  = str->value;
-  char *end  = str->value + str->size;
-  char *src1 = self2->value;
-  char *src2 = self3->value;
-  char *src3 = self4->value;
-  char *src4 = self5->value;
+  U8* dst  = str->value;
+  U8* end  = str->value + str->size;
+  U8* src1 = self2->value;
+  U8* src2 = self3->value;
+  U8* src3 = self4->value;
+  U8* src4 = self5->value;
   I32FCT4 fct = self->fct;
 
   while (dst != end)
@@ -164,8 +164,8 @@ endmethod
 // ----- all, any
 
 defmethod(OBJ, gall, String, Function1)
-  char *val = self->value;
-  char *end = self->value + self->size;
+  U8* val = self->value;
+  U8* end = self->value + self->size;
   OBJFCT1 fct = self2->fct;
 
   while (val != end)
@@ -176,8 +176,8 @@ defmethod(OBJ, gall, String, Function1)
 endmethod
 
 defmethod(OBJ, gany, String, Function1)
-  char *val = self->value;
-  char *end = self->value + self->size;
+  U8* val = self->value;
+  U8* end = self->value + self->size;
   OBJFCT1 fct = self2->fct;
 
   while (val != end)
@@ -193,9 +193,9 @@ defmethod(OBJ, gfilter, String, Function1)
   OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  char *dst = str->value;
-  char *src = self->value;
-  char *end = self->value + self->size;
+  U8* dst = str->value;
+  U8* src = self->value;
+  U8* end = self->value + self->size;
   OBJFCT1 fct = self2->fct;
 
   while (src != end) {
@@ -213,9 +213,9 @@ defmethod(OBJ, gfilterOut, String, Function1)
   OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  char *dst = str->value;
-  char *src = self->value;
-  char *end = self->value + self->size;
+  U8* dst = str->value;
+  U8* src = self->value;
+  U8* end = self->value + self->size;
   OBJFCT1 fct = self2->fct;
 
   while (src != end) {
@@ -230,9 +230,9 @@ defmethod(OBJ, gfilterOut, String, Function1)
 endmethod
 
 defmethod(OBJ, gfoldl, String, Function2, Object)
-  char *src = self->value;
-  char *end = self->value + self->size;
-  OBJ   res = _3;
+  U8* src = self->value;
+  U8* end = self->value + self->size;
+  OBJ res = _3;
   OBJFCT2 fct = self2->fct;
   
   while (src != end)
@@ -242,9 +242,9 @@ defmethod(OBJ, gfoldl, String, Function2, Object)
 endmethod
 
 defmethod(OBJ, gfoldr, String, Function2, Object)
-  char *src = self->value + self->size;
-  char *end = self->value;
-  OBJ   res = _3;
+  U8* src = self->value + self->size;
+  U8* end = self->value;
+  OBJ res = _3;
   OBJFCT2 fct = self2->fct;
 
   while (src != end)
@@ -257,9 +257,9 @@ defmethod(OBJ, gscanl, String, IntFunction2, Object)
   struct String* str = String_alloc(self->size+1);
   OBJ _str = (OBJ)str; PRT(_str);
 
-  char *dst = str->value;
-  char *end = str->value + str->size;
-  char *src = self->value;
+  U8* dst = str->value;
+  U8* end = str->value + str->size;
+  U8* src = self->value;
   I32FCT2 fct = self2->fct;
 
   *dst++ = gchr(_3);
@@ -277,9 +277,9 @@ defmethod(OBJ, gscanr, String, IntFunction2, Object)
   struct String* str = String_alloc(self->size+1);
   OBJ _str = (OBJ)str; PRT(_str);
 
-  char *dst = str->value + str->size;
-  char *end = str->value;
-  char *src = self->value + self->size;
+  U8* dst = str->value + str->size;
+  U8* end = str->value;
+  U8* src = self->value + self->size;
   I32FCT2 fct = self2->fct;
 
   *--dst = gchr(_3);
@@ -302,9 +302,9 @@ defmethod(OBJ, gunique, String, Function2)
   OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  char *dst = str ->value;
-  char *src = self->value;
-  char *end = self->value + (self->size-1);
+  U8* dst = str ->value;
+  U8* src = self->value;
+  U8* end = self->value + (self->size-1);
   OBJFCT2 fct = self2->fct;
 
   while (src != end)
@@ -327,15 +327,15 @@ ifind(struct String *self, OBJFCT1 fct)
   if (self->size == 0)
     return(-1);
 
-  char *val   = self->value;
-  OBJ   res   = fct(aChar(*val)); // bsearch order
+  U8* val = self->value;
+  OBJ res = fct(aChar(*val)); // bsearch order
 
   if (res == True || res == Equal) // found
     return(0);
 
   // linear search
   if (res == False) {
-    char *end = self->value + self->size;
+    U8* end = self->value + self->size;
     
     val++;
     while (val != end) {

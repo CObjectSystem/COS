@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.12 2009/08/10 21:02:15 ldeniau Exp $
+ | $Id: container.h,v 1.13 2009/08/17 12:57:13 ldeniau Exp $
  |
 */
 
@@ -63,10 +63,14 @@ defgeneric(OBJ , glast    , _1);
 // check for elements
 defgeneric(OBJ , gisEmpty , _1);
 
+// fix/unfix object (e.g. no shrink/enlarge)
+defgeneric(void, gfix     , _1);
+defgeneric(void, gunfix   , _1);
+
 // adjust object (e.g. capacity to size)
 defgeneric(void, gadjust  , _1);
 
-// englarge object (e.g. book some capacity)
+// englarge object (e.g. book some capacity, front if <0)
 defgeneric(void, genlarge , _1, by);
 
 #endif // COS_GEN_CONTAINER_H

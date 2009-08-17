@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.1 2009/08/15 22:29:49 ldeniau Exp $
+ | $Id: String.c,v 1.2 2009/08/17 12:57:13 ldeniau Exp $
  |
 */
 
@@ -148,9 +148,9 @@ defmethod(OBJ,  ginitWith2          , pmString, Int, Functor) // generator
     struct String* str = String_alloc(self2->value);
     OBJ _str = (OBJ)str; PRT(_str);
 
-    char *dst = str->value;
-    char *end = str->value + str->size;
-    int  argc = garity(_3);
+    U8* dst = str->value;
+    U8* end = str->value + str->size;
+    int argc = garity(_3);
 
     if (!argc)
       while (dst != end)
@@ -179,10 +179,10 @@ defmethod(OBJ,  ginitWith2          , pmString, String, Slice) // sub stray
 
     struct String* str = String_alloc(self3->size);
 
-    char *dst   = str->value;
-    char *end   = str->value + str->size;
-    char *src   = self2->value + start;
-    I32   src_s = stride;
+    U8* dst   = str->value;
+    U8* end   = str->value + str->size;
+    U8* src   = self2->value + start;
+    I32 src_s = stride;
 
     while (dst != end) {
       *dst++ = *src;
@@ -197,12 +197,12 @@ defmethod(OBJ,  ginitWith2          , pmString, String, IntVector) // random seq
   struct String* str = String_alloc(self3->size);
   OBJ _str = (OBJ)str; PRT(_str);
 
-  char *dst   = str->value;
-  char *end   = str->value + str->size;
-  char *src   = self2->value;
-  U32   src_z = self2->size;
-  I32  *idx   = self3->value;
-  I32   idx_s = self3->stride;
+  U8  *dst   = str->value;
+  U8  *end   = str->value + str->size;
+  U8  *src   = self2->value;
+  U32  src_z = self2->size;
+  I32 *idx   = self3->value;
+  I32  idx_s = self3->stride;
 
   while (dst != end) {
     U32 i = Range_index(*idx, src_z);

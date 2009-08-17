@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_vw.c,v 1.1 2009/08/14 21:47:55 ldeniau Exp $
+ | $Id: Array_vw.c,v 1.2 2009/08/17 12:57:13 ldeniau Exp $
  |
 */
 
@@ -77,9 +77,8 @@ defmethod(OBJ,  ginitWith2          , mView, Array, Slice) // array view
 endmethod
 
 defmethod(OBJ, ginitWith2, ArrayView, Array, Slice)
-  test_assert( !cos_object_isa(_2, classref(ArrayDyn))
-            && !cos_object_isa(_2, classref(ArrayLazy   )),
-               "Array views accept only non-Dyn arrays" );
+  test_assert( !cos_object_isKindOf(_2, classref(ArrayDyn)),
+               "array views accept only non-Dyn arrays" );
 
   ArrayView_init(self, self2, self3);
 
@@ -98,13 +97,10 @@ endmethod
 
 defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
   test_assert( cos_object_isKindOf((OBJ)self->array, classref(Array)),
-               "ArrayView points to something not an array", func, file, line);
+               "array view points to something not an array", func, file, line);
 
-  test_assert( !cos_object_isa((OBJ)self->array, classref(ArrayDyn)),
-               "ArrayView points to a dynamic array", func, file, line);
-
-  test_assert( !cos_object_isa((OBJ)self->array, classref(ArrayLazy)),
-               "ArrayView points to a lazy array", func, file, line);
+  test_assert( !cos_object_isKindOf((OBJ)self->array, classref(ArrayDyn)),
+               "array view points to a dynamic array", func, file, line);
 
   struct Array *arr = STATIC_CAST(struct Array*, self->array);
 
@@ -118,7 +114,7 @@ defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
   U32 last  = Slice_last (slc);
 
   test_assert( first < self->array->size && last < self->array->size,
-               "ArrayView is out of range", func, file, line);
+               "array view is out of range", func, file, line);
 
   next_method(self, func, file, line);
 endmethod

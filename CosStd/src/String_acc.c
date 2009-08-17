@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_acc.c,v 1.1 2009/08/15 22:29:49 ldeniau Exp $
+ | $Id: String_acc.c,v 1.2 2009/08/17 12:57:13 ldeniau Exp $
  |
 */
 
@@ -101,6 +101,20 @@ endmethod
 
 // ----- setters (index, slice, intvector)
 
+defmethod(void, gputAt, String, Int, Char)
+  U32 i;
+  
+  PRE
+    i = Range_index(self2->value, self->size);
+    test_assert( i < self->size, "index out of range" );
+
+  BODY
+    if (!COS_CONTRACT)
+      i = Range_index(self2->value, self->size);
+      
+    self->value[i] = self3->Int.value;
+endmethod
+
 defmethod(void, gputAt, String, Int, Object)
   U32 i;
   
@@ -123,15 +137,15 @@ defmethod(void, gputAt, String, Slice, String)
     test_assert( first < self1->size &&
                  last  < self1->size, "slice out of range" );
 
-    test_assert( self1->size < self3->size, "Source string is too small" );
+    test_assert( self1->size < self3->size, "source string is too small" );
 
   BODY
-    U32   start  = Slice_first (self2);
-    I32   stride = Slice_stride(self2);
-    char *dst    = self1->value + start;
-    I32   dst_s  = stride;
-    char *src    = self3->value;
-    char *end    = self3->value + self3->size;
+    U32 start  = Slice_first (self2);
+    I32 stride = Slice_stride(self2);
+    U8* dst    = self1->value + start;
+    I32 dst_s  = stride;
+    U8* src    = self3->value;
+    U8* end    = self3->value + self3->size;
 
   while (src != end) {
     *dst = *src++;
@@ -144,12 +158,12 @@ defmethod(void, gputAt, String, IntVector, String)
     test_assert( self2->size <= self3->size, "incompatible array sizes" );
 
   BODY
-    char *dst   = self1->value;
-    U32   dst_z = self1->size;
-    I32  *idx   = self2->value;
-    I32   idx_s = self2->stride;
-    char *src   = self3->value;
-    char *end   = self3->value + self3->size;
+    U8  *dst   = self1->value;
+    U32  dst_z = self1->size;
+    I32 *idx   = self2->value;
+    I32  idx_s = self2->stride;
+    U8  *src   = self3->value;
+    U8  *end   = self3->value + self3->size;
 
     while (src != end) {
       U32 i = Range_index(*idx, dst_z);

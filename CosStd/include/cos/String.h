@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.1 2009/08/15 22:29:49 ldeniau Exp $
+ | $Id: String.h,v 1.2 2009/08/17 12:57:12 ldeniau Exp $
  |
 */
 
@@ -40,39 +40,39 @@
 
 /* NOTE-USER: String class cluster constructors
 
-   aString    (cstring)            -> Fixed size string (automatic)
-   aStringRef (buffer,size)        -> String            (automatic)
-   aStringView(string,slice)       -> String view       (automatic)
+   aString    (cstring)            -> Block string    (automatic)
+   aStringRef (buffer,size)        -> String          (automatic)
+   aStringView(string,slice)       -> String view     (automatic)
 
-   gnewWith (String,string)        -> Fixed size string (clone)
-   gnewWith2(String,size,chr)      -> Fixed size string (element)
-   gnewWith2(String,size,fun)      -> Fixed size string (generator)
-   gnewWith2(String,string,slice)  -> Fixed size string (substring)
-   gnewWith2(String,string,range)  -> Fixed size string (substring)
-   gnewWith2(String,string,intvec) -> Fixed size string (sequence)
+   gnewWith (String,string)        -> Block string    (clone)
+   gnewWith2(String,size,chr)      -> Block string    (element)
+   gnewWith2(String,size,fun)      -> Block string    (generator)
+   gnewWith2(String,string,slice)  -> Block string    (substring)
+   gnewWith2(String,string,range)  -> Block string    (substring)
+   gnewWith2(String,string,intvec) -> Block string    (sequence)
 
    gnew     (String)               -> Dynamic string
-   gnewWith (String,capacity)      -> Dynamic string    (pre-allocated)
+   gnewWith (String,capacity)      -> Dynamic string  (pre-allocated)
 
-   gnewWith (String,fun)           -> Lazy string       (generator)
-   gnewWith2(String,fun,string)    -> Lazy string       (generator)
+   gnewWith (String,fun)           -> Lazy string     (generator)
+   gnewWith2(String,fun,string)    -> Lazy string     (generator)
 
-   gnewWith2(View,string,slice)    -> String view       (view)
-   gnewWith2(View,string,range)    -> String view       (view)
+   gnewWith2(View,string,slice)    -> String view     (view)
+   gnewWith2(View,string,range)    -> String view     (view)
 
    where:
    - All strings are mutable
    - String are not sliced (ignored in views construction)
    - Dynamic strings can shrink and grow (gappend, gpreprend)
-   - Dynamic strings can be converted to fixed size string (gadjust)
-   - Lazy strings are Dynamic strings growing automatically using a generator
+   - Dynamic strings can be converted to fixed string (gfix, gadjust)
+   - Lazy strings are dynamic strings growing automatically using a generator
    - String views work only on non-dynamic strings
-   - String views clone are fixed size strings (copy), not views
+   - String views clone are block strings (copy), not views
 */
 
 defclass(String, ValueSequence)
-  char *value;
-  U32   size;
+  U8* value;
+  U32 size;
 endclass
 
 // ----- automatic constructors
@@ -95,31 +95,32 @@ endclass
 
 #include <string.h>
 
-// ----- Fixed size string
+// ----- Block string
 
 defclass(StringN, String)
-  char _value[];
+  U8 _value[];
+endclass
+
+// ----- Fixed string, Dynamic string and Lazy string
+
+defclass(StringFix, String)
+  U8* _value;
+  U32 _cls;
+  U32 capacity;
+endclass
+
+defclass(StringDyn, StringFix)
+endclass
+
+defclass(StringLzy, StringDyn)
+  OBJ generator;
+  I32 arity;
 endclass
 
 // ----- String view
 
 defclass(StringView, String)
   struct String *string;
-endclass
-
-// ----- Adjusted string, Dynamic string and Lazy string
-
-defclass(StringAdj, String)
-  char *_str;
-endclass
-
-defclass(StringDyn, StringAdj)
-  U32 capacity;
-endclass
-
-defclass(StringLazy, StringDyn)
-  OBJ generator;
-  I32 arity;
 endclass
 
 // ----- initializers, allocators and utilities (for the class cluster)
@@ -132,7 +133,7 @@ struct String* StringView_init(struct StringView*, struct String*, struct Slice*
 
 #define atString(cstr) ( (struct String*) \
   ( &(struct StringN) {{ {{{ cos_object_auto(StringN) }}}, \
-  (char[]){ cstr }, strlen( cstr ) }} ))
+  (U8[]){ cstr }, strlen( cstr ) }} ))
 
 // --- StringRef
 

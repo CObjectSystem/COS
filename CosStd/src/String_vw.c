@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.2 2009/08/17 09:10:37 ldeniau Exp $
+ | $Id: String_vw.c,v 1.3 2009/08/17 12:57:13 ldeniau Exp $
  |
 */
 
@@ -42,11 +42,6 @@
 // -----
 
 makclass(StringView, String);
-
-// NOTE-TODO: move to String_dyn and String_lzy ASAP
-makclass(StringAdj , String);
-makclass(StringDyn , StringAdj);
-makclass(StringLazy, StringDyn);
 
 // -----
 
@@ -82,9 +77,8 @@ defmethod(OBJ,  ginitWith2          , mView, String, Slice) // stray view
 endmethod
 
 defmethod(OBJ, ginitWith2, StringView, String, Slice)
-  test_assert( !cos_object_isa(_2, classref(StringDyn))
-            && !cos_object_isa(_2, classref(StringLazy   )),
-               "String views accept only non-Dyn strings" );
+  test_assert( !cos_object_isKindOf(_2, classref(StringDyn)),
+               "string views accept only non-Dyn strings" );
 
   StringView_init(self, self2, self3);
 
@@ -103,18 +97,15 @@ endmethod
 
 defmethod(void, ginvariant, StringView, (STR)func, (STR)file, (int)line)
   test_assert( cos_object_isKindOf((OBJ)self->string, classref(String)),
-               "StringView points to something not a string", func, file, line);
+               "string view points to something not a string", func, file, line);
 
-  test_assert( !cos_object_isa((OBJ)self->string, classref(StringDyn)),
-               "StringView points to a dynamic string", func, file, line);
-
-  test_assert( !cos_object_isa((OBJ)self->string, classref(StringLazy)),
-               "StringView points to a lazy string", func, file, line);
+  test_assert( !cos_object_isKindOf((OBJ)self->string, classref(StringDyn)),
+               "string view points to a dynamic string", func, file, line);
 
   struct String *str = STATIC_CAST(struct String*, self->string);
 
-  I32 start  = (str->value - self->String.value);
-  U32 size   = self->String.size;
+  I32 start = (str->value - self->String.value);
+  U32 size  = self->String.size;
 
   struct Slice *slc = atSlice(start, size, 1);
 
@@ -122,7 +113,7 @@ defmethod(void, ginvariant, StringView, (STR)func, (STR)file, (int)line)
   U32 last  = Slice_last (slc);
 
   test_assert( first < self->string->size && last < self->string->size,
-               "StringView is out of range", func, file, line);
+               "string view is out of range", func, file, line);
 
   next_method(self, func, file, line);
 endmethod

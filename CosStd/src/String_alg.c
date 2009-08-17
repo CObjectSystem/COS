@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.2 2009/08/17 09:10:37 ldeniau Exp $
+ | $Id: String_alg.c,v 1.3 2009/08/17 12:57:13 ldeniau Exp $
  |
 */
 
@@ -78,9 +78,9 @@ defmethod(void, greverse, String)
   if (self->size < 2)
     retmethod();
 
-  char *val = self->value;
-  char *end = self->value + (self->size-1);
-  char  tmp;
+  U8* val = self->value;
+  U8* end = self->value + (self->size-1);
+  U8  tmp;
 
   while (val != end)
     tmp = *val, *val++ = *end, *end++ = tmp;
@@ -94,10 +94,10 @@ defmethod(OBJ, gzip, String, String)
 
   struct String* str = String_alloc(2*size);
 
-  char *dst  = str->value;
-  char *end  = str->value + str->size;
-  char *src1 = self->value; 
-  char *src2 = self2->value;
+  U8* dst  = str->value;
+  U8* end  = str->value + str->size;
+  U8* src1 = self->value; 
+  U8* src2 = self2->value;
 
   while (dst != end) {
     *dst++ = *src1++;
@@ -113,11 +113,11 @@ defmethod(OBJ, gzip3, String, String, String)
 
   struct String* str = String_alloc(3*size);
 
-  char *dst  = str->value;
-  char *end  = str->value + str->size;
-  char *src1 = self->value; 
-  char *src2 = self2->value;
-  char *src3 = self3->value;
+  U8* dst  = str->value;
+  U8* end  = str->value + str->size;
+  U8* src1 = self->value; 
+  U8* src2 = self2->value;
+  U8* src3 = self3->value;
 
   while (dst != end) {
     *dst++ = *src1++;
@@ -134,7 +134,7 @@ defmethod(OBJ, gcat, String, String)
   U32 size = self->size + self2->size;
 
   struct String *str = String_alloc(size);
-  char *dst = str->value;
+  U8* dst = str->value;
 
   memcpy(dst,self1->value,self1->size); dst += self1->size;
   memcpy(dst,self2->value,self2->size);
@@ -146,7 +146,7 @@ defmethod(OBJ, gcat3, String, String, String)
   U32 size = self->size + self2->size + self3->size;
 
   struct String *str = String_alloc(size);
-  char *dst = str->value;
+  U8* dst = str->value;
 
   memcpy(dst,self1->value,self1->size); dst += self1->size;
   memcpy(dst,self2->value,self2->size); dst += self2->size;
@@ -159,7 +159,7 @@ defmethod(OBJ, gcat4, String, String, String, String)
   U32 size = self->size + self2->size + self3->size + self4->size;
 
   struct String *str = String_alloc(size);
-  char *dst = str->value;
+  U8* dst = str->value;
 
   memcpy(dst,self1->value,self1->size); dst += self1->size;
   memcpy(dst,self2->value,self2->size); dst += self2->size;
@@ -174,7 +174,7 @@ defmethod(OBJ, gcat5, String, String, String, String, String)
              self3->size + self4->size + self5->size;
 
   struct String *str = String_alloc(size);
-  char *dst = str->value;
+  U8* dst = str->value;
 
   memcpy(dst,self1->value,self1->size); dst += self1->size;
   memcpy(dst,self2->value,self2->size); dst += self2->size;
@@ -188,22 +188,22 @@ endmethod
 // ----- search (char)
 
 defmethod(OBJ, gfind, String, Char)
-  char *p = memchr(self->value, self2->Int.value, self->size);
+  U8* p = memchr(self->value, self2->Int.value, self->size);
   
   retmethod(p ? gautoDelete(aChar(*p)) : Nil);  
 endmethod
 
 defmethod(OBJ, gifind, String, Char)
-  char *p = memchr(self->value, self2->Int.value, self->size);
-  
+  U8* p = memchr(self->value, self2->Int.value, self->size);
+
   retmethod(p ? gautoDelete(aInt(self->value-p)) : Nil);  
 endmethod
 
 // ----- search (string)
-// NOTE-TODO: implement memmem from two-way
+// NOTE-TODO: implement memmem from two-way string matching
 
 defmethod(OBJ, gfind, String, String)
-  char *p = memmem(self->value, self->size, self2->value, self2->size);
+  U8* p = memmem(self->value, self->size, self2->value, self2->size);
   
   if (!p)
     retmethod(Nil);
@@ -214,7 +214,7 @@ defmethod(OBJ, gfind, String, String)
 endmethod
 
 defmethod(OBJ, gifind, String, String)
-  char *p = memmem(self->value, self->size, self2->value, self2->size);
+  U8* p = memmem(self->value, self->size, self2->value, self2->size);
   
   retmethod(p ? gautoDelete(aSlice(self->value-p,self2->size,1)) : Nil);  
 endmethod

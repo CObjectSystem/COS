@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.23 2009/08/15 14:54:57 ldeniau Exp $
+ | $Id: Array.h,v 1.24 2009/08/17 12:57:12 ldeniau Exp $
  |
 */
 
@@ -40,37 +40,37 @@
 
 /* NOTE-USER: Array class cluster constructors
 
-   aArray    (obj,...)           -> Fixed size array (automatic)
-   aArrayRef (buffer,size)       -> Array            (automatic)
-   aArrayView(array ,slice)      -> Array view       (automatic)
+   aArray    (obj,...)           -> Block array    (automatic)
+   aArrayRef (buffer,size)       -> Array          (automatic)
+   aArrayView(array ,slice)      -> Array view     (automatic)
 
-   gnewWith (Array,array)        -> Fixed size array (clone)
-   gnewWith (Array,slice)        -> Fixed size array (Ints)
-   gnewWith (Array,range)        -> Fixed size array (Ints)
-   gnewWith2(Array,size,obj)     -> Fixed size array (element)
-   gnewWith2(Array,size,fun)     -> Fixed size array (generator)
-   gnewWith2(Array,array,slice)  -> Fixed size array (subarray)
-   gnewWith2(Array,array,range)  -> Fixed size array (subarray)
-   gnewWith2(Array,array,intvec) -> Fixed size array (sequence)
+   gnewWith (Array,array)        -> Block array    (clone)
+   gnewWith (Array,slice)        -> Block array    (Ints)
+   gnewWith (Array,range)        -> Block array    (Ints)
+   gnewWith2(Array,size,obj)     -> Block array    (element)
+   gnewWith2(Array,size,fun)     -> Block array    (generator)
+   gnewWith2(Array,array,slice)  -> Block array    (subarray)
+   gnewWith2(Array,array,range)  -> Block array    (subarray)
+   gnewWith2(Array,array,intvec) -> Block array    (sequence)
 
    gnew     (Array)              -> Dynamic array
-   gnewWith (Array,capacity)     -> Dynamic array    (pre-allocated)
+   gnewWith (Array,capacity)     -> Dynamic array  (pre-allocated)
 
-   gnewWith (Array,fun)          -> Lazy array       (generator)
-   gnewWith2(Array,fun,array)    -> Lazy array       (generator)
+   gnewWith (Array,fun)          -> Lazy array     (generator)
+   gnewWith2(Array,fun,array)    -> Lazy array     (generator)
 
-   gnewWith2(View,array,slice)   -> Array view       (view)
-   gnewWith2(View,array,range)   -> Array view       (view)
+   gnewWith2(View,array,slice)   -> Array view     (view)
+   gnewWith2(View,array,range)   -> Array view     (view)
 
    where:
    - All arrays are mutable and strided
    - All arrays own their elements (gretain) except automatic arrays
-   - Fixed size arrays will be one of Array0 to Array9 if size is < 10.
+   - Block arrays will be one of Array0..9 if size is < 10, ArrayN otherwise
    - Dynamic arrays can shrink and grow (gappend, gpreprend)
-   - Dynamic arrays can be converted to fixed size array (gadjust)
-   - Lazy arrays are Dynamic arrays growing automatically using a generator
+   - Dynamic arrays can be converted to fixed array (gfix, gadjust)
+   - Lazy arrays are dynamic arrays growing automatically using a generator
    - Array views work only on non-dynamic arrays
-   - Array views clone are fixed size arrays (copy), not views
+   - Array views clone are block arrays (copy), not views
 */
 
 defclass(Array, Sequence)
@@ -89,7 +89,7 @@ endclass
  * Implementation (private)
  */
 
-// ----- Fixed size array
+// ----- Block array
 
 defclass(Array0, Array) OBJ _object[]; endclass
 defclass(Array1, Array) OBJ _object[]; endclass
@@ -103,25 +103,26 @@ defclass(Array8, Array) OBJ _object[]; endclass
 defclass(Array9, Array) OBJ _object[]; endclass
 defclass(ArrayN, Array) OBJ _object[]; endclass
 
+// ----- Fixed array, Dynamic array and Lazy array
+
+defclass(ArrayFix, Array)
+  OBJ *_object;
+  U32  _cls;
+  U32  capacity;
+endclass
+
+defclass(ArrayDyn, ArrayFix)
+endclass
+
+defclass(ArrayLzy, ArrayDyn)
+  OBJ generator;
+  I32 arity;
+endclass
+
 // ----- Array view
 
 defclass(ArrayView, Array)
   struct Array *array;
-endclass
-
-// ----- Adjusted array, Dynamic array and Lazy array
-
-defclass(ArrayAdj, Array)
-  OBJ *_object;
-endclass
-
-defclass(ArrayDyn, ArrayAdj)
-  U32 capacity;
-endclass
-
-defclass(ArrayLazy, ArrayDyn)
-  OBJ generator;
-  I32 arity;
 endclass
 
 // ----- initializers, allocators and utilities (for the class cluster)
