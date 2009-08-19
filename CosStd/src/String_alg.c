@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.5 2009/08/19 10:14:22 ldeniau Exp $
+ | $Id: String_alg.c,v 1.6 2009/08/19 10:22:58 ldeniau Exp $
  |
 */
 
@@ -201,7 +201,7 @@ endmethod
 
 // ----- search (string)
 
-// -- BruteForce
+// -- BruteForce (quadratic to linear)
 
 static inline U8*
 BruteForce2(U8 *str, U32 str_n, U8 *pat)
@@ -239,7 +239,7 @@ BruteForce(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
   return 0;
 }
 
-// -- KnuthMorrisPratt
+// -- KnuthMorrisPratt (linear)
 
 static U8*
 KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
@@ -281,7 +281,7 @@ KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
   return 0;
 }
 
-// -- TurboBoyerMoore
+// -- TurboBoyerMoore (linear to sublinear)
 
 // alphabet size
 enum { ASIZE = 1 << CHAR_BIT };
@@ -306,13 +306,13 @@ preBmBc(U8 *pat, I32 pat_n, I32 bmBc[]) {
       bmBc[pat[i]] = pat_n - i - 1;
 }
  
-static inline void
+static void
 preBmGs(U8* pat, I32 pat_n, I32 bmGs[], I32 suff[])
 {
   I32 i, j, f, g;
 
    suff[pat_n-1] = pat_n;
-   g = pat_n-1;
+   f = g = pat_n-1;
    for (i = pat_n-2; i >= 0; --i) {
       if (i > g && suff[i + pat_n-1 - f] < i - g)
          suff[i] = suff[i + pat_n-1 - f];
