@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.15 2009/08/10 16:29:40 ldeniau Exp $
+ | $Id: Object.c,v 1.16 2009/08/19 10:14:22 ldeniau Exp $
  |
 */
 
@@ -56,7 +56,7 @@ defproperty(Object, (id)class, (OBJ)cos_class_get);
 
 // ----- allocator, deallocator
 
-static always_inline void*
+static COS_ALWAYS_INLINE void*
 object_alloc(OBJ _cls, size_t extra)
 {
   struct Class *cls = STATIC_CAST(struct Class*, _cls);

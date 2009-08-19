@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.43 2009/08/07 10:53:52 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.44 2009/08/19 10:14:22 ldeniau Exp $
  |
 */
 
@@ -114,7 +114,7 @@ pool_set(struct AutoRelease *pool)
 	test_assert( pthread_setspecific(_pool_key, pool) == 0 );
 }
 
-static always_inline struct AutoRelease*
+static COS_ALWAYS_INLINE struct AutoRelease*
 pool_get(void)
 {
 	struct AutoRelease *pool = pthread_getspecific(_pool_key);
@@ -171,7 +171,7 @@ enlarge(struct AutoRelease* p)
   p->end = stk + new_size;
 }
 
-static always_inline void
+static COS_ALWAYS_INLINE void
 clear(struct AutoRelease *p)
 {
   if (p->tmp)
@@ -181,7 +181,7 @@ clear(struct AutoRelease *p)
     if (*p->top) grelease(*p->top);
 }
 
-static always_inline OBJ
+static COS_ALWAYS_INLINE OBJ
 push(OBJ obj)
 {
   struct AutoRelease *pool = pool_get();

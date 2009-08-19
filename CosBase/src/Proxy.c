@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.9 2009/06/16 21:43:45 ldeniau Exp $
+ | $Id: Proxy.c,v 1.10 2009/08/19 10:14:22 ldeniau Exp $
  |
 */
 
@@ -170,14 +170,14 @@ endmethod
 
 // ----- unrecognized
 
-static always_inline void
+static COS_ALWAYS_INLINE void
 chkret(SEL sel, OBJ* ret, struct Proxy* pxy)
 {
   if (COS_GEN_ISOBJ(sel) && *ret == pxy->obj)
     *ret = (OBJ)pxy;
 }
 
-static always_inline void
+static COS_ALWAYS_INLINE void
 chkret2(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2)
 {
   if (COS_GEN_ISOBJ(sel)) {
@@ -186,7 +186,7 @@ chkret2(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2)
   }
 }
 
-static always_inline void
+static COS_ALWAYS_INLINE void
 chkret3(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3)
 {
   if (COS_GEN_ISOBJ(sel)) {

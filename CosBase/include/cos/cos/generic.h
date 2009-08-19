@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.21 2009/04/02 07:44:50 ldeniau Exp $
+ | $Id: generic.h,v 1.22 2009/08/19 10:14:22 ldeniau Exp $
  |
 */
 
@@ -331,7 +331,7 @@ extern void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
 
 // generic function definition
 #define COS_GEN_FUNCDEF(RET,NAME,PS,AS,IS,C,A,R) \
-static always_inline \
+static COS_ALWAYS_INLINE \
 RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
 { \
   /* local result and arguments (if any) */ \
@@ -383,7 +383,7 @@ RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
 
 // generic next function definition
 #define COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,V) \
-COS_PP_IF(V)(,static always_inline) \
+COS_PP_IF(V)(,static COS_ALWAYS_INLINE) \
 void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
                          SEL _sel, RET* _ret, COS_PP_CAT(IMP,C) _nxt) \
 { \

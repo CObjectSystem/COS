@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.4 2009/08/19 09:57:09 ldeniau Exp $
+ | $Id: String_alg.c,v 1.5 2009/08/19 10:14:22 ldeniau Exp $
  |
 */
 
@@ -201,9 +201,6 @@ endmethod
 
 // ----- search (string)
 
-// alphabet size
-enum { ASIZE = 1 << CHAR_BIT };
-
 // -- BruteForce
 
 static inline U8*
@@ -285,6 +282,9 @@ KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
 }
 
 // -- TurboBoyerMoore
+
+// alphabet size
+enum { ASIZE = 1 << CHAR_BIT };
 
 static inline I32
 min(I32 a, I32 b) {

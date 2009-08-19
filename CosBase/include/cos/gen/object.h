@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.27 2009/08/14 21:18:23 ldeniau Exp $
+ | $Id: object.h,v 1.28 2009/08/19 10:14:22 ldeniau Exp $
  |
 */
 
@@ -94,7 +94,7 @@ defgeneric(void, gthrow        , _1, (STR)func, (STR)file, (int)line);
 #define gretain(obj)  gretain_inline (obj)
 #define grelease(obj) grelease_inline(obj)
 
-static always_inline OBJ
+static COS_ALWAYS_INLINE OBJ
 gretain_inline(OBJ _1) {
   struct Object *obj = STATIC_CAST(struct Object*, _1);
   
@@ -104,7 +104,7 @@ gretain_inline(OBJ _1) {
   COS_UNUSED(gretain_inline);
 }
 
-static always_inline void
+static COS_ALWAYS_INLINE void
 grelease_inline(OBJ _1) {
   struct Object *obj = STATIC_CAST(struct Object*, _1);
 

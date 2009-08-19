@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.17 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: config.h,v 1.18 2009/08/19 10:14:22 ldeniau Exp $
  |
 */
 
@@ -128,11 +128,11 @@
 
 #undef  __attribute__         // not a macro so far but safer
 #define __attribute__(a)      // disable GCC __attribute__
-#define always_inline inline
+#define COS_ALWAYS_INLINE inline
 
 #else
 
-#define always_inline inline __attribute__((__always_inline__))
+#define COS_ALWAYS_INLINE inline __attribute__((__always_inline__))
 
 #endif
 

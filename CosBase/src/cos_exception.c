@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.22 2009/08/07 10:53:52 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.23 2009/08/19 10:14:22 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@ static struct cos_exception_context _cxt0;
 
 __thread struct cos_exception_context *cos_exception_cxt_ = &_cxt0;
 
-static always_inline void
+static inline void
 cxt_set(struct cos_exception_context *cxt)
 {
   cos_exception_cxt_ = cxt;
