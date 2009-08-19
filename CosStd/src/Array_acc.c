@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.8 2009/08/15 22:29:49 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.9 2009/08/19 16:34:13 ldeniau Exp $
  |
 */
 
@@ -138,7 +138,7 @@ defmethod(void, gputAt, Array, IntVector, Array)
 
   BODY
     OBJ *dst   = self1->object;
-    U32  dst_z = self1->size;
+    U32  dst_n = self1->size;
     I32  dst_s = self1->stride;
     I32 *idx   = self2->value;
     I32  idx_s = self2->stride;
@@ -147,8 +147,8 @@ defmethod(void, gputAt, Array, IntVector, Array)
     OBJ *end   = self3->object + self3->size*self3->stride;
 
     while (src != end) {
-      U32 i = Range_index(*idx, dst_z);
-      test_assert( i < dst_z, "index out of range" );
+      U32 i = Range_index(*idx, dst_n);
+      test_assert( i < dst_n, "index out of range" );
       OBJ old = dst[i*dst_s];
       dst[i*dst_s] = gretain(*src);
       grelease(old);

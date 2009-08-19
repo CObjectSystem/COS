@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.11 2009/08/15 22:29:49 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.12 2009/08/19 16:34:13 ldeniau Exp $
  |
 */
 
@@ -101,20 +101,20 @@ defmethod(void, gpermute, Array, IntVector)
       retmethod();
 
     OBJ *obj   = self1->object;
-    U32  obj_z = self1->size;
+    U32  obj_n = self1->size;
     I32  obj_s = self1->stride;
     I32 *idx   = self2->value;
     I32  idx_s = self2->stride;
 
-    TMPARRAY_CREATE(OBJ,buf,obj_z); // OBJ buf[obj_z];
+    TMPARRAY_CREATE(OBJ,buf,obj_n); // OBJ buf[obj_n];
 
-    OBJ *cur, *end = buf + obj_z;
+    OBJ *cur, *end = buf + obj_n;
     U32  i = 0;
 
     // permute
     for (cur = buf; cur != end; cur++) {
-      i = Range_index(*idx, obj_z);
-      if ( !(i < obj_z && obj[i*obj_s]) ) break;
+      i = Range_index(*idx, obj_n);
+      if ( !(i < obj_n && obj[i*obj_s]) ) break;
       *cur = obj[i*obj_s], obj[i*obj_s] = 0;
        idx += idx_s;
     }
@@ -127,11 +127,11 @@ defmethod(void, gpermute, Array, IntVector)
       TMPARRAY_DESTROY(buf);
     } else {
       // rollback (error)
-      BOOL iiir = i < obj_z; // last index-is-in-range flag
+      BOOL iiir = i < obj_n; // last index-is-in-range flag
 
       while (cur != buf) {
         idx -= idx_s;
-        i = Range_index(*idx, obj_z);
+        i = Range_index(*idx, obj_n);
         obj[i*obj_s] = *--cur;
       }
 
@@ -384,5 +384,137 @@ defmethod(OBJ, gcat5, Array, Array, Array, Array, Array)
 
   UNPRT(_arr);
   retmethod(gautoDelete(_arr));
+endmethod
+
+// ----- search (object)
+
+static OBJ*
+findObj(OBJ *obj, U32 obj_n, I32 obj_s, OBJ _2)
+{
+  if (!obj_n) return 0;
+
+  OBJ *end = obj + obj_n*obj_s;
+
+  while (obj != end) {
+    if (gisEqual(*obj, _2) == True)
+      return obj;
+    obj += obj_s;
+  }
+
+  return 0;  
+}
+
+defmethod(OBJ, gfind, Array, Object)
+  OBJ *obj   = self->object;
+  U32  obj_n = self->size;
+  I32  obj_s = self->stride;
+
+  OBJ *p = findObj(obj,obj_n,obj_s,_2);
+  if (!p) retmethod(Nil);
+
+  retmethod( p ? *p : Nil );  
+endmethod
+
+defmethod(OBJ, gifind, Array, Object)
+  OBJ *obj   = self->object;
+  U32  obj_n = self->size;
+  I32  obj_s = self->stride;
+
+  OBJ *p = findObj(obj,obj_n,obj_s,_2);
+  if (!p) retmethod(Nil);
+
+  retmethod(obj ? gautoDelete( aInt((p-obj)/obj_s) ) : Nil);
+endmethod
+
+// ----- search (array)
+
+// -- KnuthMorrisPratt (linear)
+
+static OBJ*
+KnuthMorrisPratt(OBJ *obj, U32 obj_n, I32 obj_s, OBJ *pat, I32 pat_n, I32 pat_s)
+{
+  TMPARRAY_CREATE(I32,kmpNext,pat_n);
+
+  { // preprocessing
+    I32 i = 0, j = kmpNext[0] = -1;
+
+    while (i < pat_n) {
+      while (j > -1 && gisEqual(pat[i*pat_s],pat[j*pat_s]) == False)
+        j = kmpNext[j];
+      i++;
+      j++;
+      if (gisEqual(pat[i*pat_s],pat[j*pat_s]) == True)
+        kmpNext[i] = kmpNext[j];
+      else
+        kmpNext[i] = j;
+    }
+  }
+ 
+  { // searching
+    I32 i = 0;
+    U32 j = 0;
+
+    while (j < obj_n) {
+      while (i > -1 && gisEqual(pat[i*pat_s],obj[j*obj_s]) == False)
+        i = kmpNext[i];
+      i++;
+      j++;
+      if (i >= pat_n) { // found
+        TMPARRAY_DESTROY(kmpNext);
+        return obj + (j - i)*obj_s;
+      }
+    }
+  }
+
+  TMPARRAY_DESTROY(kmpNext);
+  return 0;
+}
+
+// -- find front-end
+
+static OBJ*
+findSub(OBJ *obj, U32 obj_n, I32 obj_s, OBJ *pat, U32 pat_n, I32 pat_s)
+{
+  // string too short
+  if (obj_n < pat_n) return 0;
+
+  // empty pattern
+  if (!pat_n) return obj;
+
+  // find first
+  OBJ *p = findObj(obj, obj_n, obj_s, *pat);
+  if (!p) return 0;
+
+  // single object pattern
+  if (pat_n == 1) return p;
+
+  // linear search
+  return KnuthMorrisPratt(p, obj_n-(p-obj)*obj_s, obj_s, pat, pat_n, pat_s);
+}
+
+// -- find methods
+
+defmethod(OBJ, gfind, Array, Array)
+  OBJ *obj   = self->object;
+  U32  obj_n = self->size;
+  I32  obj_s = self->stride;
+
+  OBJ *p = findSub(obj,obj_n,obj_s,self2->object,self2->size,self2->stride);
+  if (!p) retmethod(Nil);
+
+  OBJ avw = aArrayView(self, atSlice((p-obj)/obj_s,self2->size,obj_s) );
+  retmethod(gautoDelete( avw ));
+endmethod
+
+defmethod(OBJ, gifind, Array, Array)
+  OBJ *obj   = self->object;
+  U32  obj_n = self->size;
+  I32  obj_s = self->stride;
+
+  OBJ *p = findSub(obj,obj_n,obj_s,self2->object,self2->size,self2->stride);
+  if (!p) retmethod(Nil);
+
+  OBJ slc = aSlice((p-obj)/obj_s,self2->size,obj_s);
+  retmethod(gautoDelete( slc ));  
 endmethod
 

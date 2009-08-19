@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.7 2009/08/19 15:02:27 ldeniau Exp $
+ | $Id: String_alg.c,v 1.8 2009/08/19 16:34:13 ldeniau Exp $
  |
 */
 
@@ -473,7 +473,7 @@ KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
 // -- find front-end
 
 static U8*
-find(U8 *str, U32 str_n, U8 *pat, U32 pat_n)
+findSub(U8 *str, U32 str_n, U8 *pat, U32 pat_n)
 {
   // string too short
   if (str_n < pat_n) return 0;
@@ -527,8 +527,9 @@ defmethod(OBJ, gfind, String, String)
     test_assert( p == q, "bug in substring searching");
 
   BODY
-    p = find(self->value, self->size, self2->value, self2->size);
+    p = findSub(self->value, self->size, self2->value, self2->size);
     if (!p) retmethod(Nil);
+    
     OBJ svw = aStringView(self, atSlice(p-self->value,self2->size,1) );
     retmethod(gautoDelete( svw ));
 endmethod
@@ -542,8 +543,9 @@ defmethod(OBJ, gifind, String, String)
     test_assert( p == q, "bug in substring searching");
 
   BODY
-    p = find(self->value, self->size, self2->value, self2->size);
+    p = findSub(self->value, self->size, self2->value, self2->size);
     if (!p) retmethod(Nil);
+    
     OBJ slc = aSlice(p-self->value,self2->size,1);
     retmethod(gautoDelete( slc ));  
 endmethod

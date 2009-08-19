@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_acc.c,v 1.2 2009/08/17 12:57:13 ldeniau Exp $
+ | $Id: String_acc.c,v 1.3 2009/08/19 16:34:13 ldeniau Exp $
  |
 */
 
@@ -159,15 +159,15 @@ defmethod(void, gputAt, String, IntVector, String)
 
   BODY
     U8  *dst   = self1->value;
-    U32  dst_z = self1->size;
+    U32  dst_n = self1->size;
     I32 *idx   = self2->value;
     I32  idx_s = self2->stride;
     U8  *src   = self3->value;
     U8  *end   = self3->value + self3->size;
 
     while (src != end) {
-      U32 i = Range_index(*idx, dst_z);
-      test_assert( i < dst_z, "index out of range" );
+      U32 i = Range_index(*idx, dst_n);
+      test_assert( i < dst_n, "index out of range" );
       dst[i] = *src++;
       idx += idx_s;
   }

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.37 2009/08/15 22:29:49 ldeniau Exp $
+ | $Id: Array.c,v 1.38 2009/08/19 16:34:12 ldeniau Exp $
  |
 */
 
@@ -300,14 +300,14 @@ defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random seque
     OBJ *dst   = arr->object;
     OBJ *end   = arr->object + arr->size;
     OBJ *src   = self2->object;
-    U32  src_z = self2->size;
+    U32  src_n = self2->size;
     I32  src_s = self2->stride;
     I32 *idx   = self3->value;
     I32  idx_s = self3->stride;
 
     while (dst != end) {
-      U32 i = Range_index(*idx, src_z);
-      test_assert( i < src_z, "index out of range" );
+      U32 i = Range_index(*idx, src_n);
+      test_assert( i < src_n, "index out of range" );
       *dst++ = gretain(src[i*src_s]);
       idx += idx_s;
     }

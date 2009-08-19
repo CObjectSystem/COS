@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.2 2009/08/17 12:57:13 ldeniau Exp $
+ | $Id: String.c,v 1.3 2009/08/19 16:34:13 ldeniau Exp $
  |
 */
 
@@ -200,13 +200,13 @@ defmethod(OBJ,  ginitWith2          , pmString, String, IntVector) // random seq
   U8  *dst   = str->value;
   U8  *end   = str->value + str->size;
   U8  *src   = self2->value;
-  U32  src_z = self2->size;
+  U32  src_n = self2->size;
   I32 *idx   = self3->value;
   I32  idx_s = self3->stride;
 
   while (dst != end) {
-    U32 i = Range_index(*idx, src_z);
-    test_assert( i < src_z, "index out of range" );
+    U32 i = Range_index(*idx, src_n);
+    test_assert( i < src_n, "index out of range" );
     *dst++ = src[i];
     idx += idx_s;
   }

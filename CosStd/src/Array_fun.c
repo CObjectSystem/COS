@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.12 2009/08/17 09:10:37 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.13 2009/08/19 16:34:13 ldeniau Exp $
  |
 */
 
@@ -545,12 +545,12 @@ defmethod(void, gsort, Array, Functor)
   }
 
   OBJ *obj   = self->object;
-  U32  obj_z = self->size;
+  U32  obj_n = self->size;
   I32  obj_s = self->stride;
 
-  TMPARRAY_CREATE(OBJ,buf,obj_z); // OBJ buf[obj_z];
+  TMPARRAY_CREATE(OBJ,buf,obj_n); // OBJ buf[obj_n];
 
-  OBJ *cur, *end = buf + obj_z;
+  OBJ *cur, *end = buf + obj_n;
 
   // forward copy
   for (cur = buf; cur != end; cur++)
