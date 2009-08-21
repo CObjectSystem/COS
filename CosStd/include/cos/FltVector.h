@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Float Vector, Dynamic Vector and Vector View
+ | COS Vector, Dynamic Vector, Lazy Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.h,v 1.3 2009/03/11 10:20:41 ldeniau Exp $
+ | $Id: FltVector.h,v 1.4 2009/08/21 12:27:46 ldeniau Exp $
  |
 */
 
@@ -40,30 +40,26 @@
 
 /* NOTE-USER: FltVector class cluster constructors
 
-   see cos/Vector.h
+   see cos/Vector.h for description
 */
 
 defclass(FltVector, Vector)
+  F64 *value;
   U32  size;
   I32  stride;
-  F64 *value;
 endclass
 
 // ----- automatic constructors
 
-#define aFltVector(...)        ( (OBJ)atFltVector       (__VA_ARGS__) )
-#define aFltVectorRef(...)     ( (OBJ)atFltVectorRef    (__VA_ARGS__) )
-#define aFltVectorView(...)    ( (OBJ)atFltVectorView   (__VA_ARGS__) )
-#define aFltVectorSubview(...) ( (OBJ)atFltVectorSubview(__VA_ARGS__) )
+#define aFltVector(...)     ( (OBJ)atFltVector    (__VA_ARGS__) )
+#define aFltVectorRef(...)  ( (OBJ)atFltVectorRef (__VA_ARGS__) )
+#define aFltVectorView(...) ( (OBJ)atFltVectorView(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
 
-#define aFltVec(...)         aFltVector       (__VA_ARGS__)
-#define aFltVecRef(...)      aFltVectorRef    (__VA_ARGS__)
-#define aFltVecView(...)     aFltVectorView   (__VA_ARGS__)
-#define aFltVecSubview(...)  aFltVectorSubview(__VA_ARGS__)
+#define aFVec(...)  aFltVector(__VA_ARGS__)
 
 #endif
 
@@ -71,25 +67,7 @@ endclass
  * Implementation (private)
  */
 
-// ----- Vector view
-
-defclass(FltVectorView, FltVector)
-  struct FltVector *vector;
-endclass
-
-// ----- Dynamic vector
-
-defclass(FltVectorDynamicN, FltVector)
-  F64 *base;
-endclass
-
-// ---
-
-defclass(FltVectorDynamic, FltVectorDynamicN)
-  U32 capacity;
-endclass
-
-// ----- Fixed size vector
+// ----- Block vector
 
 defclass(FltVector0, FltVector) F64 _value[]; endclass
 defclass(FltVector1, FltVector) F64 _value[]; endclass
@@ -103,21 +81,39 @@ defclass(FltVector8, FltVector) F64 _value[]; endclass
 defclass(FltVector9, FltVector) F64 _value[]; endclass
 defclass(FltVectorN, FltVector) F64 _value[]; endclass
 
+// ----- Fixed vector, Dynamic vector and Lazy vector
+
+defclass(FltVectorFix, FltVector)
+  F64 *_value;
+  U32  _cls;
+  U32  capacity;
+endclass
+
+defclass(FltVectorDyn, FltVectorFix)
+endclass
+
+defclass(FltVectorLzy, FltVectorDyn)
+  OBJ generator;
+  I32 arity;
+endclass
+
+// ----- FltVector view
+
+defclass(FltVectorView, FltVector)
+  struct FltVector *ref;
+endclass
+
 // ----- allocators and initializers
 
-struct FltVector* FltVector_alloc         (U32);
-struct FltVector* FltVectorView_alloc     (struct FltVector*,U32,U32,U32);
-struct FltVector* FltVectorView_init      (struct FltVectorView*,I32);
-struct FltVector* FltVectorSubview_init   (struct FltVectorView*,I32);
-struct FltVector* FltVectorDynamic_alloc  (U32);
-void              FltVectorDynamic_adjust (struct FltVectorDynamic*);
-void              FltVectorDynamic_enlarge(struct FltVectorDynamic*,F64);
+struct Slice;
+struct FltVector* FltVector_alloc(U32);
+struct FltVector* FltVectorView_init(struct FltVectorView*, struct FltVector*,
+                                     struct Slice*);
 
 // ----- automatic constructors
 
-#define atFltVector(...)         atVector       (Flt,F64,__VA_ARGS__)
-#define atFltVectorRef(...)      atVectorRef    (Flt,F64,__VA_ARGS__)
-#define atFltVectorView(...)     atVectorView   (Flt,F64,__VA_ARGS__)
-#define atFltVectorSubview(...)  atVectorSubview(Flt,F64,__VA_ARGS__)
+#define atFltVector(...)              atVector    (Flt,F64,__VA_ARGS__)
+#define atFltVectorRef(buffer,size)   atVectorRef (Flt,buffer,size)
+#define atFltVectorView(vector,slice) atVectorView(Flt,vector,slice)
 
 #endif // COS_FLTVECTOR_H

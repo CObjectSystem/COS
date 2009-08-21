@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array, Dynamic Array, Lazy Array  and Array View
+ | COS Array, Dynamic Array, Lazy Array and Array View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.24 2009/08/17 12:57:12 ldeniau Exp $
+ | $Id: Array.h,v 1.25 2009/08/21 12:27:46 ldeniau Exp $
  |
 */
 
@@ -122,10 +122,10 @@ endclass
 // ----- Array view
 
 defclass(ArrayView, Array)
-  struct Array *array;
+  struct Array *ref;
 endclass
 
-// ----- initializers, allocators and utilities (for the class cluster)
+// ----- initializers, allocators (for the class cluster)
 
 struct Slice;
 struct Array* Array_alloc(U32);

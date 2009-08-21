@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Long Vector, Dynamic Vector and Vector View
+ | COS Vector, Dynamic Vector, Lazy Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.h,v 1.3 2009/03/11 10:20:41 ldeniau Exp $
+ | $Id: LngVector.h,v 1.4 2009/08/21 12:27:46 ldeniau Exp $
  |
 */
 
@@ -40,30 +40,26 @@
 
 /* NOTE-USER: LngVector class cluster constructors
 
-   see cos/Vector.h
+   see cos/Vector.h for description
 */
 
 defclass(LngVector, Vector)
+  I64 *value;
   U32  size;
   I32  stride;
-  I64 *value;
 endclass
 
 // ----- automatic constructors
 
-#define aLngVector(...)        ( (OBJ)atLngVector       (__VA_ARGS__) )
-#define aLngVectorRef(...)     ( (OBJ)atLngVectorRef    (__VA_ARGS__) )
-#define aLngVectorView(...)    ( (OBJ)atLngVectorView   (__VA_ARGS__) )
-#define aLngVectorSubview(...) ( (OBJ)atLngVectorSubview(__VA_ARGS__) )
+#define aLngVector(...)     ( (OBJ)atLngVector    (__VA_ARGS__) )
+#define aLngVectorRef(...)  ( (OBJ)atLngVectorRef (__VA_ARGS__) )
+#define aLngVectorView(...) ( (OBJ)atLngVectorView(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
 
-#define aLngVec(...)         aLngVector       (__VA_ARGS__)
-#define aLngVecRef(...)      aLngVectorRef    (__VA_ARGS__)
-#define aLngVecView(...)     aLngVectorView   (__VA_ARGS__)
-#define aLngVecSubview(...)  aLngVectorSubview(__VA_ARGS__)
+#define aLVec(...)  aLngVector(__VA_ARGS__)
 
 #endif
 
@@ -71,25 +67,7 @@ endclass
  * Implementation (private)
  */
 
-// ----- Vector view
-
-defclass(LngVectorView, LngVector)
-  struct LngVector *vector;
-endclass
-
-// ----- Dynamic vector
-
-defclass(LngVectorDynamicN, LngVector)
-  I64 *base;
-endclass
-
-// ---
-
-defclass(LngVectorDynamic, LngVectorDynamicN)
-  U32 capacity;
-endclass
-
-// ----- Fixed size vector
+// ----- Block vector
 
 defclass(LngVector0, LngVector) I64 _value[]; endclass
 defclass(LngVector1, LngVector) I64 _value[]; endclass
@@ -103,21 +81,39 @@ defclass(LngVector8, LngVector) I64 _value[]; endclass
 defclass(LngVector9, LngVector) I64 _value[]; endclass
 defclass(LngVectorN, LngVector) I64 _value[]; endclass
 
+// ----- Fixed vector, Dynamic vector and Lazy vector
+
+defclass(LngVectorFix, LngVector)
+  I64 *_value;
+  U32  _cls;
+  U32  capacity;
+endclass
+
+defclass(LngVectorDyn, LngVectorFix)
+endclass
+
+defclass(LngVectorLzy, LngVectorDyn)
+  OBJ generator;
+  I32 arity;
+endclass
+
+// ----- LngVector view
+
+defclass(LngVectorView, LngVector)
+  struct LngVector *vector;
+endclass
+
 // ----- allocators and initializers
 
-struct LngVector* LngVector_alloc         (U32);
-struct LngVector* LngVectorView_alloc     (struct LngVector*,U32,U32,U32);
-struct LngVector* LngVectorView_init      (struct LngVectorView*,I32);
-struct LngVector* LngVectorSubview_init   (struct LngVectorView*,I32);
-struct LngVector* LngVectorDynamic_alloc  (U32);
-void              LngVectorDynamic_adjust (struct LngVectorDynamic*);
-void              LngVectorDynamic_enlarge(struct LngVectorDynamic*,F64);
+struct Slice;
+struct LngVector* LngVector_alloc(U32);
+struct LngVector* LngVectorView_init(struct LngVectorView*, struct LngVector*,
+                                     struct Slice*);
 
 // ----- automatic constructors
 
-#define atLngVector(...)         atVector       (Lng,I64,__VA_ARGS__)
-#define atLngVectorRef(...)      atVectorRef    (Lng,I64,__VA_ARGS__)
-#define atLngVectorView(...)     atVectorView   (Lng,I64,__VA_ARGS__)
-#define atLngVectorSubview(...)  atVectorSubview(Lng,I64,__VA_ARGS__)
+#define atLngVector(...)              atVector    (Lng,I64,__VA_ARGS__)
+#define atLngVectorRef(buffer,size)   atVectorRef (Lng,buffer,size)
+#define atLngVectorView(vector,slice) atVectorView(Lng,vector,slice)
 
 #endif // COS_LNGVECTOR_H

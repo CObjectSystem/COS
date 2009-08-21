@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Complex Vector, Dynamic Vector and Vector View
+ | COS Vector, Dynamic Vector, Lazy Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.h,v 1.3 2009/03/11 10:20:41 ldeniau Exp $
+ | $Id: CpxVector.h,v 1.4 2009/08/21 12:27:46 ldeniau Exp $
  |
 */
 
@@ -40,30 +40,26 @@
 
 /* NOTE-USER: CpxVector class cluster constructors
 
-   see cos/Vector.h
+   see cos/Vector.h for description
 */
 
 defclass(CpxVector, Vector)
+  C64 *value;
   U32  size;
   I32  stride;
-  C64 *value;
 endclass
 
 // ----- automatic constructors
 
-#define aCpxVector(...)        ( (OBJ)atCpxVector       (__VA_ARGS__) )
-#define aCpxVectorRef(...)     ( (OBJ)atCpxVectorRef    (__VA_ARGS__) )
-#define aCpxVectorView(...)    ( (OBJ)atCpxVectorView   (__VA_ARGS__) )
-#define aCpxVectorSubview(...) ( (OBJ)atCpxVectorSubview(__VA_ARGS__) )
+#define aCpxVector(...)     ( (OBJ)atCpxVector    (__VA_ARGS__) )
+#define aCpxVectorRef(...)  ( (OBJ)atCpxVectorRef (__VA_ARGS__) )
+#define aCpxVectorView(...) ( (OBJ)atCpxVectorView(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
 
-#define aCpxVec(...)         aCpxVector       (__VA_ARGS__)
-#define aCpxVecRef(...)      aCpxVectorRef    (__VA_ARGS__)
-#define aCpxVecView(...)     aCpxVectorView   (__VA_ARGS__)
-#define aCpxVecSubview(...)  aCpxVectorSubview(__VA_ARGS__)
+#define aCVec(...)  aCpxVector(__VA_ARGS__)
 
 #endif
 
@@ -71,25 +67,7 @@ endclass
  * Implementation (private)
  */
 
-// ----- Vector view
-
-defclass(CpxVectorView, CpxVector)
-  struct CpxVector *vector;
-endclass
-
-// ----- Dynamic vector
-
-defclass(CpxVectorDynamicN, CpxVector)
-  C64 *base;
-endclass
-
-// ---
-
-defclass(CpxVectorDynamic, CpxVectorDynamicN)
-  U32 capacity;
-endclass
-
-// ----- Fixed size vector
+// ----- Block vector
 
 defclass(CpxVector0, CpxVector) C64 _value[]; endclass
 defclass(CpxVector1, CpxVector) C64 _value[]; endclass
@@ -103,21 +81,39 @@ defclass(CpxVector8, CpxVector) C64 _value[]; endclass
 defclass(CpxVector9, CpxVector) C64 _value[]; endclass
 defclass(CpxVectorN, CpxVector) C64 _value[]; endclass
 
+// ----- Fixed vector, Dynamic vector and Lazy vector
+
+defclass(CpxVectorFix, CpxVector)
+  C64 *_value;
+  U32  _cls;
+  U32  capacity;
+endclass
+
+defclass(CpxVectorDyn, CpxVectorFix)
+endclass
+
+defclass(CpxVectorLzy, CpxVectorDyn)
+  OBJ generator;
+  I32 arity;
+endclass
+
+// ----- CpxVector view
+
+defclass(CpxVectorView, CpxVector)
+  struct CpxVector *vector;
+endclass
+
 // ----- allocators and initializers
 
-struct CpxVector* CpxVector_alloc         (U32);
-struct CpxVector* CpxVectorView_alloc     (struct CpxVector*,U32,U32,U32);
-struct CpxVector* CpxVectorView_init      (struct CpxVectorView*,I32);
-struct CpxVector* CpxVectorSubview_init   (struct CpxVectorView*,I32);
-struct CpxVector* CpxVectorDynamic_alloc  (U32);
-void              CpxVectorDynamic_adjust (struct CpxVectorDynamic*);
-void              CpxVectorDynamic_enlarge(struct CpxVectorDynamic*,F64);
+struct Slice;
+struct CpxVector* CpxVector_alloc(U32);
+struct CpxVector* CpxVectorView_init(struct CpxVectorView*, struct CpxVector*,
+                                     struct Slice*);
 
 // ----- automatic constructors
 
-#define atCpxVector(...)         atVector       (Cpx,C64,__VA_ARGS__)
-#define atCpxVectorRef(...)      atVectorRef    (Cpx,C64,__VA_ARGS__)
-#define atCpxVectorView(...)     atVectorView   (Cpx,C64,__VA_ARGS__)
-#define atCpxVectorSubview(...)  atVectorSubview(Cpx,C64,__VA_ARGS__)
+#define atCpxVector(...)              atVector    (Cpx,C64,__VA_ARGS__)
+#define atCpxVectorRef(buffer,size)   atVectorRef (Cpx,buffer,size)
+#define atCpxVectorView(vector,slice) atVectorView(Cpx,vector,slice)
 
 #endif // COS_CPXVECTOR_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.2 2009/08/17 12:57:12 ldeniau Exp $
+ | $Id: String.h,v 1.3 2009/08/21 12:27:46 ldeniau Exp $
  |
 */
 
@@ -62,6 +62,7 @@
 
    where:
    - All strings are mutable
+   - All strings hold value elements
    - String are not sliced (ignored in views construction)
    - Dynamic strings can shrink and grow (gappend, gpreprend)
    - Dynamic strings can be converted to fixed string (gfix, gadjust)
@@ -123,7 +124,7 @@ defclass(StringView, String)
   struct String *string;
 endclass
 
-// ----- initializers, allocators and utilities (for the class cluster)
+// ----- initializers, allocators (for the class cluster)
 
 struct Slice;
 struct String* String_alloc(U32);

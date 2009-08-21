@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.12 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Vector.h,v 1.13 2009/08/21 12:27:46 ldeniau Exp $
  |
 */
 
@@ -40,31 +40,38 @@
 
 /* NOTE-USER: Vector class cluster constructors
 
-   aTVector    (obj,...)            -> Fixed size vector (automatic)
-   aTVectorRef (buffer,size)        -> Vector            (automatic)
-   aTVectorView(vector,slice)       -> Vector view       (automatic)
+   aTVector    (val,...)            -> Block vector    (automatic)
+   aTVectorRef (buffer,size)        -> Vector          (automatic)
+   aTVectorView(vector,slice)       -> Vector view     (automatic)
 
-   gnew     (TVector)               -> Dynamic vector
-   gnewWith (TVector,capacity)      -> Dynamic vector    (pre-allocated)
-   gnewWith (TVector,vector)        -> Fixed size vector (clone, whatever vector is!)
-   gnewWith2(TVector,size,obj)      -> Fixed size vector (element)
-   gnewWith2(TVector,size,fun)      -> Fixed size vector (generator)
-   gnewWith2(TVector,vector,slice)  -> Fixed size vector (subvector)
-   gnewWith2(TVector,vector,range)  -> Fixed size vector (subvector)
-   gnewWith2(TVector,vector,intvec) -> Fixed size vector (sequence)
+   gnewWith (TVector,vector)        -> Block vector    (clone)
+   gnewWith (TVector,slice)         -> Block vector    (sequence)
+   gnewWith (TVector,range)         -> Block vector    (sequence)
+   gnewWith2(TVector,size,obj)      -> Block vector    (element)
+   gnewWith2(TVector,size,fun)      -> Block vector    (generator)
+   gnewWith2(TVector,vector,slice)  -> Block vector    (subvector)
+   gnewWith2(TVector,vector,range)  -> Block vector    (subvector)
+   gnewWith2(TVector,vector,intvec) -> Block vector    (sequence)
    
-   gnewWith2(View,vector,slice)     -> Vector view       (view)
-   gnewWith2(View,vector,range)     -> Vector view       (view)
+   gnew     (TVector)               -> Dynamic vector
+   gnewWith (TVector,capacity)      -> Dynamic vector  (pre-allocated)
+
+   gnewWith (TVector,fun)           -> Lazy vector     (generator)
+   gnewWith2(TVector,fun,vector)    -> Lazy vector     (generator)
+
+   gnewWith2(View,vector,slice)     -> Vector view     (view)
+   gnewWith2(View,vector,range)     -> Vector view     (view)
 
    where:
    - T stands for Int, Lng, Flt, Cpx
-   - All vectors are mutable
-   - All vectors own value elements
-   - Fixed size vectors will be one of TVector0 to TVector9 if size is < 10.
+   - All vectors are mutable and strided
+   - All vectors hold value elements
+   - Block vectors will be one of TVector0..9 if size is < 10, TVectorN otherwise
    - Dynamic vectors can shrink and grow (gappend, gpreprend)
-   - Dynamic vectors can be converted to fixed size vector (gadjust)
+   - Dynamic vectors can be converted to fixed vector (gfix, gadjust)
+   - Lazy vectors are dynamic vectors growing automatically using a generator
    - Vector views work only on non-dynamic vectors
-   - Vector views clone are fixed size vectors (copy), not views
+   - Vector views clone are block vectors (copy), not views
 */
 
 defclass(Vector, ValueSequence)
@@ -89,26 +96,24 @@ endclass
   atVectorN(COS_PP_CAT(P,Sequence_SizedName(Vector,10,N,__VA_ARGS__)), \
             COS_PP_CAT(P,Vector),E,__VA_ARGS__)
 
-#define atVectorN(TN,T,E,...) \
-  ( (struct T*)&(struct TN) {{ {{{{ cos_object_auto(TN) }}}}, \
-    (E[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 }} )
+#define atVectorN(TN,T,E,...) ( (struct T*) \
+  ( &(struct TN) { {{{{ cos_object_auto(TN) }}}}, \
+    (E[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 } ))
 
 // --- VectorRef
 
 #define atVectorRef(P,buffer,size) \
-  COS_PP_CAT(P,VectorRef_init)\
-    (atVectorRef_1(COS_PP_CAT(P,Vector)),buffer,size)
+  atVectorRef_Default(COS_PP_CAT(P,Vector), buffer, size)
 
-#define atVectorRef_1(T) \
-  &(struct T) {{ {{ cos_object_auto(T) }}, 0, 0, 0 } }
+#define atVectorRef_Default(T,buffer,size) \
+  ( &(struct T) { {{{{ cos_object_auto(T) }}}}, (buffer), (size), 1 } )
 
 // --- VectorView
 
-#define atVectorView(P,vector,slice) \
-  COS_PP_CAT(P,VectorView_init)\
-    (atVectorView_1(COS_PP_CAT(P,VectorView)),vector,slice)
+#define atVectorView(P,vector,slice) COS_PP_CAT(P,VectorView_init) ( \
+  atVectorView_Default(COS_PP_CAT(P,VectorView)), vector, slice )
 
-#define atVectorView_1(T) \
-  &(struct T) {{ {{ cos_object_auto(T) }}, 0, 0, 0 }, 0 }
+#define atVectorView_Default(T) \
+  ( &(struct T) {{ {{{{ cos_object_auto(T) }}}}, 0, 0, 0 }, 0 } )
 
 #endif // COS_VECTOR_H

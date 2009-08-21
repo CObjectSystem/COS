@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Int Vector, Dynamic Vector and Vector View
+ | COS Vector, Dynamic Vector, Lazy Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.h,v 1.4 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: IntVector.h,v 1.5 2009/08/21 12:27:46 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,7 @@
 
 /* NOTE-USER: IntVector class cluster constructors
 
-   see also cos/Vector.h
+   see cos/Vector.h for description
 */
 
 defclass(IntVector, Vector)
@@ -55,28 +55,19 @@ endclass
 #define aIntVectorRef(...)  ( (OBJ)atIntVectorRef (__VA_ARGS__) )
 #define aIntVectorView(...) ( (OBJ)atIntVectorView(__VA_ARGS__) )
 
+// --- shortcuts
+
+#ifndef COS_NOSHORTCUT
+
+#define aIVec(...)  aIntVector(__VA_ARGS__)
+
+#endif
+
 /***********************************************************
  * Implementation (private)
  */
 
-// ----- Vector view
-
-defclass(IntVectorView, IntVector)
-  struct IntVector *vector;
-endclass
-
-// ----- Dynamic vector
-
-defclass(IntVectorDynamicN, IntVector)
-endclass
-
-// ---
-
-defclass(IntVectorDynamic, IntVectorDynamicN)
-  U32 capacity;
-endclass
-
-// ----- Fixed size vector
+// ----- Block vector
 
 defclass(IntVector0, IntVector) I32 _value[]; endclass
 defclass(IntVector1, IntVector) I32 _value[]; endclass
@@ -90,22 +81,39 @@ defclass(IntVector8, IntVector) I32 _value[]; endclass
 defclass(IntVector9, IntVector) I32 _value[]; endclass
 defclass(IntVectorN, IntVector) I32 _value[]; endclass
 
-// ----- allocators and initializers
+// ----- Fixed vector, Dynamic vector and Lazy vector
 
-struct IntVector* IntVectorRef_init (struct IntVector*,I32*,U32);
-struct IntVector* IntVectorView_init(struct IntVectorView*,struct IntVector*,struct Slice*);
+defclass(IntVectorFix, IntVector)
+  I32 *_value;
+  U32  _cls;
+  U32  capacity;
+endclass
 
-struct IntVector* IntVector_alloc         (U32);
-struct IntVector* IntVectorDynamic_alloc  (U32);
-struct IntVector* IntVectorView_alloc     (struct IntVector*,struct Slice*);
+defclass(IntVectorDyn, IntVectorFix)
+endclass
 
-void              IntVectorDynamic_adjust (struct IntVectorDynamic*);
-void              IntVectorDynamic_enlarge(struct IntVectorDynamic*,F64);
+defclass(IntVectorLzy, IntVectorDyn)
+  OBJ generator;
+  I32 arity;
+endclass
+
+// ----- IntVector view
+
+defclass(IntVectorView, IntVector)
+  struct IntVector *vector;
+endclass
+
+// ----- initializers, allocators (for the class cluster)
+
+struct Slice;
+struct IntVector* IntVector_alloc(U32);
+struct IntVector* IntVectorView_init(struct IntVectorView*, struct IntVector*,
+                                     struct Slice*);
 
 // ----- automatic constructors
 
 #define atIntVector(...)              atVector    (Int,I32,__VA_ARGS__)
-#define atIntVectorRef(buffer,slice)  atVectorRef (Int,buffer,slice)
+#define atIntVectorRef(buffer,size)   atVectorRef (Int,buffer,size)
 #define atIntVectorView(vector,slice) atVectorView(Int,vector,slice)
 
 #endif // COS_INTVECTOR_H

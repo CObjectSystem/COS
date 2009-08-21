@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.1 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.2 2009/08/21 12:27:46 ldeniau Exp $
  |
 */
 
@@ -119,56 +119,59 @@ defmethod(void, greverse, T)
   }
 endmethod
 
-#if 0 // TODO
 defmethod(void, gpermute, T, IntVector)
   PRE
-    test_assert( self->size == self2->size, "incompatible array sizes" );
+    test_assert( self->size == self2->size, "incompatible " TS " sizes" );
 
   BODY
     if (self->size < 2)
       retmethod();
 
-    OBJ *obj   = self->object;
-    U32  obj_n = self->size;
-    I32  obj_s = self->stride;
-    I32 *idx   = self2->valref;
+    VAL *val   = self->valref;
+    U32  val_n = self->size;
+    I32  val_s = self->stride;
+    I32 *idx   = self2->value;
     I32  idx_s = self2->stride;
 
-    TMPARRAY_CREATE(OBJ,buf,obj_n); // OBJ buf[obj_n];
+    TMPARRAY_CREATE(VAL,buf,val_n); // VAL buf[val_n];
+    TMPARRAY_CREATE(U8 ,flg,val_n); // U8  flg[val_n];
 
-    OBJ *cur, *end = buf + obj_n;
+    memset(flg,1,val_n);
+
+    VAL *cur, *end = buf + val_n;
     U32  i = 0;
 
     // permute
     for (cur = buf; cur != end; cur++) {
-      i = Range_index(*idx, obj_n);
-      if ( !(i < obj_n && obj[i*obj_s]) ) break;
-      *cur = obj[i*obj_s], obj[i*obj_s] = 0;
+      i = Range_index(*idx, val_n);
+      if ( !(i < val_n && flg[i*val_s]) ) break;
+      *cur = val[i*val_s], flg[i*val_s] = 0;
        idx += idx_s;
     }
 
     if (cur == end) {
       // copy back
       for (cur = buf; cur != end; cur++)
-        *obj = *cur, obj += obj_s;
+        *val = *cur, val += val_s;
 
       TMPARRAY_DESTROY(buf);
+      TMPARRAY_DESTROY(flg);
     } else {
       // rollback (error)
-      BOOL iiir = i < obj_n; // last index-is-in-range flag
+      BOOL iiir = i < val_n; // last index-is-in-range flag
 
       while (cur != buf) {
         idx -= idx_s;
-        i = Range_index(*idx, obj_n);
-        obj[i*obj_s] = *--cur;
+        i = Range_index(*idx, val_n);
+        val[i*val_s] = *--cur;
       }
 
       TMPARRAY_DESTROY(buf);
+      TMPARRAY_DESTROY(flg);
       test_assert( iiir, "index out of range"  );
       test_assert(    0, "invalid permutation" );
     }
 endmethod
-#endif
 
 // ----- repeat
 
