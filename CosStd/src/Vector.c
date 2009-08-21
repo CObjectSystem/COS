@@ -29,10 +29,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.6 2009/08/21 13:04:40 ldeniau Exp $
+ | $Id: Vector.c,v 1.7 2009/08/21 13:10:39 ldeniau Exp $
  |
 */
 
+#include <cos/ShtVector.h>
 #include <cos/IntVector.h>
 #include <cos/LngVector.h>
 #include <cos/FltVector.h>
@@ -54,6 +55,10 @@ defmethod(OBJ, gdeinit, Vector)
 endmethod
 
 // ----- constructors from a vector
+
+defmethod(OBJ, ginitWithShtPtr, mVector, (I16*)ref, (U32)n)
+  retmethod( ginitWith(_1, aShtVectorRef(ref,n)) );
+endmethod
 
 defmethod(OBJ, ginitWithIntPtr, mVector, (I32*)ref, (U32)n)
   retmethod( ginitWith(_1, aIntVectorRef(ref,n)) );
