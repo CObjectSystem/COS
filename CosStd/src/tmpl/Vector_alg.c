@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.2 2009/08/21 12:27:46 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.3 2009/08/21 12:37:38 ldeniau Exp $
  |
 */
 
@@ -112,11 +112,18 @@ defmethod(void, greverse, T)
   I32  val_s = self->stride;
   VAL *end   = self->valref + (self->size-1)*self->stride;
 
-  while (val != end) {
-    SWAP(*val,*end);
-    val += val_s;
-    end -= val_s;
-  }
+  if (val_s > 0)
+    while (val < end) {
+      SWAP(*val,*end);
+      val += val_s;
+      end -= val_s;
+    }
+  else
+    while (val > end) {
+      SWAP(*val,*end);
+      val += val_s;
+      end -= val_s;
+    }
 endmethod
 
 defmethod(void, gpermute, T, IntVector)
