@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array - Lazy dynamic array
+ | COS Vector template - Lazy dynamic vector
  |
  o---------------------------------------------------------------------o
  |
@@ -29,47 +29,40 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_lzy.c,v 1.3 2009/08/17 12:57:13 ldeniau Exp $
+ | $Id: Vector_lzy.c,v 1.1 2009/08/21 12:10:00 ldeniau Exp $
  |
 */
 
-#include <cos/Array.h>
-#include <cos/Functor.h>
-#include <cos/Number.h>
-#include <cos/Slice.h>
-
-#include <cos/gen/accessor.h>
-#include <cos/gen/container.h>
-#include <cos/gen/functor.h>
-#include <cos/gen/object.h>
-#include <cos/gen/new.h>
+#ifndef VECTOR_TMPL
+#error "this template file requires tmpl/Vector.c"
+#endif
 
 // -----
 
-makclass(ArrayLzy, ArrayDyn);
+makclass(TL, TD);
 
-// ----- exception
+// -----
 
-useclass(ExBadArity, ArrayLzy);
+useclass(ExBadArity, TL);
 
 // ----- constructors
 
-defalias (OBJ, (ginitWith)gnewWith, pmArray, Functor);
-defmethod(OBJ,  ginitWith         , pmArray, Functor) // generator
-  retmethod( ginitWith(galloc(ArrayLzy),_2) );
+defalias (OBJ, (ginitWith)gnewWith, TP, Functor);
+defmethod(OBJ,  ginitWith         , TP, Functor) // generator
+  retmethod( ginitWith(galloc(TL),_2) );
 endmethod
 
-defmethod(OBJ, ginitWith, ArrayLzy, Functor)
-  retmethod( ginitWith2(_1,_2,aArrayRef(0,0)) );
+defmethod(OBJ, ginitWith, TL, Functor)
+  retmethod( ginitWith2(_1,_2,aTRef(0,0)) );
 endmethod
 
-defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Functor, Array);
-defmethod(OBJ,  ginitWith2          , pmArray, Functor, Array) // generator
-  retmethod( ginitWith2(galloc(ArrayLzy),_2,_3) );
+defalias (OBJ, (ginitWith2)gnewWith2, TP, Functor, T);
+defmethod(OBJ,  ginitWith2          , TP, Functor, T) // generator
+  retmethod( ginitWith2(galloc(TL),_2,_3) );
 endmethod
 
-defmethod(OBJ, ginitWith2, ArrayLzy, Functor, Array)
-  defnext(OBJ, ginitWith , ArrayLzy, Int); // dynamic array
+defmethod(OBJ, ginitWith2, TL, Functor, T)
+  defnext(OBJ, ginitWith , TL, Int); // dynamic array
   
   next_method(self, atInt(self3->size*2));
 
@@ -86,7 +79,7 @@ endmethod
 
 // ----- destructor
 
-defmethod(OBJ, gdeinit, ArrayLzy)
+defmethod(OBJ, gdeinit, TL)
   if (self->generator)          // take care of protection cases
     grelease(self->generator);
   next_method(self);
@@ -95,7 +88,7 @@ endmethod
 
 // ----- adjustment (capacity -> size)
 
-defmethod(void, gadjust, ArrayLzy)
+defmethod(void, gadjust, TL)
   if (self->generator)
     grelease(self->generator);
   next_method(self);
@@ -103,31 +96,31 @@ endmethod
 
 // ----- getter
 
-defmethod(OBJ, ggetAt, ArrayLzy, Int)
-  struct Array *arr = &self->ArrayDyn.ArrayFix.Array;
-  U32 i = Range_index(self2->value, arr->size);
+defmethod(OBJ, ggetAt, TL, Int)
+  struct T *vec = &self->TD.TF.T;
+  U32 i = Range_index(self2->value, vec->size);
 
   switch(self->arity) {
   case 0:
-    while (arr->size <= i)
+    while (vec->size <= i)
       gappend(_1, geval(self->generator));
     break;
 
   case 1:
-    while (arr->size <= i)
+    while (vec->size <= i)
       gappend(_1, geval1(self->generator, _1));
     break;
 
   case 2:
-    while (arr->size <= i)
-      gappend(_1, geval2(self->generator, _1, aInt(arr->size)));
+    while (vec->size <= i)
+      gappend(_1, geval2(self->generator, _1, aInt(vec->size)));
     break;
 
   default:
-    THROW( gnewWithStr(ExBadArity, "lazy array generator eval") );
+    THROW( gnewWithStr(ExBadArity, "lazy " TS " generator eval") );
   }
 
-  retmethod( arr->object[i*arr->stride] );
+  retmethod( AUTODELETE(VALOBJ(vec->valref[i*vec->stride])) );
 endmethod
 
 

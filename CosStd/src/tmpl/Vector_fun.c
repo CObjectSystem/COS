@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array - algorithms using functors
+ | COS Vector template - algorithms using functors
  |
  o---------------------------------------------------------------------o
  |
@@ -29,183 +29,169 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.13 2009/08/19 16:34:13 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.1 2009/08/21 12:10:00 ldeniau Exp $
  |
 */
 
-#include <cos/Array.h>
-#include <cos/Functor.h>
-#include <cos/IntVector.h>
-#include <cos/Number.h>
-
-#include <cos/gen/algorithm.h>
-#include <cos/gen/container.h>
-#include <cos/gen/functor.h>
-#include <cos/gen/object.h>
-
-#include <cos/carray.h>
-
-// ----- 
-
-useclass(Array);
+#ifndef VECTOR_TMPL
+#error "this template file requires tmpl/Vector.c"
+#endif
 
 // ----- foreach (in place, discard fun returned value)
 
-defmethod(void, gforeach, Array, Functor)
-  OBJ *obj   = self->object;
-  I32  obj_s = self->stride;
-  OBJ *end   = self->object + self->size*self->stride;
+defmethod(void, gforeach, T, Functor)
+  VAL *val   = self->valref;
+  I32  val_s = self->stride;
+  VAL *end   = self->valref + self->size*self->stride;
 
-  while (obj != end) {
-    geval1(_2, *obj);
-    obj += obj_s;
+  while (val != end) {
+    geval1(_2, VALOBJ(*val));
+    val += val_s;
   }
 endmethod
 
 // ----- apply (in place map)
 
-defmethod(void, gapply, Functor, Array)
-  OBJ *obj   = self2->object;
-  I32  obj_s = self2->stride;
-  OBJ *end   = self2->object + self2->size*self2->stride;
+defmethod(void, gapply, Functor, T)
+  VAL *val   = self2->valref;
+  I32  val_s = self2->stride;
+  VAL *end   = self2->valref + self2->size*self2->stride;
 
-  while (obj != end) {
-    OBJ new = geval1(_1, *obj);
-    if (new != *obj) {
-      OBJ old = *obj;
-      *obj = gretain(new);
-      grelease(old);
-    }
-    obj += obj_s;
+  while (val != end) {
+    OBJ new = geval1(_1, VALOBJ(*val));
+    ASSIGN(*val, TOVAL(new));
+    val += val_s;
   }
 endmethod
 
 // ----- map, map2, map3, map4
 
-defmethod(OBJ, gmap, Functor, Array)
-  struct Array* arr = Array_alloc(self2->size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+defmethod(OBJ, gmap, Functor, T)
+  struct T* vec = T_alloc(self2->size);
+  OBJ _vec = (OBJ)vec; PRT(_vec);
 
-  OBJ *dst   = arr->object;
-  OBJ *end   = arr->object + arr->size;
-  OBJ *src   = self2->object;
+  VAL *dst   = vec->valref;
+  VAL *end   = vec->valref + vec->size;
+  VAL *src   = self2->valref;
   I32  src_s = self2->stride;
 
   while (dst != end) {
-    *dst++ = gretain( geval1(_1,*src) );
+    *dst++ = RETAIN(TOVAL( geval1(_1,VALOBJ(*src)) ));
     src += src_s;
   }
 
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
-defmethod(OBJ, gmap2, Functor, Array, Array)
+defmethod(OBJ, gmap2, Functor, T, T)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
 
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  struct T* vec = T_alloc(size);
+  OBJ _vec = (OBJ)vec; PRT(_vec);
 
-  OBJ *dst    = arr->object;
-  OBJ *end    = arr->object + arr->size;
-  OBJ *src1   = self2->object;
+  VAL *dst    = vec->valref;
+  VAL *end    = vec->valref + vec->size;
+  VAL *src1   = self2->valref;
   I32  src1_s = self2->stride;
-  OBJ *src2   = self3->object;
+  VAL *src2   = self3->valref;
   I32  src2_s = self3->stride;
 
   while (dst != end) {
-    *dst++ = gretain( geval2(_1,*src1,*src2) );
+    *dst++ = RETAIN(TOVAL( geval2(_1,VALOBJ(*src1),VALOBJ(*src2)) ));
     src1 += src1_s;
     src2 += src2_s;
   }
 
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
-defmethod(OBJ, gmap3, Functor, Array, Array, Array)
+defmethod(OBJ, gmap3, Functor, T, T, T)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
   if (size > self4->size) size = self4->size;
 
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  struct T* vec = T_alloc(size);
+  OBJ _vec = (OBJ)vec; PRT(_vec);
 
-  OBJ *dst    = arr->object;
-  OBJ *end    = arr->object + arr->size;
-  OBJ *src1   = self2->object;
+  VAL *dst    = vec->valref;
+  VAL *end    = vec->valref + vec->size;
+  VAL *src1   = self2->valref;
   I32  src1_s = self2->stride;
-  OBJ *src2   = self3->object;
+  VAL *src2   = self3->valref;
   I32  src2_s = self3->stride;
-  OBJ *src3   = self4->object;
+  VAL *src3   = self4->valref;
   I32  src3_s = self4->stride;
 
   while (dst != end) {
-    *dst++ = gretain( geval3(_1,*src1,*src2,*src3) );
+    *dst++ = RETAIN(TOVAL( geval3(_1,VALOBJ(*src1),VALOBJ(*src2),
+                                     VALOBJ(*src3)) ));
     src1 += src1_s;
     src2 += src2_s;
     src3 += src3_s;
   }
 
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
-defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
+defmethod(OBJ, gmap4, Functor, T, T, T, T)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
   if (size > self4->size) size = self4->size;
   if (size > self5->size) size = self5->size;
 
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+  struct T* vec = T_alloc(size);
+  OBJ _vec = (OBJ)vec; PRT(_vec);
 
-  OBJ *dst    = arr->object;
-  OBJ *end    = arr->object + arr->size;
-  OBJ *src1   = self2->object;
+  VAL *dst    = vec->valref;
+  VAL *end    = vec->valref + vec->size;
+  VAL *src1   = self2->valref;
   I32  src1_s = self2->stride;
-  OBJ *src2   = self3->object;
+  VAL *src2   = self3->valref;
   I32  src2_s = self3->stride;
-  OBJ *src3   = self4->object;
+  VAL *src3   = self4->valref;
   I32  src3_s = self4->stride;
-  OBJ *src4   = self5->object;
+  VAL *src4   = self5->valref;
   I32  src4_s = self5->stride;
 
   while (dst != end) {
-    *dst++ = gretain( geval4(_1,*src1,*src2,*src3,*src4) );
+    *dst++ = RETAIN(TOVAL( geval4(_1,VALOBJ(*src1),VALOBJ(*src2),
+                                     VALOBJ(*src3),VALOBJ(*src4)) ));
     src1 += src1_s;
     src2 += src2_s;
     src3 += src3_s;
     src4 += src4_s;
   }
 
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
 // ----- all, any
 
-defmethod(OBJ, gall, Array, Functor)
-  OBJ *obj   = self->object;
-  I32  obj_s = self->stride;
-  OBJ *end   = self->object + self->size*self->stride;
+defmethod(OBJ, gall, T, Functor)
+  VAL *val   = self->valref;
+  I32  val_s = self->stride;
+  VAL *end   = self->valref + self->size*self->stride;
 
-  while (obj != end) {
-    if (geval1(_2, *obj) != True)
+  while (val != end) {
+    if (geval1(_2, VALOBJ(*val)) != True)
       retmethod(False);
-    obj += obj_s;
+    val += val_s;
   }
       
   retmethod(True);
 endmethod
 
-defmethod(OBJ, gany, Array, Functor)
-  OBJ *obj   = self->object;
-  I32  obj_s = self->stride;
-  OBJ *end   = self->object + self->size*self->stride;
+defmethod(OBJ, gany, T, Functor)
+  VAL *val   = self->valref;
+  I32  val_s = self->stride;
+  VAL *end   = self->valref + self->size*self->stride;
 
-  while (obj != end) {
-    if (geval1(_2, *obj) == True)
+  while (val != end) {
+    if (geval1(_2, VALOBJ(*val)) == True)
       retmethod(True);
-    obj += obj_s;
+    val += val_s;
   }
       
   retmethod(False);
@@ -213,186 +199,181 @@ endmethod
 
 // ----- filter, filterOut fold, scan
 
-defmethod(OBJ, gfilter, Array, Functor)
-  OBJ _arr = gnewWith(Array,aInt(self->size)); PRT(_arr);
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+defmethod(OBJ, gfilter, T, Functor)
+  OBJ _vec = gnewWith(T,aInt(self->size)); PRT(_vec);
+  struct T* vec = STATIC_CAST(struct T*, _vec);
 
-  OBJ *dst   = arr ->object;
-  OBJ *src   = self->object;
+  VAL *dst   = vec ->valref;
+  VAL *src   = self->valref;
   I32  src_s = self->stride;
-  OBJ *end   = self->object + self->size*self->stride;
+  VAL *end   = self->valref + self->size*self->stride;
 
   while (src != end) {
-    if (geval1(_2, *src) == True)
-      *dst++ = gretain(*src), ++arr->size;
+    if (geval1(_2, VALOBJ(*src)) == True)
+      *dst++ = RETAIN(*src), ++vec->size;
     src += src_s;
   }
 
-  gadjust(_arr);
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+  gadjust(_vec);
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
-defmethod(OBJ, gfilterOut, Array, Functor)
-  OBJ _arr = gnewWith(Array,aInt(self->size)); PRT(_arr);
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+defmethod(OBJ, gfilterOut, T, Functor)
+  OBJ _vec = gnewWith(T,aInt(self->size)); PRT(_vec);
+  struct T* vec = STATIC_CAST(struct T*, _vec);
 
-  OBJ *dst   = arr ->object;
-  OBJ *src   = self->object;
+  VAL *dst   = vec ->valref;
+  VAL *src   = self->valref;
   I32  src_s = self->stride;
-  OBJ *end   = self->object + self->size*self->stride;
+  VAL *end   = self->valref + self->size*self->stride;
 
   while (src != end) {
-    if (geval1(_2, *src) == False)
-      *dst++ = gretain(*src), ++arr->size;
+    if (geval1(_2, VALOBJ(*src)) == False)
+      *dst++ = RETAIN(*src), ++vec->size;
     src += src_s;
   }
 
-  gadjust(_arr);
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+  gadjust(_vec);
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
-defmethod(OBJ, gfoldl, Array, Functor, Object)
-  OBJ *src   = self->object;
+defmethod(OBJ, gfoldl, T, Functor, Object)
+  VAL *src   = self->valref;
   I32  src_s = self->stride;
-  OBJ *end   = self->object + self->size*self->stride;
+  VAL *end   = self->valref + self->size*self->stride;
   OBJ  res   = _3;
   
   while (src != end) {
-    res = geval2(_2, res, *src);
+    res = geval2(_2, res, VALOBJ(*src));
     src += src_s;
   }
 
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gfoldr, Array, Functor, Object)
-  OBJ *src   = self->object + self->size*self->stride;
+defmethod(OBJ, gfoldr, T, Functor, Object)
+  VAL *src   = self->valref + self->size*self->stride;
   I32  src_s = self->stride;
-  OBJ *end   = self->object;
+  VAL *end   = self->valref;
   OBJ res    = _3;
   
   while (src != end) {
     src -= src_s;
-    res = geval2(_2, *src, res);
+    res = geval2(_2, VALOBJ(*src), res);
   }
 
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gscanl, Array, Functor, Object)
-  struct Array* arr = Array_alloc(self->size+1);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+defmethod(OBJ, gscanl, T, Functor, Object)
+  struct T* vec = T_alloc(self->size+1);
+  OBJ _vec = (OBJ)vec; PRT(_vec);
 
-  OBJ *dst   = arr->object;
-  OBJ *end   = arr->object + arr->size;
-  OBJ *src   = self->object;
+  VAL *dst   = vec->valref;
+  VAL *end   = vec->valref + vec->size;
+  VAL *src   = self->valref;
   I32  src_s = self->stride;
 
-  *dst++ = gretain(_3);
+  *dst++ = RETAIN(TOVAL(_3));
   
   while (dst != end) {
-    *dst = gretain( geval2(_2, dst[-1], *src) );
+    *dst = RETAIN(TOVAL( geval2(_2, VALOBJ(dst[-1]), VALOBJ(*src)) ));
     src += src_s, dst++;
   }
 
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
-defmethod(OBJ, gscanr, Array, Functor, Object)
-  struct Array* arr = Array_alloc(self->size+1);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
+defmethod(OBJ, gscanr, T, Functor, Object)
+  struct T* vec = T_alloc(self->size+1);
+  OBJ _vec = (OBJ)vec; PRT(_vec);
 
-  OBJ *dst   = arr->object + arr->size;
-  OBJ *end   = arr->object;
-  OBJ *src   = self->object + self->size*self->stride;
+  VAL *dst   = vec->valref + vec->size;
+  VAL *end   = vec->valref;
+  VAL *src   = self->valref + self->size*self->stride;
   I32  src_s = self->stride;
 
-  *--dst = gretain(_3);
+  *--dst = RETAIN(TOVAL(_3));
 
   while (dst != end) {
     src -= src_s, dst--;
-    *dst = gretain( geval2(_2, *src, dst[1]) );
+    *dst = RETAIN(TOVAL( geval2(_2, VALOBJ(*src), VALOBJ(dst[1])) ));
   }
 
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
 // ----- unique (remove contiguous duplicates)
 
-defmethod(OBJ, gunique, Array, Functor)
+defmethod(OBJ, gunique, T, Functor)
   if (self->size < 1)
     retmethod( gautoDelete(gclone(_1)) );
 
-  OBJ _arr = gnewWith(Array,aInt(self->size)); PRT(_arr);
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  OBJ _vec = gnewWith(T,aInt(self->size)); PRT(_vec);
+  struct T* vec = STATIC_CAST(struct T*, _vec);
 
-  OBJ *dst   = arr ->object;
-  OBJ *src   = self->object;
+  VAL *dst   = vec ->valref;
+  VAL *src   = self->valref;
   I32  src_s = self->stride;
-  OBJ *end   = self->object + (self->size-1)*self->stride;
+  VAL *end   = self->valref + (self->size-1)*self->stride;
 
   while (src != end) {
-    if (geval2(_2, src[0], src[src_s]) != True)
-      *dst++ = gretain(*src), ++arr->size;
+    if (geval2(_2, VALOBJ(*src), VALOBJ(src[src_s])) != True)
+      *dst++ = RETAIN(*src), ++vec->size;
     src += src_s;
   }
-  *dst++ = gretain(*src);
+  *dst++ = RETAIN(*src);
 
-  gadjust(_arr);
-  UNPRT(_arr);
-  retmethod(gautoDelete(_arr));
+  gadjust(_vec);
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
 // ----- finding
 
-static I32
-ifind(struct Array *self, OBJ _2)
+static VAL*
+findFun(VAL *val, U32 val_n, I32 val_s, OBJ _2)
 {
-  useclass(Lesser, Equal, Greater);
+  if (!val_n) return 0;
 
-  if (self->size == 0)
-    return(-1);
-
-  OBJ *obj   = self->object;
-  I32  obj_s = self->stride;
-  OBJ  res   = geval1(_2, *obj); // bsearch order
+  OBJ res = geval1(_2, VALOBJ(*val)); // bsearch order
 
   if (res == True || res == Equal) // found
-    return(0);
+    return val;
 
   // linear search
   if (res == False) {
-    OBJ *end = self->object + self->size*self->stride;
+    VAL *end = val + val_n*val_s;
 
-    obj += obj_s;
-    while (obj != end) {
-      if (geval1(_2, *obj) == True) // found
-        return( (obj-self->object) / obj_s );
-      obj += obj_s;
+    val += val_s;
+    while (val != end) {
+      if (geval1(_2, VALOBJ(*val)) == True) // found
+        return val;
+      val += val_s;
     }
 
-    return(-1);
+    return 0;
   }
 
   // binary search
   if (res == Lesser)
-    return(-1);
+    return 0;
   
   test_assert( res == Greater,
     "find expects functor returning TrueFalse or Ordered predicates" );
 
-  U32 lo = 1, hi = self->size-1;
+  U32 lo = 1, hi = val_n-1;
 
   while (lo <= hi) {
     U32 i = (lo + hi) / 2;
-    res = geval1(_2, obj[i*obj_s]);
+    res = geval1(_2, VALOBJ(val[i*val_s]));
 
     if (res == Equal)
-      return(i); // found
+      return val + i*val_s; // found
 
     if (res == Lesser)
       hi = i-1;
@@ -400,43 +381,52 @@ ifind(struct Array *self, OBJ _2)
       lo = i+1;
   }
 
-  return(-1);  
+  return 0;  
 }
 
 // ---
 
-defmethod(OBJ, gfind, Array, Functor)
-  I32 i = ifind(self,_2);
-  
-  retmethod(i >= 0 ? self->object[i*self->stride] : Nil);  
+defmethod(OBJ, gfind, T, Functor)
+  VAL *val   = self->valref;
+  U32  val_n = self->size;
+  I32  val_s = self->stride;
+
+  VAL *p = findFun(val,val_n,val_s,_2);
+
+  retmethod(p ? AUTODELETE(VALOBJ(*p)) : Nil);  
 endmethod
 
-defmethod(OBJ, gifind, Array, Functor)
-  I32 i = ifind(self,_2);
+defmethod(OBJ, gifind, T, Functor)
+  VAL *val   = self->valref;
+  U32  val_n = self->size;
+  I32  val_s = self->stride;
 
-  retmethod(i >= 0 ? gautoDelete( aInt(i) ) : Nil);
+  VAL *p = findFun(val,val_n,val_s,_2);
+
+  retmethod(p ? gautoDelete( aInt((p-val)/val_s) ) : Nil);
 endmethod
 
 // ----- sorting (in place)
 
-#define NETSORT(a,r) \
+#undef  NETSORT
+#define NETSORT(a,r,ret) \
   do { \
     switch (r) { \
     case 1: \
       SORT(a[0],a[1]); \
-      return; \
+      ret; \
     \
     case 2: \
       SORT(a[0],a[1]); \
       SORT(a[0],a[2]); \
       SORT(a[1],a[2]); \
-      return; \
+      ret; \
     \
     case 3: \
       SORT(a[0],a[2]); SORT(a[1],a[3]); \
       SORT(a[0],a[1]); SORT(a[2],a[3]); \
       SORT(a[1],a[2]); \
-      return; \
+      ret; \
     \
     case 4: \
       SORT(a[0],a[4]); SORT(a[1],a[3]); \
@@ -444,7 +434,7 @@ endmethod
       SORT(a[2],a[4]); SORT(a[0],a[1]); \
       SORT(a[2],a[3]); SORT(a[1],a[4]); \
       SORT(a[1],a[2]); SORT(a[3],a[4]); \
-      return; \
+      ret; \
     \
     case 5: \
       SORT(a[0],a[4]); SORT(a[1],a[5]); \
@@ -453,17 +443,14 @@ endmethod
       SORT(a[0],a[1]); SORT(a[4],a[5]); \
       SORT(a[1],a[4]); SORT(a[2],a[3]); \
       SORT(a[1],a[2]); SORT(a[3],a[4]); \
-      return; \
+      ret; \
     } \
   } while (0)
 
-/* from "Quicksort Is Optimal", R. Sedgwick & J. Bentley, 2002
-   plus some practical improvements.
- */
-
+#undef  EXCH
+#undef  SORT
 #define EXCH(a,b) (t=(a),(a)=(b),(b)=t)
 #define SORT(a,b) if (GCMP(b,a) == Lesser) EXCH(a,b)
-#define GCMP(a,b) geval2(fun,a,b)
 
 static inline U32
 pivot(void)
@@ -473,18 +460,25 @@ pivot(void)
   return x = x * 2621124293u + 1;
 }
 
+/* from "Quicksort Is Optimal", R. Sedgwick & J. Bentley, 2002
+   plus some practical improvements.
+ */
+
+#undef  GCMP
+#define GCMP(a,b) geval2(fun,VALOBJ(a),VALOBJ(b))
+
 static void
-quicksort(OBJ a[], I32 r, OBJ fun)
+qsortFun(VAL a[], I32 r, OBJ fun)
 {
-  useclass(Lesser, Equal);
   I32 i, j, p, q;
-  OBJ t, ri, rj;
+  OBJ ri, rj;
+  VAL t;
 
   // nothing to do
   if (r <= 0) return;
 
   // optimized sort for small sizes
-  NETSORT(a,r);
+  NETSORT(a,r,return);
 
   // select pivot as the median-of-three taken pseudo-randomly
   i = pivot() % (r+1) + 0, EXCH(a[i],a[0  ]);
@@ -519,61 +513,60 @@ quicksort(OBJ a[], I32 r, OBJ fun)
   for (i = i+1; ++q < r; i++) EXCH(a[q],a[i]);
 
   // divide & conquer (small first)
-  OBJ *s, *l;
+  VAL *s, *l;
   
   if (j < r-i)
     s = a, l = a+i, p = j, q = r-i;
   else
     l = a, s = a+i, q = j, p = r-i;
 
-  quicksort(s,p,fun);
-  quicksort(l,q,fun); // tail recursion
+  qsortFun(s,p,fun);
+  qsortFun(l,q,fun); // tail recursion
 }
 
 // -----
 
-defmethod(void, gsort, Array, Functor)
+defmethod(void, gsort, T, Functor)
   if (self->stride == 1) {
-    quicksort(self->object, self->size-1, _2);
+    qsortFun(self->valref, self->size-1, _2);
     return;
   }
 
   if (self->stride == -1) {
-    quicksort(self->object-self->size+1, self->size-1, _2);
+    qsortFun(self->valref-self->size+1, self->size-1, _2);
     greverse(_1);
     return;
   }
 
-  OBJ *obj   = self->object;
-  U32  obj_n = self->size;
-  I32  obj_s = self->stride;
+  VAL *val   = self->valref;
+  U32  val_n = self->size;
+  I32  val_s = self->stride;
 
-  TMPARRAY_CREATE(OBJ,buf,obj_n); // OBJ buf[obj_n];
+  TMPARRAY_CREATE(VAL,buf,val_n); // VAL buf[val_n];
 
-  OBJ *cur, *end = buf + obj_n;
+  VAL *cur, *end = buf + val_n;
 
   // forward copy
   for (cur = buf; cur != end; cur++)
-    *cur = *obj, obj += obj_s;
+    *cur = *val, val += val_s;
 
-  quicksort(buf, self->size-1, _2);
+  qsortFun(buf, self->size-1, _2);
 
   // backward copy
   for (cur = buf; cur != end; cur++)
-    *obj = *cur, obj += obj_s;
+    *val = *cur, val += val_s;
 
   TMPARRAY_DESTROY(buf);
 endmethod
 
-// ----- indirect sorting (permutation)
+// ----- indirect sorting (return permutation)
 
 #undef  GCMP
-#define GCMP(a,b) geval2(fun,o[a],o[b])
+#define GCMP(a,b) geval2(fun,VALOBJ(o[a]),VALOBJ(o[b]))
 
 static void
-iquicksort(I32 a[], OBJ o[], I32 r, OBJ fun)
+iqsortFun(I32 a[], VAL o[], I32 r, OBJ fun)
 {
-  useclass(Lesser, Equal);
   I32 i, j, p, q, t;
   OBJ ri, rj;
 
@@ -581,7 +574,7 @@ iquicksort(I32 a[], OBJ o[], I32 r, OBJ fun)
   if (r <= 0) return;
 
   // optimized sort for small sizes
-  NETSORT(a,r);
+  NETSORT(a,r,return);
 
   // select pivot as the median-of-three taken pseudo-randomly
   i = pivot() % (r+1) + 0, EXCH(a[i],a[0  ]);
@@ -623,17 +616,17 @@ iquicksort(I32 a[], OBJ o[], I32 r, OBJ fun)
   else
     l = a, s = a+i, q = j, p = r-i;
 
-  iquicksort(s,o,p,fun);
-  iquicksort(l,o,q,fun); // tail recursion
+  iqsortFun(s,o,p,fun);
+  iqsortFun(l,o,q,fun); // tail recursion
 }
 
-defmethod(OBJ, gisort, Array, Functor)
+defmethod(OBJ, gisort, T, Functor)
   useclass(IntVector);
 
   OBJ _vec = gnewWith(IntVector, aSlice(0,self->size,1)); PRT(_vec);
   struct IntVector *vec = STATIC_CAST(struct IntVector*, _vec);
 
-  iquicksort(vec->value, self->object, self->size-1, _2);
+  iqsortFun(vec->value, self->valref, self->size-1, _2);
   
   UNPRT(_vec);
   retmethod(gautoDelete(_vec));
@@ -641,18 +634,18 @@ endmethod
 
 // ----- is sorted predicate
 
-defmethod(OBJ, gisSorted, Array, Functor)
+defmethod(OBJ, gisSorted, T, Functor)
   if (self->size < 2)
     retmethod(True);
 
-  OBJ *obj   = self->object;
-  I32  obj_s = self->stride;
-  OBJ *end   = self->object + (self->size-1)*self->stride;
+  VAL *val   = self->valref;
+  I32  val_s = self->stride;
+  VAL *end   = self->valref + (self->size-1)*self->stride;
 
-  while (obj != end) {
-    if (geval2(_2, *obj, *(obj+obj_s)) == False)
+  while (val != end) {
+    if (geval2(_2, VALOBJ(*val), VALOBJ(val[val_s])) == False)
       retmethod(False);
-    obj += obj_s;
+    val += val_s;
   }
 
   retmethod(True);

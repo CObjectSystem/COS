@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.3 2009/08/17 12:57:13 ldeniau Exp $
+ | $Id: String_vw.c,v 1.4 2009/08/21 12:10:00 ldeniau Exp $
  |
 */
 
@@ -72,7 +72,7 @@ StringView_init(struct StringView *strv, struct String *str, struct Slice *slc)
 // ----- constructors
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, String, Slice);
-defmethod(OBJ,  ginitWith2          , mView, String, Slice) // stray view
+defmethod(OBJ,  ginitWith2          , mView, String, Slice) // string view
   retmethod( ginitWith2(galloc(StringView),_2,_3) );
 endmethod
 

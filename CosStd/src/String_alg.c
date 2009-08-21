@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.8 2009/08/19 16:34:13 ldeniau Exp $
+ | $Id: String_alg.c,v 1.9 2009/08/21 12:10:00 ldeniau Exp $
  |
 */
 
@@ -196,7 +196,7 @@ endmethod
 defmethod(OBJ, gifind, String, Char)
   U8* p = memchr(self->value, self2->Int.value, self->size);
 
-  retmethod(p ? gautoDelete(aInt(self->value-p)) : Nil);
+  retmethod(p ? gautoDelete(aInt(p-self->value)) : Nil);
 endmethod
 
 // ----- search (string)

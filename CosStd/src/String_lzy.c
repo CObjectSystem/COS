@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS String - Lazy dynamic stray
+ | COS String - Lazy dynamic string
  |
  o---------------------------------------------------------------------o
  |
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_lzy.c,v 1.1 2009/08/17 12:57:43 ldeniau Exp $
+ | $Id: String_lzy.c,v 1.2 2009/08/21 12:10:00 ldeniau Exp $
  |
 */
 
@@ -69,7 +69,7 @@ defmethod(OBJ,  ginitWith2          , pmString, Functor, String) // generator
 endmethod
 
 defmethod(OBJ, ginitWith2, StringLzy, Functor, String)
-  defnext(OBJ, ginitWith , StringLzy, Int); // dynamic stray
+  defnext(OBJ, ginitWith , StringLzy, Int); // dynamic string
   
   next_method(self, atInt(self3->size*2));
 
@@ -124,7 +124,7 @@ defmethod(OBJ, ggetAt, StringLzy, Int)
     break;
 
   default:
-    THROW( gnewWithStr(ExBadArity, "lazy stray generator eval") );
+    THROW( gnewWithStr(ExBadArity, "lazy string generator eval") );
   }
 
   retmethod( gautoDelete(aChar(str->value[i])) );

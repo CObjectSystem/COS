@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS String - accessors
+ | COS Vector template - accessors
  |
  o---------------------------------------------------------------------o
  |
@@ -29,79 +29,73 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_acc.c,v 1.4 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.1 2009/08/21 12:10:00 ldeniau Exp $
  |
 */
 
-#include <cos/String.h>
-#include <cos/IntVector.h>
-#include <cos/Number.h>
-#include <cos/Slice.h>
-
-#include <cos/gen/accessor.h>
-#include <cos/gen/container.h>
-#include <cos/gen/object.h>
-#include <cos/gen/value.h>
-
-// -----
-
-useclass(String);
+#ifndef VECTOR_TMPL
+#error "this template file requires tmpl/Vector.c"
+#endif
 
 // ----- getters (index, slice, intvector)
 
-defmethod(I32, gchrAt, String, Int)
+#if defined(INTVECTOR_ONLY) || defined(LNGVECTOR_ONLY) || defined(FLTVECTOR_ONLY)
+
+defmethod(F64, gfltAt, T, Int)
   U32 i;
 
   PRE
-    i = Range_index(self2->value, self->size);
+    i = Range_index(self2->valref, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT)
-      i = Range_index(self2->value, self->size);
+      i = Range_index(self2->valref, self->size);
       
-    retmethod( self->value[i] );
+    retmethod( self->valref[i*self->stride] );
 endmethod
 
-defmethod(OBJ, ggetAt, String, Int)
-  U32 i;
+#endif // VECTOR_ONLY
 
+defmethod(OBJ, ggetAt, T, Int)
+  U32 i;
+  
   PRE
     i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
-
+    
   BODY
     if (!COS_CONTRACT)
       i = Range_index(self2->value, self->size);
-      
-    retmethod( gautoDelete(aChar(self->value[i])) );
+
+    retmethod( AUTODELETE(VALOBJ(self->valref[i*self->stride])) );
 endmethod
 
-defmethod(OBJ, ggetAt, String, Slice)
-  retmethod( gautoDelete(ginitWith2(String,_1,_2)) );
+defmethod(OBJ, ggetAt, T, Slice)
+  retmethod( gautoDelete(ginitWith2(T,_1,_2)) );
 endmethod
 
-defmethod(OBJ, ggetAt, String, IntVector)
-  retmethod( gautoDelete(ginitWith2(String,_1,_2)) );
+defmethod(OBJ, ggetAt, T, IntVector)
+  retmethod( gautoDelete(ginitWith2(T,_1,_2)) );
 endmethod
 
 // ---
 
-defalias (OBJ, (gget)glast, String);
-defalias (OBJ, (gget)gtop , String);
-defmethod(OBJ,  gget      , String)
+defalias (OBJ, (gget)glast, T);
+defalias (OBJ, (gget)gtop , T);
+defmethod(OBJ,  gget      , T)
   retmethod( self->size
-           ? gautoDelete(aChar(self->value[(self->size-1)]))
+           ? AUTODELETE(VALOBJ(self->valref[(self->size-1)*self->stride]))
            : Nil );
 endmethod
 
-defmethod(OBJ, gfirst, String)
-  retmethod( self->size ? gautoDelete(aChar(self->value[0])) : Nil );
+defmethod(OBJ, gfirst, T)
+  retmethod( self->size ? AUTODELETE(VALOBJ(self->valref[0])) : Nil );
 endmethod
 
 // ----- setters (index, slice, intvector)
 
-defmethod(void, gputAt, String, Int, Char)
+defmethod(void, gputAt, T, Int, Object)
   U32 i;
   
   PRE
@@ -111,64 +105,74 @@ defmethod(void, gputAt, String, Int, Char)
   BODY
     if (!COS_CONTRACT)
       i = Range_index(self2->value, self->size);
-      
-    self->value[i] = self3->Int.value;
+ 
+    VAL *dst = self->valref + i*self->stride;
+    ASSIGN(*dst,TOVAL(_3));
 endmethod
 
-defmethod(void, gputAt, String, Int, Object)
+#ifdef FLTVECTOR_ONLY
+
+defmethod(void, gputAt, T, Int, Float)
   U32 i;
   
   PRE
-    i = Range_index(self2->value, self->size);
+    i = Range_index(self2->valref, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT)
-      i = Range_index(self2->value, self->size);
+      i = Range_index(self2->valref, self->size);
       
-    self->value[i] = gchr(_3);
+    self->valref[i*self->stride] = self3->valref;
 endmethod
 
-defmethod(void, gputAt, String, Slice, String)
+#endif
+
+defmethod(void, gputAt, T, Slice, T)
   PRE
     U32 first = Slice_first(self2);
     U32 last  = Slice_last (self2);
 
-    test_assert( first < self1->size &&
-                 last  < self1->size, "slice out of range" );
+    test_assert( first < self->size &&
+                 last  < self->size, "slice out of range" );
 
-    test_assert( self1->size < self3->size, "source string is too small" );
-
+    test_assert( self->size < self3->size, "source " TS " is too small" );
+    
   BODY
-    U32 start  = Slice_first (self2);
-    I32 stride = Slice_stride(self2);
-    U8* dst    = self1->value + start;
-    I32 dst_s  = stride;
-    U8* src    = self3->value;
-    U8* end    = self3->value + self3->size;
+    U32 start  = Slice_first (self2)*self->stride;
+    I32 stride = Slice_stride(self2)*self->stride;
+    VAL *dst   = self->valref + start;
+    I32  dst_s = stride;
+    VAL *src   = self3->valref;
+    I32  src_s = self3->stride;
+    VAL *end   = self3->valref + self3->size*self3->stride;
 
     while (src != end) {
-      *dst = *src++;
+      ASSIGN(*dst,*src);
+      src += src_s;
       dst += dst_s;
     }
 endmethod
 
-defmethod(void, gputAt, String, IntVector, String)
+defmethod(void, gputAt, T, IntVector, T)
   PRE
-    test_assert( self2->size <= self3->size, "incompatible array sizes" );
+    test_assert( self2->size <= self3->size, "incompatible " TS " sizes" );
 
   BODY
-    U8  *dst   = self1->value;
-    U32  dst_n = self1->size;
+    VAL *dst   = self->valref;
+    U32  dst_n = self->size;
+    I32  dst_s = self->stride;
     I32 *idx   = self2->value;
     I32  idx_s = self2->stride;
-    U8  *src   = self3->value;
-    U8  *end   = self3->value + self3->size;
+    VAL *src   = self3->valref;
+    I32  src_s = self3->stride;
+    VAL *end   = self3->valref + self3->size*self3->stride;
 
     while (src != end) {
       U32 i = Range_index(*idx, dst_n);
       test_assert( i < dst_n, "index out of range" );
-      dst[i] = *src++;
+      ASSIGN(dst[i*dst_s],*src);
+      src += src_s;
       idx += idx_s;
     }
 endmethod

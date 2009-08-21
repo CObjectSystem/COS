@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.3 2009/08/19 16:34:13 ldeniau Exp $
+ | $Id: String.c,v 1.4 2009/08/21 12:10:00 ldeniau Exp $
  |
 */
 
@@ -62,13 +62,13 @@ useclass(String, StringView);
 // ----- properties
 
 #define size_to_OBJ(siz) gautoDelete(aInt(siz))
-#define stray_class(str) String
+#define string_class(str) String
 
 defproperty(String,   size , size_to_OBJ);
-defproperty(String, ()class, stray_class);
+defproperty(String, ()class, string_class);
 
 #undef size_to_OBJ
-#undef stray_class
+#undef string_class
 
 // --- getters
 
@@ -118,20 +118,28 @@ endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmString, String);
 defmethod(OBJ,  ginitWith         , pmString, String) // clone
-  struct String* str = String_alloc(self2->size);
+  PRE
+  POST
+    // automatically trigger ginvariant
 
-  memcpy(str->value, self2->value, str->size);
+  BODY
+    struct String* str = String_alloc(self2->size);
 
-  retmethod( (OBJ)str );
+    memcpy(str->value, self2->value, str->size);
+
+    retmethod( (OBJ)str );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmString, Int, Object);
 defmethod(OBJ,  ginitWith2          , pmString, Int, Object) // element
   PRE
-    test_assert(self2->value >= 0, "negative stray size");
+    test_assert(self2->value >= 0, "negative string size");
+
+  POST
+    // automatically trigger ginvariant
 
   BODY
-    int val = gchr(_3);
+    I32 val = gchr(_3);
     struct String* str = String_alloc(self2->value);
 
     memset(str->value, val, str->size);
@@ -142,7 +150,10 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, pmString, Int, Functor);
 defmethod(OBJ,  ginitWith2          , pmString, Int, Functor) // generator
   PRE
-    test_assert(self2->value >= 0, "negative stray size");
+    test_assert(self2->value >= 0, "negative string size");
+
+  POST
+    // automatically trigger ginvariant
 
   BODY
     struct String* str = String_alloc(self2->value);
@@ -165,13 +176,16 @@ defmethod(OBJ,  ginitWith2          , pmString, Int, Functor) // generator
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmString, String, Slice);
-defmethod(OBJ,  ginitWith2          , pmString, String, Slice) // sub stray
+defmethod(OBJ,  ginitWith2          , pmString, String, Slice) // sub string
   PRE
     U32 first = Slice_first(self3);
     U32 last  = Slice_last (self3);
 
     test_assert( first < self2->size &&
                  last  < self2->size, "slice out of range" );
+
+  POST
+    // automatically trigger ginvariant
 
   BODY
     U32 start  = Slice_first (self3);
@@ -194,24 +208,29 @@ endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmString, String, IntVector);
 defmethod(OBJ,  ginitWith2          , pmString, String, IntVector) // random sequence
-  struct String* str = String_alloc(self3->size);
-  OBJ _str = (OBJ)str; PRT(_str);
+  PRE
+  POST
+    // automatically trigger ginvariant
 
-  U8  *dst   = str->value;
-  U8  *end   = str->value + str->size;
-  U8  *src   = self2->value;
-  U32  src_n = self2->size;
-  I32 *idx   = self3->value;
-  I32  idx_s = self3->stride;
+  BODY
+    struct String* str = String_alloc(self3->size);
+    OBJ _str = (OBJ)str; PRT(_str);
 
-  while (dst != end) {
-    U32 i = Range_index(*idx, src_n);
-    test_assert( i < src_n, "index out of range" );
-    *dst++ = src[i];
-    idx += idx_s;
-  }
+    U8  *dst   = str->value;
+    U8  *end   = str->value + str->size;
+    U8  *src   = self2->value;
+    U32  src_n = self2->size;
+    I32 *idx   = self3->value;
+    I32  idx_s = self3->stride;
 
-  UNPRT(_str);
-  retmethod(_str);
+    while (dst != end) {
+      U32 i = Range_index(*idx, src_n);
+      test_assert( i < src_n, "index out of range" );
+      *dst++ = src[i];
+      idx += idx_s;
+    }
+
+    UNPRT(_str);
+    retmethod(_str);
 endmethod
 
