@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.3 2009/08/21 12:37:38 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.4 2009/08/21 13:21:12 ldeniau Exp $
  |
 */
 
@@ -175,8 +175,8 @@ defmethod(void, gpermute, T, IntVector)
 
       TMPARRAY_DESTROY(buf);
       TMPARRAY_DESTROY(flg);
-      test_assert( iiir, "index out of range"  );
-      test_assert(    0, "invalid permutation" );
+      test_assert( iiir, "index out of range" );
+      test_assert(    0, "invalid cyclic permutation" );
     }
 endmethod
 
