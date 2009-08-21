@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ShtVector.c,v 1.1 2009/08/21 13:10:39 ldeniau Exp $
+ | $Id: ShtVector.c,v 1.2 2009/08/21 13:17:01 ldeniau Exp $
  |
 */
 
@@ -64,7 +64,7 @@
 
 #define TOVALPTR        gshtPtr
 #define TOVAL(v)        gsht(v)
-#define VALUE(v)        v->value
+#define VALUE(v)        v->Int.value
 #define ASSIGN(d,s)     (d = s)
 #define SWAP(v1,v2)     { VAL tmp = v1; v1 = v2; v2 = tmp; }
 #define EQUAL(v1,v2)    (v1 == v2 ? True : False)
