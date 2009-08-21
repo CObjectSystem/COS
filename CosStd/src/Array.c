@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array - basic arrays
+ | COS Array
  |
  o---------------------------------------------------------------------o
  |
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.39 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: Array.c,v 1.40 2009/08/21 13:04:40 ldeniau Exp $
  |
 */
 
@@ -49,7 +49,6 @@
 #define VS    Sequence
 
 #define VAL       OBJ
-#define VALPTR    gobjPtr
 #define VALINT    aInt
 #define VALOBJ(v) v
 
@@ -62,7 +61,8 @@
 #define T_alloc(s)      Array_alloc(s)
 #define TV_init(vw,v,s) ArrayView_init(vw,v,s)
 
-#define TOVAL(v)        v
+#define TOVALPTR        gobjPtr
+#define TOVAL(v)        (v)   
 #define VALUE(v)        ((OBJ)v)
 #define ASSIGN(d,s)     { VAL old = d; d = RETAIN(s); RELEASE(old); }
 #define SWAP(v1,v2)     { VAL tmp = v1; v1 = v2; v2 = tmp; }
@@ -71,7 +71,7 @@
 #define EVAL1(v1,v2)    geval1(v1,v2)
 #define RETAIN(v)       gretain(v)
 #define RELEASE(v)      grelease(v)
-#define AUTODELETE(v)   v
+#define AUTODELETE(v)   (v)
 #define PROTECT(v)      PRT(v)
 #define UNPROTECT(v)    UNPRT(v)
 

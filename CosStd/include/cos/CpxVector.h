@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.h,v 1.4 2009/08/21 12:27:46 ldeniau Exp $
+ | $Id: CpxVector.h,v 1.5 2009/08/21 13:04:40 ldeniau Exp $
  |
 */
 
@@ -100,7 +100,7 @@ endclass
 // ----- CpxVector view
 
 defclass(CpxVectorView, CpxVector)
-  struct CpxVector *vector;
+  struct CpxVector *ref;
 endclass
 
 // ----- allocators and initializers

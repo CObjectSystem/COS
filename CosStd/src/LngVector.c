@@ -22,35 +22,71 @@
  | the License, or (at your option) any later version.
  |
  | The C Object System is distributed in the hope that it will be
- | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ | useful, but WITHOUT ANY WARRANTY; without even the implied wstranty
  | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  |
  | See <http://www.gnu.org/licenses> for more details.
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.c,v 1.1 2008/09/28 22:12:30 ldeniau Exp $
+ | $Id: LngVector.c,v 1.2 2009/08/21 13:04:40 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
-#include <cos/Vector.h>
-#include <cos/gen/object.h>
-#include <cos/gen/init.h>
+#define    VECTOR_ONLY
+#define LNGVECTOR_ONLY
 
-makclass(LngVector    , Vector);
-makclass(LngVector0   , LngVector);
-makclass(LngVector1   , LngVector);
-makclass(LngVector2   , LngVector);
-makclass(LngVector3   , LngVector);
-makclass(LngVector4   , LngVector);
-makclass(LngVector5   , LngVector);
-makclass(LngVector6   , LngVector);
-makclass(LngVector7   , LngVector);
-makclass(LngVector8   , LngVector);
-makclass(LngVector9   , LngVector);
-makclass(LngVectorN   , LngVector);
-makclass(LngSubVector , LngVector);
-makclass(LngDynVectorN, LngVector);
-makclass(LngDynVector , LngDynVectorN);
+#define T     LngVector
+#define TM   mLngVector
+#define TP  pmLngVector
+#define TN    LngVectorN
+#define TF    LngVectorFix
+#define TD    LngVectorDyn
+#define TL    LngVectorLzy
+#define TV    LngVectorView
+#define TS    "long vector"
+#define TE    Long
+
+#define VS    Vector.ValueSequence.Sequence
+
+#define VAL       I64
+#define VALINT  
+#define VALOBJ(v) aLong(v)
+
+#define  valref  value
+#define _valref _value
+
+#define aTView(v,s)    aLngVectorView(v,s)
+#define aTRef(v,s)     aLngVectorRef(v,s)
+
+#define T_alloc(s)      LngVector_alloc(s)
+#define TV_init(vw,v,s) LngVectorView_init(vw,v,s)
+
+#define TOVALPTR        glngPtr
+#define TOVAL(v)        glng(v)
+#define VALUE(v)        v->value
+#define ASSIGN(d,s)     (d = s)
+#define SWAP(v1,v2)     { VAL tmp = v1; v1 = v2; v2 = tmp; }
+#define EQUAL(v1,v2)    (v1 == v2 ? True : False)
+#define COMPARE(v1,v2)  (v1<v2 ? Lesser : v1>v2 ? Greater : Equal)
+#define RETAIN(v)       (v)
+#define RELEASE(v)      (v)
+#define AUTODELETE(v)   gautoDelete(v)
+#define PROTECT(v)   
+#define UNPROTECT(v) 
+
+#include <cos/LngVector.h>
+
+makclass(LngVector, Vector);
+
+// vector templates
+#include "./tmpl/Vector.c"
+#include "./tmpl/Vector_dyn.c"
+#include "./tmpl/Vector_lzy.c"
+#include "./tmpl/Vector_vw.c"
+
+#include "./tmpl/Vector_acc.c"
+#include "./tmpl/Vector_alg.c"
+#include "./tmpl/Vector_fun.c"
+#include "./tmpl/Vector_fct.c"
 

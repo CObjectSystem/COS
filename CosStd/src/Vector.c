@@ -29,22 +29,19 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.5 2009/07/24 12:36:27 ldeniau Exp $
+ | $Id: Vector.c,v 1.6 2009/08/21 13:04:40 ldeniau Exp $
  |
 */
 
-#include <cos/Vector.h>
-
-// NOTE-TODO: to move to IntVector.h once ready
 #include <cos/IntVector.h>
+#include <cos/LngVector.h>
+#include <cos/FltVector.h>
+#include <cos/CpxVector.h>
 
 #include <cos/gen/object.h>
 #include <cos/gen/init.h>
 
 makclass(Vector, ValueSequence);
-
-// NOTE-TODO: move to IntVector.c once ready
-makclass(IntVector, Vector);
 
 // ------ Vector cluster front-end
 
@@ -56,23 +53,21 @@ defmethod(OBJ, gdeinit, Vector)
   retmethod(_1);
 endmethod
 
-#if 0
 // ----- constructors from a vector
 
-defmethod(OBJ, ginitWithIntPtr, mVector, (U32)n, (I32*)val)
-  retmethod( ginitWith(_1, aIntVectorRef(n,val)) );
+defmethod(OBJ, ginitWithIntPtr, mVector, (I32*)ref, (U32)n)
+  retmethod( ginitWith(_1, aIntVectorRef(ref,n)) );
 endmethod
 
-defmethod(OBJ, ginitWithLngPtr, mVector, (U32)n, (I64*)val)
-  retmethod( ginitWith(_1, aLngVectorRef(n,val)) );
+defmethod(OBJ, ginitWithLngPtr, mVector, (I64*)ref, (U32)n)
+  retmethod( ginitWith(_1, aLngVectorRef(ref,n)) );
 endmethod
 
-defmethod(OBJ, ginitWithFltPtr, mVector, (U32)n, (F64*)val)
-  retmethod( ginitWith(_1, aFltVectorRef(n,val)) );
+defmethod(OBJ, ginitWithFltPtr, mVector, (F64*)ref, (U32)n)
+  retmethod( ginitWith(_1, aFltVectorRef(ref,n)) );
 endmethod
 
-defmethod(OBJ, ginitWithCpxPtr, mVector, (U32)n, (C64*)val)
-  retmethod( ginitWith(_1, aCpxVectorRef(n,val)) );
+defmethod(OBJ, ginitWithCpxPtr, mVector, (C64*)ref, (U32)n)
+  retmethod( ginitWith(_1, aCpxVectorRef(ref,n)) );
 endmethod
 
-#endif

@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS FltVector - basic vectors
+ | COS FltVector
  |
  o---------------------------------------------------------------------o
  |
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.8 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: FltVector.c,v 1.9 2009/08/21 13:04:40 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,6 @@
 #define VS    Vector.ValueSequence.Sequence
 
 #define VAL       F64
-#define VALPTR    gfltPtr
 #define VALINT  
 #define VALOBJ(v) aFloat(v)
 
@@ -63,15 +62,15 @@
 #define T_alloc(s)      FltVector_alloc(s)
 #define TV_init(vw,v,s) FltVectorView_init(vw,v,s)
 
+#define TOVALPTR        gfltPtr
 #define TOVAL(v)        gflt(v)
 #define VALUE(v)        v->value
-#define ASSIGN(d,s)     d = s
+#define ASSIGN(d,s)     (d = s)
 #define SWAP(v1,v2)     { VAL tmp = v1; v1 = v2; v2 = tmp; }
 #define EQUAL(v1,v2)    (float_equal(v1,v2) ? True : False)
 #define COMPARE(v1,v2)  (v1<v2 ? Lesser : v1>v2 ? Greater : Equal)
-#define EVAL1(v1,v2)    geval1(v1,v2)
-#define RETAIN(v)       v
-#define RELEASE(v)      v
+#define RETAIN(v)       (v)
+#define RELEASE(v)      (v)
 #define AUTODELETE(v)   gautoDelete(v)
 #define PROTECT(v)   
 #define UNPROTECT(v) 

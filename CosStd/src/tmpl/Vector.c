@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.1 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: Vector.c,v 1.2 2009/08/21 13:04:40 ldeniau Exp $
  |
 */
 
@@ -101,7 +101,7 @@ defmethod(U32, gsize, T)
   retmethod(self->size);
 endmethod
 
-defmethod(VAL*, VALPTR, T)
+defmethod(VAL*, TOVALPTR, T)
   retmethod(self->valref);
 endmethod
 

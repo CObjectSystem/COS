@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS CpxVector
+ | COS CpxVector - basic vectors
  |
  o---------------------------------------------------------------------o
  |
@@ -22,35 +22,72 @@
  | the License, or (at your option) any later version.
  |
  | The C Object System is distributed in the hope that it will be
- | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ | useful, but WITHOUT ANY WARRANTY; without even the implied wstranty
  | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  |
  | See <http://www.gnu.org/licenses> for more details.
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.c,v 1.1 2008/09/28 22:12:30 ldeniau Exp $
+ | $Id: CpxVector.c,v 1.2 2009/08/21 13:04:40 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
-#include <cos/Vector.h>
-#include <cos/gen/object.h>
-#include <cos/gen/init.h>
+#define    VECTOR_ONLY
+#define CPXVECTOR_ONLY
 
-makclass(CpxVector    , Vector);
-makclass(CpxVector0   , CpxVector);
-makclass(CpxVector1   , CpxVector);
-makclass(CpxVector2   , CpxVector);
-makclass(CpxVector3   , CpxVector);
-makclass(CpxVector4   , CpxVector);
-makclass(CpxVector5   , CpxVector);
-makclass(CpxVector6   , CpxVector);
-makclass(CpxVector7   , CpxVector);
-makclass(CpxVector8   , CpxVector);
-makclass(CpxVector9   , CpxVector);
-makclass(CpxVectorN   , CpxVector);
-makclass(CpxSubVector , CpxVector);
-makclass(CpxDynVectorN, CpxVector);
-makclass(CpxDynVector , CpxDynVectorN);
+#define T     CpxVector
+#define TM   mCpxVector
+#define TP  pmCpxVector
+#define TN    CpxVectorN
+#define TF    CpxVectorFix
+#define TD    CpxVectorDyn
+#define TL    CpxVectorLzy
+#define TV    CpxVectorView
+#define TS    "complex vector"
+#define TE    Complex
+
+#define VS    Vector.ValueSequence.Sequence
+
+#define VAL       C64
+#define VALINT  
+#define VALOBJ(v) aComplex(v)
+
+#define  valref  value
+#define _valref _value
+
+#define aTView(v,s)    aCpxVectorView(v,s)
+#define aTRef(v,s)     aCpxVectorRef(v,s)
+
+#define T_alloc(s)      CpxVector_alloc(s)
+#define TV_init(vw,v,s) CpxVectorView_init(vw,v,s)
+
+#define TOVALPTR        gcpxPtr
+#define TOVAL(v)        gcpx(v)
+#define VALUE(v)        v->value
+#define ASSIGN(d,s)     (d = s)
+#define SWAP(v1,v2)     { VAL tmp = v1; v1 = v2; v2 = tmp; }
+#define EQUAL(v1,v2)    (complex_equal(v1,v2) ? True : False)
+#define COMPARE(v1,v2)  (v1<v2 ? Lesser : v1>v2 ? Greater : Equal)
+#define EVAL1(v1,v2)    geval1(v1,v2)
+#define RETAIN(v)       (v)
+#define RELEASE(v)      (v)
+#define AUTODELETE(v)   gautoDelete(v)
+#define PROTECT(v)   
+#define UNPROTECT(v) 
+
+#include <cos/CpxVector.h>
+
+makclass(CpxVector, Vector);
+
+// vector templates
+#include "./tmpl/Vector.c"
+#include "./tmpl/Vector_dyn.c"
+#include "./tmpl/Vector_lzy.c"
+#include "./tmpl/Vector_vw.c"
+
+#include "./tmpl/Vector_acc.c"
+#include "./tmpl/Vector_alg.c"
+#include "./tmpl/Vector_fun.c"
+#include "./tmpl/Vector_fct.c"
 

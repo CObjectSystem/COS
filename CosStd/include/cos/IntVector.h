@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.h,v 1.5 2009/08/21 12:27:46 ldeniau Exp $
+ | $Id: IntVector.h,v 1.6 2009/08/21 13:04:40 ldeniau Exp $
  |
 */
 
@@ -100,7 +100,7 @@ endclass
 // ----- IntVector view
 
 defclass(IntVectorView, IntVector)
-  struct IntVector *vector;
+  struct IntVector *ref;
 endclass
 
 // ----- initializers, allocators (for the class cluster)
