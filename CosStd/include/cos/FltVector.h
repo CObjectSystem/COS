@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.h,v 1.4 2009/08/21 12:27:46 ldeniau Exp $
+ | $Id: FltVector.h,v 1.5 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -85,7 +85,6 @@ defclass(FltVectorN, FltVector) F64 _value[]; endclass
 
 defclass(FltVectorFix, FltVector)
   F64 *_value;
-  U32  _cls;
   U32  capacity;
 endclass
 
@@ -93,8 +92,8 @@ defclass(FltVectorDyn, FltVectorFix)
 endclass
 
 defclass(FltVectorLzy, FltVectorDyn)
-  OBJ generator;
   I32 arity;
+  OBJ generator;
 endclass
 
 // ----- FltVector view

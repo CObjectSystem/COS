@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.4 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: String.c,v 1.5 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -232,5 +232,10 @@ defmethod(OBJ,  ginitWith2          , pmString, String, IntVector) // random seq
 
     UNPRT(_str);
     retmethod(_str);
+endmethod
+
+defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, pmString, (I8*)ref, (U32)n);
+defmethod(OBJ,  ginitWithChrPtr               , pmString, (I8*)ref, (U32)n)
+  retmethod( ginitWith(_1, aStringRef((U8*)ref,n)) );
 endmethod
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_itr.c,v 1.2 2009/08/05 09:58:59 ldeniau Exp $
+ | $Id: Functor_itr.c,v 1.3 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #include <cos/Functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
+#include <cos/gen/algorithm.h>
 
 makclass(IterateFun, Functor);
 

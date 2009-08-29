@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.16 2009/08/17 09:10:36 ldeniau Exp $
+ | $Id: algorithm.h,v 1.17 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -65,26 +65,26 @@ defgeneric(OBJ , gmap3, fun, _1, _2, _3);
 defgeneric(OBJ , gmap4, fun, _1, _2, _3, _4);
 
 // filter, fold, scan
-defgeneric(OBJ , gfilter, _1, fun);
-defgeneric(OBJ , gfoldl , _1, fun, ini);
-defgeneric(OBJ , gfoldr , _1, fun, ini);
-defgeneric(OBJ , gscanl , _1, fun, ini);
-defgeneric(OBJ , gscanr , _1, fun, ini);
+defgeneric(OBJ , gselect      , _1, fun);
+defgeneric(OBJ , greject      , _1, fun);
+defgeneric(OBJ , greduce      , _1, fun, ini);
+defgeneric(OBJ , grreduce     , _1, fun, ini);
+defgeneric(OBJ , gaccumulate  , _1, fun, ini);
+defgeneric(OBJ , graccumulate , _1, fun, ini);
 
-// filterOut
-defgeneric(OBJ , gfilterOut, _1, fun);
+// repeat, iterate
+defgeneric(OBJ , grepeat , obj, num);
+defgeneric(OBJ , giterate, fun, num);
 
-// repeat (iterate -> functor.h)
-defgeneric(OBJ , grepeat, _1, num);
-
-// all, any
-defgeneric(OBJ , gall, _1, fun); // fun should return TrueFalse
-defgeneric(OBJ , gany, _1, fun); // fun should return TrueFalse
+// all, any, count
+defgeneric(OBJ , gall  , _1, fun); // fun should return TrueFalse
+defgeneric(OBJ , gany  , _1, fun); // fun should return TrueFalse
+defgeneric(U32 , gcount, _1, fun); // fun should return TrueFalse
 
 // min, max
 defgeneric(OBJ , gmin, _1, _2 or fun); // fun should return Ordered or the min
 defgeneric(OBJ , gmax, _1, _2 or fun); // fun should return Ordered or the min
-               // note: gmin(array, aFun(gmin,0,0) ) should work like a foldl
+                // note: gmin(array, aFun(gmin,0,0) ) should work like a foldl
 
 // sorting (fun must return Ordered)
 defgeneric(void, gsort    , _1, fun); // in place
@@ -98,8 +98,8 @@ defgeneric(OBJ , gifind, _1, fun); // return an index/key or Nil
 
 // seq-like algorithms (fun must return TrueFalse)
 defgeneric(OBJ , gunique, _1, fun); // remove contiguous equal elements
-defgeneric(OBJ , ggroup , _1, fun);
-defgeneric(OBJ , gsplit , _1, fun);
+defgeneric(OBJ , ggroup , _1, fun); // split when false
+defgeneric(OBJ , gsplit , _1, fun); // split when true
 
 // set-like algorithms
 defgeneric(OBJ , gdiff     , _1, _2, fun);

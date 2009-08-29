@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ShtVector.c,v 1.2 2009/08/21 13:17:01 ldeniau Exp $
+ | $Id: ShtVector.c,v 1.3 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -47,10 +47,23 @@
 #define TS    "short vector"
 #define TE    Short
 
+#define TF1   IntFunction1
+#define TF2   IntFunction2
+#define TF3   IntFunction3
+#define TF4   IntFunction4
+#define TF5   IntFunction5
+
+#define PF1   I32FCT1
+#define PF2   I32FCT2
+#define PF3   I32FCT3
+#define PF4   I32FCT4
+#define PF5   I32FCT5
+
 #define VS    Vector.ValueSequence.Sequence
 
 #define VAL       I16
 #define VALINT  
+#define VALFLT  
 #define VALOBJ(v) aShort(v)
 
 #define  valref  value
@@ -76,11 +89,12 @@
 #define UNPROTECT(v) 
 
 #include <cos/ShtVector.h>
+#include <cos/Function.h>
 
 makclass(ShtVector, Vector);
 
 // vector templates
-#include "./tmpl/Vector.c"
+#include "./tmpl/Vector_blk.c"
 #include "./tmpl/Vector_dyn.c"
 #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"
@@ -89,4 +103,5 @@ makclass(ShtVector, Vector);
 #include "./tmpl/Vector_alg.c"
 #include "./tmpl/Vector_fun.c"
 #include "./tmpl/Vector_fct.c"
+#include "./tmpl/Vector_vfn.c"
 

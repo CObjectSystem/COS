@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_lzy.c,v 1.1 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: Vector_lzy.c,v 1.2 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -49,22 +49,40 @@ useclass(ExBadArity, TL);
 
 defalias (OBJ, (ginitWith)gnewWith, TP, Functor);
 defmethod(OBJ,  ginitWith         , TP, Functor) // generator
-  retmethod( ginitWith(galloc(TL),_2) );
-endmethod
-
-defmethod(OBJ, ginitWith, TL, Functor)
-  retmethod( ginitWith2(_1,_2,aTRef(0,0)) );
+  OBJ vec = galloc(TL); PRT(vec);
+  vec = ginitWith3(vec,_2,aTRef(0,0),aInt(0));
+  UNPRT(vec);
+  retmethod(vec);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, Functor, T);
 defmethod(OBJ,  ginitWith2          , TP, Functor, T) // generator
-  retmethod( ginitWith2(galloc(TL),_2,_3) );
+  OBJ vec = galloc(TL); PRT(vec);
+  vec = ginitWith3(vec,_2,_3,aInt(self3->size*2));
+  UNPRT(vec);
+  retmethod(vec);
 endmethod
 
-defmethod(OBJ, ginitWith2, TL, Functor, T)
-  defnext(OBJ, ginitWith , TL, Int); // dynamic array
+defalias (OBJ, (ginitWith2)gnewWith2, TP, Functor, Int);
+defmethod(OBJ,  ginitWith2          , TP, Functor, Int) // generator
+  OBJ vec = galloc(TL); PRT(vec);
+  vec = ginitWith3(vec,_2,aTRef(0,0),_3);
+  UNPRT(vec);
+  retmethod(vec);
+endmethod
+
+defalias (OBJ, (ginitWith3)gnewWith3, TP, Functor, T, Int);
+defmethod(OBJ,  ginitWith3          , TP, Functor, T, Int) // generator
+  OBJ vec = galloc(TL); PRT(vec);
+  vec = ginitWith3(vec,_2,_3,_4);
+  UNPRT(vec);
+  retmethod(vec);
+endmethod
+
+defmethod(OBJ,  ginitWith3, TL, Functor, T, Int) // generator
+  defnext(OBJ,  ginitWith , TL, Int); // forward to dynamic array
   
-  next_method(self, atInt(self3->size*2));
+  next_method(self, self4);
 
   self->generator = gretain(_2);
   self->arity     = garity (_2);
@@ -123,4 +141,4 @@ defmethod(OBJ, ggetAt, TL, Int)
   retmethod( AUTODELETE(VALOBJ(vec->valref[i*vec->stride])) );
 endmethod
 
-
+// NOTE-TODO: other getters?

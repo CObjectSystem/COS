@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.3 2009/08/17 12:57:13 ldeniau Exp $
+ | $Id: String_fun.c,v 1.4 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -170,9 +170,9 @@ defmethod(OBJ, gany, String, Functor)
   retmethod(False);
 endmethod
 
-// ----- filter, filterOut fold, scan
+// ----- filter, fold, scan
 
-defmethod(OBJ, gfilter, String, Functor)
+defmethod(OBJ, gselect, String, Functor)
   OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
   struct String* str = STATIC_CAST(struct String*, _str);
 
@@ -191,7 +191,7 @@ defmethod(OBJ, gfilter, String, Functor)
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, gfilterOut, String, Functor)
+defmethod(OBJ, greject, String, Functor)
   OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
   struct String* str = STATIC_CAST(struct String*, _str);
 
@@ -210,7 +210,7 @@ defmethod(OBJ, gfilterOut, String, Functor)
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, gfoldl, String, Functor, Object)
+defmethod(OBJ, greduce, String, Functor, Object)
   U8* src = self->value;
   U8* end = self->value + self->size;
   OBJ res = _3;
@@ -221,7 +221,7 @@ defmethod(OBJ, gfoldl, String, Functor, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gfoldr, String, Functor, Object)
+defmethod(OBJ, grreduce, String, Functor, Object)
   U8* src = self->value + self->size;
   U8* end = self->value;
   OBJ res   = _3;
@@ -232,7 +232,7 @@ defmethod(OBJ, gfoldr, String, Functor, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gscanl, String, Functor, Object)
+defmethod(OBJ, gaccumulate, String, Functor, Object)
   struct String* str = String_alloc(self->size+1);
   OBJ _str = (OBJ)str; PRT(_str);
 
@@ -251,7 +251,7 @@ defmethod(OBJ, gscanl, String, Functor, Object)
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, gscanr, String, Functor, Object)
+defmethod(OBJ, graccumulate, String, Functor, Object)
   struct String* str = String_alloc(self->size+1);
   OBJ _str = (OBJ)str; PRT(_str);
 

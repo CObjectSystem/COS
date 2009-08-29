@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.1 2009/08/17 12:57:43 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.2 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -60,16 +60,18 @@ useclass(String, StringDyn, ExBadAlloc);
 
 defalias (OBJ, (ginit)gnew, pmString);
 defmethod(OBJ,  ginit     , pmString) // Dyn string
-  retmethod( ginit(galloc(StringDyn)) );
-endmethod
-
-defmethod(OBJ, ginit, StringDyn)
-  retmethod( ginitWith(_1,aInt(0)) );
+  OBJ str = galloc(StringDyn); PRT(str);
+  str = ginitWith(str,aInt(0));
+  UNPRT(str);
+  retmethod(str);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmString, Int);
 defmethod(OBJ,  ginitWith         , pmString, Int) // Dyn string with capacity
-  retmethod( ginitWith(galloc(StringDyn),_2) );
+  OBJ str = galloc(StringDyn); PRT(str);
+  str = ginitWith(str,_2);
+  UNPRT(str);
+  retmethod(str);
 endmethod
 
 defmethod(OBJ, ginitWith, StringDyn, Int)
@@ -88,7 +90,6 @@ defmethod(OBJ, ginitWith, StringDyn, Int)
 
   str->size      = 0;
   strf->_value   = str->value;
-  strf->_cls     = 0;
   strf->capacity = capacity;
 
   retmethod(_1);
@@ -147,26 +148,6 @@ defmethod(void, genlarge, StringDyn, Int)
   }
 endmethod
 
-// ----- fix/unfix
-
-defmethod(void, gfix, StringDyn)
-  PRE
-    test_assert(!self->StringFix._cls, "corrupted dynamic string");
-
-  BODY
-    self->StringFix._cls = cos_object_id(_1);
-    self->StringFix.String.ValueSequence.Sequence.Container.Object.id = classref(StringFix)->Behavior.id;
-endmethod
-
-defmethod(void, gunfix, StringFix)
-  PRE
-    test_assert(self->_cls, "corrupted dynamic string (already unfixed?)");
-
-  BODY
-    self->String.ValueSequence.Sequence.Container.Object.id = self->_cls;
-    self->_cls = 0;
-endmethod
-
 // ----- adjustment (capacity -> size)
 
 defmethod(void, gadjust, StringDyn)
@@ -200,9 +181,7 @@ endmethod
 
 // ----- getters, setters
 
-defalias (void, (gput)gappend, StringDyn, Char);
-defalias (void, (gput)gpush  , StringDyn, Char);
-defmethod(void,  gput        , StringDyn, Char)
+defmethod(void, gappend, StringDyn, Char)
   struct StringFix *strf = &self->StringFix;
   struct String    *str  = &strf->String;
 
@@ -213,9 +192,7 @@ defmethod(void,  gput        , StringDyn, Char)
   str->size++;
 endmethod
 
-defalias (void, (gput)gappend, StringDyn, Object);
-defalias (void, (gput)gpush  , StringDyn, Object);
-defmethod(void,  gput        , StringDyn, Object)
+defmethod(void, gappend, StringDyn, Object)
   struct StringFix *strf = &self->StringFix;
   struct String    *str  = &strf->String;
 
@@ -224,13 +201,6 @@ defmethod(void,  gput        , StringDyn, Object)
     
   str->value[str->size] = gchr(_2);
   str->size++;
-endmethod
-
-defalias (void, (gdrop)gpop, StringDyn);
-defmethod(void,  gdrop     , StringDyn)
-  struct String *str = &self->StringFix.String;
-
-  if (str->size) --str->size;
 endmethod
 
 // ----- prepend, append
@@ -298,3 +268,19 @@ defmethod(void, gappend, StringDyn, String)
   str->size += self2->size;
 endmethod
 
+// ----- Aliases
+
+#if 0
+defalias (void, (gput)gappend, StringDyn, Char);
+defalias (void, (gput)gpush  , StringDyn, Char);
+defalias (void, (gput)gappend, StringDyn, Object);
+defalias (void, (gput)gpush  , StringDyn, Object);
+defalias (void, (gdrop)gpop, StringDyn);
+defmethod(void,  gdrop     , StringDyn)
+  struct String *str = &self->StringFix.String;
+
+  if (str->size) --str->size;
+endmethod
+
+
+#endif

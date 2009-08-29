@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.8 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Range.c,v 1.9 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -39,19 +39,19 @@
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 
-makclass(Range, Value);
+makclass(Range, ValueSequence);
 
 // ----- new
 
-defmethod(OBJ, gnewWithRng1, mRange, (I32)end)
+defmethod(OBJ, gnewWithRng1, pmRange, (I32)end)
   retmethod( ginitWithRng1(galloc(_1), end) );
 endmethod
 
-defmethod(OBJ, gnewWithRng2, mRange, (I32)start, (I32)end)
+defmethod(OBJ, gnewWithRng2, pmRange, (I32)start, (I32)end)
   retmethod( ginitWithRng2(galloc(_1), start, end) );
 endmethod
 
-defmethod(OBJ, gnewWithRng3, mRange, (I32)start, (I32)end, (I32)stride)
+defmethod(OBJ, gnewWithRng3, pmRange, (I32)start, (I32)end, (I32)stride)
   retmethod( ginitWithRng3(galloc(_1), start, end, stride) );
 endmethod
 
@@ -72,12 +72,12 @@ endmethod
 // ----- copy
 
 defmethod(OBJ, ginitWith, Range, Range)
-  retmethod( (OBJ)Range_copy(self1, self2) );
+  retmethod( (OBJ)Range_copy(self, self2) );
 endmethod
 
 // ----- equality
 
 defmethod(OBJ, gisEqual, Range, Range)
-  retmethod( Range_isEqual(self1, self2) ? True : False );
+  retmethod( Range_isEqual(self, self2) ? True : False );
 endmethod
 

@@ -32,41 +32,39 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.4 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: sequence.h,v 1.5 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
 #include <cos/Slice.h>
 
-/* NOTE-USER: includes of generics
-   One can find hereafter a trick to avoid multiple definition of generics when
-   the instance generation is left to the COS makefiles (e.g automatic makgeneric).
-*/
-
-#ifndef COS_NOCOS
-#include <cos/gen/object.h>
-#endif
-
-// sequence
-defgeneric(struct Range, grange, _1);
+// slice
 defgeneric(struct Slice, gslice, _1);
 
 // new
-defgeneric(OBJ, gnewWithRng1, _1, (I32)end);
-defgeneric(OBJ, gnewWithRng2, _1, (I32)start, (I32)end);
-defgeneric(OBJ, gnewWithRng3, _1, (I32)start, (I32)end, (I32)stride);
-
 defgeneric(OBJ, gnewWithSlc1, _1, (U32)size);
 defgeneric(OBJ, gnewWithSlc2, _1, (I32)start, (U32)size);
 defgeneric(OBJ, gnewWithSlc3, _1, (I32)start, (U32)size, (I32)stride);
 
+defgeneric(OBJ, gnewWithRng1, _1, (I32)end);
+defgeneric(OBJ, gnewWithRng2, _1, (I32)start, (I32)end);
+defgeneric(OBJ, gnewWithRng3, _1, (I32)start, (I32)end, (I32)stride);
+
+defgeneric(OBJ, gnewWithXRng1, _1, (F64)end);
+defgeneric(OBJ, gnewWithXRng2, _1, (F64)start, (F64)end);
+defgeneric(OBJ, gnewWithXRng3, _1, (F64)start, (F64)end, (F64)stride);
+
 // constructors
+defgeneric(OBJ, ginitWithSlc1, _1, (U32)size);
+defgeneric(OBJ, ginitWithSlc2, _1, (I32)start, (U32)size);
+defgeneric(OBJ, ginitWithSlc3, _1, (I32)start, (U32)size, (I32)stride);
+
 defgeneric(OBJ, ginitWithRng1, _1, (I32)end);
 defgeneric(OBJ, ginitWithRng2, _1, (I32)start, (I32)end);
 defgeneric(OBJ, ginitWithRng3, _1, (I32)start, (I32)end, (I32)stride);
 
-defgeneric(OBJ, ginitWithSlc1, _1, (U32)size);
-defgeneric(OBJ, ginitWithSlc2, _1, (I32)start, (U32)size);
-defgeneric(OBJ, ginitWithSlc3, _1, (I32)start, (U32)size, (I32)stride);
+defgeneric(OBJ, ginitWithXRng1, _1, (F64)end);
+defgeneric(OBJ, ginitWithXRng2, _1, (F64)start, (F64)end);
+defgeneric(OBJ, ginitWithXRng3, _1, (F64)start, (F64)end, (F64)stride);
 
 #endif // COS_GEN_CONTAINER_H

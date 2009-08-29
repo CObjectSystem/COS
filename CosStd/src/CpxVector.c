@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.c,v 1.2 2009/08/21 13:04:40 ldeniau Exp $
+ | $Id: CpxVector.c,v 1.3 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -47,10 +47,23 @@
 #define TS    "complex vector"
 #define TE    Complex
 
+#define TF1   CpxFunction1
+#define TF2   CpxFunction2
+#define TF3   CpxFunction3
+#define TF4   CpxFunction4
+#define TF5   CpxFunction5
+
+#define PF1   C64FCT1
+#define PF2   C64FCT2
+#define PF3   C64FCT3
+#define PF4   C64FCT4
+#define PF5   C64FCT5
+
 #define VS    Vector.ValueSequence.Sequence
 
 #define VAL       C64
 #define VALINT  
+#define VALFLT  
 #define VALOBJ(v) aComplex(v)
 
 #define  valref  value
@@ -77,11 +90,12 @@
 #define UNPROTECT(v) 
 
 #include <cos/CpxVector.h>
+#include <cos/Function.h>
 
 makclass(CpxVector, Vector);
 
 // vector templates
-#include "./tmpl/Vector.c"
+#include "./tmpl/Vector_blk.c"
 #include "./tmpl/Vector_dyn.c"
 #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"
@@ -90,4 +104,5 @@ makclass(CpxVector, Vector);
 #include "./tmpl/Vector_alg.c"
 #include "./tmpl/Vector_fun.c"
 #include "./tmpl/Vector_fct.c"
+#include "./tmpl/Vector_vfn.c"
 

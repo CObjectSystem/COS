@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.1 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.2 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -167,7 +167,7 @@ defmethod(OBJ, gmap4, Functor, T, T, T, T)
   retmethod(gautoDelete(_vec));
 endmethod
 
-// ----- all, any
+// ----- all, any, count
 
 defmethod(OBJ, gall, T, Functor)
   VAL *val   = self->valref;
@@ -197,9 +197,24 @@ defmethod(OBJ, gany, T, Functor)
   retmethod(False);
 endmethod
 
-// ----- filter, filterOut fold, scan
+defmethod(U32, gcount, T, Functor)
+  VAL *val   = self->valref;
+  I32  val_s = self->stride;
+  VAL *end   = self->valref + self->size*self->stride;
+  U32  cnt   = 0;
 
-defmethod(OBJ, gfilter, T, Functor)
+  while (val != end) {
+    if (geval1(_2, VALOBJ(*val)) == True)
+      ++cnt;
+    val += val_s;
+  }
+      
+  retmethod(cnt);
+endmethod
+
+// ----- filter, fold, scan
+
+defmethod(OBJ, gselect, T, Functor)
   OBJ _vec = gnewWith(T,aInt(self->size)); PRT(_vec);
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
@@ -219,7 +234,7 @@ defmethod(OBJ, gfilter, T, Functor)
   retmethod(gautoDelete(_vec));
 endmethod
 
-defmethod(OBJ, gfilterOut, T, Functor)
+defmethod(OBJ, greject, T, Functor)
   OBJ _vec = gnewWith(T,aInt(self->size)); PRT(_vec);
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
@@ -229,7 +244,7 @@ defmethod(OBJ, gfilterOut, T, Functor)
   VAL *end   = self->valref + self->size*self->stride;
 
   while (src != end) {
-    if (geval1(_2, VALOBJ(*src)) == False)
+    if (geval1(_2, VALOBJ(*src)) != True)
       *dst++ = RETAIN(*src), ++vec->size;
     src += src_s;
   }
@@ -239,7 +254,7 @@ defmethod(OBJ, gfilterOut, T, Functor)
   retmethod(gautoDelete(_vec));
 endmethod
 
-defmethod(OBJ, gfoldl, T, Functor, Object)
+defmethod(OBJ, greduce, T, Functor, Object)
   VAL *src   = self->valref;
   I32  src_s = self->stride;
   VAL *end   = self->valref + self->size*self->stride;
@@ -253,21 +268,21 @@ defmethod(OBJ, gfoldl, T, Functor, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gfoldr, T, Functor, Object)
+defmethod(OBJ, grreduce, T, Functor, Object)
   VAL *src   = self->valref + self->size*self->stride;
   I32  src_s = self->stride;
   VAL *end   = self->valref;
-  OBJ res    = _3;
+  OBJ  res   = _3;
   
   while (src != end) {
     src -= src_s;
-    res = geval2(_2, VALOBJ(*src), res);
+    res = geval2(_2, res, VALOBJ(*src));
   }
 
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gscanl, T, Functor, Object)
+defmethod(OBJ, gaccumulate, T, Functor, Object)
   struct T* vec = T_alloc(self->size+1);
   OBJ _vec = (OBJ)vec; PRT(_vec);
 
@@ -287,7 +302,7 @@ defmethod(OBJ, gscanl, T, Functor, Object)
   retmethod(gautoDelete(_vec));
 endmethod
 
-defmethod(OBJ, gscanr, T, Functor, Object)
+defmethod(OBJ, graccumulate, T, Functor, Object)
   struct T* vec = T_alloc(self->size+1);
   OBJ _vec = (OBJ)vec; PRT(_vec);
 
@@ -643,7 +658,7 @@ defmethod(OBJ, gisSorted, T, Functor)
   VAL *end   = self->valref + (self->size-1)*self->stride;
 
   while (val != end) {
-    if (geval2(_2, VALOBJ(*val), VALOBJ(val[val_s])) == False)
+    if (geval2(_2, VALOBJ(*val), VALOBJ(val[val_s])) == Greater)
       retmethod(False);
     val += val_s;
   }

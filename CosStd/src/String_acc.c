@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_acc.c,v 1.4 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: String_acc.c,v 1.5 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -47,21 +47,19 @@
 
 useclass(String);
 
-// ----- getters (index, slice, intvector)
+// --- first, last
 
-defmethod(I32, gchrAt, String, Int)
-  U32 i;
-
-  PRE
-    i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
-
-  BODY
-    if (!COS_CONTRACT)
-      i = Range_index(self2->value, self->size);
-      
-    retmethod( self->value[i] );
+defmethod(OBJ,  glast, String)
+  retmethod( self->size
+           ? gautoDelete(aChar(self->value[(self->size-1)]))
+           : Nil );
 endmethod
+
+defmethod(OBJ, gfirst, String)
+  retmethod( self->size ? gautoDelete(aChar(self->value[0])) : Nil );
+endmethod
+
+// ----- getters (index, slice, intvector)
 
 defmethod(OBJ, ggetAt, String, Int)
   U32 i;
@@ -71,32 +69,22 @@ defmethod(OBJ, ggetAt, String, Int)
     test_assert( i < self->size, "index out of range" );
 
   BODY
-    if (!COS_CONTRACT)
+    if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, self->size);
       
     retmethod( gautoDelete(aChar(self->value[i])) );
 endmethod
 
 defmethod(OBJ, ggetAt, String, Slice)
-  retmethod( gautoDelete(ginitWith2(String,_1,_2)) );
+  retmethod( gautoDelete(gnewWith2(String,_1,_2)) );
+endmethod
+
+defmethod(OBJ, ggetAt, String, Range)
+  retmethod( gautoDelete(gnewWith2(String,_1,_2)) );
 endmethod
 
 defmethod(OBJ, ggetAt, String, IntVector)
-  retmethod( gautoDelete(ginitWith2(String,_1,_2)) );
-endmethod
-
-// ---
-
-defalias (OBJ, (gget)glast, String);
-defalias (OBJ, (gget)gtop , String);
-defmethod(OBJ,  gget      , String)
-  retmethod( self->size
-           ? gautoDelete(aChar(self->value[(self->size-1)]))
-           : Nil );
-endmethod
-
-defmethod(OBJ, gfirst, String)
-  retmethod( self->size ? gautoDelete(aChar(self->value[0])) : Nil );
+  retmethod( gautoDelete(gnewWith2(String,_1,_2)) );
 endmethod
 
 // ----- setters (index, slice, intvector)
@@ -109,7 +97,7 @@ defmethod(void, gputAt, String, Int, Char)
     test_assert( i < self->size, "index out of range" );
 
   BODY
-    if (!COS_CONTRACT)
+    if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, self->size);
       
     self->value[i] = self3->Int.value;
@@ -123,7 +111,7 @@ defmethod(void, gputAt, String, Int, Object)
     test_assert( i < self->size, "index out of range" );
 
   BODY
-    if (!COS_CONTRACT)
+    if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, self->size);
       
     self->value[i] = gchr(_3);
@@ -131,45 +119,65 @@ endmethod
 
 defmethod(void, gputAt, String, Slice, String)
   PRE
-    U32 first = Slice_first(self2);
-    U32 last  = Slice_last (self2);
-
-    test_assert( first < self1->size &&
-                 last  < self1->size, "slice out of range" );
-
-    test_assert( self1->size < self3->size, "source string is too small" );
+    test_assert( Slice_first(self2) < self->size &&
+                 Slice_last (self2) < self->size, "slice out of range" );
+    test_assert( Slice_size (self2) <= self3->size, "source string is too small" );
 
   BODY
-    U32 start  = Slice_first (self2);
-    I32 stride = Slice_stride(self2);
-    U8* dst    = self1->value + start;
-    I32 dst_s  = stride;
-    U8* src    = self3->value;
-    U8* end    = self3->value + self3->size;
+    U8* dst   = Slice_first (self2) + self->value;
+    I32 dst_s = Slice_stride(self2);
+    U32 dst_n = Slice_size  (self2);
+    U8* src   = self3->value;
+    U8* end   = dst + dst_n;
 
-    while (src != end) {
+    while (dst != end) {
       *dst = *src++;
       dst += dst_s;
     }
 endmethod
 
+defmethod(void, gputAt, String, Range, String)
+  struct Range range = Range_normalize(self2,self->size);
+  struct Slice slice = Slice_fromRange(&range);
+  gputAt(_1,(OBJ)&slice,_3);
+endmethod
+
 defmethod(void, gputAt, String, IntVector, String)
   PRE
-    test_assert( self2->size <= self3->size, "incompatible array sizes" );
+    test_assert( self2->size <= self3->size, "source string is too small" );
 
   BODY
-    U8  *dst   = self1->value;
-    U32  dst_n = self1->size;
+    U8*  dst   = self->value;
+    U32  dst_n = self->size;
     I32 *idx   = self2->value;
+    U32  idx_n = self2->size;
     I32  idx_s = self2->stride;
-    U8  *src   = self3->value;
-    U8  *end   = self3->value + self3->size;
+    U8*  src   = self3->value;
+    I32 *end   = idx + idx_n*idx_s;
 
-    while (src != end) {
+    while (idx != end) {
       U32 i = Range_index(*idx, dst_n);
       test_assert( i < dst_n, "index out of range" );
       dst[i] = *src++;
       idx += idx_s;
     }
 endmethod
+
+// ----- value getter
+
+defmethod(I32, gchrAt, String, Int)
+  U32 i;
+
+  PRE
+    i = Range_index(self2->value, self->size);
+    test_assert( i < self->size, "index out of range" );
+
+  BODY
+    if (!COS_CONTRACT) // no PRE
+      i = Range_index(self2->value, self->size);
+      
+    retmethod( self->value[i] );
+endmethod
+
+
 

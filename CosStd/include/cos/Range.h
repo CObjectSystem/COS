@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.13 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Range.h,v 1.14 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
-#include <cos/Value.h>
+#include <cos/Sequence.h>
 
 /* NOTE-USER: Ranges
   - Ranges are objects useful to represent relative strided interval of sequence
@@ -62,7 +62,7 @@
   - Slices can be converted to Ranges
 */
 
-defclass(Range, Value)
+defclass(Range, ValueSequence)
   I32 start;
   I32 end;
   I32 stride;
@@ -84,7 +84,7 @@ endclass
    - validation and consitency checks are the user's responsibility
    - stride must never be zero! (never happens if you use the ctor)
 */
-static inline I32
+static inline U32
 Range_index(I32 index, U32 seq_size) {
   return index + (index < 0) * seq_size;
 }
@@ -100,7 +100,7 @@ Range_index(I32 index, U32 seq_size) {
         atRange_3(start,end,1)
 
 #define atRange_3(start,end,stride) \
-  ( &(struct Range){{ cos_object_auto(Range) }, \
+  ( &(struct Range) { {{{ cos_object_auto(Range) }}}, \
     start, end, stride ? stride : 1 })
 
 // --- Range inliners (low-level monorphic interface)
@@ -180,13 +180,13 @@ Range_isClosed(const struct Range *r) {
 // normalization
 
 // sequence first index (normalized vs sequence's size)
-static inline I32
+static inline U32
 Range_first(const struct Range *r, U32 seq_size) {
   return Range_index(r->start, seq_size);
 }
 
 // sequence last index (normalized vs sequence's size) (included)
-static inline I32
+static inline U32
 Range_last(const struct Range *r, U32 seq_size) {
   return Range_index(r->end, seq_size);
 }
@@ -194,8 +194,8 @@ Range_last(const struct Range *r, U32 seq_size) {
 // normalization (requires sequence's size, preserves stride)
 static inline struct Range
 Range_normalize(const struct Range *r, U32 seq_size) {
-  I32 start = Range_first(r, seq_size);
-  I32 end   = Range_last (r, seq_size);
+  U32 start = Range_first(r, seq_size);
+  U32 end   = Range_last (r, seq_size);
 
   if ( (start <= end && r->stride >= 0)
     || (start >= end && r->stride <= 0) )

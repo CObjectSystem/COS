@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.1 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.2 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -69,15 +69,25 @@ TV_init(struct TV *vecv, struct T *vec, struct Slice *slc)
 // ----- constructors
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Slice);
-defmethod(OBJ,  ginitWith2          , mView, T, Slice) // array view
-  retmethod( ginitWith2(galloc(TV),_2,_3) );
+defmethod(OBJ,  ginitWith2          , mView, T, Slice) // vector view
+  OBJ vec = galloc(TV); PRT(vec); PRT(_2);
+  vec = ginitWith2(vec,gretain(_2),_3);
+  UNPRT(vec);
+  retmethod(vec);
 endmethod
 
-defmethod(OBJ, ginitWith2, TV, T, Slice)
+defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Range);
+defmethod(OBJ,  ginitWith2          , mView, T, Range) // vector view
+  struct Range range = Range_normalize(self3,self2->size);
+  struct Slice slice = Slice_fromRange(&range);
+  retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
+endmethod
+
+defmethod(OBJ, ginitWith2, TV, T, Slice) // vector view
   test_assert( !cos_object_isKindOf(_2, classref(TD)),
                TS " views accept only non-dynamic " TS );
 
-  TV_init(self, self2, self3);
+  TV_init(self1, self2, self3);
 
   retmethod(_1);
 endmethod
@@ -99,7 +109,7 @@ defmethod(void, ginvariant, TV, (STR)func, (STR)file, (int)line)
   test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(TD)),
                TS " view points to a dynamic " TS, func, file, line);
 
-  struct T *vec = STATIC_CAST(struct T*, self->ref);
+  struct T *vec = self->ref;
 
   I32 start  = (vec->valref - self->T.valref)/vec->stride;
   U32 size   = self->T.size;
@@ -113,6 +123,7 @@ defmethod(void, ginvariant, TV, (STR)func, (STR)file, (int)line)
   test_assert( first < self->ref->size && last < self->ref->size,
                TS " view is out of range", func, file, line);
 
-  next_method(self, func, file, line);
+  if (next_method_p)
+    next_method(self, func, file, line);
 endmethod
 

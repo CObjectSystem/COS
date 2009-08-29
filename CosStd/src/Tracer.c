@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Tracer.c,v 1.6 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Tracer.c,v 1.7 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -77,102 +77,102 @@ endmethod
 
 // rank 2
 defmethod(void, gunrecognizedMessage2, Tracer, Object)
-  OBJ obj[2]; obj[0]=self1->Proxy.obj, obj[1]=_2;
+  OBJ obj[2]; obj[0]=self->Proxy.obj, obj[1]=_2;
 
-  trace(self1,_sel,obj,1);
-  next_method(self1,self2);
+  trace(self,_sel,obj,1);
+  next_method(self,self2);
 endmethod
 
 defmethod(void, gunrecognizedMessage2, Object, Tracer)
   OBJ obj[2]; obj[0]=_1, obj[1]=self2->Proxy.obj;
 
   trace(self2,_sel,obj,2);
-  next_method(self1,self2);
+  next_method(self,self2);
 endmethod
 
 // rank 3
 defmethod(void, gunrecognizedMessage3, Tracer, Object, Object)
-  OBJ obj[3]; obj[0]=self1->Proxy.obj, obj[1]=_2, obj[2]=_3;
+  OBJ obj[3]; obj[0]=self->Proxy.obj, obj[1]=_2, obj[2]=_3;
 
-  trace(self1,_sel,obj,1);
-  next_method(self1,self2,self3);
+  trace(self,_sel,obj,1);
+  next_method(self,self2,self3);
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Object, Tracer, Object)
   OBJ obj[3]; obj[0]=_1, obj[1]=self2->Proxy.obj, obj[2]=_3;
 
   trace(self2,_sel,obj,2);
-  next_method(self1,self2,self3);
+  next_method(self,self2,self3);
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Object, Object, Tracer)
   OBJ obj[3]; obj[0]=_1, obj[1]=_2, obj[2]=self3->Proxy.obj;
 
   trace(self3,_sel,obj,3);
-  next_method(self1,self2,self3);
+  next_method(self,self2,self3);
 endmethod
 
 // rank 4
 defmethod(void, gunrecognizedMessage4, Tracer, Object, Object, Object)
-  OBJ obj[4]; obj[0]=self1->Proxy.obj, obj[1]=_2, obj[2]=_3, obj[3]=_4;
+  OBJ obj[4]; obj[0]=self->Proxy.obj, obj[1]=_2, obj[2]=_3, obj[3]=_4;
 
-  trace(self1,_sel,obj,1);
-  next_method(self1,self2,self3,self4);
+  trace(self,_sel,obj,1);
+  next_method(self,self2,self3,self4);
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Object, Tracer, Object, Object)
   OBJ obj[4]; obj[0]=_1, obj[1]=self2->Proxy.obj, obj[2]=_3, obj[3]=_4;
 
   trace(self2,_sel,obj,2);
-  next_method(self1,self2,self3,self4);
+  next_method(self,self2,self3,self4);
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Object, Object, Tracer, Object)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=self3->Proxy.obj, obj[3]=_4;
 
   trace(self3,_sel,obj,3);
-  next_method(self1,self2,self3,self4);
+  next_method(self,self2,self3,self4);
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Object, Object, Object, Tracer)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=self4->Proxy.obj;
 
   trace(self4,_sel,obj,4);
-  next_method(self1,self2,self3,self4);
+  next_method(self,self2,self3,self4);
 endmethod
 
 // rank 5
 defmethod(void, gunrecognizedMessage5, Tracer, Object, Object, Object, Object)
-  OBJ obj[5]; obj[0]=self1->Proxy.obj, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
+  OBJ obj[5]; obj[0]=self->Proxy.obj, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
 
-  trace(self1,_sel,obj,1);
-  next_method(self1,self2,self3,self4,self5);
+  trace(self,_sel,obj,1);
+  next_method(self,self2,self3,self4,self5);
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Tracer, Object, Object, Object)
   OBJ obj[5]; obj[0]=_1, obj[1]=self2->Proxy.obj, obj[2]=_3, obj[3]=_4, obj[4]=_5;
 
   trace(self2,_sel,obj,2);
-  next_method(self1,self2,self3,self4,self5);
+  next_method(self,self2,self3,self4,self5);
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Object, Tracer, Object, Object)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=self3->Proxy.obj, obj[3]=_4, obj[4]=_5;
 
   trace(self3,_sel,obj,3);
-  next_method(self1,self2,self3,self4,self5);
+  next_method(self,self2,self3,self4,self5);
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Object, Object, Tracer, Object)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=self4->Proxy.obj, obj[4]=_5;
 
   trace(self4,_sel,obj,4);
-  next_method(self1,self2,self3,self4,self5);
+  next_method(self,self2,self3,self4,self5);
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Tracer)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=self5->Proxy.obj;
 
   trace(self5,_sel,obj,5);
-  next_method(self1,self2,self3,self4,self5);
+  next_method(self,self2,self3,self4,self5);
 endmethod

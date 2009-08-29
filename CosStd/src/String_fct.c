@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fct.c,v 1.3 2009/08/17 12:57:13 ldeniau Exp $
+ | $Id: String_fct.c,v 1.4 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -48,17 +48,9 @@
 // -----
 
 useclass(String);
+useclass(Lesser,Equal,Greater);
 
 // ----- foreach (in place)
-
-defmethod(void, gforeach, String, IntFunction1)
-  U8* val = self->value;
-  U8* end = self->value + self->size;
-  I32FCT1 fct = self2->fct;
-
-  while (val != end)
-    fct(*val++);
-endmethod
 
 defmethod(void, gforeach, String, Function1)
   U8* val = self->value;
@@ -71,34 +63,34 @@ endmethod
 
 // ----- apply (in place map)
 
-defmethod(void, gapply, IntFunction1, String)
+defmethod(void, gapply, Function1, String)
   U8* val = self2->value;
   U8* end = self2->value + self2->size;
-  I32FCT1 fct = self->fct;
+  OBJFCT1 fct = self->fct;
 
   while (val != end)
-    *val = fct(*val), val++;
+    *val = gchr(fct(aChar(*val))), val++;
 endmethod
 
 // ----- map, map2, map3, map4
 
-defmethod(OBJ, gmap, IntFunction1, String)
+defmethod(OBJ, gmap, Function1, String)
   struct String* str = String_alloc(self2->size);
   OBJ _str = (OBJ)str; PRT(_str);
 
   U8* dst = str->value;
   U8* end = str->value + str->size;
   U8* src = self2->value;
-  I32FCT1 fct = self->fct;
+  OBJFCT1 fct = self->fct;
 
   while (dst != end)
-    *dst++ = fct(*src++);
+    *dst++ = gchr(fct(aChar(*src++)));
 
   UNPRT(_str);
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, gmap2, IntFunction2, String, String)
+defmethod(OBJ, gmap2, Function2, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
 
   struct String* str = String_alloc(size);
@@ -108,16 +100,16 @@ defmethod(OBJ, gmap2, IntFunction2, String, String)
   U8* end  = str->value + str->size;
   U8* src1 = self2->value;
   U8* src2 = self3->value;
-  I32FCT2 fct = self->fct;
+  OBJFCT2 fct = self->fct;
 
   while (dst != end)
-    *dst++ = fct(*src1++,*src2++);
+    *dst++ = gchr(fct(aChar(*src1++),aChar(*src2++)));
 
   UNPRT(_str);
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, gmap3, IntFunction3, String, String, String)
+defmethod(OBJ, gmap3, Function3, String, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
   if (size > self4->size) size = self4->size;
 
@@ -129,16 +121,16 @@ defmethod(OBJ, gmap3, IntFunction3, String, String, String)
   U8* src1 = self2->value;
   U8* src2 = self3->value;
   U8* src3 = self4->value;
-  I32FCT3 fct = self->fct;
+  OBJFCT3 fct = self->fct;
 
   while (dst != end)
-    *dst++ = fct(*src1++,*src2++,*src3++);
+    *dst++ = gchr(fct(aChar(*src1++),aChar(*src2++),aChar(*src3++)));
 
   UNPRT(_str);
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, gmap4, IntFunction4, String, String, String, String)
+defmethod(OBJ, gmap4, Function4, String, String, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
   if (size > self4->size) size = self4->size;
   if (size > self5->size) size = self5->size;
@@ -152,10 +144,10 @@ defmethod(OBJ, gmap4, IntFunction4, String, String, String, String)
   U8* src2 = self3->value;
   U8* src3 = self4->value;
   U8* src4 = self5->value;
-  I32FCT4 fct = self->fct;
+  OBJFCT4 fct = self->fct;
 
   while (dst != end)
-    *dst++ = fct(*src1++,*src2++,*src3++,*src4++);
+    *dst++ = gchr(fct(aChar(*src1++),aChar(*src2++),aChar(*src3++),aChar(*src4++)));
 
   UNPRT(_str);
   retmethod(gautoDelete(_str));
@@ -187,9 +179,9 @@ defmethod(OBJ, gany, String, Function1)
   retmethod(False);
 endmethod
 
-// ----- filter, filterOut, fold, scan
+// ----- filter, fold, scan
 
-defmethod(OBJ, gfilter, String, Function1)
+defmethod(OBJ, gselect, String, Function1)
   OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
   struct String* str = STATIC_CAST(struct String*, _str);
 
@@ -209,7 +201,7 @@ defmethod(OBJ, gfilter, String, Function1)
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, gfilterOut, String, Function1)
+defmethod(OBJ, greject, String, Function1)
   OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
   struct String* str = STATIC_CAST(struct String*, _str);
 
@@ -229,7 +221,7 @@ defmethod(OBJ, gfilterOut, String, Function1)
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, gfoldl, String, Function2, Object)
+defmethod(OBJ, greduce, String, Function2, Object)
   U8* src = self->value;
   U8* end = self->value + self->size;
   OBJ res = _3;
@@ -241,7 +233,7 @@ defmethod(OBJ, gfoldl, String, Function2, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gfoldr, String, Function2, Object)
+defmethod(OBJ, grreduce, String, Function2, Object)
   U8* src = self->value + self->size;
   U8* end = self->value;
   OBJ res = _3;
@@ -253,19 +245,19 @@ defmethod(OBJ, gfoldr, String, Function2, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gscanl, String, IntFunction2, Object)
+defmethod(OBJ, gaccumulate, String, Function2, Object)
   struct String* str = String_alloc(self->size+1);
   OBJ _str = (OBJ)str; PRT(_str);
 
   U8* dst = str->value;
   U8* end = str->value + str->size;
   U8* src = self->value;
-  I32FCT2 fct = self2->fct;
+  OBJFCT2 fct = self2->fct;
 
   *dst++ = gchr(_3);
   
   while (dst != end) {
-    *dst = fct(dst[-1], *src++);
+    *dst = gchr(fct(aChar(dst[-1]), aChar(*src++)));
      dst++;
   }
 
@@ -273,20 +265,20 @@ defmethod(OBJ, gscanl, String, IntFunction2, Object)
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, gscanr, String, IntFunction2, Object)
+defmethod(OBJ, graccumulate, String, Function2, Object)
   struct String* str = String_alloc(self->size+1);
   OBJ _str = (OBJ)str; PRT(_str);
 
   U8* dst = str->value + str->size;
   U8* end = str->value;
   U8* src = self->value + self->size;
-  I32FCT2 fct = self2->fct;
+  OBJFCT2 fct = self2->fct;
 
   *--dst = gchr(_3);
 
   while (dst != end) {
      dst--;
-    *dst = fct(*src++, dst[1]);
+    *dst = gchr(fct(aChar(*src++), aChar(dst[1])));
   }
 
   UNPRT(_str);
@@ -317,51 +309,47 @@ defmethod(OBJ, gunique, String, Function2)
   retmethod(gautoDelete(_str));
 endmethod
 
-// ----- search (function)
+// ----- finding
 
-static I32
-ifind(struct String *self, OBJFCT1 fct)
+static U8*
+findFct(U8 *val, U32 val_n, OBJFCT1 fct)
 {
-  useclass(Lesser, Equal, Greater);
+  if (!val_n) return 0;
 
-  if (self->size == 0)
-    return(-1);
-
-  U8* val = self->value;
   OBJ res = fct(aChar(*val)); // bsearch order
 
   if (res == True || res == Equal) // found
-    return(0);
+    return val;
 
   // linear search
   if (res == False) {
-    U8* end = self->value + self->size;
+    U8* end = val + val_n;
     
     val++;
     while (val != end) {
       if (fct(aChar(*val)) == True) // found
-        return(val-self->value);
+        return val;
       val++;
     }
 
-    return(-1);
+    return 0;
   }
 
   // binary search
   if (res == Lesser)
-    return(-1);
+    return 0;
 
   test_assert( res == Greater,
     "find expects functor returning TrueFalse or Ordered predicates" );
 
-  U32 lo = 1, hi = self->size-1;
+  U32 lo = 1, hi = val_n-1;
 
   while (lo <= hi) {
     U32 i = (lo + hi) / 2;
     res = fct(aChar(val[i]));
 
     if (res == Equal)
-      return(i); // found
+      return val + i; // found
 
     if (res == Lesser)
       hi = i-1;
@@ -369,21 +357,27 @@ ifind(struct String *self, OBJFCT1 fct)
       lo = i+1;
   }
 
-  return(-1);
+  return 0;
 }
 
 // ---
 
 defmethod(OBJ, gfind, String, Function1)
-  I32 i = ifind(self,self2->fct);
+  U8* val   = self->value;
+  U32 val_n = self->size;
+
+  U8* p = findFct(val,val_n,self2->fct);
   
-  retmethod(i >= 0 ? gautoDelete(aChar(self->value[i])) : Nil);  
+  retmethod(p ? gautoDelete(aChar(*p)) : Nil);  
 endmethod
 
 defmethod(OBJ, gifind, String, Function1)
-  I32 i = ifind(self,self2->fct);
+  U8* val   = self->value;
+  U32 val_n = self->size;
 
-  retmethod(i >= 0 ? gautoDelete( aInt(i) ) : Nil);
+  U8* p = findFct(val,val_n,self2->fct);
+  
+  retmethod(p ? gautoDelete(aInt(p-val)) : Nil);  
 endmethod
 
 

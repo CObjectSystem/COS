@@ -32,27 +32,28 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.13 2009/08/17 12:57:13 ldeniau Exp $
+ | $Id: container.h,v 1.14 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-// stream-like accessors
-defgeneric(OBJ , gget     , _1);
-defgeneric(void, gput     , _1, what);
-defgeneric(void, gdrop    , _1);
-defgeneric(void, ginsert  , _1, what);
-defgeneric(void, gremove  , _1);
-
-// stack-like accessors
-defgeneric(void, gpush    , _1, what);  // alias for gput
-defgeneric(OBJ , gtop     , _1);        // alias for gget
-defgeneric(void, gpop     , _1);        // alias for gdrop
-
 // list-like accessor
 defgeneric(void, ginsertAt, _1, at, what);
 defgeneric(void, gremoveAt, _1, at);
+
+// stack-like accessors
+defgeneric(void, gpush    , _1, what);
+defgeneric(OBJ , gtop     , _1);
+defgeneric(void, gpop     , _1);
+
+// dequeue-like accessors
+defgeneric(OBJ , gfront    , _1);
+defgeneric(OBJ , gback     , _1);
+defgeneric(void, gpushFront, _1, what);
+defgeneric(void, gpushBack , _1, what);
+defgeneric(void, gpopFront , _1);
+defgeneric(void, gpopBack  , _1);
 
 // seq-like accessor
 defgeneric(void, gprepend , _1, what);
@@ -62,10 +63,6 @@ defgeneric(OBJ , glast    , _1);
 
 // check for elements
 defgeneric(OBJ , gisEmpty , _1);
-
-// fix/unfix object (e.g. no shrink/enlarge)
-defgeneric(void, gfix     , _1);
-defgeneric(void, gunfix   , _1);
 
 // adjust object (e.g. capacity to size)
 defgeneric(void, gadjust  , _1);

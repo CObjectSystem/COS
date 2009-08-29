@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ShtVector.h,v 1.1 2009/08/21 13:10:39 ldeniau Exp $
+ | $Id: ShtVector.h,v 1.2 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -85,7 +85,6 @@ defclass(ShtVectorN, ShtVector) I16 _value[]; endclass
 
 defclass(ShtVectorFix, ShtVector)
   I16 *_value;
-  U32  _cls;
   U32  capacity;
 endclass
 
@@ -93,8 +92,8 @@ defclass(ShtVectorDyn, ShtVectorFix)
 endclass
 
 defclass(ShtVectorLzy, ShtVectorDyn)
-  OBJ generator;
   I32 arity;
+  OBJ generator;
 endclass
 
 // ----- ShtVector view

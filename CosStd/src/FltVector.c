@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.9 2009/08/21 13:04:40 ldeniau Exp $
+ | $Id: FltVector.c,v 1.10 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -47,10 +47,23 @@
 #define TS    "float vector"
 #define TE    Float
 
+#define TF1   FltFunction1
+#define TF2   FltFunction2
+#define TF3   FltFunction3
+#define TF4   FltFunction4
+#define TF5   FltFunction5
+
+#define PF1   F64FCT1
+#define PF2   F64FCT2
+#define PF3   F64FCT3
+#define PF4   F64FCT4
+#define PF5   F64FCT5
+
 #define VS    Vector.ValueSequence.Sequence
 
 #define VAL       F64
 #define VALINT  
+#define VALFLT  
 #define VALOBJ(v) aFloat(v)
 
 #define  valref  value
@@ -76,11 +89,12 @@
 #define UNPROTECT(v) 
 
 #include <cos/FltVector.h>
+#include <cos/Function.h>
 
 makclass(FltVector, Vector);
 
 // vector templates
-#include "./tmpl/Vector.c"
+#include "./tmpl/Vector_blk.c"
 #include "./tmpl/Vector_dyn.c"
 #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"
@@ -89,4 +103,5 @@ makclass(FltVector, Vector);
 #include "./tmpl/Vector_alg.c"
 #include "./tmpl/Vector_fun.c"
 #include "./tmpl/Vector_fct.c"
+#include "./tmpl/Vector_vfn.c"
 

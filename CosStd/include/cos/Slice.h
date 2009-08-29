@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.14 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Slice.h,v 1.15 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
-#include <cos/Value.h>
+#include <cos/Sequence.h>
 
 /* NOTE-USER: Slices
   - Slices are objects useful to represent sliced views of sequence
@@ -49,7 +49,7 @@
   - Ranges can be converted to Slices given the sequence size
 */
 
-defclass(Slice, Value)
+defclass(Slice, ValueSequence)
   I32 start;
   U32 size;
   I32 stride;
@@ -79,7 +79,7 @@ endclass
         atSlice_3(start,size,1)
 
 #define atSlice_3(start,size,stride) \
-  ( &(struct Slice){{ cos_object_auto(Slice) }, \
+  ( &(struct Slice) { {{{ cos_object_auto(Slice) }}}, \
     start, size, stride ? stride : 1 })
 
 // --- Slice inliners (low-level monorphic interface)
@@ -136,14 +136,14 @@ Slice_end(const struct Slice *s) {
   return Slice_eval(s, s->size-1);
 }
 
-// sequence first index (alias for start)
-static inline I32
+// sequence first index
+static inline U32
 Slice_first(const struct Slice *s) {
   return Slice_start(s);
 }
 
-// sequence last index (alias for end )
-static inline I32
+// sequence last index
+static inline U32
 Slice_last(const struct Slice *s) {
   return Slice_end(s);
 }

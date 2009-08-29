@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.h,v 1.5 2009/08/21 13:04:40 ldeniau Exp $
+ | $Id: LngVector.h,v 1.6 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -85,7 +85,6 @@ defclass(LngVectorN, LngVector) I64 _value[]; endclass
 
 defclass(LngVectorFix, LngVector)
   I64 *_value;
-  U32  _cls;
   U32  capacity;
 endclass
 
@@ -93,8 +92,8 @@ defclass(LngVectorDyn, LngVectorFix)
 endclass
 
 defclass(LngVectorLzy, LngVectorDyn)
-  OBJ generator;
   I32 arity;
+  OBJ generator;
 endclass
 
 // ----- LngVector view

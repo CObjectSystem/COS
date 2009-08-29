@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.4 2009/08/21 13:21:12 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.5 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #error "this template file requires tmpl/Vector.c"
 #endif
 
+#if 0
 // ----- equality
 
 defmethod(OBJ, gisEqual, T, T)
@@ -101,6 +102,7 @@ defmethod(OBJ, gcompare, T, T)
 endmethod
 
 #endif
+#endif
 
 // ----- in place
 
@@ -151,8 +153,8 @@ defmethod(void, gpermute, T, IntVector)
     // permute
     for (cur = buf; cur != end; cur++) {
       i = Range_index(*idx, val_n);
-      if ( !(i < val_n && flg[i*val_s]) ) break;
-      *cur = val[i*val_s], flg[i*val_s] = 0;
+      if ( !(i < val_n && flg[i]) ) break;
+      *cur = val[i*val_s], flg[i] = 0;
        idx += idx_s;
     }
 
@@ -182,13 +184,9 @@ endmethod
 
 // ----- repeat
 
-#ifdef ARRAY_ONLY
-
-defmethod(OBJ, grepeat, Object, Int)
+defmethod(OBJ, grepeat, TE, Int)
   retmethod(gautoDelete( gnewWith2(T,_2,_1) ));
 endmethod
-
-#endif
 
 // ----- zip, zip3, zip4
 
@@ -264,6 +262,40 @@ defmethod(OBJ, gzip4, T, T, T, T)
     *dst++ = RETAIN(*src2), src2 += src2_s;
     *dst++ = RETAIN(*src3), src3 += src3_s;
     *dst++ = RETAIN(*src4), src4 += src4_s;
+  }
+
+  UNPROTECT(_vec);
+  retmethod(gautoDelete(_vec));
+endmethod
+
+defmethod(OBJ, gzip5, T, T, T, T, T)
+  U32 size = self->size < self2->size ? self->size : self2->size;
+  if (size > self3->size) size = self3->size;
+  if (size > self4->size) size = self4->size;
+  if (size > self5->size) size = self5->size;
+
+  struct T* vec = T_alloc(5*size);
+  OBJ _vec = (OBJ)vec; PROTECT(_vec);
+
+  VAL *dst    = vec->valref;
+  VAL *end    = vec->valref + vec->size;
+  VAL *src1   = self->valref; 
+  I32  src1_s = self->stride;
+  VAL *src2   = self2->valref;
+  I32  src2_s = self2->stride;
+  VAL *src3   = self3->valref;
+  I32  src3_s = self3->stride;
+  VAL *src4   = self4->valref;
+  I32  src4_s = self4->stride;
+  VAL *src5   = self5->valref;
+  I32  src5_s = self5->stride;
+
+  while (dst != end) {
+    *dst++ = RETAIN(*src1), src1 += src1_s;
+    *dst++ = RETAIN(*src2), src2 += src2_s;
+    *dst++ = RETAIN(*src3), src3 += src3_s;
+    *dst++ = RETAIN(*src4), src4 += src4_s;
+    *dst++ = RETAIN(*src5), src5 += src5_s;
   }
 
   UNPROTECT(_vec);
@@ -433,22 +465,22 @@ findVal(VAL *val, U32 val_n, I32 val_s, VAL _2)
   return 0;  
 }
 
-defmethod(OBJ, gfind, T, TE)
+defmethod(OBJ, gfind, T, Object)
   VAL *val   = self->valref;
   U32  val_n = self->size;
   I32  val_s = self->stride;
 
-  VAL *p = findVal(val,val_n,val_s,VALUE(self2));
+  VAL *p = findVal(val,val_n,val_s,TOVAL(_2));
 
   retmethod( p ? AUTODELETE(VALOBJ(*p)) : Nil );  
 endmethod
 
-defmethod(OBJ, gifind, T, TE)
+defmethod(OBJ, gifind, T, Object)
   VAL *val   = self->valref;
   U32  val_n = self->size;
   I32  val_s = self->stride;
 
-  VAL *p = findVal(val,val_n,val_s,VALUE(self2));
+  VAL *p = findVal(val,val_n,val_s,TOVAL(_2));
 
   retmethod(p ? gautoDelete( aInt((p-val)/val_s) ) : Nil);
 endmethod

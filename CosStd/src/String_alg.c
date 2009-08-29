@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.9 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: String_alg.c,v 1.10 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -136,7 +136,7 @@ defmethod(OBJ, gcat, String, String)
   struct String *str = String_alloc(size);
   U8* dst = str->value;
 
-  memcpy(dst,self1->value,self1->size); dst += self1->size;
+  memcpy(dst,self ->value,self ->size); dst += self->size;
   memcpy(dst,self2->value,self2->size);
 
   retmethod(gautoDelete( (OBJ)str ));
@@ -148,7 +148,7 @@ defmethod(OBJ, gcat3, String, String, String)
   struct String *str = String_alloc(size);
   U8* dst = str->value;
 
-  memcpy(dst,self1->value,self1->size); dst += self1->size;
+  memcpy(dst,self ->value,self ->size); dst += self ->size;
   memcpy(dst,self2->value,self2->size); dst += self2->size;
   memcpy(dst,self3->value,self3->size);
 
@@ -161,7 +161,7 @@ defmethod(OBJ, gcat4, String, String, String, String)
   struct String *str = String_alloc(size);
   U8* dst = str->value;
 
-  memcpy(dst,self1->value,self1->size); dst += self1->size;
+  memcpy(dst,self ->value,self ->size); dst += self ->size;
   memcpy(dst,self2->value,self2->size); dst += self2->size;
   memcpy(dst,self3->value,self3->size); dst += self3->size;
   memcpy(dst,self4->value,self4->size);
@@ -170,13 +170,13 @@ defmethod(OBJ, gcat4, String, String, String, String)
 endmethod
 
 defmethod(OBJ, gcat5, String, String, String, String, String)
-  U32 size = self1->size + self2->size +
+  U32 size = self->size + self2->size +
              self3->size + self4->size + self5->size;
 
   struct String *str = String_alloc(size);
   U8* dst = str->value;
 
-  memcpy(dst,self1->value,self1->size); dst += self1->size;
+  memcpy(dst,self ->value,self ->size); dst += self ->size;
   memcpy(dst,self2->value,self2->size); dst += self2->size;
   memcpy(dst,self3->value,self3->size); dst += self3->size;
   memcpy(dst,self4->value,self4->size); dst += self4->size;

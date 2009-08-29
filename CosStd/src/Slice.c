@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.7 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Slice.c,v 1.8 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -39,19 +39,19 @@
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 
-makclass(Slice, Value);
+makclass(Slice, ValueSequence);
 
 // ----- new
 
-defmethod(OBJ, gnewWithSlc1, mSlice, (U32)size)
+defmethod(OBJ, gnewWithSlc1, pmSlice, (U32)size)
   retmethod( ginitWithSlc1(galloc(_1), size) );
 endmethod
 
-defmethod(OBJ, gnewWithSlc2, mSlice, (I32)start, (U32)size)
+defmethod(OBJ, gnewWithSlc2, pmSlice, (I32)start, (U32)size)
   retmethod( ginitWithSlc2(galloc(_1), start, size) );
 endmethod
 
-defmethod(OBJ, gnewWithSlc3, mSlice, (I32)start, (U32)size, (I32)stride)
+defmethod(OBJ, gnewWithSlc3, pmSlice, (I32)start, (U32)size, (I32)stride)
   retmethod( ginitWithSlc3(galloc(_1), start, size, stride) );
 endmethod
 
@@ -72,12 +72,12 @@ endmethod
 // ----- copy
 
 defmethod(OBJ, ginitWith, Slice, Slice)
-  retmethod( (OBJ)Slice_copy(self1, self2) );
+  retmethod( (OBJ)Slice_copy(self, self2) );
 endmethod
 
 // ----- equality
 
 defmethod(OBJ, gisEqual, Slice, Slice)
-  retmethod( Slice_isEqual(self1, self2) ? True : False );
+  retmethod( Slice_isEqual(self, self2) ? True : False );
 endmethod
 

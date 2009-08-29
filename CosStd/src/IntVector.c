@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.c,v 1.2 2009/08/21 13:04:40 ldeniau Exp $
+ | $Id: IntVector.c,v 1.3 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -47,10 +47,23 @@
 #define TS    "int vector"
 #define TE    Int
 
+#define TF1   IntFunction1
+#define TF2   IntFunction2
+#define TF3   IntFunction3
+#define TF4   IntFunction4
+#define TF5   IntFunction5
+
+#define PF1   I32FCT1
+#define PF2   I32FCT2
+#define PF3   I32FCT3
+#define PF4   I32FCT4
+#define PF5   I32FCT5
+
 #define VS    Vector.ValueSequence.Sequence
 
 #define VAL       I32
 #define VALINT  
+#define VALFLT  
 #define VALOBJ(v) aInt(v)
 
 #define  valref  value
@@ -76,11 +89,12 @@
 #define UNPROTECT(v) 
 
 #include <cos/IntVector.h>
+#include <cos/Function.h>
 
 makclass(IntVector, Vector);
 
 // vector templates
-#include "./tmpl/Vector.c"
+#include "./tmpl/Vector_blk.c"
 #include "./tmpl/Vector_dyn.c"
 #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"
@@ -89,4 +103,5 @@ makclass(IntVector, Vector);
 #include "./tmpl/Vector_alg.c"
 #include "./tmpl/Vector_fun.c"
 #include "./tmpl/Vector_fct.c"
+#include "./tmpl/Vector_vfn.c"
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.2 2009/08/05 09:58:59 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.3 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -71,8 +71,8 @@ defmethod(OBJ, ginitWith, ComposeFun, ComposeFun) // copy
   test_assert(self->size == self2->size, "incompatible composition size");
 
   OBJ *src = self2->functor;
-  OBJ *fun = self1->functor;
-  OBJ *end = self1->functor+self1->size;
+  OBJ *fun = self->functor;
+  OBJ *end = self->functor + self->size;
 
   while (fun < end)
     *fun++ = gretain(*src++);
@@ -85,8 +85,8 @@ defmethod(OBJ, ginitWith, ComposeFun, Array) // from array
 
   OBJ *obj   = self2->object;
   I32  obj_s = self2->stride;
-  OBJ *fun   = self1->functor+self1->size;
-  OBJ *end   = self1->functor;
+  OBJ *fun   = self->functor + self->size;
+  OBJ *end   = self->functor;
 
   while (fun-- > end) { // reverse references
     *fun = gretain(*obj);

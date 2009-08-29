@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_lzy.c,v 1.2 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: String_lzy.c,v 1.3 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -56,32 +56,38 @@ useclass(ExBadArity, StringLzy);
 
 defalias (OBJ, (ginitWith)gnewWith, pmString, Functor);
 defmethod(OBJ,  ginitWith         , pmString, Functor) // generator
-  retmethod( ginitWith(galloc(StringLzy),_2) );
+  retmethod( ginitWith3(_1,_2,aStringRef(0,0),aInt(0)) );
 endmethod
 
-defmethod(OBJ, ginitWith, StringLzy, Functor)
-  retmethod( ginitWith2(_1,_2,aStringRef(0,0)) );
+defalias (OBJ, (ginitWith2)gnewWith2, pmString, Functor, Int);
+defmethod(OBJ,  ginitWith2          , pmString, Functor, Int) // generator
+  retmethod( ginitWith3(_1,_2,aStringRef(0,0),_3) );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmString, Functor, String);
 defmethod(OBJ,  ginitWith2          , pmString, Functor, String) // generator
-  retmethod( ginitWith2(galloc(StringLzy),_2,_3) );
+  retmethod( ginitWith3(_1,_2,_3,aInt(self3->size*2)) );
 endmethod
 
-defmethod(OBJ, ginitWith2, StringLzy, Functor, String)
-  defnext(OBJ, ginitWith , StringLzy, Int); // dynamic string
+defalias (OBJ, (ginitWith3)gnewWith3, pmString, Functor, String, Int);
+defmethod(OBJ,  ginitWith3          , pmString, Functor, String, Int) // generator
+  defnext(OBJ,  ginitWith, StringLzy, Int); // dynamic string
+
+  OBJ _str = galloc(StringLzy); PRT(_str);
+  struct StringLzy *str = STATIC_CAST(struct StringLzy*, _str);
   
-  next_method(self, atInt(self3->size*2));
+  next_method(str, self4);
 
-  self->generator = gretain(_2);
-  self->arity     = garity (_2);
+  str->generator = gretain(_2);
+  str->arity     = garity (_2);
 
-  test_assert( (U32)self->arity < 3, "invalid generator arity" );
+  test_assert( (U32)str->arity < 3, "invalid generator arity" );
 
   if (self3->size > 0)
-    gappend(_1,_3);
+    gappend(_str,_3);
 
-  retmethod(_1);
+  UNPRT(_str);
+  retmethod(_str);
 endmethod
 
 // ----- destructor

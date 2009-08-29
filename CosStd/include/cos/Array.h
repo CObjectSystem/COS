@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.25 2009/08/21 12:27:46 ldeniau Exp $
+ | $Id: Array.h,v 1.26 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -107,7 +107,6 @@ defclass(ArrayN, Array) OBJ _object[]; endclass
 
 defclass(ArrayFix, Array)
   OBJ *_object;
-  U32  _cls;
   U32  capacity;
 endclass
 
@@ -115,8 +114,8 @@ defclass(ArrayDyn, ArrayFix)
 endclass
 
 defclass(ArrayLzy, ArrayDyn)
-  OBJ generator;
   I32 arity;
+  OBJ generator;
 endclass
 
 // ----- Array view

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.40 2009/08/21 13:04:40 ldeniau Exp $
+ | $Id: Array.c,v 1.41 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -50,6 +50,7 @@
 
 #define VAL       OBJ
 #define VALINT    aInt
+#define VALFLT    aFloat
 #define VALOBJ(v) v
 
 #define  valref  object
@@ -80,7 +81,7 @@
 makclass(Array, Sequence);
 
 // vector templates
-#include "./tmpl/Vector.c"
+#include "./tmpl/Vector_blk.c"
 #include "./tmpl/Vector_dyn.c"
 #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"

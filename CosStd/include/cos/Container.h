@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Container.h,v 1.5 2009/08/10 21:02:14 ldeniau Exp $
+ | $Id: Container.h,v 1.6 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -51,17 +51,17 @@
     <- Deque
     <- List
     <- ValueSequence (elements are values)
+      <- Slice
+      <- Range
+      <- XRange
       <- String
-      <- WString
       <- Vector
-        <- BitVector
-        <- ChrVector
+        <- BitVector // TODO
         <- ShtVector
         <- IntVector
         <- LngVector
         <- FltVector
         <- CpxVector
-        <- ObjVector
 
   - All containers own (gretain) their elements (and keys if any)
   - All containers do swallow copy

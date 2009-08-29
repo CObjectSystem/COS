@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.3 2009/08/21 12:27:46 ldeniau Exp $
+ | $Id: String.h,v 1.4 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -106,7 +106,6 @@ endclass
 
 defclass(StringFix, String)
   U8* _value;
-  U32 _cls;
   U32 capacity;
 endclass
 
@@ -114,8 +113,8 @@ defclass(StringDyn, StringFix)
 endclass
 
 defclass(StringLzy, StringDyn)
-  OBJ generator;
   I32 arity;
+  OBJ generator;
 endclass
 
 // ----- String view

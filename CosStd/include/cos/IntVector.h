@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.h,v 1.6 2009/08/21 13:04:40 ldeniau Exp $
+ | $Id: IntVector.h,v 1.7 2009/08/29 21:33:39 ldeniau Exp $
  |
 */
 
@@ -85,7 +85,6 @@ defclass(IntVectorN, IntVector) I32 _value[]; endclass
 
 defclass(IntVectorFix, IntVector)
   I32 *_value;
-  U32  _cls;
   U32  capacity;
 endclass
 
@@ -93,8 +92,8 @@ defclass(IntVectorDyn, IntVectorFix)
 endclass
 
 defclass(IntVectorLzy, IntVectorDyn)
-  OBJ generator;
   I32 arity;
+  OBJ generator;
 endclass
 
 // ----- IntVector view

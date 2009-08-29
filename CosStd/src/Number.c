@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.14 2009/08/15 14:54:58 ldeniau Exp $
+ | $Id: Number.c,v 1.15 2009/08/29 21:33:40 ldeniau Exp $
  |
 */
 
@@ -66,7 +66,7 @@ defmethod(OBJ, galloc, pmNumber) // lazy alloc
   retmethod(_1);
 endmethod
 
-// ----- constructors (cluster), optimized ginitWith(galloc(_1))
+// ----- constructors (cluster), optimized ginitWith(galloc(_2),_2)
 
 #undef  DEFMETHOD
 #define DEFMETHOD(T,P) \
@@ -85,7 +85,7 @@ DEFMETHOD(Long   ,     )
 DEFMETHOD(Float  ,     )
 DEFMETHOD(Complex,     )
 
-// ----- clones (cluster), optimized ginitWith(galloc(gclass(_1)))
+// ----- clones (cluster), optimized ginitWith(galloc(gclass(_1)),_1)
 
 #undef  DEFMETHOD
 #define DEFMETHOD(T,P) \
