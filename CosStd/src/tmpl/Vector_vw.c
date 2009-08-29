@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.3 2009/08/29 21:53:08 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.4 2009/08/29 22:15:08 ldeniau Exp $
  |
 */
 
@@ -86,6 +86,7 @@ defmethod(OBJ, ginitWith2, TV, T, Slice) // vector view
     test_assert( !cos_object_isKindOf(_2, classref(TD)),
                  TS " views accept only non-dynamic " TS );
   POST
+    // automatically trigger ginvariant
   
   BODY
     OBJ ref = gretain(_2); PRT(ref);

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.2 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.3 2009/08/29 22:15:08 ldeniau Exp $
  |
 */
 
@@ -97,9 +97,11 @@ endmethod
 // ----- destructor
 
 defmethod(OBJ, gdeinit, TF)
+  next_method(self);
+
   if (self->_valref)            // take care of protection cases
     free(self->_valref);
-  next_method(self);
+
   retmethod(_1);
 endmethod
 
@@ -131,32 +133,29 @@ defmethod(void, genlarge, TD, Float) // negative factor means enlarge front
 endmethod
 
 defmethod(void, genlarge, TD, Int) // negative size means enlarge front
-  enum { MIN_ADDON = 1024 };
+  enum { MIN_SIZE = 1024 };
   
-  struct TF *vecf = &self->TF;
-  struct T  *vec  = &vecf->T;
+  struct TF*  vecf = &self->TF;
+  struct T*    vec = &vecf->T;
   U32     capacity = vecf->capacity;
   ptrdiff_t offset = vec->valref - vecf->_valref;
   BOOL       front = self2->value < 0;
-  U32        addon = front ? -self2->value : self2->value;
+  U32         size = front ? -self2->value : self2->value;
 
-  if (addon < MIN_ADDON)
-    addon = MIN_ADDON;
+  if (size < MIN_SIZE)
+    size = MIN_SIZE;
 
-  if (addon > 0) {
-    U32 capacity = vecf->capacity + addon;
-    VAL *_valref = realloc(vecf->_valref, capacity * sizeof *vecf->_valref);
-    if (!_valref) THROW(ExBadAlloc);
-
-    vec ->valref   = _valref + offset;
-    vecf->_valref  = _valref;
-    vecf->capacity = capacity;
-  }
+  capacity += size;
   
-  if (front) { // move data to book the new space front
-    vec->valref = vecf->_valref + (vecf->capacity - capacity);
-    memmove(vec->valref, vecf->_valref + offset, vec->size*sizeof *vec->valref);
-  }
+  VAL *_valref = realloc(vecf->_valref, capacity*sizeof(VAL));
+  if (!_valref) THROW(ExBadAlloc);
+
+  vec -> valref  = _valref + offset;
+  vecf->_valref  = _valref;
+  vecf->capacity = capacity;
+  
+  if (front) // move data to book the new space front
+    vec->valref = memmove(vec->valref+size, _valref+offset, vec->size*sizeof(VAL));
 endmethod
 
 // ----- adjustment (capacity -> size)
