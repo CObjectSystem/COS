@@ -32,42 +32,45 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.14 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: container.h,v 1.15 2009/08/29 23:52:05 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
 // list-like accessor
-defgeneric(void, ginsertAt, _1, at, what);
-defgeneric(void, gremoveAt, _1, at);
+defgeneric(void, ginsertAt , _1, at, what);
+defgeneric(void, gremoveAt , _1, at);
 
 // stack-like accessors
-defgeneric(void, gpush    , _1, what);
-defgeneric(OBJ , gtop     , _1);
-defgeneric(void, gpop     , _1);
+defgeneric(void, gpush     , _1, what);
+defgeneric(OBJ , gtop      , _1);
+defgeneric(void, gpop      , _1);
 
 // dequeue-like accessors
-defgeneric(OBJ , gfront    , _1);
-defgeneric(OBJ , gback     , _1);
 defgeneric(void, gpushFront, _1, what);
 defgeneric(void, gpushBack , _1, what);
 defgeneric(void, gpopFront , _1);
 defgeneric(void, gpopBack  , _1);
+defgeneric(OBJ , gfront    , _1);
+defgeneric(OBJ , gback     , _1);
 
 // seq-like accessor
-defgeneric(void, gprepend , _1, what);
-defgeneric(void, gappend  , _1, what);
-defgeneric(OBJ , gfirst   , _1);
-defgeneric(OBJ , glast    , _1);
+defgeneric(void, gprepend  , _1, what);
+defgeneric(void, gappend   , _1, what);
+defgeneric(void, gdrop     , _1, num); // front if num<0
+defgeneric(void, gdropFirst, _1);
+defgeneric(void, gdropLast , _1);
+defgeneric(OBJ , gfirst    , _1);
+defgeneric(OBJ , glast     , _1);
 
 // check for elements
-defgeneric(OBJ , gisEmpty , _1);
+defgeneric(OBJ , gisEmpty  , _1);
 
 // adjust object (e.g. capacity to size)
-defgeneric(void, gadjust  , _1);
+defgeneric(void, gadjust   , _1);
 
-// englarge object (e.g. book some capacity, front if <0)
-defgeneric(void, genlarge , _1, by);
+// englarge object memory (e.g. front if by<0)
+defgeneric(void, genlarge  , _1, by);
 
 #endif // COS_GEN_CONTAINER_H

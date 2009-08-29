@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.3 2009/08/29 22:15:08 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.4 2009/08/29 23:52:05 ldeniau Exp $
  |
 */
 
@@ -164,13 +164,13 @@ defmethod(void, gadjust, TD)
   struct TF *vecf = &self->TF;
   struct T  *vec  = &vecf->T;
 
-  // move data to storage base
+  // move data to base
   if (vec->valref != vecf->_valref)
-    vec->valref = memmove(vecf->_valref, vec->valref, vec->size * sizeof *vecf->_valref);
+    vec->valref = memmove(vecf->_valref, vec->valref, vec->size*sizeof(VAL));
 
   // shrink storage
   if (vec->size != vecf->capacity) {
-    VAL *_valref = realloc(vecf->_valref, vec->size * sizeof *vecf->_valref);
+    VAL *_valref = realloc(vecf->_valref, vec->size*sizeof(VAL));
     if (!_valref) THROW(ExBadAlloc);
 
     vec ->valref   = _valref;
@@ -199,14 +199,68 @@ defmethod(void, gclear, TD)
   self->TF.T.size = 0;
 endmethod
 
-// ----- prepend, append
+// ----- dropFirst, dropLast, dropn
+
+defmethod(void, gdropFirst, TD)
+  struct T *vec = &self->TF.T;
+
+  if (vec->size) {
+    --vec->size;
+    ++vec->valref;
+#ifdef ARRAY_ONLY
+   RELEASE(vec->valref[-1]);
+#endif
+  }
+endmethod
+
+defmethod(void, gdropLast, TD)
+  struct T *vec = &self->TF.T;
+
+  if (vec->size) {
+    --vec->size;
+#ifdef ARRAY_ONLY
+    RELEASE(vec->valref[vec->size]);
+#endif
+  }
+endmethod
+
+defmethod(void, gdrop, TD, Int)
+  struct T *vec = &self->TF.T;
+  BOOL front = self2->value < 0;
+  U32 n = front ? -self2->value : self2->value;
+
+  if (n > vec->size)
+    n = vec->size;
+
+#ifdef VECTOR_ONLY
+  vec->size -= n;
+  if (front)
+    vec->valref += n;
+#endif
+  
+#ifdef ARRAY_ONLY
+  if (front)
+    while (n-- > 0) {
+      --vec->size;
+      ++vec->valref;
+      RELEASE(vec->valref[-1]);
+    }
+  else
+    while (n-- > 0) {
+      --vec->size;
+      RELEASE(vec->valref[vec->size]);
+    }
+#endif
+endmethod
+
+// ----- prepend, append object
 
 defmethod(void, gprepend, TD, Object)
   struct TF *vecf = &self->TF;
   struct T  *vec  = &vecf->T;
 
   if (vec->valref == vecf->_valref)
-    genlarge(_1, aFloat(-VECTOR_GROWTH_RATE));
+    genlarge(_1, aInt(vecf->capacity*(1.0-VECTOR_GROWTH_RATE)));
 
   vec->valref[-1] = RETAIN(TOVAL(_2));
   vec->valref--;
@@ -218,22 +272,40 @@ defmethod(void, gappend, TD, Object)
   struct T  *vec  = &vecf->T;
 
   if (vec->size == vecf->capacity)
-    genlarge(_1, aFloat(VECTOR_GROWTH_RATE));
+    genlarge(_1, aInt(vecf->capacity*(VECTOR_GROWTH_RATE-1.0)));
     
   vec->valref[vec->size] = RETAIN(TOVAL(_2));
   vec->size++;
 endmethod
 
+// ----- prepend, append vector
+
+static inline I32
+extra_size(U32 capacity, U32 size)
+{
+  F64 factor = VECTOR_GROWTH_RATE;
+
+  while (capacity*(factor - 1.0) < size)
+    factor *= VECTOR_GROWTH_RATE;
+
+  I32 extra = capacity*(factor - 1.0);
+  
+  test_assert(extra > 0 && (U32)extra > size, TS "size overflow");
+
+  return extra;
+}
+
 defmethod(void, gprepend, TD, T)
   struct TF *vecf = &self->TF;
   struct T  *vec  = &vecf->T;
 
-  if (vec->valref - vecf->_valref < self2->size)
-    genlarge(_1, aInt(-self2->size));
+  if (vec->valref-vecf->_valref < self2->size)
+    genlarge(_1, aInt(-extra_size(vecf->capacity, self2->size)));
 
   VAL *src   = self2->valref;
+  U32  src_n = self2->size;
   I32  src_s = self2->stride;
-  VAL *end   = self2->valref + self2->size*self2->stride;
+  VAL *end   = src + src_n*src_s;
 
   while (src != end) {
     vec->valref[-1] = RETAIN(*src);
@@ -247,12 +319,13 @@ defmethod(void, gappend, TD, T)
   struct TF *vecf = &self->TF;
   struct T  *vec  = &vecf->T;
 
-  if (vec->valref - vecf->_valref < self2->size)
-    genlarge(_1, aInt(self2->size));
+  if (vecf->capacity-vec->size < self2->size)
+    genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
 
   VAL *src   = self2->valref;
+  U32  src_n = self2->size;
   I32  src_s = self2->stride;
-  VAL *end   = self2->valref + self2->size*self2->stride;
+  VAL *end   = src + src_n*src_s;
 
   while (src != end) {
     vec->valref[vec->size] = RETAIN(*src);
@@ -263,24 +336,16 @@ endmethod
 
 // ----- Aliases
 
-#if 0
+// --- dequeue
+defalias(void, (gprepend  )gpushFront, TD, Object);
+defalias(void, (gappend   )gpushBack , TD, Object);
+defalias(void, (gdropFirst)gpopFront , TD);
+defalias(void, (gdropLast )gpopBack  , TD);
+defalias(OBJ , (gfirst    )gfront    , TD);
+defalias(OBJ , (glast     )gback     , TD);
 
-defalias (void, (gappend)gpush, TD, Object);
-
-defalias(OBJ, (glast)gtop, TD);
-// ----- drop
-
-defalias (void, (gdrop)gpop, TD);
-defmethod(void,  gdrop     , TD)
-  struct T *vec = &self->TF.T;
-
-  if (vec->size) {
-    --vec->size;
-#ifdef ARRAY_ONLY
-    RELEASE(vec->valref[vec->size]);
-#endif
-  }
-endmethod
-
-#endif
+// --- stack
+defalias(void, (gappend  )gpush, TD, Object);
+defalias(void, (gdropLast)gpop , TD);
+defalias(OBJ , (glast    )gtop , TD);
 
