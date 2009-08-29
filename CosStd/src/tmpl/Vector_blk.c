@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vector template - basic vectors
+ | COS Vector template - block vectors
  |
  o---------------------------------------------------------------------o
  |
@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.2 2009/08/21 13:04:40 ldeniau Exp $
+ | $Id: Vector_blk.c,v 1.1 2009/08/29 21:38:46 ldeniau Exp $
  |
 */
 
@@ -37,8 +37,7 @@
 
 #include <cos/Functor.h>
 #include <cos/IntVector.h>
-#include <cos/Number.h>
-#include <cos/Slice.h>
+#include <cos/XRange.h>
 #include <cos/View.h>
 
 #include <cos/gen/accessor.h>
@@ -113,7 +112,7 @@ defmethod(OBJ, gclass, T)
   retmethod(T);     // class cluster: hide implementation details
 endmethod
 
-// ----- allocator
+// --- alloc
 
 struct T*
 T_alloc(U32 size)
@@ -122,7 +121,7 @@ T_alloc(U32 size)
   static struct Class* cls[] = {
     classref(COS_PP_CAT(T,0),COS_PP_CAT(T,1),COS_PP_CAT(T,2),COS_PP_CAT(T,3),
              COS_PP_CAT(T,4),COS_PP_CAT(T,5),COS_PP_CAT(T,6),COS_PP_CAT(T,7),
-             COS_PP_CAT(T,8),COS_PP_CAT(T,9), TN)
+             COS_PP_CAT(T,8),COS_PP_CAT(T,9),TN)
   };
 
   OBJ _cls = (OBJ)cls[size > N ? N : size];
@@ -131,18 +130,48 @@ T_alloc(U32 size)
   struct TN *vecn = STATIC_CAST(struct TN*, _vec);
   struct T  *vec  = &vecn->T;
 
-  vec->valref  = vecn->_valref;
+  vec->valref = vecn->_valref;
   vec->size   = size;
   vec->stride = 1;
 
   return vec;
 }
 
-// ----- constructors
+// --- copy
+
+static inline void
+copy(VAL *dst, U32 dst_n, VAL *src, I32 src_s)
+{
+  VAL *end = dst + dst_n;
+
+  while (dst != end) {
+    *dst++ = RETAIN(*src);
+    src += src_s;
+  }
+}
+
+// ----- allocator
 
 defmethod(OBJ, galloc, TP) // lazy alloc
   retmethod(_1);
 endmethod
+
+// ----- initializers
+
+defmethod(OBJ, ginitWith, T, T) // copy
+  PRE
+    test_assert(self->size == self2->size, "incompatible " TS "sizes");
+    
+  POST
+    // automatically trigger ginvariant
+
+  BODY
+    copy(self->valref,self->size,self2->valref,self2->stride);
+    
+    retmethod(_1);
+endmethod
+
+// ----- constructors
 
 defalias (OBJ, (ginitWith)gnewWith, TP, T);
 defmethod(OBJ,  ginitWith         , TP, T) // clone
@@ -154,15 +183,7 @@ defmethod(OBJ,  ginitWith         , TP, T) // clone
     struct T* vec = T_alloc(self2->size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
 
-    VAL *dst   = vec->valref;
-    VAL *end   = vec->valref + vec->size;
-    VAL *src   = self2->valref;
-    I32  src_s = self2->stride;
-
-    while (dst != end) {
-      *dst++ = RETAIN(*src);
-      src += src_s;
-    }
+    copy(vec->valref,vec->size,self2->valref,self2->stride);
 
     UNPROTECT(_vec);
     retmethod(_vec);
@@ -176,6 +197,7 @@ defmethod(OBJ,  ginitWith         , TP, Slice) // Int sequence
 
   BODY
     U32 size = Slice_size(self2);
+    
     struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
   
@@ -194,11 +216,31 @@ defmethod(OBJ,  ginitWith         , TP, Range) // Int sequence
 
   BODY
     U32 size = Range_size(self2);
+    
     struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
   
     for (U32 i = 0; i < size; i++)
       vec->valref[i] = RETAIN(VALINT(Range_eval(self2,i)));
+
+    UNPROTECT(_vec);
+    retmethod(_vec);
+endmethod
+
+defalias (OBJ, (ginitWith)gnewWith, TP, XRange);
+defmethod(OBJ,  ginitWith         , TP, XRange) // Float sequence
+  PRE
+  POST
+    // automatically trigger ginvariant
+
+  BODY
+    U32 size = XRange_size(self2);
+    
+    struct T* vec = T_alloc(size);
+    OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  
+    for (U32 i = 0; i < size; i++)
+      vec->valref[i] = RETAIN(VALFLT(XRange_eval(self2,i)));
 
     UNPROTECT(_vec);
     retmethod(_vec);
@@ -213,10 +255,11 @@ defmethod(OBJ,  ginitWith2          , TP, Int, Object) // element
     // automatically trigger ginvariant
 
   BODY
+    VAL val = TOVAL(_3);
+
     struct T* vec = T_alloc(self2->value);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
 
-    VAL  val = TOVAL(_3);
     VAL *dst = vec->valref;
     VAL *end = vec->valref + vec->size;
 
@@ -237,7 +280,7 @@ defmethod(OBJ,  ginitWith2          , TP, Int, Functor) // generator
 
   BODY
     struct T* vec = T_alloc(self2->value);
-    OBJ _vec = (OBJ)vec; PROTECT(_vec);
+    OBJ _vec = (OBJ)vec; PRT(_vec);
 
     VAL *dst = vec->valref;
     VAL *end = vec->valref + vec->size;
@@ -251,41 +294,38 @@ defmethod(OBJ,  ginitWith2          , TP, Int, Functor) // generator
       for (I32 i = 0; dst != end; i++)
         *dst++ = RETAIN(TOVAL(geval1(_3, aInt(i))));
 
-    UNPROTECT(_vec);
+    UNPRT(_vec);
     retmethod(_vec);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, T, Slice);
-defmethod(OBJ,  ginitWith2          , TP, T, Slice) // sub array
+defmethod(OBJ,  ginitWith2          , TP, T, Slice) // sub vector
   PRE
-    U32 first = Slice_first(self3);
-    U32 last  = Slice_last (self3);
-
-    test_assert( first < self2->size &&
-                 last  < self2->size, "slice out of range" );
+    test_assert( Slice_first(self3) < self2->size &&
+                 Slice_last (self3) < self2->size, "slice out of range" );
 
   POST
     // automatically trigger ginvariant
 
   BODY
-    U32 start  = Slice_first (self3)*self2->stride;
+    I32 start  = Slice_start (self3)*self2->stride;
     I32 stride = Slice_stride(self3)*self2->stride;
 
     struct T* vec = T_alloc(self3->size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
 
-    VAL *dst   = vec->valref;
-    VAL *end   = vec->valref + vec->size;
-    VAL *src   = self2->valref + start;
-    I32  src_s = stride;
-
-    while (dst != end) {
-      *dst++ = RETAIN(*src);
-      src += src_s;
-    }
+    copy(vec->valref,vec->size,self2->valref+start,stride);
 
     UNPROTECT(_vec);
     retmethod(_vec);
+endmethod
+
+defalias (OBJ, (ginitWith2)gnewWith2, TP, T, Range);
+defmethod(OBJ,  ginitWith2          , TP, T, Range) // sub vector
+  struct Range range = Range_normalize(self3,self2->size);
+  struct Slice slice = Slice_fromRange(&range);
+  
+  retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, T, IntVector);
@@ -296,7 +336,7 @@ defmethod(OBJ,  ginitWith2          , TP, T, IntVector) // random sequence
 
   BODY
     struct T* vec = T_alloc(self3->size);
-    OBJ _vec = (OBJ)vec; PROTECT(_vec);
+    OBJ _vec = (OBJ)vec; PRT(_vec);
 
     VAL *dst   = vec->valref;
     VAL *end   = vec->valref + vec->size;
@@ -313,7 +353,7 @@ defmethod(OBJ,  ginitWith2          , TP, T, IntVector) // random sequence
       idx += idx_s;
     }
 
-    UNPROTECT(_vec);
+    UNPRT(_vec);
     retmethod(_vec);
 endmethod
 
@@ -325,7 +365,7 @@ defmethod(OBJ, gdeinit, T)
   VAL *val = self->valref;
   VAL *end = self->valref + self->size;
 
-  while (val != end && *val)    // take care of protection cases
+  while (val != end && *val)  // care of protection cases
     RELEASE(*val++);
 
   retmethod(_1);
@@ -345,3 +385,41 @@ defmethod(void, ginvariant, T, (STR)func, (STR)file, (int)line)
 endmethod
 
 #endif // ARRAY_ONLY
+
+// ----- constructors from C array
+
+#ifdef SHTVECTOR_ONLY
+defalias (OBJ, (ginitWithShtPtr)gnewWithShtPtr, TP, (I16*)ref, (U32)n);
+defmethod(OBJ,  ginitWithShtPtr               , TP, (I16*)ref, (U32)n)
+  retmethod( ginitWith(_1, aShtVectorRef(ref,n)) );
+endmethod
+#endif
+
+#ifdef INTVECTOR_ONLY
+defalias (OBJ, (ginitWithIntPtr)gnewWithIntPtr, TP, (I32*)ref, (U32)n);
+defmethod(OBJ,  ginitWithIntPtr               , TP, (I32*)ref, (U32)n)
+  retmethod( ginitWith(_1, aIntVectorRef(ref,n)) );
+endmethod
+#endif
+
+#ifdef LNGVECTOR_ONLY
+defalias (OBJ, (ginitWithLngPtr)gnewWithLngPtr, TP, (I64*)ref, (U32)n);
+defmethod(OBJ,  ginitWithLngPtr               , TP, (I64*)ref, (U32)n)
+  retmethod( ginitWith(_1, aLngVectorRef(ref,n)) );
+endmethod
+#endif
+
+#ifdef FLTVECTOR_ONLY
+defalias (OBJ, (ginitWithFltPtr)gnewWithFltPtr, TP, (F64*)ref, (U32)n);
+defmethod(OBJ,  ginitWithFltPtr               , TP, (F64*)ref, (U32)n)
+  retmethod( ginitWith(_1, aFltVectorRef(ref,n)) );
+endmethod
+#endif
+
+#ifdef CPXVECTOR_ONLY
+defalias (OBJ, (ginitWithCpxPtr)gnewWithCpxPtr, TP, (C64*)ref, (U32)n);
+defmethod(OBJ,  ginitWithCpxPtr               , TP, (C64*)ref, (U32)n)
+  retmethod( ginitWith(_1, aCpxVectorRef(ref,n)) );
+endmethod
+#endif
+
