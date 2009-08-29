@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.2 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.3 2009/08/29 21:53:08 ldeniau Exp $
  |
 */
 
@@ -50,11 +50,8 @@ useclass(TV);
 struct T*
 TV_init(struct TV *vecv, struct T *vec, struct Slice *slc)
 {
-  U32 first = Slice_first(slc);
-  U32 last  = Slice_last (slc);
-
-  test_assert( first < vec->size &&
-               last  < vec->size, "slice out of range" );
+  test_assert( Slice_first(slc) < vec->size &&
+               Slice_last (slc) < vec->size, "slice out of range" );
 
   struct T* vw = &vecv->T;
 
@@ -70,8 +67,8 @@ TV_init(struct TV *vecv, struct T *vec, struct Slice *slc)
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Slice);
 defmethod(OBJ,  ginitWith2          , mView, T, Slice) // vector view
-  OBJ vec = galloc(TV); PRT(vec); PRT(_2);
-  vec = ginitWith2(vec,gretain(_2),_3);
+  OBJ vec = galloc(TV); PRT(vec);
+  vec = ginitWith2(vec,_2,_3);
   UNPRT(vec);
   retmethod(vec);
 endmethod
@@ -80,16 +77,23 @@ defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Range);
 defmethod(OBJ,  ginitWith2          , mView, T, Range) // vector view
   struct Range range = Range_normalize(self3,self2->size);
   struct Slice slice = Slice_fromRange(&range);
+  
   retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
 endmethod
 
 defmethod(OBJ, ginitWith2, TV, T, Slice) // vector view
-  test_assert( !cos_object_isKindOf(_2, classref(TD)),
-               TS " views accept only non-dynamic " TS );
+  PRE
+    test_assert( !cos_object_isKindOf(_2, classref(TD)),
+                 TS " views accept only non-dynamic " TS );
+  POST
+  
+  BODY
+    OBJ ref = gretain(_2); PRT(ref);
 
-  TV_init(self1, self2, self3);
+    TV_init(self1, STATIC_CAST(struct T*, ref), self3);
 
-  retmethod(_1);
+    UNPRT(ref);
+    retmethod(_1);
 endmethod
 
 // ----- destructor
