@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_slice.c,v 1.3 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: ut_slice.c,v 1.4 2009/08/29 21:46:06 ldeniau Exp $
  |
 */
 
@@ -99,15 +99,15 @@ ut_slice(void)
     // first
     UTEST( Slice_first(atSlice(10)) == 0 );
     UTEST( Slice_first(atSlice(1,10)) == 1 );
-    UTEST( Slice_first(atSlice(-1,10)) == -1 );
-    UTEST( Slice_first(atSlice(-1,-10)) == -1 );
+    UTEST( Slice_first(atSlice(-1,10)) == (U32)-1 );
+    UTEST( Slice_first(atSlice(-1,-10)) == (U32)-1 );
 
     // last
     UTEST( Slice_last(atSlice(10)) == 9 );
     UTEST( Slice_last(atSlice(1,10)) == 10 );
     UTEST( Slice_last(atSlice(1,10,2)) == 19 );
-    UTEST( Slice_last(atSlice(0,-10)) == -11 );
-    UTEST( Slice_last(atSlice(-1,-10)) == -12 );
+    UTEST( Slice_last(atSlice(0,-10)) == (U32)-11 );
+    UTEST( Slice_last(atSlice(-1,-10)) == (U32)-12 );
 
     // size
     UTEST( Slice_size(atSlice(0,9,1)) == 9 );

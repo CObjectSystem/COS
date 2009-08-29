@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_range.c,v 1.3 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: ut_range.c,v 1.4 2009/08/29 21:46:06 ldeniau Exp $
  |
 */
 
@@ -86,9 +86,9 @@ ut_range(void)
     UTEST( Range_index(3,0) == 3 );
     UTEST( Range_index(3,10) == 3 );
     UTEST( Range_index(3,-10) == 3 );
-    UTEST( Range_index(-3,0) == -3 + 0 );
+    UTEST( Range_index(-3,0) == (U32)-3 + 0 );
     UTEST( Range_index(-3,10) == -3 + 10 );
-    UTEST( Range_index(-3,-10) == -3 + -10 );
+    UTEST( Range_index(-3,-10) == (U32)-3 + -10 );
 
     // eval
     UTEST( Range_eval(atRange(10),0) == 0 );
@@ -107,13 +107,13 @@ ut_range(void)
     // first
     UTEST( Range_first(atRange(10),0) == 0 );
     UTEST( Range_first(atRange(1,10),0) ==  1 );
-    UTEST( Range_first(atRange(-1,10),0) == -1 );
+    UTEST( Range_first(atRange(-1,10),0) == (U32)-1 );
     UTEST( Range_first(atRange(-1,10),10) == 9 );
 
     // last
     UTEST( Range_last(atRange(10),0) == 10 );
-    UTEST( Range_last(atRange(0,-10),0) == -10 );
-    UTEST( Range_last(atRange(-1,-10),0) == -10 );
+    UTEST( Range_last(atRange(0,-10),0) == (U32)-10 );
+    UTEST( Range_last(atRange(-1,-10),0) == (U32)-10 );
     UTEST( Range_last(atRange(-1,-10),10) == 0 );
 
     // size (seq size independant)
