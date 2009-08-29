@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.4 2009/08/29 23:52:05 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.5 2009/08/29 23:54:17 ldeniau Exp $
  |
 */
 
@@ -255,31 +255,6 @@ endmethod
 
 // ----- prepend, append object
 
-defmethod(void, gprepend, TD, Object)
-  struct TF *vecf = &self->TF;
-  struct T  *vec  = &vecf->T;
-
-  if (vec->valref == vecf->_valref)
-    genlarge(_1, aInt(vecf->capacity*(1.0-VECTOR_GROWTH_RATE)));
-
-  vec->valref[-1] = RETAIN(TOVAL(_2));
-  vec->valref--;
-  vec->size++;
-endmethod
-
-defmethod(void, gappend, TD, Object)
-  struct TF *vecf = &self->TF;
-  struct T  *vec  = &vecf->T;
-
-  if (vec->size == vecf->capacity)
-    genlarge(_1, aInt(vecf->capacity*(VECTOR_GROWTH_RATE-1.0)));
-    
-  vec->valref[vec->size] = RETAIN(TOVAL(_2));
-  vec->size++;
-endmethod
-
-// ----- prepend, append vector
-
 static inline I32
 extra_size(U32 capacity, U32 size)
 {
@@ -294,6 +269,31 @@ extra_size(U32 capacity, U32 size)
 
   return extra;
 }
+
+defmethod(void, gprepend, TD, Object)
+  struct TF *vecf = &self->TF;
+  struct T  *vec  = &vecf->T;
+
+  if (vec->valref == vecf->_valref)
+    genlarge(_1, aInt(-extra_size(vecf->capacity, 1)));
+
+  vec->valref[-1] = RETAIN(TOVAL(_2));
+  vec->valref--;
+  vec->size++;
+endmethod
+
+defmethod(void, gappend, TD, Object)
+  struct TF *vecf = &self->TF;
+  struct T  *vec  = &vecf->T;
+
+  if (vec->size == vecf->capacity)
+    genlarge(_1, aInt(extra_size(vecf->capacity, 1)));
+    
+  vec->valref[vec->size] = RETAIN(TOVAL(_2));
+  vec->size++;
+endmethod
+
+// ----- prepend, append vector
 
 defmethod(void, gprepend, TD, T)
   struct TF *vecf = &self->TF;
