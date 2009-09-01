@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.10 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: FltVector.c,v 1.11 2009/09/01 21:31:17 ldeniau Exp $
  |
 */
 
@@ -83,7 +83,7 @@
 #define EQUAL(v1,v2)    (float_equal(v1,v2) ? True : False)
 #define COMPARE(v1,v2)  (v1<v2 ? Lesser : v1>v2 ? Greater : Equal)
 #define RETAIN(v)       (v)
-#define RELEASE(v)      (v)
+#define RELEASE(v)      
 #define AUTODELETE(v)   gautoDelete(v)
 #define PROTECT(v)   
 #define UNPROTECT(v) 

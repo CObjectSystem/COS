@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.3 2009/09/01 11:57:37 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.4 2009/09/01 21:31:17 ldeniau Exp $
  |
 */
 
@@ -85,9 +85,7 @@ defmethod(void, gputAt, T, Int, Object)
   PRE
     i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
-  POST
-    // automatically trigger ginvariant
- 
+
   BODY
     if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, self->size);
@@ -250,7 +248,7 @@ defmethod(I64, glngAt, T, Int)
   BODY
     if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->valref, self->size);
-      
+
     retmethod( self->valref[i*self->stride] );
 endmethod
 

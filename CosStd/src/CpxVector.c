@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.c,v 1.3 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: CpxVector.c,v 1.4 2009/09/01 21:31:17 ldeniau Exp $
  |
 */
 
@@ -84,7 +84,7 @@
 #define COMPARE(v1,v2)  (v1<v2 ? Lesser : v1>v2 ? Greater : Equal)
 #define EVAL1(v1,v2)    geval1(v1,v2)
 #define RETAIN(v)       (v)
-#define RELEASE(v)      (v)
+#define RELEASE(v)      
 #define AUTODELETE(v)   gautoDelete(v)
 #define PROTECT(v)   
 #define UNPROTECT(v) 

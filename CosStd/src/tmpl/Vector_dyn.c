@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.6 2009/09/01 11:57:37 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.7 2009/09/01 21:31:17 ldeniau Exp $
  |
 */
 
@@ -185,18 +185,18 @@ endmethod
 // ----- clear (size -> 0)
 
 defmethod(void, gclear, TD)
-#ifdef ARRAY_ONLY
   struct TF *vecf = &self->TF;
   struct T  *vec  = &vecf->T;
 
+#ifdef ARRAY_ONLY
   VAL *val = vec->valref + vec->size;
   VAL *end = vec->valref;
 
   while (val != end)
-    RELEASE(*--val), *val = 0;
+    --val, RELEASE(*val), *val = 0;
 #endif
 
-  self->TF.T.size = 0;
+  vec->size = 0;
 endmethod
 
 // ----- dropFirst, dropLast, drop
@@ -207,9 +207,7 @@ defmethod(void, gdropFirst, TD)
   if (vec->size) {
     --vec->size;
     ++vec->valref;
-#ifdef ARRAY_ONLY
    RELEASE(vec->valref[-1]);
-#endif
   }
 endmethod
 
@@ -218,9 +216,7 @@ defmethod(void, gdropLast, TD)
 
   if (vec->size) {
     --vec->size;
-#ifdef ARRAY_ONLY
     RELEASE(vec->valref[vec->size]);
-#endif
   }
 endmethod
 
@@ -354,29 +350,78 @@ endmethod
 
 // --- insertAt object (index, slice, range, intvector)
 
+static BOOL
+prepareRandomInsert(struct T *vec, struct IntVector *self2)
+{
+  U32  dst_n = vec->size;
+  I32 *idx   = self2->value;
+  U32  idx_n = self2->size;
+  I32  idx_s = self2->stride;
+  I32 *end   = idx + idx_n*idx_s;
+  U32  fst   = dst_n;
+  U32  lst   = 0;
+
+  TMPARRAY_CREATE(U8,flg,dst_n);
+  memset(flg,0,dst_n);
+
+  // mark insertion slots
+  while (idx != end) {
+    U32 i = Range_index(*idx, dst_n);
+    if (i >= dst_n) break;
+    if (i < fst) fst = i;
+    if (i > lst) lst = i;
+    flg[i] = 1;
+    idx += idx_s;
+  }
+  
+  // range error
+  if (idx != end) {
+    TMPARRAY_DESTROY(flg);
+    return NO;
+  }
+
+  // shift post data to the end
+  VAL *dst = lst + vec->valref;
+  memmove(dst+idx_n, dst, (vec->size - (dst-vec->valref))*sizeof(VAL));
+  vec->size += idx_n;
+
+  // prepare insertion slots (start from the end)
+  {
+    VAL *end = fst + vec->valref;
+    U8  *slt = lst + flg;
+    U32  sht = idx_n;
+
+    for (; dst != end; --dst, --slt)
+      if (*slt)
+        sht--;
+      else
+        dst[sht] = *dst;
+  }
+  
+  TMPARRAY_DESTROY(flg);
+  return YES;
+}
+
 defmethod(void, ginsertAt, TD, Int, Object)
   U32 i;
 
   PRE
     i = Range_index(self2->value, self->TF.T.size);
     test_assert( i <= self->TF.T.size, "index out of range" );
-  POST
-    // automatically trigger ginvariant
  
   BODY
-    if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->value, self->TF.T.size);
- 
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
     if (vec->size == vecf->capacity)
       genlarge(_1, aInt(extra_size(vecf->capacity, 1)));
 
-    VAL *dst   = vec->valref+i;
-    U32  dst_n = vec->size  -i;
+    if (!COS_CONTRACT) // no PRE
+      i = Range_index(self2->value, vec->size);
+ 
+    VAL *dst = vec->valref+i;
 
-    memmove(dst+1, dst, dst_n*sizeof(VAL));
+    memmove(dst+1, dst, (vec->size-i)*sizeof(VAL));
     *dst = RETAIN(TOVAL(_3));
     vec->size++;
 endmethod
@@ -415,16 +460,17 @@ defmethod(void, ginsertAt, TD, Slice, Object)
     VAL *end = dst - dst_s*dst_n;
     VAL *nxt = dst - dst_s;
     VAL  val = TOVAL(_3);
+    U32  sht = dst_n;
 
     // double level fill-move
     while (dst != end) {
-      ASSIGN(*dst,val);
+      ASSIGN(dst[sht],val);
  
       for (dst--; dst != nxt; dst--)
-        *dst = dst[-dst_n];
+        dst[sht] = *dst;
 
-      nxt   -= dst_s;
-      dst_n -= 1; 
+      nxt -= dst_s;
+      sht -= 1; 
     }
 endmethod
 
@@ -436,12 +482,29 @@ defmethod(void, ginsertAt, TD, Range, Object)
 endmethod
 
 defmethod(void, ginsertAt, TD, IntVector, Object)
-  PRE
-  POST
-    // automatically trigger ginvariant
+  struct TF *vecf = &self->TF;
+  struct T  *vec  = &vecf->T;
 
-  BODY
-    // TODO
+  // enlarge
+  if (vec->size + self2->size > vecf->capacity)
+    genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
+
+  test_assert( prepareRandomInsert(vec,self2), "index out of range" );
+
+  // insert data
+  VAL *dst   = vec->valref;
+  U32  dst_n = vec->size;
+  I32 *idx   = self2->value;
+  U32  idx_n = self2->size;
+  I32  idx_s = self2->stride;
+  I32 *end   = idx + idx_n*idx_s;
+  VAL  val   = TOVAL(_3);
+  
+  while (idx != end) {
+    U32 i = Range_index(*idx, dst_n);
+    dst[i] = RETAIN(val);
+    idx += idx_s;
+  }
 endmethod
 
 // --- insertAt object (slice, range, intvector)
@@ -482,34 +545,119 @@ defmethod(void, ginsertAt, TD, Slice, T)
     VAL *nxt   = dst - dst_s;
     VAL *src   = (self3->size-1)*self3->stride + self3->valref;
     I32  src_s =  self3->stride;
+    U32  sht   = dst_n;
 
     while (dst != end) {
-      ASSIGN(*dst,*src);
+      ASSIGN(dst[sht],*src);
  
       for (dst--; dst != nxt; dst--)
-        *dst = dst[-dst_n];
+        dst[sht] = *dst;
 
-      src   -= src_s;
-      nxt   -= dst_s;
-      dst_n -= 1; 
+      src -= src_s;
+      nxt -= dst_s;
+      sht -= 1; 
     }
 endmethod
 
 defmethod(void, ginsertAt, TD, IntVector, T)
   PRE
+    test_assert( self2->size <= self3->size, "source " TS " is too small" );
   POST
     // automatically trigger ginvariant
 
   BODY
-    // TODO
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
+
+    // enlarge
+    if (vec->size + self2->size > vecf->capacity)
+      genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
+
+    test_assert( prepareRandomInsert(vec,self2), "index out of range" );
+
+    // insert data
+    VAL *dst   = vec->valref;
+    U32  dst_n = vec->size;
+    I32 *idx   = self2->value;
+    U32  idx_n = self2->size;
+    I32  idx_s = self2->stride;
+    VAL *src   = self3->valref;
+    I32  src_s = self3->stride;
+    I32 *end   = idx + idx_n*idx_s;
+    
+    while (idx != end) {
+      U32 i = Range_index(*idx, dst_n);
+      dst[i] = RETAIN(*src);
+      src += src_s;
+      idx += idx_s;
+    }
 endmethod
 
 // --- removeAt
 
 defmethod(void, gremoveAt, TD, Int)
+  U32 i;
+
+  PRE
+    i = Range_index(self2->value, self->TF.T.size);
+    test_assert( i <= self->TF.T.size, "index out of range" );
+ 
+  BODY
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
+
+    if (!COS_CONTRACT) // no PRE
+      i = Range_index(self2->value, self->TF.T.size);
+ 
+    VAL *dst = vec->valref+i;
+
+    vec->size--;
+    RELEASE(*dst);
+    memmove(dst, dst+1, (vec->size-i)*sizeof(VAL));
 endmethod
 
 defmethod(void, gremoveAt, TD, Slice)
+  PRE
+    test_assert( Slice_first(self2) <= self->TF.T.size &&
+                 Slice_last (self2) <= self->TF.T.size, "slice out of range" );
+  POST
+    // automatically trigger ginvariant
+ 
+  BODY
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
+
+    VAL *dst;
+    I32  dst_s;
+    U32  dst_n = Slice_size(self2);
+
+    // always start from the beginning
+    if (Slice_stride(self2) > 0) {
+      dst   =  Slice_first (self2) + vec->valref;
+      dst_s =  Slice_stride(self2);
+    } else {
+      dst   =  Slice_last  (self2) + vec->valref;
+      dst_s = -Slice_stride(self2);
+    }
+
+    VAL *end = dst + dst_s*dst_n;
+    VAL *nxt = dst + dst_s;
+    U32  sht = 1;
+
+    // double level clear-move
+    while (dst != end) {
+      RELEASE(*dst);
+ 
+      for (; dst != nxt; dst++)
+        *dst = dst[sht];
+
+      nxt += dst_s;
+      sht += 1; 
+    }
+
+    // shift post data to the beginning
+    memmove(dst, dst+dst_n, (vec->size - (dst-vec->valref))*sizeof(VAL));
+    vec->size -= dst_n;
 endmethod
 
 defmethod(void, gremoveAt, TD, Range)
@@ -520,6 +668,52 @@ defmethod(void, gremoveAt, TD, Range)
 endmethod
 
 defmethod(void, gremoveAt, TD, IntVector)
+  struct TF *vecf = &self->TF;
+  struct T  *vec  = &vecf->T;
+
+  VAL *dst   = vec->valref;
+  U32  dst_n = vec->size;
+  I32 *idx   = self2->value;
+  U32  idx_n = self2->size;
+  I32  idx_s = self2->stride;
+  I32 *end   = idx + idx_n*idx_s;
+  U32  fst   = dst_n;
+  U32  lst   = 0;
+
+  TMPARRAY_CREATE(U8,flg,dst_n);
+  memset(flg,0,dst_n);
+
+  // release
+  while (idx != end) {
+    U32 i = Range_index(*idx, dst_n);
+    if (i >= dst_n) break;
+    if (i < fst) fst = i;
+    if (i > lst) lst = i;
+    flg[i] = 1; RELEASE(dst[i]);
+    idx += idx_s;
+  }
+  
+  if (idx != end) {
+    TMPARRAY_DESTROY(flg);
+    test_assert( 0, "index out of range" );
+  }
+
+  // shrink
+  {
+    VAL *end = lst + vec->valref;
+    U8  *slt = fst + flg;
+    U32  sht = 0;
+
+    for (dst += fst; dst != end; ++dst, ++slt) {
+      if (*slt) sht++;
+      dst[sht] = *dst;
+    }
+
+    memmove(dst, dst+idx_n, (vec->size - (dst-vec->valref))*sizeof(VAL));
+    vec->size -= idx_n;
+  }
+
+  TMPARRAY_DESTROY(flg);
 endmethod
 
 // --- dequeue aliases

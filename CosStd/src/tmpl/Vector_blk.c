@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_blk.c,v 1.2 2009/09/01 11:57:37 ldeniau Exp $
+ | $Id: Vector_blk.c,v 1.3 2009/09/01 21:31:17 ldeniau Exp $
  |
 */
 
@@ -357,21 +357,27 @@ defmethod(OBJ,  ginitWith2          , TP, T, IntVector) // random sequence
     retmethod(_vec);
 endmethod
 
-#ifdef ARRAY_ONLY
-
 // ----- destructor
+
+#ifdef ARRAY_ONLY
 
 defmethod(OBJ, gdeinit, T)
   VAL *val = self->valref;
   VAL *end = self->valref + self->size;
 
-  while (val != end) // take care of protection cases
-    if (*val) RELEASE(*val++);
+  while (val != end) { // take care of protection cases
+    if (*val) RELEASE(*val);
+    ++val;
+  }
 
   retmethod(_1);
 endmethod
 
+#endif
+
 // ----- invariant
+
+#ifdef ARRAY_ONLY
 
 defmethod(void, ginvariant, T, (STR)func, (STR)file, (int)line)
   VAL *val   = self->valref;
@@ -384,7 +390,7 @@ defmethod(void, ginvariant, T, (STR)func, (STR)file, (int)line)
   test_assert( val == end, TS " contains null elements", func, file, line);
 endmethod
 
-#endif // ARRAY_ONLY
+#endif
 
 // ----- constructors from C array
 
