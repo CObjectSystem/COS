@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.2 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.3 2009/09/01 11:57:37 ldeniau Exp $
  |
 */
 
@@ -77,7 +77,7 @@ defmethod(OBJ, ggetAt, T, IntVector)
   retmethod( gautoDelete(gnewWith2(T,_1,_2)) );
 endmethod
 
-// ----- setters (index, slice, intvector)
+// ----- object setters (index, slice, range, intvector)
 
 defmethod(void, gputAt, T, Int, Object)
   U32 i;
@@ -85,21 +85,79 @@ defmethod(void, gputAt, T, Int, Object)
   PRE
     i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
-
+  POST
+    // automatically trigger ginvariant
+ 
   BODY
     if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, self->size);
  
     VAL *dst = self->valref + i*self->stride;
-    ASSIGN(*dst,TOVAL(_3));
+    VAL  val = TOVAL(_3);
+    
+    ASSIGN(*dst,val);
 endmethod
+
+defmethod(void, gputAt, T, Slice, Object)
+  PRE
+    test_assert( Slice_first(self2) < self->size &&
+                 Slice_last (self2) < self->size, "slice out of range" );
+  POST
+    // automatically trigger ginvariant
+  
+  BODY
+    VAL *dst   = Slice_start (self2)*self->stride + self->valref;
+    I32  dst_s = Slice_stride(self2)*self->stride;
+    U32  dst_n = Slice_size  (self2);
+    VAL *end   = dst + dst_n*dst_s;
+    VAL  val   = TOVAL(_3);
+
+    while (dst != end) {
+      ASSIGN(*dst,val);
+      dst += dst_s;
+    }
+endmethod
+
+defmethod(void, gputAt, T, Range, Object)
+  struct Range range = Range_normalize(self2,self->size);
+  struct Slice slice = Slice_fromRange(&range);
+  
+  gputAt(_1,(OBJ)&slice,_3);
+endmethod
+
+defmethod(void, gputAt, T, IntVector, Object)
+  PRE
+  POST
+    // automatically trigger ginvariant
+
+  BODY
+    VAL *dst   = self->valref;
+    U32  dst_n = self->size;
+    I32  dst_s = self->stride;
+    I32 *idx   = self2->value;
+    U32  idx_n = self2->size;
+    I32  idx_s = self2->stride;
+    I32 *end   = idx + idx_n*idx_s;
+    VAL  val   = TOVAL(_3);
+
+    while (idx != end) {
+      U32 i = Range_index(*idx, dst_n);
+      test_assert( i < dst_n, "index out of range" );
+      ASSIGN(dst[i*dst_s],val);
+      idx += idx_s;
+    }
+endmethod
+
+// ----- array setters (slice, range, intvector)
 
 defmethod(void, gputAt, T, Slice, T)
   PRE
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
     test_assert( Slice_size (self2) <= self3->size, "source " TS " is too small" );
-    
+  POST    
+    // automatically trigger ginvariant
+
   BODY
     VAL *dst   = Slice_start (self2)*self->stride + self->valref;
     I32  dst_s = Slice_stride(self2)*self->stride;
@@ -115,16 +173,11 @@ defmethod(void, gputAt, T, Slice, T)
     }
 endmethod
 
-defmethod(void, gputAt, T, Range, T)
-  struct Range range = Range_normalize(self2,self->size);
-  struct Slice slice = Slice_fromRange(&range);
-  
-  gputAt(_1,(OBJ)&slice,_3);
-endmethod
-
 defmethod(void, gputAt, T, IntVector, T)
   PRE
     test_assert( self2->size <= self3->size, "source " TS " is too small" );
+  POST
+    // automatically trigger ginvariant
 
   BODY
     VAL *dst   = self->valref;

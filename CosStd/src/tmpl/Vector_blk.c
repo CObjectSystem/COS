@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_blk.c,v 1.1 2009/08/29 21:38:46 ldeniau Exp $
+ | $Id: Vector_blk.c,v 1.2 2009/09/01 11:57:37 ldeniau Exp $
  |
 */
 
@@ -365,8 +365,8 @@ defmethod(OBJ, gdeinit, T)
   VAL *val = self->valref;
   VAL *end = self->valref + self->size;
 
-  while (val != end && *val)  // care of protection cases
-    RELEASE(*val++);
+  while (val != end) // take care of protection cases
+    if (*val) RELEASE(*val++);
 
   retmethod(_1);
 endmethod

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.5 2009/08/29 23:54:17 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.6 2009/09/01 11:57:37 ldeniau Exp $
  |
 */
 
@@ -199,7 +199,7 @@ defmethod(void, gclear, TD)
   self->TF.T.size = 0;
 endmethod
 
-// ----- dropFirst, dropLast, dropn
+// ----- dropFirst, dropLast, drop
 
 defmethod(void, gdropFirst, TD)
   struct T *vec = &self->TF.T;
@@ -236,9 +236,7 @@ defmethod(void, gdrop, TD, Int)
   vec->size -= n;
   if (front)
     vec->valref += n;
-#endif
-  
-#ifdef ARRAY_ONLY
+#else // ARRAY_ONLY
   if (front)
     while (n-- > 0) {
       --vec->size;
@@ -271,81 +269,269 @@ extra_size(U32 capacity, U32 size)
 }
 
 defmethod(void, gprepend, TD, Object)
-  struct TF *vecf = &self->TF;
-  struct T  *vec  = &vecf->T;
+  PRE
+  POST
+    // automatically trigger ginvariant
 
-  if (vec->valref == vecf->_valref)
-    genlarge(_1, aInt(-extra_size(vecf->capacity, 1)));
+  BODY
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
 
-  vec->valref[-1] = RETAIN(TOVAL(_2));
-  vec->valref--;
-  vec->size++;
+    if (vec->valref == vecf->_valref)
+      genlarge(_1, aInt(-extra_size(vecf->capacity, 1)));
+
+    vec->valref[-1] = RETAIN(TOVAL(_2));
+    vec->valref--;
+    vec->size++;
 endmethod
 
 defmethod(void, gappend, TD, Object)
-  struct TF *vecf = &self->TF;
-  struct T  *vec  = &vecf->T;
+  PRE
+  POST
+    // automatically trigger ginvariant
 
-  if (vec->size == vecf->capacity)
-    genlarge(_1, aInt(extra_size(vecf->capacity, 1)));
-    
-  vec->valref[vec->size] = RETAIN(TOVAL(_2));
-  vec->size++;
+  BODY
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
+
+    if (vec->size == vecf->capacity)
+      genlarge(_1, aInt(extra_size(vecf->capacity, 1)));
+      
+    vec->valref[vec->size] = RETAIN(TOVAL(_2));
+    vec->size++;
 endmethod
 
 // ----- prepend, append vector
 
 defmethod(void, gprepend, TD, T)
-  struct TF *vecf = &self->TF;
-  struct T  *vec  = &vecf->T;
+  PRE
+  POST
+    // automatically trigger ginvariant
 
-  if (vec->valref-vecf->_valref < self2->size)
-    genlarge(_1, aInt(-extra_size(vecf->capacity, self2->size)));
+  BODY
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
 
-  VAL *src   = self2->valref;
-  U32  src_n = self2->size;
-  I32  src_s = self2->stride;
-  VAL *end   = src + src_n*src_s;
+    if (vec->valref-vecf->_valref < self2->size)
+      genlarge(_1, aInt(-extra_size(vecf->capacity, self2->size)));
 
-  while (src != end) {
-    vec->valref[-1] = RETAIN(*src);
-    vec->valref--;
-    vec->size++;
-    src += src_s;
-  }
+    VAL *src   = self2->valref;
+    U32  src_n = self2->size;
+    I32  src_s = self2->stride;
+    VAL *end   = src + src_n*src_s;
+
+    while (src != end) {
+      vec->valref[-1] = RETAIN(*src);
+      vec->valref--;
+      vec->size++;
+      src += src_s;
+    }
 endmethod
 
 defmethod(void, gappend, TD, T)
-  struct TF *vecf = &self->TF;
-  struct T  *vec  = &vecf->T;
+  PRE
+  POST
+    // automatically trigger ginvariant
 
-  if (vecf->capacity-vec->size < self2->size)
-    genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
+  BODY
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
 
-  VAL *src   = self2->valref;
-  U32  src_n = self2->size;
-  I32  src_s = self2->stride;
-  VAL *end   = src + src_n*src_s;
+    if (vecf->capacity-vec->size < self2->size)
+      genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
 
-  while (src != end) {
-    vec->valref[vec->size] = RETAIN(*src);
-    vec->size++;
-    src += src_s;
-  }
+    VAL *src   = self2->valref;
+    U32  src_n = self2->size;
+    I32  src_s = self2->stride;
+    VAL *end   = src + src_n*src_s;
+
+    while (src != end) {
+      vec->valref[vec->size] = RETAIN(*src);
+      vec->size++;
+      src += src_s;
+    }
 endmethod
 
-// ----- Aliases
+// --- insertAt object (index, slice, range, intvector)
 
-// --- dequeue
+defmethod(void, ginsertAt, TD, Int, Object)
+  U32 i;
+
+  PRE
+    i = Range_index(self2->value, self->TF.T.size);
+    test_assert( i <= self->TF.T.size, "index out of range" );
+  POST
+    // automatically trigger ginvariant
+ 
+  BODY
+    if (!COS_CONTRACT) // no PRE
+      i = Range_index(self2->value, self->TF.T.size);
+ 
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
+
+    if (vec->size == vecf->capacity)
+      genlarge(_1, aInt(extra_size(vecf->capacity, 1)));
+
+    VAL *dst   = vec->valref+i;
+    U32  dst_n = vec->size  -i;
+
+    memmove(dst+1, dst, dst_n*sizeof(VAL));
+    *dst = RETAIN(TOVAL(_3));
+    vec->size++;
+endmethod
+
+defmethod(void, ginsertAt, TD, Slice, Object)
+  PRE
+    test_assert( Slice_first(self2) <= self->TF.T.size &&
+                 Slice_last (self2) <= self->TF.T.size, "slice out of range" );
+  POST
+    // automatically trigger ginvariant
+ 
+  BODY
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
+
+    VAL *dst;
+    I32  dst_s;
+    U32  dst_n = Slice_size(self2);
+
+    if (vec->size + dst_n > vecf->capacity)
+      genlarge(_1, aInt(extra_size(vecf->capacity, dst_n)));
+
+    // always start from the end (reverse fill with positive stride)
+    if (Slice_stride(self2) > 0) {
+      dst   =  Slice_last  (self2) + vec->valref;
+      dst_s =  Slice_stride(self2);
+    } else {
+      dst   =  Slice_first (self2) + vec->valref;
+      dst_s = -Slice_stride(self2);
+    }
+
+    // shift post data to the end
+    memmove(dst+dst_n, dst, (vec->size - (dst-vec->valref))*sizeof(VAL));
+    vec->size += dst_n;
+
+    VAL *end = dst - dst_s*dst_n;
+    VAL *nxt = dst - dst_s;
+    VAL  val = TOVAL(_3);
+
+    // double level fill-move
+    while (dst != end) {
+      ASSIGN(*dst,val);
+ 
+      for (dst--; dst != nxt; dst--)
+        *dst = dst[-dst_n];
+
+      nxt   -= dst_s;
+      dst_n -= 1; 
+    }
+endmethod
+
+defmethod(void, ginsertAt, TD, Range, Object)
+  struct Range range = Range_normalize(self2,self->TF.T.size);
+  struct Slice slice = Slice_fromRange(&range);
+  
+  ginsertAt(_1,(OBJ)&slice,_3);
+endmethod
+
+defmethod(void, ginsertAt, TD, IntVector, Object)
+  PRE
+  POST
+    // automatically trigger ginvariant
+
+  BODY
+    // TODO
+endmethod
+
+// --- insertAt object (slice, range, intvector)
+
+defmethod(void, ginsertAt, TD, Slice, T)
+  PRE
+    test_assert( Slice_first(self2) <= self->TF.T.size &&
+                 Slice_last (self2) <= self->TF.T.size, "slice out of range" );
+    test_assert( Slice_size (self2) <= self3->size, "source " TS " is too small" );
+  POST
+    // automatically trigger ginvariant
+ 
+  BODY
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
+
+    VAL *dst;
+    I32  dst_s;
+    U32  dst_n = Slice_size(self2);
+
+    if (vec->size + dst_n > vecf->capacity)
+      genlarge(_1, aInt(extra_size(vecf->capacity, dst_n)));
+
+    // always start from the end (reverse fill with positive stride)
+    if (Slice_stride(self2) > 0) {
+      dst   =  Slice_last  (self2) + vec->valref;
+      dst_s =  Slice_stride(self2);    
+    } else {
+      dst   =  Slice_first (self2) + vec->valref;
+      dst_s = -Slice_stride(self2);
+    }
+
+    // shift post data to the end
+    memmove(dst+dst_n, dst, (vec->size - (dst-vec->valref))*sizeof(VAL));
+    vec->size += dst_n;
+
+    VAL *end   = dst - dst_s*dst_n;
+    VAL *nxt   = dst - dst_s;
+    VAL *src   = (self3->size-1)*self3->stride + self3->valref;
+    I32  src_s =  self3->stride;
+
+    while (dst != end) {
+      ASSIGN(*dst,*src);
+ 
+      for (dst--; dst != nxt; dst--)
+        *dst = dst[-dst_n];
+
+      src   -= src_s;
+      nxt   -= dst_s;
+      dst_n -= 1; 
+    }
+endmethod
+
+defmethod(void, ginsertAt, TD, IntVector, T)
+  PRE
+  POST
+    // automatically trigger ginvariant
+
+  BODY
+    // TODO
+endmethod
+
+// --- removeAt
+
+defmethod(void, gremoveAt, TD, Int)
+endmethod
+
+defmethod(void, gremoveAt, TD, Slice)
+endmethod
+
+defmethod(void, gremoveAt, TD, Range)
+  struct Range range = Range_normalize(self2,self->TF.T.size);
+  struct Slice slice = Slice_fromRange(&range);
+  
+  gremoveAt(_1,(OBJ)&slice);
+endmethod
+
+defmethod(void, gremoveAt, TD, IntVector)
+endmethod
+
+// --- dequeue aliases
 defalias(void, (gprepend  )gpushFront, TD, Object);
 defalias(void, (gappend   )gpushBack , TD, Object);
 defalias(void, (gdropFirst)gpopFront , TD);
 defalias(void, (gdropLast )gpopBack  , TD);
-defalias(OBJ , (gfirst    )gfront    , TD);
-defalias(OBJ , (glast     )gback     , TD);
+defalias(OBJ , (gfirst    )gfront    , T );
+defalias(OBJ , (glast     )gback     , T );
 
-// --- stack
+// --- stack aliases
 defalias(void, (gappend  )gpush, TD, Object);
 defalias(void, (gdropLast)gpop , TD);
-defalias(OBJ , (glast    )gtop , TD);
+defalias(OBJ , (glast    )gtop , T );
 
