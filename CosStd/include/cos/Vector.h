@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.13 2009/08/21 12:27:46 ldeniau Exp $
+ | $Id: Vector.h,v 1.14 2009/09/02 10:48:16 ldeniau Exp $
  |
 */
 
@@ -77,6 +77,12 @@
 defclass(Vector, ValueSequence)
 endclass
 
+defclass(IntegralVector, Vector)
+endclass
+
+defclass(FloatingVector, Vector)
+endclass
+
 /***********************************************************
  * Implementation (private)
  */
@@ -97,7 +103,7 @@ endclass
             COS_PP_CAT(P,Vector),E,__VA_ARGS__)
 
 #define atVectorN(TN,T,E,...) ( (struct T*) \
-  ( &(struct TN) { {{{{ cos_object_auto(TN) }}}}, \
+  ( &(struct TN) { {{{{{ cos_object_auto(TN) }}}}}, \
     (E[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 } ))
 
 // --- VectorRef
@@ -106,7 +112,7 @@ endclass
   atVectorRef_Default(COS_PP_CAT(P,Vector), buffer, size)
 
 #define atVectorRef_Default(T,buffer,size) \
-  ( &(struct T) { {{{{ cos_object_auto(T) }}}}, (buffer), (size), 1 } )
+  ( &(struct T) { {{{{{ cos_object_auto(T) }}}}}, (buffer), (size), 1 } )
 
 // --- VectorView
 
@@ -114,6 +120,6 @@ endclass
   atVectorView_Default(COS_PP_CAT(P,VectorView)), vector, slice )
 
 #define atVectorView_Default(T) \
-  ( &(struct T) {{ {{{{ cos_object_auto(T) }}}}, 0, 0, 0 }, 0 } )
+  ( &(struct T) {{ {{{{{ cos_object_auto(T) }}}}}, 0, 0, 0 }, 0 } )
 
 #endif // COS_VECTOR_H

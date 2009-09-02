@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.h,v 1.5 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: FltVector.h,v 1.6 2009/09/02 10:48:16 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,7 @@
    see cos/Vector.h for description
 */
 
-defclass(FltVector, Vector)
+defclass(FltVector, FloatingVector)
   F64 *value;
   U32  size;
   I32  stride;

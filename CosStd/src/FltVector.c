@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.11 2009/09/01 21:31:17 ldeniau Exp $
+ | $Id: FltVector.c,v 1.12 2009/09/02 10:48:16 ldeniau Exp $
  |
 */
 
@@ -91,7 +91,7 @@
 #include <cos/FltVector.h>
 #include <cos/Function.h>
 
-makclass(FltVector, Vector);
+makclass(FltVector, FloatingVector);
 
 // vector templates
 #include "./tmpl/Vector_blk.c"

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.h,v 1.6 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: LngVector.h,v 1.7 2009/09/02 10:48:16 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,7 @@
    see cos/Vector.h for description
 */
 
-defclass(LngVector, Vector)
+defclass(LngVector, IntegralVector)
   I64 *value;
   U32  size;
   I32  stride;

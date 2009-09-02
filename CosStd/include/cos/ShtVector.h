@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ShtVector.h,v 1.2 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: ShtVector.h,v 1.3 2009/09/02 10:48:16 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,7 @@
    see cos/Vector.h for description
 */
 
-defclass(ShtVector, Vector)
+defclass(ShtVector, IntegralVector)
   I16 *value;
   U32  size;
   I32  stride;

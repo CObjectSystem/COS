@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.c,v 1.4 2009/09/01 21:31:17 ldeniau Exp $
+ | $Id: IntVector.c,v 1.5 2009/09/02 10:48:16 ldeniau Exp $
  |
 */
 
@@ -91,7 +91,7 @@
 #include <cos/IntVector.h>
 #include <cos/Function.h>
 
-makclass(IntVector, Vector);
+makclass(IntVector, IntegralVector);
 
 // vector templates
 #include "./tmpl/Vector_blk.c"

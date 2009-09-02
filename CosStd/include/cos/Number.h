@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.12 2009/08/21 12:27:46 ldeniau Exp $
+ | $Id: Number.h,v 1.13 2009/09/02 10:48:16 ldeniau Exp $
  |
 */
 
@@ -106,6 +106,8 @@ float_notEqual(F64 x, F64 y)
   return !float_equal(x,y);
 }
 
+F64 float_ipow(F64,I32);
+
 // ---- complex inliners
 
 static inline C64
@@ -138,5 +140,7 @@ complex_notEqual(C64 x, C64 y)
 {
   return !complex_equal(x,y);
 }
+
+C64 complex_ipow(C64,I32);
 
 #endif // COS_NUMBER_H

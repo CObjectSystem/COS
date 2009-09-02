@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.c,v 1.4 2009/09/01 21:31:17 ldeniau Exp $
+ | $Id: CpxVector.c,v 1.5 2009/09/02 10:48:16 ldeniau Exp $
  |
 */
 
@@ -92,7 +92,7 @@
 #include <cos/CpxVector.h>
 #include <cos/Function.h>
 
-makclass(CpxVector, Vector);
+makclass(CpxVector, FloatingVector);
 
 // vector templates
 #include "./tmpl/Vector_blk.c"
