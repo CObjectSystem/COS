@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Number -- floating operators
+ | COS Vector template - numerics
  |
  o---------------------------------------------------------------------o
  |
@@ -29,32 +29,37 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.3 2009/09/02 12:09:49 ldeniau Exp $
+ | $Id: Vector_flt.c,v 1.1 2009/09/02 12:09:49 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
+#include <cos/FltVector.h>
+#include <cos/CpxVector.h>
 #include <cos/Number.h>
 
 #include <cos/gen/object.h>
 #include <cos/gen/operator.h>
 #include <cos/gen/floatop.h>
-#include <cos/gen/new.h>
+#include <cos/gen/value.h>
 
 #include <math.h>
 #include <complex.h>
-
-// -----
-
-useclass(Float, Complex);
 
 // ----- absolute, conjugate and argument
 
 #undef  DEFMETHOD
 #define DEFMETHOD(gen,fun) \
 \
-defmethod(OBJ, gen, Complex) \
-  self->value = fun(self->value); \
+defmethod(OBJ, gen, CpxVector) \
+  C64 *val   = self->value; \
+  I32  val_s = self->stride; \
+  C64 *end   = self->value + self->size*self->stride; \
+\
+  while (val != end) { \
+    *val = fun(*val); \
+    val += val_s; \
+  } \
+\
   retmethod(_1); \
 endmethod
 
@@ -67,13 +72,29 @@ DEFMETHOD(gargument , carg)
 #undef  DEFMETHOD
 #define DEFMETHOD(gen,fun) \
 \
-defmethod(OBJ, gen, Float) \
-  self->value = fun(self->value); \
+defmethod(OBJ, gen, FltVector) \
+  F64 *val   = self->value; \
+  I32  val_s = self->stride; \
+  F64 *end   = self->value + self->size*self->stride; \
+\
+  while (val != end) { \
+    *val = fun(*val); \
+    val += val_s; \
+  } \
+\
   retmethod(_1); \
 endmethod \
 \
-defmethod(OBJ, gen, Complex) \
-  self->value = c##fun(self->value); \
+defmethod(OBJ, gen, CpxVector) \
+  C64 *val   = self->value; \
+  I32  val_s = self->stride; \
+  C64 *end   = self->value + self->size*self->stride; \
+\
+  while (val != end) { \
+    *val = c##fun(*val); \
+    val += val_s; \
+  } \
+\
   retmethod(_1); \
 endmethod
 
@@ -99,41 +120,50 @@ DEFMETHOD(gatangenth  , atanh )
 
 // ----- power
 
-defmethod(OBJ, gpower, Float, Float)
-  self->value = pow(self->value, self2->value);
+defmethod(OBJ, gpower, FltVector, Float)
+  F64 *val   = self->value;
+  I32  val_s = self->stride;
+  F64 *end   = self->value + self->size*self->stride;
+  F64  exp   = self2->value;
+
+  while (val != end) {
+    *val = pow(*val,exp);
+    val += val_s;
+  }
+  
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gpower, Complex, Float)
-  self->value = cpow(self->value, self2->value);
-  retmethod(_1);
-endmethod
+defmethod(OBJ, gpower, CpxVector, Floating)
+  C64 *val   = self->value;
+  I32  val_s = self->stride;
+  C64 *end   = self->value + self->size*self->stride;
+  C64  exp   = gcpx(_2);
 
-defmethod(OBJ, gpower, Complex, Complex)
-  self->value = cpow(self->value, self2->value);
+  while (val != end) {
+    *val = cpow(*val,exp);
+    val += val_s;
+  }
+  
   retmethod(_1);
 endmethod
 
 // ----- conj
 
-defmethod(OBJ, gconj, Complex)
+defmethod(OBJ, gconj, CpxVector)
   retmethod(gautoDelete( gconjugate(gclone(_1)) ));
 endmethod
 
 // ----- abs
 
-defmethod(OBJ, gabs, Complex)
-  struct Float *flt = STATIC_CAST(struct Float*, galloc(Float));
-  flt->value = cabs(self->value);
-  retmethod(gautoDelete( (OBJ)flt ));
+defmethod(OBJ, gabs, CpxVector)
+  retmethod(gautoDelete( gabsolute(gclone(_1)) ));
 endmethod
 
 // ----- arg
 
-defmethod(OBJ, garg, Complex)
-  struct Float *flt = STATIC_CAST(struct Float*, galloc(Float));
-  flt->value = carg(self->value);
-  retmethod(gautoDelete( (OBJ)flt ));
+defmethod(OBJ, ginv, CpxVector)
+  retmethod(gautoDelete( gargument(gclone(_1)) ));
 endmethod
 
 // ----- math methods
@@ -141,7 +171,7 @@ endmethod
 #undef  DEFMETHOD
 #define DEFMETHOD(mth,gen) \
 \
-defmethod(OBJ, mth, Floating) \
+defmethod(OBJ, mth, FloatingVector) \
   retmethod(gautoDelete( gen(gclone(_1)) )); \
 endmethod
 
@@ -164,41 +194,4 @@ DEFMETHOD(gtanh , gtangenth   )
 DEFMETHOD(gacosh, gacosineh   )
 DEFMETHOD(gasinh, gasineh     )
 DEFMETHOD(gatanh, gatangenth  )
-
-// ----- subSqr
-
-defmethod(OBJ, gsubSqr, Floating, Floating)
-  OBJ flt = gsubTo(gclone(_1),_2);
-  retmethod(gautoDelete( gmulBy(flt,flt) ));
-endmethod
-
-// avoid subTo(Float,Complex)
-defmethod(OBJ, gsubSqr, Float, Complex)
-  struct Complex *cpx = STATIC_CAST(struct Complex*, galloc(Complex));
-  cpx->value  = (self->value - self2->value) * (self->value - self2->value);
-  retmethod(gautoDelete( (OBJ)cpx ));
-endmethod
-
-// ----- mulAdd
-
-defmethod(OBJ, gmulAdd, Floating, Floating, Floating)
-  retmethod(gautoDelete( gaddTo(gmulBy(gclone(_1),_2),_3) ));
-endmethod
-
-// avoid mulBy(Float,Complex)
-defmethod(OBJ, gmulAdd, Float, Complex, Floating)
-  retmethod(gautoDelete( gaddTo(gmulBy(gclone(_2),_1),_3) ));
-endmethod
-
-// avoid addTo(Float,Complex)
-defmethod(OBJ, gmulAdd, Float, Float, Complex)
-  retmethod(gautoDelete( gaddTo(gmulBy(gnewWithCpx(Complex,self->value),_2),_3) ));
-endmethod
-
-// use C99 fma
-defmethod(OBJ, gmulAdd, Float, Float, Float)
-  struct Float *flt = STATIC_CAST(struct Float*, galloc(Float));
-  flt->value = fma(self->value,self2->value,self3->value);
-  retmethod(gautoDelete( (OBJ)flt ));
-endmethod
 
