@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_flt.c,v 1.1 2009/09/02 12:09:49 ldeniau Exp $
+ | $Id: Vector_flt.c,v 1.2 2009/09/02 12:25:00 ldeniau Exp $
  |
 */
 
@@ -162,7 +162,7 @@ endmethod
 
 // ----- arg
 
-defmethod(OBJ, ginv, CpxVector)
+defmethod(OBJ, garg, CpxVector)
   retmethod(gautoDelete( gargument(gclone(_1)) ));
 endmethod
 
