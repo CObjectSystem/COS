@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.41 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: Array.c,v 1.42 2009/09/02 10:51:37 ldeniau Exp $
  |
 */
 
@@ -81,7 +81,8 @@
 makclass(Array, Sequence);
 
 // vector templates
-#include "./tmpl/Vector_blk.c"
+#include "./tmpl/Vector.c"
+
 #include "./tmpl/Vector_dyn.c"
 #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"

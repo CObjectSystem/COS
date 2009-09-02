@@ -29,11 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.8 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: Vector.c,v 1.9 2009/09/02 10:48:16 ldeniau Exp $
  |
 */
 
 #include <cos/Vector.h>
 
 makclass(Vector, ValueSequence);
+
+makclass(IntegralVector, Vector);
+makclass(FloatingVector, Vector);
 
