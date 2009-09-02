@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.7 2009/07/24 12:36:27 ldeniau Exp $
+ | $Id: tests.c,v 1.8 2009/09/02 19:34:59 ldeniau Exp $
  |
 */
 
@@ -95,8 +95,9 @@ int main(int argc, char *argv[])
   // testsuites
   printf("\n** C Object System Library Testsuite (%d bits) **\n", bits);
 
-  ut_range();
   ut_slice();
+  ut_range();
+  ut_xrange();
   ut_array();
 
   cos_utest_stat();

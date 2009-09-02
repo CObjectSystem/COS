@@ -32,12 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.h,v 1.3 2009/07/24 12:36:27 ldeniau Exp $
+ | $Id: tests.h,v 1.4 2009/09/02 19:34:59 ldeniau Exp $
  |
 */
 
-void ut_range(void);
 void ut_slice(void);
+void ut_range(void);
+void ut_xrange(void);
 void ut_array(void);
 
 #endif // COS_TESTS_TESTS_H

@@ -29,15 +29,22 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.1 2009/08/29 21:38:46 ldeniau Exp $
+ | $Id: XRange.c,v 1.2 2009/09/02 19:34:57 ldeniau Exp $
  |
 */
 
 #include <cos/XRange.h>
+#include <cos/Functor.h>
+#include <cos/Function.h>
+#include <cos/Number.h>
+#include <cos/FltVector.h>
 
+#include <cos/gen/algorithm.h>
 #include <cos/gen/compare.h>
+#include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
+#include <cos/gen/value.h>
 
 makclass(XRange, ValueSequence);
 
@@ -79,5 +86,38 @@ endmethod
 
 defmethod(OBJ, gisEqual, XRange, XRange)
   retmethod( XRange_isEqual(self, self2) ? True : False );
+endmethod
+
+// ----- sequence
+
+defmethod(OBJ, gmap, Functor, XRange)
+  struct FltVector* vec = FltVector_alloc(XRange_size(self2));
+  OBJ _vec = (OBJ)vec; PRT(_vec);
+
+  F64 *dst   = vec->value;
+  U32  dst_n = vec->size;
+  U32  i;
+
+  for (i = 0; i < dst_n; i++)
+    dst[i] = gflt( geval1(_1, aFloat(XRange_eval(self2,i))) );
+
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
+endmethod
+
+defmethod(OBJ, gmap, FltFunction1, XRange)
+  struct FltVector* vec = FltVector_alloc(XRange_size(self2));
+  OBJ _vec = (OBJ)vec; PRT(_vec);
+
+  F64    *dst   = vec->value;
+  U32     dst_n = vec->size;
+  F64FCT1 fct   = self1->fct;
+  U32     i;
+
+  for (i = 0; i < dst_n; i++)
+    dst[i] = fct(XRange_eval(self2,i));
+
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 

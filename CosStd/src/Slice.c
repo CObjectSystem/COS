@@ -29,15 +29,22 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.8 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: Slice.c,v 1.9 2009/09/02 19:34:57 ldeniau Exp $
  |
 */
 
 #include <cos/Slice.h>
+#include <cos/Functor.h>
+#include <cos/Function.h>
+#include <cos/Number.h>
+#include <cos/IntVector.h>
 
+#include <cos/gen/algorithm.h>
 #include <cos/gen/compare.h>
+#include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
+#include <cos/gen/value.h>
 
 makclass(Slice, ValueSequence);
 
@@ -79,5 +86,38 @@ endmethod
 
 defmethod(OBJ, gisEqual, Slice, Slice)
   retmethod( Slice_isEqual(self, self2) ? True : False );
+endmethod
+
+// ----- sequence
+
+defmethod(OBJ, gmap, Functor, Slice)
+  struct IntVector* vec = IntVector_alloc(Slice_size(self2));
+  OBJ _vec = (OBJ)vec; PRT(_vec);
+
+  I32 *dst   = vec->value;
+  U32  dst_n = vec->size;
+  U32  i;
+
+  for (i = 0; i < dst_n; i++)
+    dst[i] = gint( geval1(_1, aInt(Slice_eval(self2,i))) );
+
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
+endmethod
+
+defmethod(OBJ, gmap, IntFunction1, Slice)
+  struct IntVector* vec = IntVector_alloc(Slice_size(self2));
+  OBJ _vec = (OBJ)vec; PRT(_vec);
+
+  I32    *dst   = vec->value;
+  U32     dst_n = vec->size;
+  I32FCT1 fct   = self1->fct;
+  U32     i;
+
+  for (i = 0; i < dst_n; i++)
+    dst[i] = fct(Slice_eval(self2,i));
+
+  UNPRT(_vec);
+  retmethod(gautoDelete(_vec));
 endmethod
 
