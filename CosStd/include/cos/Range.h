@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.14 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: Range.h,v 1.15 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -46,6 +46,10 @@
     aRange(10, 1,-1) = range from index 10     to 1      included with step -1
     aRange(-1,-9,-1) = range from index size-1 to size-9 included with step -1
 
+  - Ranges can be built from enumeration
+    aRange(1,3,..,7) = range from index 1      to 7      included with step  2
+    aRange(0,3,..,7) = range from index 0      to 6      included with step  3
+     
   - Ranges can be normalized versus the sequence size
     negative relative indexes are converted to absolute indexes (abs_idx = size - neg_idx)
     normalization is not idempotent (cases where abs_idx is negative)
@@ -99,19 +103,17 @@ Range_index(I32 index, U32 seq_size) {
 #define atRange_2(start,end) \
         atRange_3(start,end,1)
 
-#define atRange_3(start,end,stride) \
-  ( &(struct Range) { {{{ cos_object_auto(Range) }}}, \
-    start, end, stride ? stride : 1 })
+#define atRange_3(start,end,stride) Range_init( \
+  &(struct Range) { {{{ cos_object_auto(Range) }}}, 0, 0, 0}, \
+  start, end, stride)
+
+#define atRange_4(start,next,_,end) Range_enum( \
+  &(struct Range) { {{{ cos_object_auto(Range) }}}, 0, 0, 0 }, \
+  start, next, end)
 
 // --- Range inliners (low-level monorphic interface)
 
 // constructor
-static inline struct Range
-Range_make(I32 start, I32 end, I32 stride) {
-  return *atRange(start, end, stride);
-}
-
-// initializer
 static inline struct Range*
 Range_init(struct Range *r, I32 start, I32 end, I32 stride) {
   r->start  = start;
@@ -119,6 +121,26 @@ Range_init(struct Range *r, I32 start, I32 end, I32 stride) {
   r->stride = stride ? stride : 1;
 
   return r;
+}
+
+static inline struct Range
+Range_make(I32 start, I32 end, I32 stride) {
+  return *atRange(start, end, stride);
+}
+
+// enumerator
+static inline struct Range*
+Range_enum(struct Range *r, I32 start, I32 next, I32 end) {
+  r->start  = start;
+  r->end    = end;
+  r->stride = start == next ? 1 : next-start;
+
+  return r;
+}
+
+static inline struct Range
+Range_makeEnum(I32 start, I32 next, I32 end) {
+  return *atRange(start, next, .., end);
 }
 
 // copy
@@ -171,7 +193,7 @@ Range_isEqual(const struct Range *r1, const struct Range *r2) {
       && r1->stride == r2->stride;
 }
 
-// closed vs open interval (requires sequence's size)
+// closed vs open interval
 static inline BOOL
 Range_isClosed(const struct Range *r) {
   return r->stride > 0 ? r->start <= r->end : r->start >= r->end;
@@ -209,7 +231,7 @@ Range_normalize(const struct Range *r, U32 seq_size) {
 
 static inline struct Range
 Range_fromSlice(const struct Slice *s) {
-  return *atRange(Slice_first(s), Slice_last(s), Slice_stride(s));
+  return *atRange(Slice_start(s), Slice_end(s), Slice_stride(s));
 }
 
 #endif // COS_RANGE_H

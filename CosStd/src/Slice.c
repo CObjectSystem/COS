@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.9 2009/09/02 19:34:57 ldeniau Exp $
+ | $Id: Slice.c,v 1.10 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -48,38 +48,28 @@
 
 makclass(Slice, ValueSequence);
 
+// -----
+
+useclass(Slice);
+
 // ----- new
 
-defmethod(OBJ, gnewWithSlc1, pmSlice, (U32)size)
-  retmethod( ginitWithSlc1(galloc(_1), size) );
+defmethod(OBJ, gnewSlc1, pmSlice, (U32)size)
+  retmethod( (OBJ)Slice_init((void*)galloc(_1), 0, size, 1) );
 endmethod
 
-defmethod(OBJ, gnewWithSlc2, pmSlice, (I32)start, (U32)size)
-  retmethod( ginitWithSlc2(galloc(_1), start, size) );
+defmethod(OBJ, gnewSlc2, pmSlice, (I32)start, (U32)size)
+  retmethod( (OBJ)Slice_init((void*)galloc(_1), start, size, 1) );
 endmethod
 
-defmethod(OBJ, gnewWithSlc3, pmSlice, (I32)start, (U32)size, (I32)stride)
-  retmethod( ginitWithSlc3(galloc(_1), start, size, stride) );
-endmethod
-
-// ----- constructors
-
-defmethod(OBJ, ginitWithSlc1, Slice, (U32)size)
-  retmethod( (OBJ)Slice_init(self, 0, size, 1) );
-endmethod
-
-defmethod(OBJ, ginitWithSlc2, Slice, (I32)start, (U32)size)
-  retmethod( (OBJ)Slice_init(self, start, size, 1));
-endmethod
-
-defmethod(OBJ, ginitWithSlc3, Slice, (I32)start, (U32)size, (I32)stride)
-  retmethod( (OBJ)Slice_init(self,start, size, stride) );
+defmethod(OBJ, gnewSlc3, pmSlice, (I32)start, (U32)size, (I32)stride)
+  retmethod( (OBJ)Slice_init((void*)galloc(_1), start, size, stride) );
 endmethod
 
 // ----- copy
 
-defmethod(OBJ, ginitWith, Slice, Slice)
-  retmethod( (OBJ)Slice_copy(self, self2) );
+defmethod(OBJ, gclone, Slice)
+  retmethod( (OBJ)Slice_copy((void*)galloc(Slice), self) );
 endmethod
 
 // ----- equality
@@ -88,11 +78,28 @@ defmethod(OBJ, gisEqual, Slice, Slice)
   retmethod( Slice_isEqual(self, self2) ? True : False );
 endmethod
 
-// ----- sequence
+// ----- foreach
+
+defmethod(void, gforeach, Slice, Functor)
+  U32 n = Slice_size(self);
+  
+  for (U32 i = 0; i < n; i++)
+    geval1(_2, aInt(Slice_eval(self,i)));
+endmethod
+
+defmethod(void, gforeach, Slice, IntFunction1)
+  U32 n = Slice_size(self);
+  I32FCT1 fct = self2->fct;
+
+  for (U32 i = 0; i < n; i++)
+    fct(Slice_eval(self,i));
+endmethod
+
+// ----- map
 
 defmethod(OBJ, gmap, Functor, Slice)
   struct IntVector* vec = IntVector_alloc(Slice_size(self2));
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32 *dst   = vec->value;
   U32  dst_n = vec->size;
@@ -101,13 +108,12 @@ defmethod(OBJ, gmap, Functor, Slice)
   for (i = 0; i < dst_n; i++)
     dst[i] = gint( geval1(_1, aInt(Slice_eval(self2,i))) );
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap, IntFunction1, Slice)
   struct IntVector* vec = IntVector_alloc(Slice_size(self2));
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32    *dst   = vec->value;
   U32     dst_n = vec->size;
@@ -117,7 +123,6 @@ defmethod(OBJ, gmap, IntFunction1, Slice)
   for (i = 0; i < dst_n; i++)
     dst[i] = fct(Slice_eval(self2,i));
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+   retmethod(_vec);
 endmethod
 

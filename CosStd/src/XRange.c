@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.2 2009/09/02 19:34:57 ldeniau Exp $
+ | $Id: XRange.c,v 1.3 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -46,40 +46,32 @@
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
 
+// -----
+
 makclass(XRange, ValueSequence);
+
+// -----
+
+useclass(XRange);
 
 // ----- new
 
-defmethod(OBJ, gnewWithXRng1, pmXRange, (F64)end)
-  retmethod( ginitWithXRng1(galloc(_1), end) );
+defmethod(OBJ, gnewXRng1, pmXRange, (F64)end)
+  retmethod( (OBJ)XRange_init((void*)galloc(_1), 0, end, 1) );
 endmethod
 
-defmethod(OBJ, gnewWithXRng2, pmXRange, (F64)start, (F64)end)
-  retmethod( ginitWithXRng2(galloc(_1), start, end) );
+defmethod(OBJ, gnewXRng2, pmXRange, (F64)start, (F64)end)
+  retmethod( (OBJ)XRange_init((void*)galloc(_1), start, end, 1) );
 endmethod
 
-defmethod(OBJ, gnewWithXRng3, pmXRange, (F64)start, (F64)end, (F64)stride)
-  retmethod( ginitWithXRng3(galloc(_1), start, end, stride) );
+defmethod(OBJ, gnewXRng3, pmXRange, (F64)start, (F64)end, (F64)stride)
+  retmethod( (OBJ)XRange_init((void*)galloc(_1), start, end, stride) );
 endmethod
 
-// ----- constructors
+// ----- clone
 
-defmethod(OBJ, ginitWithXRng1, XRange, (F64)end)
-  retmethod( (OBJ)XRange_init(self, 0, end, 1) );
-endmethod
-
-defmethod(OBJ, ginitWithXRng2, XRange, (F64)start, (F64)end)
-  retmethod( (OBJ)XRange_init(self, start, end, 1) );
-endmethod
-
-defmethod(OBJ, ginitWithXRng3, XRange, (F64)start, (F64)end, (F64)stride)
-  retmethod( (OBJ)XRange_init(self, start, end, stride) );
-endmethod
-
-// ----- copy
-
-defmethod(OBJ, ginitWith, XRange, XRange)
-  retmethod( (OBJ)XRange_copy(self, self2) );
+defmethod(OBJ, gclone, XRange)
+  retmethod( (OBJ)XRange_copy((void*)galloc(XRange), self) );
 endmethod
 
 // ----- equality
@@ -88,11 +80,28 @@ defmethod(OBJ, gisEqual, XRange, XRange)
   retmethod( XRange_isEqual(self, self2) ? True : False );
 endmethod
 
-// ----- sequence
+// ----- foreach
+
+defmethod(void, gforeach, XRange, Functor)
+  U32 n = XRange_size(self);
+  
+  for (U32 i = 0; i < n; i++)
+    geval1(_2, aFloat(XRange_eval(self,i)));
+endmethod
+
+defmethod(void, gforeach, XRange, FltFunction1)
+  U32 n = XRange_size(self);
+  F64FCT1 fct = self2->fct;
+
+  for (U32 i = 0; i < n; i++)
+    fct(XRange_eval(self,i));
+endmethod
+
+// ----- map
 
 defmethod(OBJ, gmap, Functor, XRange)
   struct FltVector* vec = FltVector_alloc(XRange_size(self2));
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   F64 *dst   = vec->value;
   U32  dst_n = vec->size;
@@ -101,23 +110,21 @@ defmethod(OBJ, gmap, Functor, XRange)
   for (i = 0; i < dst_n; i++)
     dst[i] = gflt( geval1(_1, aFloat(XRange_eval(self2,i))) );
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap, FltFunction1, XRange)
   struct FltVector* vec = FltVector_alloc(XRange_size(self2));
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   F64    *dst   = vec->value;
   U32     dst_n = vec->size;
-  F64FCT1 fct   = self1->fct;
+  F64FCT1 fct   = self->fct;
   U32     i;
 
   for (i = 0; i < dst_n; i++)
     dst[i] = fct(XRange_eval(self2,i));
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 

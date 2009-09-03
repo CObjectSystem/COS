@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.15 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: Slice.h,v 1.16 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -78,19 +78,17 @@ endclass
 #define atSlice_2(start,size) \
         atSlice_3(start,size,1)
 
-#define atSlice_3(start,size,stride) \
-  ( &(struct Slice) { {{{ cos_object_auto(Slice) }}}, \
-    start, size, stride ? stride : 1 })
+#define atSlice_3(start,size,stride) Slice_init( \
+  &(struct Slice) { {{{ cos_object_auto(Slice) }}}, 0, 0, 0 }, \
+  start, size, stride)
+
+#define atSlice_4(start,next,_,end) Slice_enum( \
+  &(struct Slice) { {{{ cos_object_auto(Slice) }}}, 0, 0, 0 }, \
+  start, next, end)
 
 // --- Slice inliners (low-level monorphic interface)
 
 // constructor
-static inline struct Slice
-Slice_make(I32 start, U32 size, I32 stride) {
-  return *atSlice(start, size, stride);
-}
-
-// initializer
 static inline struct Slice*
 Slice_init(struct Slice *s, I32 start, U32 size, I32 stride) {
   s->start  = start;
@@ -98,6 +96,28 @@ Slice_init(struct Slice *s, I32 start, U32 size, I32 stride) {
   s->stride = stride ? stride : 1;
 
   return s;
+}
+
+static inline struct Slice
+Slice_make(I32 start, U32 size, I32 stride) {
+  return *atSlice(start, size, stride);
+}
+
+// enumerator
+static inline struct Slice*
+Slice_enum(struct Slice *s, I32 start, I32 next, I32 end) {
+  s->start  = start;
+  s->stride = start == next ? 1 : next-start;
+  
+  I32 size = (end - start + s->stride) / s->stride;
+  s ->size = size < 0 ? 0 : size;
+
+  return s;
+}
+
+static inline struct Slice
+Slice_makeEnum(I32 start, I32 next, I32 end) {
+  return *atSlice(start, next, .., end);
 }
 
 // copy
@@ -133,7 +153,7 @@ Slice_eval(const struct Slice *s, I32 idx) {
 
 static inline I32
 Slice_end(const struct Slice *s) {
-  return Slice_eval(s, s->size-1);
+  return s->size ? Slice_eval(s, s->size-1) : s->start;
 }
 
 // sequence first index
@@ -177,11 +197,7 @@ Slice_addTo(struct Slice *s1, const struct Slice *s2) {
 static inline struct Slice
 Slice_fromRange(const struct Range *r)
 {
-  I32 start  = Range_start (r);
-  U32 size   = Range_size  (r);
-  I32 stride = Range_stride(r);
-
-  return *atSlice(start, size, stride);
+  return *atSlice(Range_start(r), Range_size(r), Range_stride(r));
 }
 
 #endif // COS_SLICE_H

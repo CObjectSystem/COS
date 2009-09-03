@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.17 2009/06/25 17:05:36 ldeniau Exp $
+ | $Id: tests.c,v 1.18 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -63,6 +63,8 @@ int main(int argc, char *argv[])
   for (i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "-d"))
       debug_sym = YES;
+    if (!strcmp(argv[i], "-dd"))
+      debug_sym = YES+YES;
     if (!strcmp(argv[i], "-i"))
       init_time = YES;
     if (!strcmp(argv[i], "-s"))
@@ -84,8 +86,10 @@ int main(int argc, char *argv[])
   cos_signal_std();
 
   // for debugging
-  if (debug_sym) {
+  if (debug_sym)
     cos_symbol_showSummary(0);
+
+  if (debug_sym > 1) {
     cos_symbol_showClasses(0);
     cos_symbol_showProperties(0);
     cos_symbol_showGenerics(0);

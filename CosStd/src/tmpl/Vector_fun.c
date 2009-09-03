@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.2 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.3 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -68,7 +68,7 @@ endmethod
 
 defmethod(OBJ, gmap, Functor, T)
   struct T* vec = T_alloc(self2->size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst   = vec->valref;
   VAL *end   = vec->valref + vec->size;
@@ -80,15 +80,14 @@ defmethod(OBJ, gmap, Functor, T)
     src += src_s;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap2, Functor, T, T)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst    = vec->valref;
   VAL *end    = vec->valref + vec->size;
@@ -103,8 +102,7 @@ defmethod(OBJ, gmap2, Functor, T, T)
     src2 += src2_s;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap3, Functor, T, T, T)
@@ -112,7 +110,7 @@ defmethod(OBJ, gmap3, Functor, T, T, T)
   if (size > self4->size) size = self4->size;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst    = vec->valref;
   VAL *end    = vec->valref + vec->size;
@@ -131,8 +129,7 @@ defmethod(OBJ, gmap3, Functor, T, T, T)
     src3 += src3_s;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap4, Functor, T, T, T, T)
@@ -141,7 +138,7 @@ defmethod(OBJ, gmap4, Functor, T, T, T, T)
   if (size > self5->size) size = self5->size;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst    = vec->valref;
   VAL *end    = vec->valref + vec->size;
@@ -163,8 +160,7 @@ defmethod(OBJ, gmap4, Functor, T, T, T, T)
     src4 += src4_s;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- all, any, count
@@ -215,7 +211,7 @@ endmethod
 // ----- filter, fold, scan
 
 defmethod(OBJ, gselect, T, Functor)
-  OBJ _vec = gnewWith(T,aInt(self->size)); PRT(_vec);
+  OBJ _vec = gautoDelete(gnewWith(T,aInt(self->size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   VAL *dst   = vec ->valref;
@@ -230,12 +226,11 @@ defmethod(OBJ, gselect, T, Functor)
   }
 
   gadjust(_vec);
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, greject, T, Functor)
-  OBJ _vec = gnewWith(T,aInt(self->size)); PRT(_vec);
+  OBJ _vec = gautoDelete(gnewWith(T,aInt(self->size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   VAL *dst   = vec ->valref;
@@ -250,8 +245,7 @@ defmethod(OBJ, greject, T, Functor)
   }
 
   gadjust(_vec);
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, greduce, T, Functor, Object)
@@ -284,7 +278,7 @@ endmethod
 
 defmethod(OBJ, gaccumulate, T, Functor, Object)
   struct T* vec = T_alloc(self->size+1);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst   = vec->valref;
   VAL *end   = vec->valref + vec->size;
@@ -298,13 +292,12 @@ defmethod(OBJ, gaccumulate, T, Functor, Object)
     src += src_s, dst++;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, graccumulate, T, Functor, Object)
   struct T* vec = T_alloc(self->size+1);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst   = vec->valref + vec->size;
   VAL *end   = vec->valref;
@@ -318,17 +311,16 @@ defmethod(OBJ, graccumulate, T, Functor, Object)
     *dst = RETAIN(TOVAL( geval2(_2, VALOBJ(*src), VALOBJ(dst[1])) ));
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- unique (remove contiguous duplicates)
 
 defmethod(OBJ, gunique, T, Functor)
   if (self->size < 1)
-    retmethod( gautoDelete(gclone(_1)) );
+    retmethod(_1);
 
-  OBJ _vec = gnewWith(T,aInt(self->size)); PRT(_vec);
+  OBJ _vec = gautoDelete(gnewWith(T,aInt(self->size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   VAL *dst   = vec ->valref;
@@ -344,8 +336,7 @@ defmethod(OBJ, gunique, T, Functor)
   *dst++ = RETAIN(*src);
 
   gadjust(_vec);
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- finding
@@ -638,13 +629,12 @@ iqsortFun(I32 a[], VAL o[], I32 r, OBJ fun)
 defmethod(OBJ, gisort, T, Functor)
   useclass(IntVector);
 
-  OBJ _vec = gnewWith(IntVector, aSlice(0,self->size,1)); PRT(_vec);
+  OBJ _vec = gautoDelete(gnewWith(IntVector, aSlice(0,self->size,1)));
   struct IntVector *vec = STATIC_CAST(struct IntVector*, _vec);
 
   iqsortFun(vec->value, self->valref, self->size-1, _2);
   
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- is sorted predicate

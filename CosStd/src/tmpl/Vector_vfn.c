@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vfn.c,v 1.1 2009/08/29 21:38:46 ldeniau Exp $
+ | $Id: Vector_vfn.c,v 1.2 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -165,7 +165,7 @@ endmethod
 
 defmethod(OBJ, gmap, TF1, T)
   struct T* vec = T_alloc(self2->size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst   = vec->valref;
   VAL *end   = vec->valref + vec->size;
@@ -178,8 +178,7 @@ defmethod(OBJ, gmap, TF1, T)
     src += src_s;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 // ---
@@ -187,15 +186,14 @@ endmethod
 static inline OBJ
 map(VAL *src, PF1 fct, int n) {
   struct T* vec = T_alloc(n);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
   
   VAL *dst = vec->valref;
   
   for (int i = 0; i < n; i++)
     dst[i] = fct(src[i]);
 
-  UNPRT(_vec);
-  return(gautoDelete(_vec));
+  return _vec;
 }
 
 defmethod(OBJ, gmap, TF1, COS_PP_CAT(T,0))
@@ -244,7 +242,7 @@ defmethod(OBJ, gmap2, TF2, T, T)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst    = vec->valref;
   VAL *end    = vec->valref + vec->size;
@@ -260,8 +258,7 @@ defmethod(OBJ, gmap2, TF2, T, T)
     src2 += src2_s;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap3, TF3, T, T, T)
@@ -269,7 +266,7 @@ defmethod(OBJ, gmap3, TF3, T, T, T)
   if (size > self4->size) size = self4->size;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst    = vec->valref;
   VAL *end    = vec->valref + vec->size;
@@ -288,8 +285,7 @@ defmethod(OBJ, gmap3, TF3, T, T, T)
     src3 += src3_s;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap4, TF4, T, T, T, T)
@@ -298,7 +294,7 @@ defmethod(OBJ, gmap4, TF4, T, T, T, T)
   if (size > self5->size) size = self5->size;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst    = vec->valref;
   VAL *end    = vec->valref + vec->size;
@@ -320,8 +316,7 @@ defmethod(OBJ, gmap4, TF4, T, T, T, T)
     src4 += src4_s;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- filter, fold, scan
@@ -360,7 +355,7 @@ endmethod
 
 defmethod(OBJ, gaccumulate, T, TF2, TE)
   struct T* vec = T_alloc(self->size+1);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst   = vec->valref;
   VAL *end   = vec->valref + vec->size;
@@ -375,13 +370,12 @@ defmethod(OBJ, gaccumulate, T, TF2, TE)
     src += src_s, dst++;
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, graccumulate, T, TF2, TE)
   struct T* vec = T_alloc(self->size+1);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
   VAL *dst   = vec->valref + vec->size;
   VAL *end   = vec->valref;
@@ -396,7 +390,6 @@ defmethod(OBJ, graccumulate, T, TF2, TE)
     *dst = fct(*src, dst[1]);
   }
 
-  UNPRT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 

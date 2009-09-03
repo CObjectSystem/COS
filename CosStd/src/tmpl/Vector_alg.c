@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.5 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.6 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -38,31 +38,6 @@
 #endif
 
 #if 0
-// ----- equality
-
-defmethod(OBJ, gisEqual, T, T)
-  if (self == self2)
-    retmethod(True);
-
-  if (self->size != self2->size)
-    retmethod(False);
-
-  VAL *val1   = self->valref;
-  I32  val1_s = self->stride;
-  VAL *end    = self->valref + self->size*self->stride;
-  VAL *val2   = self2->valref;
-  I32  val2_s = self2->stride;
-  
-  while (val1 != end) {
-    if (EQUAL(*val1,*val2) != True)
-      retmethod(False);
-    val1 += val1_s;
-    val2 += val2_s;
-  }
-
-  retmethod(True);
-endmethod
-
 // ----- comparison
 
 #ifndef CPXVECTOR_ONLY
@@ -103,6 +78,31 @@ endmethod
 
 #endif
 #endif
+
+// ----- equality
+
+defmethod(OBJ, gisEqual, T, T)
+  if (self == self2)
+    retmethod(True);
+
+  if (self->size != self2->size)
+    retmethod(False);
+
+  VAL *val1   = self->valref;
+  I32  val1_s = self->stride;
+  VAL *end    = self->valref + self->size*self->stride;
+  VAL *val2   = self2->valref;
+  I32  val2_s = self2->stride;
+  
+  while (val1 != end) {
+    if (EQUAL(*val1,*val2) != True)
+      retmethod(False);
+    val1 += val1_s;
+    val2 += val2_s;
+  }
+
+  retmethod(True);
+endmethod
 
 // ----- in place
 

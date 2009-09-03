@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.4 2009/08/29 22:15:08 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.5 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -68,7 +68,9 @@ TV_init(struct TV *vecv, struct T *vec, struct Slice *slc)
 defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Slice);
 defmethod(OBJ,  ginitWith2          , mView, T, Slice) // vector view
   OBJ vec = galloc(TV); PRT(vec);
+
   vec = ginitWith2(vec,_2,_3);
+
   UNPRT(vec);
   retmethod(vec);
 endmethod
@@ -77,8 +79,12 @@ defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Range);
 defmethod(OBJ,  ginitWith2          , mView, T, Range) // vector view
   struct Range range = Range_normalize(self3,self2->size);
   struct Slice slice = Slice_fromRange(&range);
-  
-  retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
+  OBJ vec = galloc(TV); PRT(vec);
+ 
+  vec = ginitWith2(vec,_2,(OBJ)&slice);
+ 
+  UNPRT(vec);
+  retmethod(vec);
 endmethod
 
 defmethod(OBJ, ginitWith2, TV, T, Slice) // vector view

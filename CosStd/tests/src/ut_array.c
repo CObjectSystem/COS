@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.2 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: ut_array.c,v 1.3 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -44,89 +44,9 @@
 void
 ut_array(void)
 {
-  useclass(Array, View);
+//  useclass(Array, View);
 
   UTEST_START("Array")
-
-#if 0
-    // equality
-    UTEST( Slice_isEqual(atSlice(10)  , atSlice(0,10, 1))  );
-    UTEST( Slice_isEqual(atSlice(0,10), atSlice(0,10, 1))  );
-    UTEST(!Slice_isEqual(atSlice(0,10), atSlice(0,10,-1))  );
-
-    UTEST( gisEqual(aSlice(10)  , aSlice(0,10, 1)) == True  );
-    UTEST( gisEqual(aSlice(0,10), aSlice(0,10, 1)) == True  );
-    UTEST( gisEqual(aSlice(0,10), aSlice(0,10,-1)) == False );
-
-    // new vs auto
-    UTEST( isEq(gnewWithSlc1(Slice, 10), aSlice(0,10,1)) );
-    UTEST( isEq(gnewWithSlc2(Slice, 0, 10), aSlice(0,10,1)) );
-    UTEST( isEq(gnewWithSlc3(Slice, 0, 10, 1), aSlice(0,10,1)) );
-    UTEST(!isEq(gnewWithSlc1(Slice, 10), aSlice(0,10,-1)) );
-
-    // clone vs auto
-    UTEST( isEq(gclone(aSlice(10)), aSlice(10)) );
-    UTEST( isEq(gclone(aSlice(0,10)), aSlice(0,10)) );
-    UTEST( isEq(gclone(aSlice(0,10,-1)), aSlice(0,10,-1)) );
-    
-    // eval
-    UTEST( Slice_eval(atSlice(10),0) == 0 );
-    UTEST( Slice_eval(atSlice(10),1) == 1 );
-    UTEST( Slice_eval(atSlice(10),10) == 10 );
-    UTEST( Slice_eval(atSlice(1,10),0) == 1 );
-    UTEST( Slice_eval(atSlice(1,10),1) == 2 );
-    UTEST( Slice_eval(atSlice(1,10),10) == 11 );
-    UTEST( Slice_eval(atSlice(1,10,2),0) == 1 );
-    UTEST( Slice_eval(atSlice(1,10,2),1) == 3 );
-    UTEST( Slice_eval(atSlice(1,10,2),10) == 21 );
-    UTEST( Slice_eval(atSlice(10,1,-2),0) == 10 );
-    UTEST( Slice_eval(atSlice(10,1,-2),1) == 8 );
-    UTEST( Slice_eval(atSlice(10,1,-2),10) == -10 );
-
-    // first
-    UTEST( Slice_first(atSlice(10)) == 0 );
-    UTEST( Slice_first(atSlice(1,10)) == 1 );
-    UTEST( Slice_first(atSlice(-1,10)) == -1 );
-    UTEST( Slice_first(atSlice(-1,-10)) == -1 );
-
-    // last
-    UTEST( Slice_last(atSlice(10)) == 9 );
-    UTEST( Slice_last(atSlice(1,10)) == 10 );
-    UTEST( Slice_last(atSlice(1,10,2)) == 19 );
-    UTEST( Slice_last(atSlice(0,-10)) == -11 );
-    UTEST( Slice_last(atSlice(-1,-10)) == -12 );
-
-    // size
-    UTEST( Slice_size(atSlice(0,9,1)) == 9 );
-    UTEST( Slice_size(atSlice(1,10,1)) == 10 );
-    UTEST( Slice_size(atSlice(1,10,2)) == 10 );
-    UTEST( Slice_size(atSlice(1,10,3)) == 10 );
-    UTEST( Slice_size(atSlice(1,9,3)) == 9 );
-
-    UTEST( Slice_size(atSlice(9,0,-1)) == 0 );
-    UTEST( Slice_size(atSlice(10,1,-1)) == 1 );
-    UTEST( Slice_size(atSlice(10,1,-2)) == 1 );
-    UTEST( Slice_size(atSlice(10,1,-3)) == 1 );
-    UTEST( Slice_size(atSlice(9,1,-3)) == 1 );
-
-    // closed
-    UTEST( Slice_isClosed(atSlice(0,10,1)) );
-    UTEST( Slice_isClosed(atSlice(0,10,-1)) );
-    UTEST( Slice_isClosed(atSlice(10,0,1)) );
-    UTEST( Slice_isClosed(atSlice(10,0,-1)) );
-
-    UTEST( Slice_isClosed(atSlice(-1,1,-1)) );
-    UTEST(!Slice_isClosed(atSlice(1,-1,-1)) );
-    UTEST( Slice_isClosed(atSlice(-1,1,1)) );
-    UTEST(!Slice_isClosed(atSlice(1,-1,1)) );
-
-    // convert
-    UTEST( eq(Slice_fromRange(atRange(1,-1,1),10), atSlice(1,9,1)) );
-    UTEST( eq(Slice_fromRange(atRange(1,-1,2),10), atSlice(1,5,2)) );
-    UTEST( eq(Slice_fromRange(atRange(0,-1,3),10), atSlice(0,4,3)) );
-    UTEST( eq(Slice_fromRange(atRange(1,-1,3),10), atSlice(1,3,3)) );
-    UTEST( eq(Slice_fromRange(atRange(1,-9,3),10), atSlice(1,1,3)) );
-#endif
 
   UTEST_END
 }

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.7 2009/09/01 21:31:17 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.8 2009/09/03 23:21:42 ldeniau Exp $
  |
 */
 
@@ -57,7 +57,9 @@ STATIC_ASSERT(vector_growth_rate_is_too_small, VECTOR_GROWTH_RATE >= 1.5);
 defalias (OBJ, (ginit)gnew, TP);
 defmethod(OBJ,  ginit     , TP) // Dynamic vector
   OBJ vec = galloc(TD); PRT(vec);
+
   vec = ginitWith(vec,aInt(0));
+
   UNPRT(vec);
   retmethod(vec);
 endmethod
@@ -65,7 +67,9 @@ endmethod
 defalias (OBJ, (ginitWith)gnewWith, TP, Int);
 defmethod(OBJ,  ginitWith         , TP, Int) // Dynamic vector with capacity
   OBJ vec = galloc(TD); PRT(vec);
+
   vec = ginitWith(vec,_2);
+
   UNPRT(vec);
   retmethod(vec);
 endmethod
