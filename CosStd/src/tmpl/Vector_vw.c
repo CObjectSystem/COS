@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.5 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.6 2009/09/04 10:22:36 ldeniau Exp $
  |
 */
 
@@ -67,39 +67,32 @@ TV_init(struct TV *vecv, struct T *vec, struct Slice *slc)
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Slice);
 defmethod(OBJ,  ginitWith2          , mView, T, Slice) // vector view
-  OBJ vec = galloc(TV); PRT(vec);
-
-  vec = ginitWith2(vec,_2,_3);
-
-  UNPRT(vec);
-  retmethod(vec);
+  retmethod(ginitWith2(galloc(TV),_2,_3));
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Range);
 defmethod(OBJ,  ginitWith2          , mView, T, Range) // vector view
   struct Range range = Range_normalize(self3,self2->size);
   struct Slice slice = Slice_fromRange(&range);
-  OBJ vec = galloc(TV); PRT(vec);
- 
-  vec = ginitWith2(vec,_2,(OBJ)&slice);
- 
-  UNPRT(vec);
-  retmethod(vec);
+  
+  retmethod(ginitWith2(galloc(TV),_2,(OBJ)&slice));
 endmethod
 
 defmethod(OBJ, ginitWith2, TV, T, Slice) // vector view
   PRE
-    test_assert( !cos_object_isKindOf(_2, classref(TD)),
-                 TS " views accept only non-dynamic " TS );
   POST
     // automatically trigger ginvariant
   
   BODY
+    PRT(_1);
     OBJ ref = gretain(_2); PRT(ref);
+
+    test_assert( !cos_object_isKindOf(ref, classref(TD)),
+                 TS " views accept only non-dynamic " TS );
 
     TV_init(self1, STATIC_CAST(struct T*, ref), self3);
 
-    UNPRT(ref);
+    UNPRT(_1);
     retmethod(_1);
 endmethod
 

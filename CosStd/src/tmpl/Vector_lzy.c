@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_lzy.c,v 1.2 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: Vector_lzy.c,v 1.3 2009/09/04 10:22:36 ldeniau Exp $
  |
 */
 
@@ -49,34 +49,22 @@ useclass(ExBadArity, TL);
 
 defalias (OBJ, (ginitWith)gnewWith, TP, Functor);
 defmethod(OBJ,  ginitWith         , TP, Functor) // generator
-  OBJ vec = galloc(TL); PRT(vec);
-  vec = ginitWith3(vec,_2,aTRef(0,0),aInt(0));
-  UNPRT(vec);
-  retmethod(vec);
+  retmethod(ginitWith3(galloc(TL),_2,aTRef(0,0),aInt(0)));
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, Functor, T);
 defmethod(OBJ,  ginitWith2          , TP, Functor, T) // generator
-  OBJ vec = galloc(TL); PRT(vec);
-  vec = ginitWith3(vec,_2,_3,aInt(self3->size*2));
-  UNPRT(vec);
-  retmethod(vec);
+  retmethod(ginitWith3(galloc(TL),_2,_3,aInt(self3->size*2)));
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, Functor, Int);
 defmethod(OBJ,  ginitWith2          , TP, Functor, Int) // generator
-  OBJ vec = galloc(TL); PRT(vec);
-  vec = ginitWith3(vec,_2,aTRef(0,0),_3);
-  UNPRT(vec);
-  retmethod(vec);
+  retmethod(ginitWith3(galloc(TL),_2,aTRef(0,0),_3));
 endmethod
 
 defalias (OBJ, (ginitWith3)gnewWith3, TP, Functor, T, Int);
 defmethod(OBJ,  ginitWith3          , TP, Functor, T, Int) // generator
-  OBJ vec = galloc(TL); PRT(vec);
-  vec = ginitWith3(vec,_2,_3,_4);
-  UNPRT(vec);
-  retmethod(vec);
+  retmethod(ginitWith3(galloc(TL),_2,_3,_4));
 endmethod
 
 defmethod(OBJ,  ginitWith3, TL, Functor, T, Int) // generator
@@ -84,6 +72,7 @@ defmethod(OBJ,  ginitWith3, TL, Functor, T, Int) // generator
   
   next_method(self, self4);
 
+  PRT(_1);
   self->generator = gretain(_2);
   self->arity     = garity (_2);
 
@@ -92,6 +81,7 @@ defmethod(OBJ,  ginitWith3, TL, Functor, T, Int) // generator
   if (self3->size > 0)
     gappend(_1,_3);
 
+  UNPRT(_1);
   retmethod(_1);
 endmethod
 

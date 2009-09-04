@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.8 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.9 2009/09/04 10:22:36 ldeniau Exp $
  |
 */
 
@@ -56,33 +56,25 @@ STATIC_ASSERT(vector_growth_rate_is_too_small, VECTOR_GROWTH_RATE >= 1.5);
 
 defalias (OBJ, (ginit)gnew, TP);
 defmethod(OBJ,  ginit     , TP) // Dynamic vector
-  OBJ vec = galloc(TD); PRT(vec);
-
-  vec = ginitWith(vec,aInt(0));
-
-  UNPRT(vec);
-  retmethod(vec);
+  retmethod(ginitWith(galloc(TD),aInt(0)));
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, TP, Int);
 defmethod(OBJ,  ginitWith         , TP, Int) // Dynamic vector with capacity
-  OBJ vec = galloc(TD); PRT(vec);
-
-  vec = ginitWith(vec,_2);
-
-  UNPRT(vec);
-  retmethod(vec);
+  retmethod(ginitWith(galloc(TD),_2));
 endmethod
 
 defmethod(OBJ, ginitWith, TD, Int)
   PRE
-    test_assert(self2->value >= 0, "negative " TS " capacity");
   POST
     // automatically trigger ginvariant
 
   BODY
+    PRT(_1);
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
+
+    test_assert(self2->value >= 0, "negative " TS " capacity");
 
     if (self2->value > 0) {
       vec->valref = malloc(self2->value * sizeof *vec->valref);
@@ -95,6 +87,7 @@ defmethod(OBJ, ginitWith, TD, Int)
     vecf->_valref  = vec->valref;
     vecf->capacity = self2->value;
 
+    UNPRT(_1);
     retmethod(_1);
 endmethod
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.16 2009/08/19 10:14:22 ldeniau Exp $
+ | $Id: Object.c,v 1.17 2009/09/04 10:22:32 ldeniau Exp $
  |
 */
 
@@ -60,7 +60,7 @@ static COS_ALWAYS_INLINE void*
 object_alloc(OBJ _cls, size_t extra)
 {
   struct Class *cls = STATIC_CAST(struct Class*, _cls);
-  struct Object *obj = calloc(1, cls->isz + extra);
+  struct Object *obj = malloc(cls->isz + extra);
 
   if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
 

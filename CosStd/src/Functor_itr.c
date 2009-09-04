@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_itr.c,v 1.3 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: Functor_itr.c,v 1.4 2009/09/04 10:22:33 ldeniau Exp $
  |
 */
 
@@ -66,31 +66,28 @@ endmethod
 // ----- builder - ctor
 
 defmethod(OBJ, giterate, Functor, Int)
-
   test_assert(self2->value > 0, "invalid number of iteration");
   test_assert(garity(_1)  == 1, "invalid arity");
 
   struct IterateFun *itr = IterateFun_alloc(self2->value);
-  OBJ _itr = (OBJ)itr; PRT(_itr);
+  OBJ _itr = gautoDelete( (OBJ)itr );
 
   itr->fun = gretain(_1);
   itr->fct =  0;
 
-  UNPRT(_itr);
-  retmethod(gautoDelete(_itr));
+  retmethod(_itr);
 endmethod
 
 defmethod(OBJ, giterate, Function1, Int)
   test_assert(self2->value > 0, "invalid number of iteration");
 
   struct IterateFun *itr = IterateFun_alloc(self2->value);
-  OBJ _itr = (OBJ)itr; PRT(_itr);
+  OBJ _itr = gautoDelete( (OBJ)itr );
 
   itr->fun = gretain(_1);
   itr->fct = STATIC_CAST(struct Function1*, itr->fun)->fct;
 
-  UNPRT(_itr);
-  retmethod(gautoDelete(_itr));
+  retmethod(_itr);
 endmethod
 
 // ----- arity

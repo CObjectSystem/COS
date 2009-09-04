@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.4 2009/09/01 21:31:17 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.5 2009/09/04 10:22:36 ldeniau Exp $
  |
 */
 
@@ -199,25 +199,16 @@ endmethod
 
 // ----- value getters
 
-#if defined(SHTVECTOR_ONLY)
-
-defmethod(I32, gshtAt, T, Int)
-  U32 i;
-
-  PRE
-    i = Range_index(self2->valref, self->size);
-    test_assert( i < self->size, "index out of range" );
-
-  BODY
-    if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
-      
-    retmethod( self->valref[i*self->stride] );
-endmethod
-
+#if defined(CHRVECTOR_ONLY)
+defalias(I32, (gintAt)gchrAt, T, Int);
 #endif
 
-#if defined(SHTVECTOR_ONLY) || defined(INTVECTOR_ONLY)
+#if defined(CHRVECTOR_ONLY) || defined(SHTVECTOR_ONLY)
+defalias(I32, (gintAt)gshtAt, T, Int);
+#endif
+
+#if defined(CHRVECTOR_ONLY) || defined(SHTVECTOR_ONLY) || \
+    defined(INTVECTOR_ONLY)
 
 defmethod(I32, gintAt, T, Int)
   U32 i;
@@ -235,8 +226,8 @@ endmethod
 
 #endif
 
-#if defined(SHTVECTOR_ONLY) || defined(INTVECTOR_ONLY) || \
-    defined(LNGVECTOR_ONLY)
+#if defined(CHRVECTOR_ONLY) || defined(SHTVECTOR_ONLY) || \
+    defined(INTVECTOR_ONLY) || defined(LNGVECTOR_ONLY)
 
 defmethod(I64, glngAt, T, Int)
   U32 i;
@@ -254,8 +245,9 @@ endmethod
 
 #endif
 
-#if defined(SHTVECTOR_ONLY) || defined(INTVECTOR_ONLY) || \
-    defined(LNGVECTOR_ONLY) || defined(FLTVECTOR_ONLY)
+#if defined(CHRVECTOR_ONLY) || defined(SHTVECTOR_ONLY) || \
+    defined(INTVECTOR_ONLY) || defined(LNGVECTOR_ONLY) || \
+    defined(FLTVECTOR_ONLY)
 
 defmethod(F64, gfltAt, T, Int)
   U32 i;
@@ -273,9 +265,9 @@ endmethod
 
 #endif
 
-#if defined(SHTVECTOR_ONLY) || defined(INTVECTOR_ONLY) || \
-    defined(LNGVECTOR_ONLY) || defined(FLTVECTOR_ONLY) || \
-    defined(CPXVECTOR_ONLY)
+#if defined(CHRVECTOR_ONLY) || defined(SHTVECTOR_ONLY) || \
+    defined(INTVECTOR_ONLY) || defined(LNGVECTOR_ONLY) || \
+    defined(FLTVECTOR_ONLY) || defined(CPXVECTOR_ONLY)
 
 defmethod(C64, gcpxAt, T, Int)
   U32 i;
@@ -295,6 +287,26 @@ endmethod
 #endif
 
 // ----- value setters
+
+#if defined(CHRVECTOR_ONLY) || defined(SHTVECTOR_ONLY) || \
+    defined(INTVECTOR_ONLY) || defined(LNGVECTOR_ONLY) || \
+    defined(FLTVECTOR_ONLY) || defined(CPXVECTOR_ONLY)
+
+defmethod(void, gputAt, T, Int, Char)
+  U32 i;
+  
+  PRE
+    i = Range_index(self2->valref, self->size);
+    test_assert( i < self->size, "index out of range" );
+
+  BODY
+    if (!COS_CONTRACT) // no PRE
+      i = Range_index(self2->valref, self->size);
+      
+    self->valref[i*self->stride] = self3->Int.value;
+endmethod
+
+#endif
 
 #if defined(SHTVECTOR_ONLY) || defined(INTVECTOR_ONLY) || \
     defined(LNGVECTOR_ONLY) || defined(FLTVECTOR_ONLY) || \

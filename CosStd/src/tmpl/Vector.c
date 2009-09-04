@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.4 2009/09/02 10:51:37 ldeniau Exp $
+ | $Id: Vector.c,v 1.5 2009/09/04 10:22:36 ldeniau Exp $
  |
 */
 
@@ -134,6 +134,9 @@ T_alloc(U32 size)
   vec->size   = size;
   vec->stride = 1;
 
+#ifdef ARRAY_ONLY
+  memset(vec->valref, 0, size*sizeof(VAL));
+#endif
   return vec;
 }
 
@@ -393,6 +396,13 @@ endmethod
 #endif
 
 // ----- constructors from C array
+
+#ifdef CHRVECTOR_ONLY
+defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, TP, (I8*)ref, (U32)n);
+defmethod(OBJ,  ginitWithChrPtr               , TP, (I8*)ref, (U32)n)
+  retmethod( ginitWith(_1, aChrVectorRef(ref,n)) );
+endmethod
+#endif
 
 #ifdef SHTVECTOR_ONLY
 defalias (OBJ, (ginitWithShtPtr)gnewWithShtPtr, TP, (I16*)ref, (U32)n);

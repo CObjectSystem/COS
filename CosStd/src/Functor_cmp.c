@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.3 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.4 2009/09/04 10:22:33 ldeniau Exp $
  |
 */
 
@@ -68,8 +68,9 @@ defmethod(OBJ, ginitWith, pmComposeFun, Array) // clone
 endmethod
 
 defmethod(OBJ, ginitWith, ComposeFun, ComposeFun) // copy
+  PRT(_1);
   test_assert(self->size == self2->size, "incompatible composition size");
-
+  
   OBJ *src = self2->functor;
   OBJ *fun = self->functor;
   OBJ *end = self->functor + self->size;
@@ -77,10 +78,12 @@ defmethod(OBJ, ginitWith, ComposeFun, ComposeFun) // copy
   while (fun < end)
     *fun++ = gretain(*src++);
 
+  UNPRT(_1);
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, ComposeFun, Array) // from array
+  PRT(_1);
   test_assert(self->size == self2->size, "incompatible composition size");
 
   OBJ *obj   = self2->object;
@@ -93,6 +96,7 @@ defmethod(OBJ, ginitWith, ComposeFun, Array) // from array
     obj += obj_s;
   }
 
+  UNPRT(_1);
   retmethod(_1);
 endmethod
 
@@ -120,24 +124,6 @@ endmethod
 defmethod(OBJ, gcompose, Array)
   retmethod(gautoDelete(gnewWith(ComposeFun,_1)));
 endmethod
-
-#if 0
-defmethod(OBJ, grepeat, Functor, Int)
-  test_assert(self2->value > 0, "invalid number of repeat");
-
-  struct ComposeFun *cmp = ComposeFun_alloc(self2->value);
-  OBJ _cmp = (OBJ)cmp; PRT(_cmp);
-
-  OBJ *fun = cmp->functor;
-  OBJ *end = cmp->functor + cmp->size;
-
-  while (fun != end)
-    *fun++ = gretain(_1);
-
-  UNPRT(_cmp);
-  retmethod(gautoDelete(_cmp));
-endmethod
-#endif
 
 // ----- eval
 
