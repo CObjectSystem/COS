@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.h,v 1.6 2009/09/02 10:48:16 ldeniau Exp $
+ | $Id: FltVector.h,v 1.7 2009/09/04 12:09:17 ldeniau Exp $
  |
 */
 
@@ -51,9 +51,10 @@ endclass
 
 // ----- automatic constructors
 
-#define aFltVector(...)     ( (OBJ)atFltVector    (__VA_ARGS__) )
-#define aFltVectorRef(...)  ( (OBJ)atFltVectorRef (__VA_ARGS__) )
-#define aFltVectorView(...) ( (OBJ)atFltVectorView(__VA_ARGS__) )
+#define aFltVector(...)        ( (OBJ)atFltVector       (__VA_ARGS__) )
+#define aFltVectorRef(...)     ( (OBJ)atFltVectorRef    (__VA_ARGS__) )
+#define aFltVectorView(...)    ( (OBJ)atFltVectorView   (__VA_ARGS__) )
+#define aFltVectorSubView(...) ( (OBJ)atFltVectorSubView(__VA_ARGS__) )
 
 // --- shortcuts
 
@@ -96,10 +97,13 @@ defclass(FltVectorLzy, FltVectorDyn)
   OBJ generator;
 endclass
 
-// ----- FltVector view
+// ----- FltVector view and subview
 
 defclass(FltVectorView, FltVector)
   struct FltVector *ref;
+endclass
+
+defclass(FltVectorSubView, FltVectorView)
 endclass
 
 // ----- allocators and initializers
@@ -107,12 +111,13 @@ endclass
 struct Slice;
 struct FltVector* FltVector_alloc(U32);
 struct FltVector* FltVectorView_init(struct FltVectorView*, struct FltVector*,
-                                     struct Slice*);
+                                     struct Slice*, BOOL);
 
 // ----- automatic constructors
 
-#define atFltVector(...)              atVector    (Flt,F64,__VA_ARGS__)
-#define atFltVectorRef(buffer,size)   atVectorRef (Flt,buffer,size)
-#define atFltVectorView(vector,slice) atVectorView(Flt,vector,slice)
+#define atFltVector(...)                 atVector    (Flt,F64,__VA_ARGS__)
+#define atFltVectorRef(buffer,size)      atVectorRef (Flt,buffer,size)
+#define atFltVectorView(vector,slice)    atVectorView(Flt,vector,slice,0)
+#define atFltVectorSubView(vector,slice) atVectorView(Flt,vector,slice,1)
 
 #endif // COS_FLTVECTOR_H

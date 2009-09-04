@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.c,v 1.6 2009/09/02 10:51:37 ldeniau Exp $
+ | $Id: LngVector.c,v 1.7 2009/09/04 12:09:19 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,7 @@
 #define TD    LngVectorDyn
 #define TL    LngVectorLzy
 #define TV    LngVectorView
+#define TW    LngVectorSubView
 #define TS    "long vector"
 #define TE    Long
 
@@ -72,8 +73,8 @@
 #define aTView(v,s)    aLngVectorView(v,s)
 #define aTRef(v,s)     aLngVectorRef(v,s)
 
-#define T_alloc(s)      LngVector_alloc(s)
-#define TV_init(vw,v,s) LngVectorView_init(vw,v,s)
+#define T_alloc(s)        LngVector_alloc(s)
+#define TV_init(vw,v,s,b) LngVectorView_init(vw,v,s,b)
 
 #define TOVALPTR        glngPtr
 #define TOVAL(v)        glng(v)

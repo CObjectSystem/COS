@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.c,v 1.6 2009/09/02 10:51:37 ldeniau Exp $
+ | $Id: IntVector.c,v 1.7 2009/09/04 12:09:19 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,7 @@
 #define TD    IntVectorDyn
 #define TL    IntVectorLzy
 #define TV    IntVectorView
+#define TW    IntVectorSubView
 #define TS    "int vector"
 #define TE    Int
 
@@ -72,8 +73,8 @@
 #define aTView(v,s)    aIntVectorView(v,s)
 #define aTRef(v,s)     aIntVectorRef(v,s)
 
-#define T_alloc(s)      IntVector_alloc(s)
-#define TV_init(vw,v,s) IntVectorView_init(vw,v,s)
+#define T_alloc(s)        IntVector_alloc(s)
+#define TV_init(vw,v,s,b) IntVectorView_init(vw,v,s,b)
 
 #define TOVALPTR        gintPtr
 #define TOVAL(v)        gint(v)

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.13 2009/09/02 10:51:37 ldeniau Exp $
+ | $Id: FltVector.c,v 1.14 2009/09/04 12:09:19 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,7 @@
 #define TD    FltVectorDyn
 #define TL    FltVectorLzy
 #define TV    FltVectorView
+#define TW    FltVectorSubView
 #define TS    "float vector"
 #define TE    Float
 
@@ -72,8 +73,8 @@
 #define aTView(v,s)    aFltVectorView(v,s)
 #define aTRef(v,s)     aFltVectorRef(v,s)
 
-#define T_alloc(s)      FltVector_alloc(s)
-#define TV_init(vw,v,s) FltVectorView_init(vw,v,s)
+#define T_alloc(s)        FltVector_alloc(s)
+#define TV_init(vw,v,s,b) FltVectorView_init(vw,v,s,b)
 
 #define TOVALPTR        gfltPtr
 #define TOVAL(v)        gflt(v)

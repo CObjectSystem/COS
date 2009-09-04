@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.h,v 1.7 2009/09/02 10:48:16 ldeniau Exp $
+ | $Id: LngVector.h,v 1.8 2009/09/04 12:09:17 ldeniau Exp $
  |
 */
 
@@ -51,9 +51,10 @@ endclass
 
 // ----- automatic constructors
 
-#define aLngVector(...)     ( (OBJ)atLngVector    (__VA_ARGS__) )
-#define aLngVectorRef(...)  ( (OBJ)atLngVectorRef (__VA_ARGS__) )
-#define aLngVectorView(...) ( (OBJ)atLngVectorView(__VA_ARGS__) )
+#define aLngVector(...)        ( (OBJ)atLngVector       (__VA_ARGS__) )
+#define aLngVectorRef(...)     ( (OBJ)atLngVectorRef    (__VA_ARGS__) )
+#define aLngVectorView(...)    ( (OBJ)atLngVectorView   (__VA_ARGS__) )
+#define aLngVectorSubView(...) ( (OBJ)atLngVectorSubView(__VA_ARGS__) )
 
 // --- shortcuts
 
@@ -96,10 +97,13 @@ defclass(LngVectorLzy, LngVectorDyn)
   OBJ generator;
 endclass
 
-// ----- LngVector view
+// ----- LngVector view and subview
 
 defclass(LngVectorView, LngVector)
   struct LngVector *ref;
+endclass
+
+defclass(LngVectorSubView, LngVectorView)
 endclass
 
 // ----- allocators and initializers
@@ -107,12 +111,13 @@ endclass
 struct Slice;
 struct LngVector* LngVector_alloc(U32);
 struct LngVector* LngVectorView_init(struct LngVectorView*, struct LngVector*,
-                                     struct Slice*);
+                                     struct Slice*, BOOL);
 
 // ----- automatic constructors
 
-#define atLngVector(...)              atVector    (Lng,I64,__VA_ARGS__)
-#define atLngVectorRef(buffer,size)   atVectorRef (Lng,buffer,size)
-#define atLngVectorView(vector,slice) atVectorView(Lng,vector,slice)
+#define atLngVector(...)                 atVector    (Lng,I64,__VA_ARGS__)
+#define atLngVectorRef(buffer,size)      atVectorRef (Lng,buffer,size)
+#define atLngVectorView(vector,slice)    atVectorView(Lng,vector,slice,0)
+#define atLngVectorSubView(vector,slice) atVectorView(Lng,vector,slice,1)
 
 #endif // COS_LNGVECTOR_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.6 2009/09/04 10:22:36 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.7 2009/09/04 12:09:20 ldeniau Exp $
  |
 */
 
@@ -40,15 +40,16 @@
 // -----
 
 makclass(TV, T);
+makclass(TW, TV);
 
 // -----
 
-useclass(TV);
+useclass(TV, TW);
 
 // ----- initializer
 
 struct T*
-TV_init(struct TV *vecv, struct T *vec, struct Slice *slc)
+TV_init(struct TV *vecv, struct T *vec, struct Slice *slc, BOOL isSub)
 {
   test_assert( Slice_first(slc) < vec->size &&
                Slice_last (slc) < vec->size, "slice out of range" );
@@ -57,17 +58,17 @@ TV_init(struct TV *vecv, struct T *vec, struct Slice *slc)
 
   vw->valref = Slice_start (slc)*vec->stride + vec->valref;
   vw->size   = Slice_size  (slc);
-  vw->stride = Slice_stride(slc)*vec->stride;
+  vw->stride = isSub ? Slice_stride(slc) : Slice_stride(slc)*vec->stride;
   vecv->ref  = vec;
 
   return vw;
 }
 
-// ----- constructors
+// ----- view constructors
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Slice);
 defmethod(OBJ,  ginitWith2          , mView, T, Slice) // vector view
-  retmethod(ginitWith2(galloc(TV),_2,_3));
+  retmethod(ginitWith3(galloc(TV),_2,_3,aInt(NO)));
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Range);
@@ -75,10 +76,23 @@ defmethod(OBJ,  ginitWith2          , mView, T, Range) // vector view
   struct Range range = Range_normalize(self3,self2->size);
   struct Slice slice = Slice_fromRange(&range);
   
-  retmethod(ginitWith2(galloc(TV),_2,(OBJ)&slice));
+  retmethod(ginitWith3(galloc(TV),_2,(OBJ)&slice,aInt(NO)));
 endmethod
 
-defmethod(OBJ, ginitWith2, TV, T, Slice) // vector view
+defalias (OBJ, (ginitWith2)gnewWith2, mSubView, T, Slice);
+defmethod(OBJ,  ginitWith2          , mSubView, T, Slice) // vector view
+  retmethod(ginitWith3(galloc(TW),_2,_3,aInt(YES)));
+endmethod
+
+defalias (OBJ, (ginitWith2)gnewWith2, mSubView, T, Range);
+defmethod(OBJ,  ginitWith2          , mSubView, T, Range) // vector view
+  struct Range range = Range_normalize(self3,self2->size);
+  struct Slice slice = Slice_fromRange(&range);
+
+  retmethod(ginitWith3(galloc(TW),_2,(OBJ)&slice,aInt(YES)));
+endmethod
+
+defmethod(OBJ, ginitWith3, TV, T, Slice, Int) // vector view
   PRE
   POST
     // automatically trigger ginvariant
@@ -90,7 +104,7 @@ defmethod(OBJ, ginitWith2, TV, T, Slice) // vector view
     test_assert( !cos_object_isKindOf(ref, classref(TD)),
                  TS " views accept only non-dynamic " TS );
 
-    TV_init(self1, STATIC_CAST(struct T*, ref), self3);
+    TV_init(self1, STATIC_CAST(struct T*, ref), self3, self4->value);
 
     UNPRT(_1);
     retmethod(_1);

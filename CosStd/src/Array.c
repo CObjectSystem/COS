@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.42 2009/09/02 10:51:37 ldeniau Exp $
+ | $Id: Array.c,v 1.43 2009/09/04 12:09:19 ldeniau Exp $
  |
 */
 
@@ -43,6 +43,7 @@
 #define TD    ArrayDyn
 #define TL    ArrayLzy
 #define TV    ArrayView
+#define TW    ArraySubView
 #define TS    "array"
 #define TE    Object
 
@@ -59,8 +60,8 @@
 #define aTView(v,s)    aArrayView(v,s)
 #define aTRef(v,s)     aArrayRef(v,s)
 
-#define T_alloc(s)      Array_alloc(s)
-#define TV_init(vw,v,s) ArrayView_init(vw,v,s)
+#define T_alloc(s)        Array_alloc(s)
+#define TV_init(vw,v,s,b) ArrayView_init(vw,v,s,b)
 
 #define TOVALPTR        gobjPtr
 #define TOVAL(v)        (v)   

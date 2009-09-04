@@ -32,13 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: View.h,v 1.4 2009/08/10 21:02:14 ldeniau Exp $
+ | $Id: View.h,v 1.5 2009/09/04 12:09:17 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
+#include <cos/Nil.h>
 
-defclass(View)
+defclass(View, Nil)
+endclass
+
+defclass(SubView, View)
 endclass
 
 #endif // COS_VIEW_H

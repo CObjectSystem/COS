@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.14 2009/09/02 10:48:16 ldeniau Exp $
+ | $Id: Vector.h,v 1.15 2009/09/04 12:09:17 ldeniau Exp $
  |
 */
 
@@ -61,6 +61,9 @@
 
    gnewWith2(View,vector,slice)     -> Vector view     (view)
    gnewWith2(View,vector,range)     -> Vector view     (view)
+
+   gnewWith2(SubView,vector,slice)  -> Vector view     (substride view)
+   gnewWith2(SubView,vector,range)  -> Vector view     (substride view)
 
    where:
    - T stands for Int, Lng, Flt, Cpx
@@ -116,8 +119,8 @@ endclass
 
 // --- VectorView
 
-#define atVectorView(P,vector,slice) COS_PP_CAT(P,VectorView_init) ( \
-  atVectorView_Default(COS_PP_CAT(P,VectorView)), vector, slice )
+#define atVectorView(P,vector,slice,sub) COS_PP_CAT(P,VectorView_init) ( \
+  atVectorView_Default(COS_PP_CAT(P,VectorView)), vector, slice, sub )
 
 #define atVectorView_Default(T) \
   ( &(struct T) {{ {{{{{ cos_object_auto(T) }}}}}, 0, 0, 0 }, 0 } )

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ChrVector.c,v 1.1 2009/09/04 08:40:07 ldeniau Exp $
+ | $Id: ChrVector.c,v 1.2 2009/09/04 12:09:19 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,7 @@
 #define TD    ChrVectorDyn
 #define TL    ChrVectorLzy
 #define TV    ChrVectorView
+#define TW    ChrVectorSubView
 #define TS    "char vector"
 #define TE    Char
 
@@ -72,8 +73,8 @@
 #define aTView(v,s)    aChrVectorView(v,s)
 #define aTRef(v,s)     aChrVectorRef(v,s)
 
-#define T_alloc(s)      ChrVector_alloc(s)
-#define TV_init(vw,v,s) ChrVectorView_init(vw,v,s)
+#define T_alloc(s)        ChrVector_alloc(s)
+#define TV_init(vw,v,s,b) ChrVectorView_init(vw,v,s,b)
 
 #define TOVALPTR        gchrPtr
 #define TOVAL(v)        gchr(v)

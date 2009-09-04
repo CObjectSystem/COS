@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: View.c,v 1.3 2009/07/24 12:36:27 ldeniau Exp $
+ | $Id: View.c,v 1.4 2009/09/04 12:09:19 ldeniau Exp $
  |
 */
 
@@ -37,5 +37,6 @@
 
 // -----
 
-makclass(View);
+makclass(View, Nil);
+makclass(SubView, View);
 

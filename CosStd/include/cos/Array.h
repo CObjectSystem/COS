@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.26 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: Array.h,v 1.27 2009/09/04 12:09:17 ldeniau Exp $
  |
 */
 
@@ -81,9 +81,10 @@ endclass
 
 // ----- automatic constructors
 
-#define aArray(...)     ( (OBJ)atArray    (__VA_ARGS__) )
-#define aArrayRef(...)  ( (OBJ)atArrayRef (__VA_ARGS__) )
-#define aArrayView(...) ( (OBJ)atArrayView(__VA_ARGS__) )
+#define aArray(...)        ( (OBJ)atArray       (__VA_ARGS__) )
+#define aArrayRef(...)     ( (OBJ)atArrayRef    (__VA_ARGS__) )
+#define aArrayView(...)    ( (OBJ)atArrayView   (__VA_ARGS__) )
+#define aArraySubView(...) ( (OBJ)atArraySubView(__VA_ARGS__) )
 
 /***********************************************************
  * Implementation (private)
@@ -118,17 +119,20 @@ defclass(ArrayLzy, ArrayDyn)
   OBJ generator;
 endclass
 
-// ----- Array view
+// ----- Array view and subview
 
 defclass(ArrayView, Array)
   struct Array *ref;
+endclass
+
+defclass(ArraySubView, ArrayView)
 endclass
 
 // ----- initializers, allocators (for the class cluster)
 
 struct Slice;
 struct Array* Array_alloc(U32);
-struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*);
+struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*, BOOL);
 
 // ----- automatic constructors
 
@@ -148,6 +152,10 @@ struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*);
 
 #define atArrayView(array,slice) ArrayView_init( \
   (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \
-  array,slice)
+  array,slice,0)
+
+#define atArraySubView(array,slice) ArrayView_init( \
+  (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \
+  array,slice,1)
 
 #endif // COS_ARRAY_H

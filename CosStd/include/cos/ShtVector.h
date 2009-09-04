@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ShtVector.h,v 1.3 2009/09/02 10:48:16 ldeniau Exp $
+ | $Id: ShtVector.h,v 1.4 2009/09/04 12:09:17 ldeniau Exp $
  |
 */
 
@@ -51,9 +51,10 @@ endclass
 
 // ----- automatic constructors
 
-#define aShtVector(...)     ( (OBJ)atShtVector    (__VA_ARGS__) )
-#define aShtVectorRef(...)  ( (OBJ)atShtVectorRef (__VA_ARGS__) )
-#define aShtVectorView(...) ( (OBJ)atShtVectorView(__VA_ARGS__) )
+#define aShtVector(...)        ( (OBJ)atShtVector       (__VA_ARGS__) )
+#define aShtVectorRef(...)     ( (OBJ)atShtVectorRef    (__VA_ARGS__) )
+#define aShtVectorView(...)    ( (OBJ)atShtVectorView   (__VA_ARGS__) )
+#define aShtVectorSubView(...) ( (OBJ)atShtVectorSubView(__VA_ARGS__) )
 
 // --- shortcuts
 
@@ -96,10 +97,13 @@ defclass(ShtVectorLzy, ShtVectorDyn)
   OBJ generator;
 endclass
 
-// ----- ShtVector view
+// ----- ShtVector view and subview
 
 defclass(ShtVectorView, ShtVector)
   struct ShtVector *ref;
+endclass
+
+defclass(ShtVectorSubView, ShtVectorView)
 endclass
 
 // ----- allocators and initializers
@@ -107,12 +111,13 @@ endclass
 struct Slice;
 struct ShtVector* ShtVector_alloc(U32);
 struct ShtVector* ShtVectorView_init(struct ShtVectorView*, struct ShtVector*,
-                                     struct Slice*);
+                                     struct Slice*, BOOL);
 
 // ----- automatic constructors
 
-#define atShtVector(...)              atVector    (Sht,I16,__VA_ARGS__)
-#define atShtVectorRef(buffer,size)   atVectorRef (Sht,buffer,size)
-#define atShtVectorView(vector,slice) atVectorView(Sht,vector,slice)
+#define atShtVector(...)                 atVector    (Sht,I16,__VA_ARGS__)
+#define atShtVectorRef(buffer,size)      atVectorRef (Sht,buffer,size)
+#define atShtVectorView(vector,slice)    atVectorView(Sht,vector,slice,0)
+#define atShtVectorSubView(vector,slice) atVectorView(Sht,vector,slice,1)
 
 #endif // COS_SHTVECTOR_H

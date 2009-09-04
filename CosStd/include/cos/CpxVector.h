@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.h,v 1.7 2009/09/02 10:48:16 ldeniau Exp $
+ | $Id: CpxVector.h,v 1.8 2009/09/04 12:09:17 ldeniau Exp $
  |
 */
 
@@ -51,9 +51,10 @@ endclass
 
 // ----- automatic constructors
 
-#define aCpxVector(...)     ( (OBJ)atCpxVector    (__VA_ARGS__) )
-#define aCpxVectorRef(...)  ( (OBJ)atCpxVectorRef (__VA_ARGS__) )
-#define aCpxVectorView(...) ( (OBJ)atCpxVectorView(__VA_ARGS__) )
+#define aCpxVector(...)        ( (OBJ)atCpxVector       (__VA_ARGS__) )
+#define aCpxVectorRef(...)     ( (OBJ)atCpxVectorRef    (__VA_ARGS__) )
+#define aCpxVectorView(...)    ( (OBJ)atCpxVectorView   (__VA_ARGS__) )
+#define aCpxVectorSubView(...) ( (OBJ)atCpxVectorSubView(__VA_ARGS__) )
 
 // --- shortcuts
 
@@ -96,10 +97,13 @@ defclass(CpxVectorLzy, CpxVectorDyn)
   OBJ generator;
 endclass
 
-// ----- CpxVector view
+// ----- CpxVector view and subview
 
 defclass(CpxVectorView, CpxVector)
   struct CpxVector *ref;
+endclass
+
+defclass(CpxVectorSubView, CpxVectorView)
 endclass
 
 // ----- allocators and initializers
@@ -107,12 +111,13 @@ endclass
 struct Slice;
 struct CpxVector* CpxVector_alloc(U32);
 struct CpxVector* CpxVectorView_init(struct CpxVectorView*, struct CpxVector*,
-                                     struct Slice*);
+                                     struct Slice*, BOOL);
 
 // ----- automatic constructors
 
-#define atCpxVector(...)              atVector    (Cpx,C64,__VA_ARGS__)
-#define atCpxVectorRef(buffer,size)   atVectorRef (Cpx,buffer,size)
-#define atCpxVectorView(vector,slice) atVectorView(Cpx,vector,slice)
+#define atCpxVector(...)                 atVector    (Cpx,C64,__VA_ARGS__)
+#define atCpxVectorRef(buffer,size)      atVectorRef (Cpx,buffer,size)
+#define atCpxVectorView(vector,slice)    atVectorView(Cpx,vector,slice,0)
+#define atCpxVectorSubView(vector,slice) atVectorView(Cpx,vector,slice,1)
 
 #endif // COS_CPXVECTOR_H

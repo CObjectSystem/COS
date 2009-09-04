@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.h,v 1.8 2009/09/02 10:48:16 ldeniau Exp $
+ | $Id: IntVector.h,v 1.9 2009/09/04 12:09:17 ldeniau Exp $
  |
 */
 
@@ -51,9 +51,10 @@ endclass
 
 // ----- automatic constructors
 
-#define aIntVector(...)     ( (OBJ)atIntVector    (__VA_ARGS__) )
-#define aIntVectorRef(...)  ( (OBJ)atIntVectorRef (__VA_ARGS__) )
-#define aIntVectorView(...) ( (OBJ)atIntVectorView(__VA_ARGS__) )
+#define aIntVector(...)        ( (OBJ)atIntVector       (__VA_ARGS__) )
+#define aIntVectorRef(...)     ( (OBJ)atIntVectorRef    (__VA_ARGS__) )
+#define aIntVectorView(...)    ( (OBJ)atIntVectorView   (__VA_ARGS__) )
+#define aIntVectorSubView(...) ( (OBJ)atIntVectorSubView(__VA_ARGS__) )
 
 // --- shortcuts
 
@@ -96,10 +97,13 @@ defclass(IntVectorLzy, IntVectorDyn)
   OBJ generator;
 endclass
 
-// ----- IntVector view
+// ----- IntVector view and subview
 
 defclass(IntVectorView, IntVector)
   struct IntVector *ref;
+endclass
+
+defclass(IntVectorSubView, IntVectorView)
 endclass
 
 // ----- initializers, allocators (for the class cluster)
@@ -107,12 +111,13 @@ endclass
 struct Slice;
 struct IntVector* IntVector_alloc(U32);
 struct IntVector* IntVectorView_init(struct IntVectorView*, struct IntVector*,
-                                     struct Slice*);
+                                     struct Slice*, BOOL);
 
 // ----- automatic constructors
 
-#define atIntVector(...)              atVector    (Int,I32,__VA_ARGS__)
-#define atIntVectorRef(buffer,size)   atVectorRef (Int,buffer,size)
-#define atIntVectorView(vector,slice) atVectorView(Int,vector,slice)
+#define atIntVector(...)                 atVector    (Int,I32,__VA_ARGS__)
+#define atIntVectorRef(buffer,size)      atVectorRef (Int,buffer,size)
+#define atIntVectorView(vector,slice)    atVectorView(Int,vector,slice,0)
+#define atIntVectorSubView(vector,slice) atVectorView(Int,vector,slice,1)
 
 #endif // COS_INTVECTOR_H

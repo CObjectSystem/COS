@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ShtVector.c,v 1.6 2009/09/02 10:51:37 ldeniau Exp $
+ | $Id: ShtVector.c,v 1.7 2009/09/04 12:09:19 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,7 @@
 #define TD    ShtVectorDyn
 #define TL    ShtVectorLzy
 #define TV    ShtVectorView
+#define TW    ShtVectorSubView
 #define TS    "short vector"
 #define TE    Short
 
@@ -72,8 +73,8 @@
 #define aTView(v,s)    aShtVectorView(v,s)
 #define aTRef(v,s)     aShtVectorRef(v,s)
 
-#define T_alloc(s)      ShtVector_alloc(s)
-#define TV_init(vw,v,s) ShtVectorView_init(vw,v,s)
+#define T_alloc(s)        ShtVector_alloc(s)
+#define TV_init(vw,v,s,b) ShtVectorView_init(vw,v,s,b)
 
 #define TOVALPTR        gshtPtr
 #define TOVAL(v)        gsht(v)

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.c,v 1.6 2009/09/02 10:51:37 ldeniau Exp $
+ | $Id: CpxVector.c,v 1.7 2009/09/04 12:09:19 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,7 @@
 #define TD    CpxVectorDyn
 #define TL    CpxVectorLzy
 #define TV    CpxVectorView
+#define TW    CpxVectorSubView
 #define TS    "complex vector"
 #define TE    Complex
 
@@ -72,8 +73,8 @@
 #define aTView(v,s)    aCpxVectorView(v,s)
 #define aTRef(v,s)     aCpxVectorRef(v,s)
 
-#define T_alloc(s)      CpxVector_alloc(s)
-#define TV_init(vw,v,s) CpxVectorView_init(vw,v,s)
+#define T_alloc(s)        CpxVector_alloc(s)
+#define TV_init(vw,v,s,b) CpxVectorView_init(vw,v,s,b)
 
 #define TOVALPTR        gcpxPtr
 #define TOVAL(v)        gcpx(v)

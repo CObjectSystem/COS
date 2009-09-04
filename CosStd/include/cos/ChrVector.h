@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ChrVector.h,v 1.1 2009/09/04 08:40:05 ldeniau Exp $
+ | $Id: ChrVector.h,v 1.2 2009/09/04 12:09:17 ldeniau Exp $
  |
 */
 
@@ -51,15 +51,16 @@ endclass
 
 // ----- automatic constructors
 
-#define aChrVector(...)     ( (OBJ)atChrVector    (__VA_ARGS__) )
-#define aChrVectorRef(...)  ( (OBJ)atChrVectorRef (__VA_ARGS__) )
-#define aChrVectorView(...) ( (OBJ)atChrVectorView(__VA_ARGS__) )
+#define aChrVector(...)        ( (OBJ)atChrVector       (__VA_ARGS__) )
+#define aChrVectorRef(...)     ( (OBJ)atChrVectorRef    (__VA_ARGS__) )
+#define aChrVectorView(...)    ( (OBJ)atChrVectorView   (__VA_ARGS__) )
+#define aChrVectorSubView(...) ( (OBJ)atChrVectorSubView(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
 
-#define aSVec(...)  aChrVector(__VA_ARGS__)
+#define aCVec(...)  aChrVector(__VA_ARGS__)
 
 #endif
 
@@ -96,10 +97,13 @@ defclass(ChrVectorLzy, ChrVectorDyn)
   OBJ generator;
 endclass
 
-// ----- ChrVector view
+// ----- ChrVector view and subview
 
 defclass(ChrVectorView, ChrVector)
   struct ChrVector *ref;
+endclass
+
+defclass(ChrVectorSubView, ChrVectorView)
 endclass
 
 // ----- allocators and initializers
@@ -107,12 +111,13 @@ endclass
 struct Slice;
 struct ChrVector* ChrVector_alloc(U32);
 struct ChrVector* ChrVectorView_init(struct ChrVectorView*, struct ChrVector*,
-                                     struct Slice*);
+                                     struct Slice*, BOOL);
 
 // ----- automatic constructors
 
-#define atChrVector(...)              atVector    (Chr,I8,__VA_ARGS__)
-#define atChrVectorRef(buffer,size)   atVectorRef (Chr,buffer,size)
-#define atChrVectorView(vector,slice) atVectorView(Chr,vector,slice)
+#define atChrVector(...)                 atVector    (Chr,I8,__VA_ARGS__)
+#define atChrVectorRef(buffer,size)      atVectorRef (Chr,buffer,size)
+#define atChrVectorView(vector,slice)    atVectorView(Chr,vector,slice,0)
+#define atChrVectorSubView(vector,slice) atVectorView(Chr,vector,slice,1)
 
 #endif // COS_CHRVECTOR_H
