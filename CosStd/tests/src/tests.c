@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.9 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: tests.c,v 1.10 2009/09/04 12:51:52 ldeniau Exp $
  |
 */
 
@@ -56,11 +56,14 @@ int main(int argc, char *argv[])
   int init_time = NO;
   int speed_test = NO;
   int debug_sym = NO;
+  int cache_trc = NO;
   int i;
 
   cos_logmsg_set(COS_LOGMSG_DEBUG);
 
   for (i = 1; i < argc; i++) {
+    if (!strcmp(argv[i], "-c"))
+      cache_trc = YES;
     if (!strcmp(argv[i], "-d"))
       debug_sym = YES;
     if (!strcmp(argv[i], "-dd"))
@@ -107,15 +110,25 @@ int main(int argc, char *argv[])
   cos_utest_stat();
 
   // speed testsuites
-  if (!speed_test) return EXIT_SUCCESS;
-  
-  printf("\n** C Object System Library Speed Testsuite (%d bits) **\n", bits);
+  if (!speed_test) {
+    printf("\n** C Object System Library Speed Testsuite (%d bits) **\n", bits);
 
-  // st_methods();
-  // st_nextmethods();
-  // st_multimethods();
+    // st_methods();
+    // st_nextmethods();
+    // st_multimethods();
 
-  cos_stest_stat();
+    cos_stest_stat();
+  }
+
+  if (cache_trc) {
+    printf("\n** COS caches statistics\n");
+    
+    cos_method_statCache1(0);
+    cos_method_statCache2(0);
+    cos_method_statCache3(0);
+    cos_method_statCache4(0);
+    cos_method_statCache5(0);
+  }
 
   return EXIT_SUCCESS;
 }

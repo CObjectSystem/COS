@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: debug.h,v 1.5 2009/01/30 12:12:56 ldeniau Exp $
+ | $Id: debug.h,v 1.6 2009/09/04 12:51:50 ldeniau Exp $
  |
 */
 
@@ -53,7 +53,12 @@ void cos_symbol_showClassProperties(FILE*,int);
 void cos_symbol_showGenerics       (FILE*);
 void cos_symbol_showMethods        (FILE*);
 
-// in cos/cos_dispatch{1..5}.c
+// in cos/cos_dispatch.c
+void cos_method_statCache1(FILE*);
+void cos_method_statCache2(FILE*);
+void cos_method_statCache3(FILE*);
+void cos_method_statCache4(FILE*);
+void cos_method_statCache5(FILE*);
 void cos_method_showCache1(FILE*);
 void cos_method_showCache2(FILE*);
 void cos_method_showCache3(FILE*);

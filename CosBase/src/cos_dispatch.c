@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch.c,v 1.3 2008/10/31 15:19:44 ldeniau Exp $
+ | $Id: cos_dispatch.c,v 1.4 2009/09/04 12:51:52 ldeniau Exp $
  |
 */
 
@@ -51,6 +51,135 @@ void cos_method_clearCaches(void)
  */
 
 #include <cos/debug.h>
+
+// ----- cache stats
+
+void
+cos_method_statCache1(FILE *fp)
+{
+  struct cos_method_cache1 *cache = cos_method_cache1();
+  U32 i, n, n1=0, n2=0, n3=0;
+
+  if (!fp) fp = stderr;
+
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot1 *slot = cache->slot[i];
+
+    if (slot->idg) {
+      ++n1;
+      if (slot->nxt->idg) {
+        ++n2;
+        if (slot->nxt->nxt->idg) {
+          ++n3;
+    }}}
+  }
+
+  n = n1+n2+n3;
+  fprintf(fp,"cache1: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,(double)n/i,n1,n2,n3);
+}
+
+void
+cos_method_statCache2(FILE *fp)
+{
+  struct cos_method_cache2 *cache = cos_method_cache2();
+  U32 i, n, n1=0, n2=0, n3=0;
+
+  if (!fp) fp = stderr;
+
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot2 *slot = cache->slot[i];
+
+    if (slot->idg) {
+      ++n1;
+      if (slot->nxt->idg) {
+        ++n2;
+        if (slot->nxt->nxt->idg) {
+          ++n3;
+    }}}
+  }
+
+  n = n1+n2+n3;
+  fprintf(fp,"cache2: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,(double)n/i,n1,n2,n3);
+}
+
+void
+cos_method_statCache3(FILE *fp)
+{
+  struct cos_method_cache3 *cache = cos_method_cache3();
+  U32 i, n, n1=0, n2=0, n3=0;
+
+  if (!fp) fp = stderr;
+
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot3 *slot = cache->slot[i];
+
+    if (slot->idg) {
+      ++n1;
+      if (slot->nxt->idg) {
+        ++n2;
+        if (slot->nxt->nxt->idg) {
+          ++n3;
+    }}}
+  }
+
+  n = n1+n2+n3;
+  fprintf(fp,"cache3: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,(double)n/i,n1,n2,n3);
+}
+
+void
+cos_method_statCache4(FILE *fp)
+{
+  struct cos_method_cache4 *cache = cos_method_cache4();
+  U32 i, n, n1=0, n2=0, n3=0;
+
+  if (!fp) fp = stderr;
+
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot4 *slot = cache->slot[i];
+
+    if (slot->idg) {
+      ++n1;
+      if (slot->nxt->idg) {
+        ++n2;
+        if (slot->nxt->nxt->idg) {
+          ++n3;
+    }}}
+  }
+
+  n = n1+n2+n3;
+  fprintf(fp,"cache4: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,(double)n/i,n1,n2,n3);
+}
+
+void
+cos_method_statCache5(FILE *fp)
+{
+  struct cos_method_cache5 *cache = cos_method_cache5();
+  U32 i, n, n1=0, n2=0, n3=0;
+
+  if (!fp) fp = stderr;
+
+  for (i=0; i <= cache->msk; i++) {
+    struct cos_method_slot5 *slot = cache->slot[i];
+
+    if (slot->idg) {
+      ++n1;
+      if (slot->nxt->idg) {
+        ++n2;
+        if (slot->nxt->nxt->idg) {
+          ++n3;
+    }}}
+  }
+
+  n = n1+n2+n3;
+  fprintf(fp,"cache5: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,(double)n/i,n1,n2,n3);
+}
+
+// ----- cache content
 
 void
 cos_method_showCache1(FILE *fp)
@@ -83,7 +212,7 @@ cos_method_showCache1(FILE *fp)
     }
   }
 
-  fprintf(fp,"Slots=%u, Cells=%u, MaxDepth=%d, Load=%.2f\n",i,n,d,(double)n/i);
+  fprintf(fp,"cache 1: slots=%u, cells=%u, load=%.2f\n, maxdepth=%u",i,n,(double)n/i,d);
 }
 
 void
@@ -118,7 +247,7 @@ cos_method_showCache2(FILE *fp)
     }
   }
 
-  fprintf(fp,"Slots=%u, Cells=%u, MaxDepth=%d, Load=%.2f\n",i,n,d,(double)n/i);
+  fprintf(fp,"cache 2: slots=%u, cells=%u, load=%.2f, maxdepth=%u\n",i,n,(double)n/i,d);
 }
 
 void
@@ -154,7 +283,7 @@ cos_method_showCache3(FILE *fp)
     }
   }
 
-  fprintf(fp,"Slots=%u, Cells=%u, MaxDepth=%d, Load=%.2f\n",i,n,d,(double)n/i);
+  fprintf(fp,"cache 3: slots=%u, cells=%u, load=%.2f, maxdepth=%u\n",i,n,(double)n/i,d);
 }
 
 void
@@ -191,7 +320,7 @@ cos_method_showCache4(FILE *fp)
     }
   }
 
-  fprintf(fp,"Slots=%u, Cells=%u, MaxDepth=%d, Load=%.2f\n",i,n,d,(double)n/i);
+  fprintf(fp,"cache 4: slots=%u, cells=%u, load=%.2f, maxdepth=%u\n",i,n,(double)n/i,d);
 }
 
 void
@@ -229,5 +358,5 @@ cos_method_showCache5(FILE *fp)
     }
   }
 
-  fprintf(fp,"Slots=%u, Cells=%u, MaxDepth=%d, Load=%.2f\n",i,n,d,(double)n/i);
+  fprintf(fp,"cache 5: slots=%u, cells=%u, load=%.2f, maxdepth=%u\n",i,n,(double)n/i,d);
 }

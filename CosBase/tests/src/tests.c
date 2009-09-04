@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.18 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: tests.c,v 1.19 2009/09/04 12:51:52 ldeniau Exp $
  |
 */
 
@@ -56,11 +56,14 @@ int main(int argc, char *argv[])
   int init_time = NO;
   int speed_test = NO;
   int debug_sym = NO;
+  int cache_trc = NO;
   int i;
   
   cos_logmsg_set(COS_LOGMSG_DEBUG);
 
   for (i = 1; i < argc; i++) {
+    if (!strcmp(argv[i], "-c"))
+      cache_trc = YES;
     if (!strcmp(argv[i], "-d"))
       debug_sym = YES;
     if (!strcmp(argv[i], "-dd"))
@@ -72,7 +75,6 @@ int main(int argc, char *argv[])
     if (!strcmp(argv[i], "-t"))
       cos_logmsg_set(COS_LOGMSG_TRACE);
   }
-
 
   if (init_time) {
     // must be loaded before COS is initialized (and first message is sent)
@@ -114,25 +116,35 @@ int main(int argc, char *argv[])
   cos_utest_stat();
 
   // speed testsuites
-  if (!speed_test) return EXIT_SUCCESS;
+  if (speed_test) {
+    printf("\n** C Object System Speed Testsuite (%d bits) **\n", bits);
+
+    st_methods();
+    st_nextmethods();
+    st_multimethods();
+
+    st_methods_ptr();
+    st_multimethods_ptr();
+
+    st_pxymethods();
+    st_pxynextmethods();
+    st_pxymultimethods();
   
-  printf("\n** C Object System Speed Testsuite (%d bits) **\n", bits);
+    st_memory();
+    st_exception();
 
-  st_methods();
-  st_nextmethods();
-  st_multimethods();
-
-  st_methods_ptr();
-  st_multimethods_ptr();
-
-  st_pxymethods();
-  st_pxynextmethods();
-  st_pxymultimethods();
+    cos_stest_stat();
+  }
   
-  st_memory();
-  st_exception();
+  if (cache_trc) {
+    printf("\n** COS caches statistics\n");
 
-  cos_stest_stat();
+    cos_method_statCache1(0);
+    cos_method_statCache2(0);
+    cos_method_statCache3(0);
+    cos_method_statCache4(0);
+    cos_method_statCache5(0);
+  }
 
   return EXIT_SUCCESS;
 }
