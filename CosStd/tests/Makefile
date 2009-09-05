@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.6 2009/07/02 08:25:12 ldeniau Exp $
+# | $Id: Makefile,v 1.7 2009/09/05 21:13:38 ldeniau Exp $
 # |
 #
 
@@ -53,7 +53,7 @@ defgens := $(headers)
 defprps := $(headers)
 
 # project dependencies (as with -lname)
-moddeps := CosStd CosBase
+moddeps := CosBase CosStd
 
 # project dependencies (as with -Ipath or -Lpath)
 incdirs := $(foreach m,$(moddeps),../../$(m)/include) src

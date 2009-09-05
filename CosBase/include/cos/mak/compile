@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile,v 1.9 2009/05/13 14:54:03 ldeniau Exp $
+# | $Id: compile,v 1.10 2009/09/05 21:13:38 ldeniau Exp $
 # |
 #
 
@@ -58,7 +58,6 @@ $(OSNAME)/$(TARGET)/$(PRJNAME)_prps.c: $(DEFPRPS)
 $(OSNAME)/$(TARGET)/$(PRJNAME)_syms.c: $(OBJECTS)
 	@  echo "*** Computing [$(TARGET)] symbols"
 	$_ $(COSSYM) --nm="$(NM)" $(MODS) --out=$(<D)/$(PRJNAME)_syms.c $(COSSYMOPT) $^
-	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $(<D)/$(PRJNAME)_syms.c -o $(<D)/$(PRJNAME)_syms.o
 
 #
 # rules for compilation

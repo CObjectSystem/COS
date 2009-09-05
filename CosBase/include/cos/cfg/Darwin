@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.22 2009/08/05 13:42:47 ldeniau Exp $
+# | $Id: Darwin,v 1.23 2009/09/05 21:13:38 ldeniau Exp $
 # |
 #
 
@@ -98,7 +98,7 @@ PLUGIN_LD   := -dynamic -bundle -fPIC -read_only_relocs suppress -Wl,-noprebind 
 #
 # dynamic library search path
 #
-RPATH        = $(patsubst -L%,-Wl$(comma)-rpath$(comma)%,$(LIBRARY))
+RPATH        = # $(patsubst -L%,-Wl$(comma)-rpath$(comma)%,$(LIBRARY))
 
 #
 # system specific
@@ -106,8 +106,8 @@ RPATH        = $(patsubst -L%,-Wl$(comma)-rpath$(comma)%,$(LIBRARY))
 SYSFLAGS    := -DOSNAME=$(OSNAME) \
                -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
                -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
-SYSLIBS     := -lpthread -ldl
 SYSLIBPATH  := DYLD_LIBRARY_PATH
+SYSLIBS     := pthread dl
 
 #
 # compiler specific (gcc is the reference)

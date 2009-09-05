@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.30 2009/09/05 17:50:10 ldeniau Exp $
+# | $Id: Makefile,v 1.31 2009/09/05 21:13:38 ldeniau Exp $
 # |
 #
 
@@ -58,7 +58,7 @@ defgens := $(wildcard include/cos/gen/*.h)
 defprps := $(wildcard include/cos/prp/*.h)
 
 # project dependencies (as with -lname)
-libdeps :=
+libdeps := $(SYSLIBS)
 moddeps :=
 
 # project dependencies (as with -Ipath or -Lpath)

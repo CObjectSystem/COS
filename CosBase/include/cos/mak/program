@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.13 2009/06/14 20:31:20 ldeniau Exp $
+# | $Id: program,v 1.14 2009/09/05 21:13:38 ldeniau Exp $
 # |
 #
 
@@ -64,7 +64,7 @@ $(TARGET).bin: $(OSNAME)/bin/$(BINNAME)
 
 $(OSNAME)/bin/$(BINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
 	@  echo "*** Building [$(TARGET)] $(@F)"
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@ $(LIBS) $(SYSLIBS)
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@ $(LIBS)
 
 #
 # rules for building program with static linkage
@@ -75,7 +75,7 @@ $(TARGET).sbin: $(OSNAME)/bin/$(SBINNAME)
 
 $(OSNAME)/bin/$(SBINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
 	@  echo "*** Building [$(TARGET)] $(@F)"
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@ $(LIBS) $(SYSLIBS)
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@ $(LIBS)
 	$_ $(if $(STRIP),$(STRIP) $@)
 
 #

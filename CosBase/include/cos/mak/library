@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library,v 1.8 2009/06/14 17:47:38 ldeniau Exp $
+# | $Id: library,v 1.9 2009/09/05 21:13:38 ldeniau Exp $
 # |
 #
 
@@ -66,7 +66,7 @@ $(TARGET).lib: $(OSNAME)/lib/$(LIBNAME)
 
 $(OSNAME)/lib/$(LIBNAME): $(OSNAME)/$(TARGET)/$(library)_syms.o
 	@  echo "*** Building [$(TARGET)] $(@F)"
-	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@.$(VERSION) $(LIBS) $(SYSLIBS)
+	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@.$(VERSION) $(LIBS)
 	$_ ln -sf $(@F).$(VERSION) $@
 
 #

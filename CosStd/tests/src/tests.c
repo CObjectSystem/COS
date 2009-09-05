@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.11 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: tests.c,v 1.12 2009/09/05 21:13:38 ldeniau Exp $
  |
 */
 
@@ -118,9 +118,7 @@ int main(int argc, char *argv[])
   if (speed_tst) {
     printf("\n** C Object System Library Speed Testsuite (%d bits) **\n", bits);
 
-    // st_methods();
-    // st_nextmethods();
-    // st_multimethods();
+    // TODO
 
     cos_stest_stat();
   }
