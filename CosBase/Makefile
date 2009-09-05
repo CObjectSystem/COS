@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.28 2009/08/03 21:07:13 ldeniau Exp $
+# | $Id: Makefile,v 1.29 2009/09/05 17:49:31 ldeniau Exp $
 # |
 #
 
@@ -49,7 +49,7 @@ release := 200908
 package := $(library)-$(version)_$(release)
 
 # targets
-targets := all
+targets := debug # all
 
 # files and modules
 sources := $(wildcard src/*.c)
