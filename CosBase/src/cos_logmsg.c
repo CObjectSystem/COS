@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.12 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.13 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
@@ -82,7 +82,7 @@ cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
 #if COS_HAVE_POSIX
     fprintf(cos_logmsg_out,"COS-%s[%u]:(%s,%d,%s): ",
             tag[lvl], (U32)getpid(), file ? file : "", line, func ? func : "");
-#else // !COS_HAVE_POSIX
+#else
     fprintf(cos_logmsg_out,"COS-%s:(%s,%d,%s): ",
             tag[lvl], file ? file : "", line, func ? func : "");
 #endif

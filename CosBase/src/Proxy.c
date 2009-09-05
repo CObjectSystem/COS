@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.11 2009/09/04 10:22:32 ldeniau Exp $
+ | $Id: Proxy.c,v 1.12 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
@@ -48,13 +48,18 @@ makclass(Proxy);
 
 defmethod(OBJ, ginitWith, Proxy, Object)
   PRT(_1);
+
+  self->obj = 0;
   self->obj = gretain(_2);
+
   UNPRT(_1);
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gdeinit, Proxy)
-  if (self->obj) grelease(self->obj);
+  if (self->obj)
+    grelease(self->obj);
+
   retmethod(_1);
 endmethod
 

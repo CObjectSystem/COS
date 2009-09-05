@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: main.c,v 1.2 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: main.c,v 1.3 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
@@ -113,7 +113,7 @@ sum_oop(I32 n)
   F64 t0   = clock();
   OBJ xs   = grepeat(ini,aInt(n));
   F64 t1   = clock();
-  I32 x    = gint(gfoldl(xs,aFunctor(gaddTo,0,0),aInt(0)));
+  I32 x    = gint(greduce(xs,aFunctor(gaddTo,0,0),aInt(0)));
   F64 t2   = clock();
              grelease(pool);
   F64 t3   = clock();

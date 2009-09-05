@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.44 2009/08/19 10:14:22 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.45 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
@@ -153,21 +153,18 @@ enlarge(struct AutoRelease* p)
   if (p->stk == p->_stk) {
     new_size = COS_AUTORELEASE_INIT;
     stk = malloc(sizeof *stk * new_size);
-    if (stk) {
-      *stk = 0;
-      memcpy(stk+1, p->stk, sizeof *stk * size);
-    }
+    if (stk) memcpy(stk, p->stk, sizeof *stk * size);
   } else {
     new_size = size * COS_AUTORELEASE_RATE;
-    stk = realloc(p->stk-1, sizeof *stk * new_size);
+    stk = realloc(p->stk, sizeof *stk * new_size);
     if (size >= COS_AUTORELEASE_WARN)
       cos_debug("pool at %p hold %u autoreleased objects", (void*)p, size);
   }
   
   if (!stk) THROW(ExBadAlloc);
 
-  p->stk = stk + 1;
-  p->top = stk + 1 + size;
+  p->stk = stk;
+  p->top = stk + size;
   p->end = stk + new_size;
 }
 
@@ -178,7 +175,7 @@ clear(struct AutoRelease *p)
     grelease(p->tmp), p->tmp = 0;
 
   while (p->top-- > p->stk)
-    if (*p->top) grelease(*p->top);
+    grelease(*p->top);
 }
 
 static COS_ALWAYS_INLINE OBJ
@@ -282,7 +279,7 @@ endmethod
 // -----
 
 defmethod(OBJ, ginit, AutoRelease)
-  self->Object.rc = COS_RC_AUTO; // AutoRelease pools are linked to the stack
+  self->Object.rc = COS_RC_AUTO; // AutoRelease pools are "linked" to the stack
   self->stk = self->_stk;
   self->top = self->_stk;
   self->end = self->_stk + COS_ARRLEN(self->_stk);
@@ -304,7 +301,7 @@ defmethod(OBJ, gdeinit, AutoRelease)
 
   // free stack
   if (self->stk != self->_stk)
-    free(self->stk-1);
+    free(self->stk);
 
   // remove from top
   pool_set(self->prv);

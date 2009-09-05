@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.41 2009/08/07 10:53:52 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.42 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
@@ -685,12 +685,12 @@ sym_deinit(void)
   nxt_clear();
   mod_clear();
 
-  free(sym.bhv), sym.bhv = 0, sym.  msk = 0;
-  free(sym.cls), sym.cls = 0, sym.n_cls = 0;
-                 sym.prp = 0, sym.n_prp = 0;
-  free(sym.gen), sym.gen = 0, sym.n_gen = 0;
-  free(sym.mth), sym.mth = 0, sym.n_mth = 0;
-  free(sym.nxt), sym.nxt = 0, sym.n_nxt = 0, sym.m_nxt = 0;
+  if (sym.bhv) free(sym.bhv), sym.bhv = 0, sym.  msk = 0;
+  if (sym.cls) free(sym.cls), sym.cls = 0, sym.n_cls = 0,
+                              sym.prp = 0, sym.n_prp = 0;
+  if (sym.gen) free(sym.gen), sym.gen = 0, sym.n_gen = 0;
+  if (sym.mth) free(sym.mth), sym.mth = 0, sym.n_mth = 0;
+  if (sym.nxt) free(sym.nxt), sym.nxt = 0, sym.n_nxt = 0, sym.m_nxt = 0;
   
   tbl_ini = 0;
 }

@@ -29,19 +29,21 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.13 2009/08/07 10:51:03 ldeniau Exp $
+ | $Id: Exception.c,v 1.14 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/Exception.h>
+
 #include <cos/debug.h>
 #include <cos/errno.h>
 #include <cos/signal.h>
+
+#include <cos/gen/init.h>
+#include <cos/gen/message.h>
+#include <cos/gen/new.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
-#include <cos/gen/init.h>
-#include <cos/gen/new.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -100,7 +102,7 @@ defmethod(STR, gstr, Exception)
   if (self->str)
     retmethod(self->str);
 
-  if (self->obj != Nil)
+  if (self->obj != Nil && gunderstandMessage1(_1, genericref(gstr)) == True)
     retmethod( gstr(self->obj) );
     
   retmethod( "" );

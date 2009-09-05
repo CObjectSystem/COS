@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.10 2009/09/04 12:51:52 ldeniau Exp $
+ | $Id: tests.c,v 1.11 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
@@ -54,27 +54,33 @@ int main(int argc, char *argv[])
 {
   enum { bits = CHAR_BIT*sizeof(void*) };
   int init_time = NO;
-  int speed_test = NO;
+  int speed_tst = NO;
   int debug_sym = NO;
+  int alloc_trc = NO;
   int cache_trc = NO;
   int i;
 
   cos_logmsg_set(COS_LOGMSG_DEBUG);
 
   for (i = 1; i < argc; i++) {
-    if (!strcmp(argv[i], "-c"))
-      cache_trc = YES;
     if (!strcmp(argv[i], "-d"))
       debug_sym = YES;
-    if (!strcmp(argv[i], "-dd"))
+    if (!strcmp(argv[i], "-ds"))
       debug_sym = YES+YES;
+    if (!strcmp(argv[i], "-da"))
+      alloc_trc = YES;
+    if (!strcmp(argv[i], "-dc"))
+      cache_trc = YES;
     if (!strcmp(argv[i], "-i"))
       init_time = YES;
     if (!strcmp(argv[i], "-s"))
-      speed_test = YES;
+      speed_tst = YES;
     if (!strcmp(argv[i], "-t"))
       cos_logmsg_set(COS_LOGMSG_TRACE);
   }
+
+  if (alloc_trc)
+    cos_mem_trace(YES);
 
   if (init_time) {
     // must be loaded before COS is initialized (and first message is sent)
@@ -101,7 +107,6 @@ int main(int argc, char *argv[])
 
   // testsuites
   printf("\n** C Object System Library Testsuite (%d bits) **\n", bits);
-
   ut_slice();
   ut_range();
   ut_xrange();
@@ -110,7 +115,7 @@ int main(int argc, char *argv[])
   cos_utest_stat();
 
   // speed testsuites
-  if (!speed_test) {
+  if (speed_tst) {
     printf("\n** C Object System Library Speed Testsuite (%d bits) **\n", bits);
 
     // st_methods();
@@ -130,5 +135,12 @@ int main(int argc, char *argv[])
     cos_method_statCache5(0);
   }
 
+  if (alloc_trc) {
+    cos_deinit();
+    printf("\n** COS alloc/free balance: %u/%u\n",
+           cos_mem_nalloc(), cos_mem_nfree());
+  }
+    
   return EXIT_SUCCESS;
 }
+

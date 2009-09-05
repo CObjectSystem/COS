@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_utest.c,v 1.2 2009/02/05 15:47:52 ldeniau Exp $
+ | $Id: cos_utest.c,v 1.3 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
@@ -82,7 +82,7 @@ cos_utest_init(struct cos_utest_info *uti, int keep, const char *name, const cha
 }
 
 void
-cos_stest_init (struct cos_stest_info *sti, const char *name, long itr)
+cos_stest_init(struct cos_stest_info *sti, const char *name, long itr)
 {
   if (!utest_out) utest_out = stdout;
 
@@ -121,7 +121,7 @@ cos_utest_fini(struct cos_utest_info *uti)
 }
 
 void
-cos_stest_fini (struct cos_stest_info *sti)
+cos_stest_fini(struct cos_stest_info *sti)
 {
   double t1 = clock();
   double t = (t1 - sti->t0) / CLOCKS_PER_SEC;

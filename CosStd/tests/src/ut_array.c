@@ -29,24 +29,64 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.3 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: ut_array.c,v 1.4 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
+#include <cos/Number.h>
 #include <cos/gen/compare.h>
+#include <cos/gen/container.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
+#include <cos/gen/value.h>
 #include <cos/utest.h>
+#include <cos/prp/sequence.h>
 
 #include "tests.h"
+
+static BOOL
+isEq(OBJ r, OBJ ref)
+{
+  OBJ res = gisEqual(r, ref);
+  gdelete(r);
+  return res == True;
+}
 
 void
 ut_array(void)
 {
-//  useclass(Array, View);
+  useproperty(size);
+  useclass(Array, Array1, Array2, Array5, Array9, ArrayN);
+  OBJ buf[] = { aInt(0,1,2,3,4,5,6,7,8,9) };
 
   UTEST_START("Array")
+
+  // sizes
+  UTEST(gsize(aArray(aInt(0))) == 1);
+  UTEST(gsize(aArray(aInt(0,1))) == 2);
+  UTEST(gsize(aArray(aInt(0,1,2,3,4))) == 5);
+  UTEST(gsize(aArray(aInt(0,1,2,3,4,5,6,7,8,9))) == 10);
+
+  UTEST(gisEmpty(aArray(aInt(0))) == False);
+  UTEST(gisEqual(ggetAt(aArray(aInt(0)),size), aInt(1)) == True);
+  UTEST(gisEqual(ggetAt(aArray(aInt(0,1)),size), aInt(2)) == True);
+  UTEST(gisEqual(ggetAt(aArray(aInt(0,1,2,3,4)),size), aInt(5)) == True);
+  UTEST(gisEqual(ggetAt(aArray(aInt(0,1,2,3,4,5,6,7,8,9)),size), aInt(10)) == True);
+
+  // types
+  UTEST(gisKindOf(aArray(aInt(0)), Array1) == True);
+  UTEST(gisKindOf(aArray(aInt(0,1)), Array2) == True);
+  UTEST(gisKindOf(aArray(aInt(0,1,2,3,4)), Array5) == True);
+  UTEST(gisKindOf(aArray(aInt(0,1,2,3,4,5,6,7,8)), Array9) == True);
+  UTEST(gisKindOf(aArray(aInt(0,1,2,3,4,5,6,7,8,9)), ArrayN) == True);
+
+  // equals + copy
+  UTEST(isEq(gnewWith(Array,aArrayRef(buf,1)) , aArray(aInt(0))));
+  UTEST(isEq(gnewWith(Array,aArrayRef(buf,2)) , aArray(aInt(0,1))));
+  UTEST(isEq(gnewWith(Array,aArrayRef(buf,5)) , aArray(aInt(0,1,2,3,4))));
+  UTEST(isEq(gnewWith(Array,aArrayRef(buf,9)) , aArray(aInt(0,1,2,3,4,5,6,7,8))));
+  UTEST(isEq(gnewWith(Array,aArrayRef(buf,10)), aArray(aInt(0,1,2,3,4,5,6,7,8,9))));
 
   UTEST_END
 }

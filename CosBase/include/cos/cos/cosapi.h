@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.32 2009/08/19 10:14:22 ldeniau Exp $
+ | $Id: cosapi.h,v 1.33 2009/09/05 17:49:32 ldeniau Exp $
  |
 */
 
@@ -143,10 +143,34 @@ void   cos_module_load(STR*); // null terminated array of module names
 void cos_logmsg_(int,STR,STR,int,STR,...) __attribute__((__format__(__printf__,5,6)));
 int  cos_logmsg_set(int lvl); // return previous level
 
+/* NOTE-INFO: memory tracer
+*/
+void* cos_mem_malloc (size_t, STR,STR,int);
+void* cos_mem_calloc (size_t, size_t, STR,STR,int);
+void* cos_mem_realloc(void*, size_t, STR,STR,int);
+void  cos_mem_free   (void*, STR,STR,int);
+BOOL  cos_mem_trace  (BOOL); // on/off memory trace
+U32   cos_mem_nalloc (void); // number of alloc modulo 2^32
+U32   cos_mem_nfree  (void); // number of free  modulo 2^32
+
+#ifndef COS_NOTRACEMEM
+#if COS_LOGMSG <= COS_LOGMSG_DEBUG
+
+#undef  malloc
+#define malloc(s)    cos_mem_malloc (s  , __FUNC__, __FILE__, __LINE__)
+#undef  calloc
+#define calloc(n,s)  cos_mem_calloc (n,s, __FUNC__, __FILE__, __LINE__)
+#undef  realloc
+#define realloc(p,s) cos_mem_realloc(p,s, __FUNC__, __FILE__, __LINE__)
+#undef  free
+#define free(p)      cos_mem_free   (p  , __FUNC__, __FILE__, __LINE__)
+
+#endif
+#endif
+
 /* NOTE-INFO: auto ctor
    the following function-like macro is useful to define automatic ctor
 */
-
 #define cos_object_auto(cls) \
   { COS_CLS_NAME(cls).Behavior.id, COS_RC_AUTO }
 
