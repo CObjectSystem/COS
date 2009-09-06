@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utest.h,v 1.4 2009/07/22 13:28:56 ldeniau Exp $
+ | $Id: utest.h,v 1.5 2009/09/06 18:42:26 ldeniau Exp $
  |
 */
 
@@ -60,7 +60,7 @@
     cos_stest_fini(_stst_info); \
   } while (0)
 
-#define KEEP_FAILED_MAX 10
+#define KEEP_FAILED_MAX 25
 
 struct cos_utest_info {
   int         keep_max;
