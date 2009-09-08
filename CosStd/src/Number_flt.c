@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.4 2009/09/08 00:49:44 ldeniau Exp $
+ | $Id: Number_flt.c,v 1.5 2009/09/08 10:54:28 ldeniau Exp $
  |
 */
 
@@ -54,19 +54,23 @@ useclass(Float, Complex);
 BOOL
 float_equalEps(F64 x, F64 y, F64 eps)
 {
-  if (x <= y && x >= y)
-    return YES;
-    
-  F64 ax = fabs(x);
-  F64 ay = fabs(y);
+  // absolute difference
+  F64 d = x-y;
   
-  return fabs(x-y) <= (ax > ay ? ax : ay) * eps;
+  if (d < 0) d = -d;
+  if (d < DBL_MIN) return YES;
+
+  // relative difference
+  if (x < 0) x = -x;
+  if (y < 0) y = -y;
+  
+  return d <= (x > y ? x : y) * eps;
 }
 
 BOOL
 float_equal(F64 x, F64 y)
 {
-  return float_equalEps(x, y, DBL_EPSILON);
+  return float_equalEps(x, y, 2*DBL_EPSILON);
 }
 
 F64
@@ -98,7 +102,7 @@ complex_equalEps(C64 x, C64 y, F64 eps)
 BOOL
 complex_equal(C64 x, C64 y)
 {
-  return complex_equalEps(x, y, DBL_EPSILON);
+  return complex_equalEps(x, y, 2*DBL_EPSILON);
 }
 
 C64
