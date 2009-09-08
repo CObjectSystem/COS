@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.5 2009/09/08 10:54:28 ldeniau Exp $
+ | $Id: Number_flt.c,v 1.6 2009/09/08 10:56:26 ldeniau Exp $
  |
 */
 
@@ -58,7 +58,7 @@ float_equalEps(F64 x, F64 y, F64 eps)
   F64 d = x-y;
   
   if (d < 0) d = -d;
-  if (d < DBL_MIN) return YES;
+  if (d < 2*DBL_MIN) return YES;
 
   // relative difference
   if (x < 0) x = -x;
