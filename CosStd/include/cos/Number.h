@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.14 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: Number.h,v 1.15 2009/09/08 00:49:43 ldeniau Exp $
  |
 */
 
@@ -98,11 +98,9 @@ defclass(Complex , Floating) C64 value; endclass
 
 // ---- float inliners
 
-static inline BOOL
-float_equal(F64 x, F64 y)
-{
-  return x <= y && x >= y;
-}
+F64  float_ipow    (F64,I32);
+BOOL float_equal   (F64,F64);
+BOOL float_equalEps(F64,F64,F64);
 
 static inline BOOL
 float_notEqual(F64 x, F64 y)
@@ -110,9 +108,17 @@ float_notEqual(F64 x, F64 y)
   return !float_equal(x,y);
 }
 
-F64 float_ipow(F64,I32);
+static inline BOOL
+float_notEqualEps(F64 x, F64 y, F64 e)
+{
+  return !float_equalEps(x,y,e);
+}
 
 // ---- complex inliners
+
+C64  complex_ipow    (C64,I32);
+BOOL complex_equal   (C64,C64);
+BOOL complex_equalEps(C64,C64,F64);
 
 static inline C64
 complex_make(F64 x, F64 y)
@@ -133,18 +139,15 @@ complex_imag(C64 x)
 }
 
 static inline BOOL
-complex_equal(C64 x, C64 y)
-{
-  return float_equal(complex_real(x), complex_real(y)) &&
-         float_equal(complex_imag(x), complex_imag(y));
-}
-
-static inline BOOL
 complex_notEqual(C64 x, C64 y)
 {
   return !complex_equal(x,y);
 }
 
-C64 complex_ipow(C64,I32);
+static inline BOOL
+complex_notEqualEps(C64 x, C64 y, F64 e)
+{
+  return !complex_equalEps(x,y,e);
+}
 
 #endif // COS_NUMBER_H

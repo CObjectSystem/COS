@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.16 2009/09/02 10:48:16 ldeniau Exp $
+ | $Id: Number.c,v 1.17 2009/09/08 00:49:44 ldeniau Exp $
  |
 */
 
@@ -329,38 +329,6 @@ DEFMETHOD(gmodulo, Long  , %=, Int    )
 DEFMETHOD(gmodulo, Long  , %=, Long   )
 
 // ----- power
-
-F64 float_ipow(F64 v, I32 n)
-{
-  F64 a = 1.0;
-  
-  if (n < 0) n = -n, v = 1.0/v;
-
-  for (;;) {
-    if (n  &  1) a *= v;
-
-    if (n >>= 1) v *= v;
-    else         break;
-  }
-
-  return v;
-}
-
-C64 complex_ipow(C64 v, I32 n)
-{
-  C64 a = 1.0;
-  
-  if (n < 0) n = -n, v = 1.0/v;
-
-  for (;;) {
-    if (n  &  1) a *= v;
-
-    if (n >>= 1) v *= v;
-    else         break;
-  }
-
-  return v;
-}
 
 defmethod(OBJ, gpower, Float, Int)
   self->value = float_ipow(self->value, self2->value);

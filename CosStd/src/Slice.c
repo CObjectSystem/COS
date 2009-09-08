@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.10 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: Slice.c,v 1.11 2009/09/08 00:49:44 ldeniau Exp $
  |
 */
 
@@ -45,6 +45,8 @@
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
+
+#include <cos/prp/object.h>
 
 makclass(Slice, ValueSequence);
 
@@ -76,6 +78,16 @@ endmethod
 
 defmethod(OBJ, gisEqual, Slice, Slice)
   retmethod( Slice_isEqual(self, self2) ? True : False );
+endmethod
+
+// ----- size
+
+#define size(siz) gautoDelete(aInt(siz))
+defproperty(Slice, size, size);
+#undef  size
+
+defmethod(U32, gsize, Slice)
+  retmethod(self->size);
 endmethod
 
 // ----- foreach

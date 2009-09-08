@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_xrange.c,v 1.1 2009/09/03 23:22:32 ldeniau Exp $
+ | $Id: ut_xrange.c,v 1.2 2009/09/08 00:49:44 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #include <cos/gen/compare.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
+#include <cos/gen/value.h>
 #include <cos/utest.h>
 
 #include "tests.h"
@@ -210,6 +211,8 @@ ut_xrange(void)
     UTEST( gisEqual(aXRange(0,2.1,..,10), aXRange(0,10,2.1)) == True );
     UTEST( gisEqual(aXRange(-1,-2.1,..,-10), aXRange(-1,-10,-1.1)) == True );
     UTEST( gisEqual(aXRange(1,-2.1,..,-10), aXRange(1,-10,-3.1)) == True );
+    UTEST( gisEqual(aXRange(0,0.1,..,0.4), aXRange(0,0.4,0.1)) == True );
+    UTEST( gsize(aXRange(0,0.1,..,0.4)) == 5);
 
     // xrange vs slice
     UTEST( eq(XRange_fromSlice(atSlice(-1,3,1)), atXRange(-1,1,1)) );

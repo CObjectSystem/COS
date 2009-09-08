@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.3 2009/09/02 12:09:49 ldeniau Exp $
+ | $Id: Number_flt.c,v 1.4 2009/09/08 00:49:44 ldeniau Exp $
  |
 */
 
@@ -42,11 +42,81 @@
 #include <cos/gen/new.h>
 
 #include <math.h>
+#include <float.h>
 #include <complex.h>
 
 // -----
 
 useclass(Float, Complex);
+
+// ----- float
+
+BOOL
+float_equalEps(F64 x, F64 y, F64 eps)
+{
+  if (x <= y && x >= y)
+    return YES;
+    
+  F64 ax = fabs(x);
+  F64 ay = fabs(y);
+  
+  return fabs(x-y) <= (ax > ay ? ax : ay) * eps;
+}
+
+BOOL
+float_equal(F64 x, F64 y)
+{
+  return float_equalEps(x, y, DBL_EPSILON);
+}
+
+F64
+float_ipow(F64 v, I32 n)
+{
+  F64 a = 1.0;
+  
+  if (n < 0) n = -n, v = 1.0/v;
+
+  for (;;) {
+    if (n  &  1) a *= v;
+
+    if (n >>= 1) v *= v;
+    else         break;
+  }
+
+  return v;
+}
+
+// ----- complex
+
+BOOL
+complex_equalEps(C64 x, C64 y, F64 eps)
+{
+  return float_equalEps(complex_real(x), complex_real(y), eps) &&
+         float_equalEps(complex_imag(x), complex_imag(y), eps);
+}
+
+BOOL
+complex_equal(C64 x, C64 y)
+{
+  return complex_equalEps(x, y, DBL_EPSILON);
+}
+
+C64
+complex_ipow(C64 v, I32 n)
+{
+  C64 a = 1.0;
+  
+  if (n < 0) n = -n, v = 1.0/v;
+
+  for (;;) {
+    if (n  &  1) a *= v;
+
+    if (n >>= 1) v *= v;
+    else         break;
+  }
+
+  return v;
+}
 
 // ----- absolute, conjugate and argument
 
@@ -196,9 +266,11 @@ defmethod(OBJ, gmulAdd, Float, Float, Complex)
 endmethod
 
 // use C99 fma
+#ifdef FP_FAST_FMA
 defmethod(OBJ, gmulAdd, Float, Float, Float)
   struct Float *flt = STATIC_CAST(struct Float*, galloc(Float));
   flt->value = fma(self->value,self2->value,self3->value);
   retmethod(gautoDelete( (OBJ)flt ));
 endmethod
+#endif
 

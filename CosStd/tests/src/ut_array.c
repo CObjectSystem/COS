@@ -29,12 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.4 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: ut_array.c,v 1.5 2009/09/08 00:49:44 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
 #include <cos/Number.h>
+#include <cos/XRange.h>
 #include <cos/gen/compare.h>
 #include <cos/gen/container.h>
 #include <cos/gen/object.h>
@@ -58,7 +59,10 @@ ut_array(void)
 {
   useproperty(size);
   useclass(Array, Array1, Array2, Array5, Array9, ArrayN);
+  useclass(AutoRelease);
+  
   OBJ buf[] = { aInt(0,1,2,3,4,5,6,7,8,9) };
+  OBJ pool = gnew(AutoRelease);
 
   UTEST_START("Array")
 
@@ -88,6 +92,46 @@ ut_array(void)
   UTEST(isEq(gnewWith(Array,aArrayRef(buf,9)) , aArray(aInt(0,1,2,3,4,5,6,7,8))));
   UTEST(isEq(gnewWith(Array,aArrayRef(buf,10)), aArray(aInt(0,1,2,3,4,5,6,7,8,9))));
 
+  // from slice
+  UTEST(isEq(gnewWith(Array,aSlice( 0, 1, 1)), aArray(aInt(0))));
+  UTEST(isEq(gnewWith(Array,aSlice(-1, 3, 1)), aArray(aInt(-1,0,1))));
+  UTEST(isEq(gnewWith(Array,aSlice( 0, 5, 1)), aArray(aInt(0,1,2,3,4))));
+  UTEST(isEq(gnewWith(Array,aSlice( 0, 9, 1)), aArray(aInt(0,1,2,3,4,5,6,7,8))));
+  UTEST(isEq(gnewWith(Array,aSlice( 0,10, 1)), aArray(aInt(0,1,2,3,4,5,6,7,8,9))));
+  UTEST(isEq(gnewWith(Array,aSlice( 0, 5, 2)), aArray(aInt(0,2,4,6,8))));
+  UTEST(isEq(gnewWith(Array,aSlice( 1, 5,-2)), aArray(aInt(1,-1,-3,-5,-7))));
+
+  // from range
+  UTEST(isEq(gnewWith(Array,aRange( 0, 0, 1)), aArray(aInt(0))));
+  UTEST(isEq(gnewWith(Array,aRange(-1, 1, 1)), aArray(aInt(-1,0,1))));
+  UTEST(isEq(gnewWith(Array,aRange( 0, 4, 1)), aArray(aInt(0,1,2,3,4))));
+  UTEST(isEq(gnewWith(Array,aRange( 0, 8, 1)), aArray(aInt(0,1,2,3,4,5,6,7,8))));
+  UTEST(isEq(gnewWith(Array,aRange( 0, 9, 1)), aArray(aInt(0,1,2,3,4,5,6,7,8,9))));
+  UTEST(isEq(gnewWith(Array,aRange( 0, 8, 2)), aArray(aInt(0,2,4,6,8))));
+  UTEST(isEq(gnewWith(Array,aRange( 1,-7,-2)), aArray(aInt(1,-1,-3,-5,-7))));
+
+  // from xrange
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 0, 1)), aArray(aInt(0))));
+  UTEST(isEq(gnewWith(Array,aXRange(-1, 1, 1)), aArray(aInt(-1,0,1))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 4, 1)), aArray(aInt(0,1,2,3,4))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 8, 1)), aArray(aInt(0,1,2,3,4,5,6,7,8))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 9, 1)), aArray(aInt(0,1,2,3,4,5,6,7,8,9))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 8, 2)), aArray(aInt(0,2,4,6,8))));
+  UTEST(isEq(gnewWith(Array,aXRange( 1,-7,-2)), aArray(aInt(1,-1,-3,-5,-7))));
+
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 0, 0)), aArray(aFlt(0))));
+  UTEST(isEq(gnewWith(Array,aXRange(-1, 1, 1)), aArray(aFlt(-1,0,1))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 3, 0.5)), aArray(aFlt(0,0.5,1,1.5,2,2.5,3))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0,0.5,..,3)), aArray(aFlt(0,0.5,1,1.5,2,2.5,3))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0,0.1,..,0.4)), aArray(aFlt(0,.1,.2,.3,.4))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0,0.4,0.1)), aArray(aFlt(0,.1,.2,.3,.4))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 8, 1)), aArray(aFlt(0,1,2,3,4,5,6,7,8))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 9, 1)), aArray(aFlt(0,1,2,3,4,5,6,7,8,9))));
+  UTEST(isEq(gnewWith(Array,aXRange( 0, 8, 2)), aArray(aFlt(0,2,4,6,8))));
+  UTEST(isEq(gnewWith(Array,aXRange( 1,-7,-2)), aArray(aFlt(1,-1,-3,-5,-7))));
+
   UTEST_END
+
+  gdelete(pool);
 }
 

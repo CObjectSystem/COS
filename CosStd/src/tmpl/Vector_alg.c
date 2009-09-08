@@ -29,54 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.6 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.7 2009/09/08 00:49:44 ldeniau Exp $
  |
 */
 
 #ifndef VECTOR_TMPL
 #error "this template file requires tmpl/Vector.c"
-#endif
-
-#if 0
-// ----- comparison
-
-#ifndef CPXVECTOR_ONLY
-
-defmethod(OBJ, gcompare, T, T)
-  if (self == self2)
-    retmethod(True);
-
-  VAL *val1   = self->valref;
-  I32  val1_s = self->stride;
-  VAL *val2   = self2->valref;
-  I32  val2_s = self2->stride;
-  VAL *end;
-  OBJ  res = Equal;
-
-  if (self->size <= self2->size) {
-    end = self->valref + self->size*self->stride;
-  
-    while (val1 != end) {
-      res = COMPARE(*val1,*val2);
-      if (res != Equal) break;
-      val1 += val1_s;
-      val2 += val2_s;
-    }
-  } else {
-    end = self2->valref + self2->size*self2->stride;
-  
-    while (val2 != end) {
-      res = COMPARE(*val1,*val2);
-      if (res != Equal) break;
-      val1 += val1_s;
-      val2 += val2_s;
-    }
-  }
-
-  retmethod(res);
-endmethod
-
-#endif
 #endif
 
 // ----- equality

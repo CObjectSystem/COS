@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.11 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: Range.c,v 1.12 2009/09/08 00:49:44 ldeniau Exp $
  |
 */
 
@@ -45,6 +45,8 @@
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
+
+#include <cos/prp/object.h>
 
 makclass(Range, ValueSequence);
 
@@ -76,6 +78,16 @@ endmethod
 
 defmethod(OBJ, gisEqual, Range, Range)
   retmethod( Range_isEqual(self, self2) ? True : False );
+endmethod
+
+// ----- size
+
+#define size(rng) gautoDelete(aInt(Range_size(rng)))
+defproperty(Range, ()size, size);
+#undef  size
+
+defmethod(U32, gsize, Range)
+  retmethod(Range_size(self));
 endmethod
 
 // ----- foreach
