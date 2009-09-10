@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.45 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.46 2009/09/10 21:38:24 ldeniau Exp $
  |
 */
 
@@ -234,7 +234,7 @@ defmethod(void,  grelease        , Object)
   }
 
   else
-  if (self->rc < COS_RC_STATIC)
+  if (self->rc < COS_RC_STATIC) // insensitive to STATIC and AUTO
     THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 

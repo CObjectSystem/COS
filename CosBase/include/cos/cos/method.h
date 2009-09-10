@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.32 2009/08/10 16:29:15 ldeniau Exp $
+ | $Id: method.h,v 1.33 2009/09/10 21:38:23 ldeniau Exp $
  |
 */
 
@@ -165,6 +165,9 @@ COS_CTR_BEGCTR
           COS_PP_FILTER((__VA_ARGS__),COS_PP_ISNTUPLE) )
 
 #define COS_MTH_DEFN_0(RET,NAME,PS,CS) \
+/* type check */ \
+COS_MTH_NXTTYPECHK(RET,NAME,PS,CS) \
+COS_MTH_NXTRETCHK (RET,NAME,   CS) \
 /* next_method definition */ \
 COS_MTH_NEXTDEF(RET,NAME,TAG,PS,CS,COS_PP_LEN(CS),0) \
 /* next_method classes */ \
@@ -206,6 +209,25 @@ extern RET (* \
   COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defmethod_vs_defgeneric) ) \
                                             COS_PP_MAP(PS,COS_SIG_GEN);
 
+// next-method type check
+#define COS_MTH_NXTTYPECHK(RET,NAME,PS,CS) \
+extern COS_GEN_TYPE(NAME) \
+  COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defnext_vs_defgeneric); \
+extern RET (* \
+  COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defnext_vs_defgeneric) ) \
+                                            COS_PP_MAP(PS,COS_SIG_GEN); \
+COS_UNUSED( \
+  COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defnext_vs_defgeneric));
+
+// next-method returned type check
+#define COS_MTH_NXTRETCHK(RET,NAME,CS) \
+extern _cos_mth_ret_t (* \
+  COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defnext_vs_defmethod) )(int); \
+extern RET (* \
+  COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defnext_vs_defmethod) )(int); \
+COS_UNUSED( \
+  COS_PP_CAT(COS_SYM_NAME(NAME,CS),__invalid_defnext_vs_defmethod));
+
 // component intantiation (see cos/cos/coscls.h)
 #define COS_MTH_COMPMAK(NAME,TAG,CS,C,T) \
 static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
@@ -233,6 +255,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
    void* const restrict _arg, void* const restrict _ret) \
 { \
   /* return and arguments type */ \
+  typedef COS_RET_TYPE(NAME) _cos_mth_ret_t; \
   typedef COS_RET_TYPE(NAME)* const restrict _ret_t; \
   typedef COS_ARG_TYPE(NAME)* const restrict _arg_t; \
   /* selfs types (i.e. selfn_t) */ \

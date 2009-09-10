@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: new.h,v 1.1 2009/08/07 10:53:52 ldeniau Exp $
+ | $Id: new.h,v 1.2 2009/09/10 21:38:24 ldeniau Exp $
  |
 */
 
@@ -55,13 +55,13 @@ defgeneric(OBJ, gnewWithLng , _1, (I64)val);
 defgeneric(OBJ, gnewWithFlt , _1, (F64)val);
 defgeneric(OBJ, gnewWithCpx , _1, (C64)val);
 
-defgeneric(OBJ, gnewWithChrPtr , _1, (I8  *)ref, (U32)n);
-defgeneric(OBJ, gnewWithShtPtr , _1, (I16 *)ref, (U32)n);
-defgeneric(OBJ, gnewWithIntPtr , _1, (I32 *)ref, (U32)n);
-defgeneric(OBJ, gnewWithLngPtr , _1, (I64 *)ref, (U32)n);
-defgeneric(OBJ, gnewWithFltPtr , _1, (F64 *)ref, (U32)n);
-defgeneric(OBJ, gnewWithCpxPtr , _1, (C64 *)ref, (U32)n);
-defgeneric(OBJ, gnewWithObjPtr , _1, (OBJ *)ref, (U32)n);
-defgeneric(OBJ, gnewWithVoidPtr, _1, (void*)ref, (U32)n, (size_t)esize);
+defgeneric(OBJ, gnewWithChrPtr , _1, (I8  *)ref, (U32)n, (I32)s);
+defgeneric(OBJ, gnewWithShtPtr , _1, (I16 *)ref, (U32)n, (I32)s);
+defgeneric(OBJ, gnewWithIntPtr , _1, (I32 *)ref, (U32)n, (I32)s);
+defgeneric(OBJ, gnewWithLngPtr , _1, (I64 *)ref, (U32)n, (I32)s);
+defgeneric(OBJ, gnewWithFltPtr , _1, (F64 *)ref, (U32)n, (I32)s);
+defgeneric(OBJ, gnewWithCpxPtr , _1, (C64 *)ref, (U32)n, (I32)s);
+defgeneric(OBJ, gnewWithObjPtr , _1, (OBJ *)ref, (U32)n, (I32)s);
+defgeneric(OBJ, gnewWithVoidPtr, _1, (void*)ref, (U32)n, (I32)s, (size_t)esize);
 
 #endif // COS_GEN_NEW_H
