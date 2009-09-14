@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.7 2009/09/08 00:49:44 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.8 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -46,16 +46,17 @@ defmethod(OBJ, gisEqual, T, T)
   if (self->size != self2->size)
     retmethod(False);
 
-  VAL *val1   = self->valref;
-  I32  val1_s = self->stride;
-  VAL *end    = self->valref + self->size*self->stride;
-  VAL *val2   = self2->valref;
+  U32  size   = self->size;
+  I32  val_s  = self->stride;
+  VAL *val    = self->valref;
   I32  val2_s = self2->stride;
+  VAL *val2   = self2->valref;
+  VAL *end    = val + val_s*size;
   
-  while (val1 != end) {
-    if (EQUAL(*val1,*val2) != True)
+  while (val != end) {
+    if (EQUAL(*val,*val2) != True)
       retmethod(False);
-    val1 += val1_s;
+    val  += val_s;
     val2 += val2_s;
   }
 
@@ -68,9 +69,10 @@ defmethod(void, greverse, T)
   if (self->size < 2)
     retmethod();
 
-  VAL *val   = self->valref;
+  U32  size  = self->size;
   I32  val_s = self->stride;
-  VAL *end   = self->valref + (self->size-1)*self->stride;
+  VAL *val   = self->valref;
+  VAL *end   = val + val_s*(size-1);
 
   if (val_s > 0)
     while (val < end) {
@@ -94,24 +96,24 @@ defmethod(void, gpermute, T, IntVector)
     if (self->size < 2)
       retmethod();
 
-    VAL *val   = self->valref;
-    U32  val_n = self->size;
+    U32  size  = self->size;
     I32  val_s = self->stride;
-    I32 *idx   = self2->value;
+    VAL *val   = self->valref;
     I32  idx_s = self2->stride;
+    I32 *idx   = self2->value;
 
-    TMPARRAY_CREATE(VAL,buf,val_n); // VAL buf[val_n];
-    TMPARRAY_CREATE(U8 ,flg,val_n); // U8  flg[val_n];
+    TMPARRAY_CREATE(VAL,buf,size); // VAL buf[size];
+    TMPARRAY_CREATE(U8 ,flg,size); // U8  flg[size];
 
-    memset(flg,1,val_n);
+    memset(flg,1,size);
 
-    VAL *cur, *end = buf + val_n;
+    VAL *cur, *end = buf + size;
     U32  i = 0;
 
     // permute
     for (cur = buf; cur != end; cur++) {
-      i = Range_index(*idx, val_n);
-      if ( !(i < val_n && flg[i]) ) break;
+      i = Range_index(*idx, size);
+      if ( !(i < size && flg[i]) ) break;
       *cur = val[i*val_s], flg[i] = 0;
        idx += idx_s;
     }
@@ -125,11 +127,11 @@ defmethod(void, gpermute, T, IntVector)
       TMPARRAY_DESTROY(flg);
     } else {
       // rollback (error)
-      BOOL iiir = i < val_n; // last index-is-in-range flag
+      BOOL iiir = i < size; // last index-is-in-range flag
 
       while (cur != buf) {
         idx -= idx_s;
-        i = Range_index(*idx, val_n);
+        i = Range_index(*idx, size);
         val[i*val_s] = *--cur;
       }
 
@@ -150,259 +152,170 @@ endmethod
 
 defmethod(OBJ, gzip, T, T)
   U32 size = self->size < self2->size ? self->size : self2->size;
-
   struct T* vec = T_alloc(2*size);
-  OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
-  VAL *dst    = vec->valref;
-  VAL *end    = vec->valref + vec->size;
-  VAL *src1   = self->valref; 
-  I32  src1_s = self->stride;
-  VAL *src2   = self2->valref;
+  I32  src_s  = self->stride;
+  VAL *src    = self->valref; 
   I32  src2_s = self2->stride;
+  VAL *src2   = self2->valref;
+  U32 *dst_n  = &vec->size;
+  VAL *dst    = vec->valref;
+  VAL *end    = dst + 2*size;
 
   while (dst != end) {
-    *dst++ = RETAIN(*src1), src1 += src1_s;
-    *dst++ = RETAIN(*src2), src2 += src2_s;
+    *dst++ = RETAIN(*src ), ++*dst_n, src  += src_s;
+    *dst++ = RETAIN(*src2), ++*dst_n, src2 += src2_s;
   }
 
-  UNPROTECT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gzip3, T, T, T)
   U32 size = self->size < self2->size ? self->size : self2->size;
-  if (size > self3->size) size = self3->size;
-
+      size = self3->size < size ? self3->size : size;
   struct T* vec = T_alloc(3*size);
-  OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
-  VAL *dst    = vec->valref;
-  VAL *end    = vec->valref + vec->size;
-  VAL *src1   = self->valref; 
-  I32  src1_s = self->stride;
-  VAL *src2   = self2->valref;
+  I32  src_s  = self->stride;
+  VAL *src    = self->valref; 
   I32  src2_s = self2->stride;
-  VAL *src3   = self3->valref;
+  VAL *src2   = self2->valref;
   I32  src3_s = self3->stride;
+  VAL *src3   = self3->valref;
+  U32 *dst_n  = &vec->size;
+  VAL *dst    = vec->valref;
+  VAL *end    = dst + 3*size;
 
   while (dst != end) {
-    *dst++ = RETAIN(*src1), src1 += src1_s;
-    *dst++ = RETAIN(*src2), src2 += src2_s;
-    *dst++ = RETAIN(*src3), src3 += src3_s;
+    *dst++ = RETAIN(*src ), ++*dst_n, src  += src_s;
+    *dst++ = RETAIN(*src2), ++*dst_n, src2 += src2_s;
+    *dst++ = RETAIN(*src3), ++*dst_n, src3 += src3_s;
   }
 
-  UNPROTECT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gzip4, T, T, T, T)
   U32 size = self->size < self2->size ? self->size : self2->size;
-  if (size > self3->size) size = self3->size;
-  if (size > self4->size) size = self4->size;
-
+      size = self3->size < size ? self3->size : size;
+      size = self4->size < size ? self4->size : size;
   struct T* vec = T_alloc(4*size);
-  OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
-  VAL *dst    = vec->valref;
-  VAL *end    = vec->valref + vec->size;
-  VAL *src1   = self->valref; 
-  I32  src1_s = self->stride;
-  VAL *src2   = self2->valref;
+  I32  src_s  = self->stride;
+  VAL *src    = self->valref; 
   I32  src2_s = self2->stride;
-  VAL *src3   = self3->valref;
+  VAL *src2   = self2->valref;
   I32  src3_s = self3->stride;
-  VAL *src4   = self4->valref;
+  VAL *src3   = self3->valref;
   I32  src4_s = self4->stride;
+  VAL *src4   = self4->valref;
+  U32 *dst_n  = &vec->size;
+  VAL *dst    = vec->valref;
+  VAL *end    = dst + 4*size;
 
   while (dst != end) {
-    *dst++ = RETAIN(*src1), src1 += src1_s;
-    *dst++ = RETAIN(*src2), src2 += src2_s;
-    *dst++ = RETAIN(*src3), src3 += src3_s;
-    *dst++ = RETAIN(*src4), src4 += src4_s;
+    *dst++ = RETAIN(*src ), ++*dst_n, src  += src_s;
+    *dst++ = RETAIN(*src2), ++*dst_n, src2 += src2_s;
+    *dst++ = RETAIN(*src3), ++*dst_n, src3 += src3_s;
+    *dst++ = RETAIN(*src4), ++*dst_n, src4 += src4_s;
   }
 
-  UNPROTECT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gzip5, T, T, T, T, T)
   U32 size = self->size < self2->size ? self->size : self2->size;
-  if (size > self3->size) size = self3->size;
-  if (size > self4->size) size = self4->size;
-  if (size > self5->size) size = self5->size;
-
+      size = self3->size < size ? self3->size : size;
+      size = self4->size < size ? self4->size : size;
+      size = self5->size < size ? self5->size : size;
   struct T* vec = T_alloc(5*size);
-  OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
-  VAL *dst    = vec->valref;
-  VAL *end    = vec->valref + vec->size;
-  VAL *src1   = self->valref; 
-  I32  src1_s = self->stride;
-  VAL *src2   = self2->valref;
+  I32  src_s  = self->stride;
+  VAL *src    = self->valref; 
   I32  src2_s = self2->stride;
-  VAL *src3   = self3->valref;
+  VAL *src2   = self2->valref;
   I32  src3_s = self3->stride;
-  VAL *src4   = self4->valref;
+  VAL *src3   = self3->valref;
   I32  src4_s = self4->stride;
-  VAL *src5   = self5->valref;
+  VAL *src4   = self4->valref;
   I32  src5_s = self5->stride;
+  VAL *src5   = self5->valref;
+  U32 *dst_n  = &vec->size;
+  VAL *dst    = vec->valref;
+  VAL *end    = dst + 5*size;
 
   while (dst != end) {
-    *dst++ = RETAIN(*src1), src1 += src1_s;
-    *dst++ = RETAIN(*src2), src2 += src2_s;
-    *dst++ = RETAIN(*src3), src3 += src3_s;
-    *dst++ = RETAIN(*src4), src4 += src4_s;
-    *dst++ = RETAIN(*src5), src5 += src5_s;
+    *dst++ = RETAIN(*src ), ++*dst_n, src  += src_s;
+    *dst++ = RETAIN(*src2), ++*dst_n, src2 += src2_s;
+    *dst++ = RETAIN(*src3), ++*dst_n, src3 += src3_s;
+    *dst++ = RETAIN(*src4), ++*dst_n, src4 += src4_s;
+    *dst++ = RETAIN(*src5), ++*dst_n, src5 += src5_s;
   }
 
-  UNPROTECT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- cat, cat3, cat4, cat5
 
 defmethod(OBJ, gcat, T, T)
   U32 size = self->size + self2->size;
-
   struct T *vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
-  VAL *dst   = vec->valref;
-  VAL *end   = vec->valref + self->size;
-  VAL *src   = self->valref;
-  I32  src_s = self->stride;
+  VAL *dst = vec->valref;
 
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-  
-  end  += self2->size;
-  src   = self2->valref;
-  src_s = self2->stride;
-  
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
+  dst = copy(dst,&vec->size,self ->valref,self ->stride,self ->size);
+        copy(dst,&vec->size,self2->valref,self2->stride,self2->size);
 
-  UNPROTECT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gcat3, T, T, T)
   U32 size = self->size + self2->size + self3->size;
-
   struct T *vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
-  VAL *dst   = vec->valref;
-  VAL *end   = vec->valref + self->size;
-  VAL *src   = self->valref;
-  I32  src_s = self->stride;
+  VAL *dst = vec->valref;
 
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-  
-  end  += self2->size;
-  src   = self2->valref;
-  src_s = self2->stride;
-  
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
+  dst = copy(dst,&vec->size,self ->valref,self ->stride,self ->size);
+  dst = copy(dst,&vec->size,self2->valref,self2->stride,self2->size);
+        copy(dst,&vec->size,self3->valref,self3->stride,self3->size);
 
-  end  += self3->size;
-  src   = self3->valref;
-  src_s = self3->stride;
-  
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-
-  UNPROTECT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gcat4, T, T, T, T)
   U32 size = self->size + self2->size + self3->size + self4->size;
-
   struct T *vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
-  VAL *dst   = vec->valref;
-  VAL *end   = vec->valref + self->size;
-  VAL *src   = self->valref;
-  I32  src_s = self->stride;
+  VAL *dst = vec->valref;
 
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-  
-  end  += self2->size;
-  src   = self2->valref;
-  src_s = self2->stride;
+  dst = copy(dst,&vec->size,self ->valref,self ->stride,self ->size);
+  dst = copy(dst,&vec->size,self2->valref,self2->stride,self2->size);
+  dst = copy(dst,&vec->size,self3->valref,self3->stride,self3->size);
+        copy(dst,&vec->size,self4->valref,self4->stride,self4->size);
 
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-
-  end  += self3->size;
-  src   = self3->valref;
-  src_s = self3->stride;
-  
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-
-  end  += self4->size;
-  src   = self4->valref;
-  src_s = self4->stride;
-  
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-
-  UNPROTECT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gcat5, T, T, T, T, T)
-  U32 size = self->size + self2->size +
-             self3->size + self4->size + self5->size;
-
+  U32 size = self->size + self2->size + self3->size + self4->size + self5->size;
   struct T *vec = T_alloc(size);
-  OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  OBJ _vec = gautoDelete( (OBJ)vec );
 
-  VAL *dst   = vec->valref;
-  VAL *end   = vec->valref + self->size;
-  VAL *src   = self->valref;
-  I32  src_s = self->stride;
+  VAL *dst = vec->valref;
 
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-  
-  end  += self2->size;
-  src   = self2->valref;
-  src_s = self2->stride;
+  dst = copy(dst,&vec->size,self ->valref,self ->stride,self ->size);
+  dst = copy(dst,&vec->size,self2->valref,self2->stride,self2->size);
+  dst = copy(dst,&vec->size,self3->valref,self3->stride,self3->size);
+  dst = copy(dst,&vec->size,self4->valref,self4->stride,self4->size);
+        copy(dst,&vec->size,self5->valref,self5->stride,self5->size);
 
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-
-  end  += self3->size;
-  src   = self3->valref;
-  src_s = self3->stride;
-  
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-
-  end  += self4->size;
-  src   = self4->valref;
-  src_s = self4->stride;
-  
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-
-  end  += self5->size;
-  src   = self5->valref;
-  src_s = self5->stride;
-  
-  while (dst != end)
-    *dst++ = RETAIN(*src), src += src_s;
-
-  UNPROTECT(_vec);
-  retmethod(gautoDelete(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- search (object)
@@ -412,7 +325,7 @@ findVal(VAL *val, U32 val_n, I32 val_s, VAL _2)
 {
   if (!val_n) return 0;
 
-  VAL *end = val + val_n*val_s;
+  VAL *end = val + val_s*val_n;
 
   while (val != end) {
     if (EQUAL(*val, _2) == True)
@@ -424,9 +337,9 @@ findVal(VAL *val, U32 val_n, I32 val_s, VAL _2)
 }
 
 defmethod(OBJ, gfind, T, Object)
-  VAL *val   = self->valref;
   U32  val_n = self->size;
   I32  val_s = self->stride;
+  VAL *val   = self->valref;
 
   VAL *p = findVal(val,val_n,val_s,TOVAL(_2));
 
@@ -434,9 +347,9 @@ defmethod(OBJ, gfind, T, Object)
 endmethod
 
 defmethod(OBJ, gifind, T, Object)
-  VAL *val   = self->valref;
   U32  val_n = self->size;
   I32  val_s = self->stride;
+  VAL *val   = self->valref;
 
   VAL *p = findVal(val,val_n,val_s,TOVAL(_2));
 
@@ -484,7 +397,7 @@ KnuthMorrisPratt(VAL *val, U32 val_n, I32 val_s, VAL *pat, I32 pat_n, I32 pat_s)
   }
 
   TMPARRAY_DESTROY(kmpNext);
-  return 0;
+  return 0; // not found
 }
 
 // -- find front-end
@@ -492,7 +405,7 @@ KnuthMorrisPratt(VAL *val, U32 val_n, I32 val_s, VAL *pat, I32 pat_n, I32 pat_s)
 static VAL*
 findSub(VAL *val, U32 val_n, I32 val_s, VAL *pat, U32 pat_n, I32 pat_s)
 {
-  // string too short
+  // subvector is too short
   if (val_n < pat_n) return 0;
 
   // empty pattern
@@ -512,9 +425,9 @@ findSub(VAL *val, U32 val_n, I32 val_s, VAL *pat, U32 pat_n, I32 pat_s)
 // -- find methods
 
 defmethod(OBJ, gfind, T, T)
-  VAL *val   = self->valref;
   U32  val_n = self->size;
   I32  val_s = self->stride;
+  VAL *val   = self->valref;
 
   VAL *p = findSub(val,val_n,val_s,self2->valref,self2->size,self2->stride);
   if (!p) retmethod(Nil);
@@ -524,9 +437,9 @@ defmethod(OBJ, gfind, T, T)
 endmethod
 
 defmethod(OBJ, gifind, T, T)
-  VAL *val   = self->valref;
   U32  val_n = self->size;
   I32  val_s = self->stride;
+  VAL *val   = self->valref;
 
   VAL *p = findSub(val,val_n,val_s,self2->valref,self2->size,self2->stride);
   if (!p) retmethod(Nil);

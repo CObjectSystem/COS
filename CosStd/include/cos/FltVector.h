@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.h,v 1.7 2009/09/04 12:09:17 ldeniau Exp $
+ | $Id: FltVector.h,v 1.8 2009/09/14 13:35:13 ldeniau Exp $
  |
 */
 
@@ -116,7 +116,7 @@ struct FltVector* FltVectorView_init(struct FltVectorView*, struct FltVector*,
 // ----- automatic constructors
 
 #define atFltVector(...)                 atVector    (Flt,F64,__VA_ARGS__)
-#define atFltVectorRef(buffer,size)      atVectorRef (Flt,buffer,size)
+#define atFltVectorRef(...)              atVectorRef (Flt,    __VA_ARGS__)
 #define atFltVectorView(vector,slice)    atVectorView(Flt,vector,slice,0)
 #define atFltVectorSubView(vector,slice) atVectorView(Flt,vector,slice,1)
 

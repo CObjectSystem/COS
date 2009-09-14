@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.h,v 1.9 2009/09/04 12:09:17 ldeniau Exp $
+ | $Id: IntVector.h,v 1.10 2009/09/14 13:35:13 ldeniau Exp $
  |
 */
 
@@ -116,7 +116,7 @@ struct IntVector* IntVectorView_init(struct IntVectorView*, struct IntVector*,
 // ----- automatic constructors
 
 #define atIntVector(...)                 atVector    (Int,I32,__VA_ARGS__)
-#define atIntVectorRef(buffer,size)      atVectorRef (Int,buffer,size)
+#define atIntVectorRef(...)              atVectorRef (Int,    __VA_ARGS__)
 #define atIntVectorView(vector,slice)    atVectorView(Int,vector,slice,0)
 #define atIntVectorSubView(vector,slice) atVectorView(Int,vector,slice,1)
 

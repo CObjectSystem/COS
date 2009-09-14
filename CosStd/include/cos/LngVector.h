@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.h,v 1.8 2009/09/04 12:09:17 ldeniau Exp $
+ | $Id: LngVector.h,v 1.9 2009/09/14 13:35:13 ldeniau Exp $
  |
 */
 
@@ -116,7 +116,7 @@ struct LngVector* LngVectorView_init(struct LngVectorView*, struct LngVector*,
 // ----- automatic constructors
 
 #define atLngVector(...)                 atVector    (Lng,I64,__VA_ARGS__)
-#define atLngVectorRef(buffer,size)      atVectorRef (Lng,buffer,size)
+#define atLngVectorRef(...)              atVectorRef (Lng,    __VA_ARGS__)
 #define atLngVectorView(vector,slice)    atVectorView(Lng,vector,slice,0)
 #define atLngVectorSubView(vector,slice) atVectorView(Lng,vector,slice,1)
 

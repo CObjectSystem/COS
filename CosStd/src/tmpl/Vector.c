@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.5 2009/09/04 10:22:36 ldeniau Exp $
+ | $Id: Vector.c,v 1.6 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -131,26 +131,23 @@ T_alloc(U32 size)
   struct T  *vec  = &vecn->T;
 
   vec->valref = vecn->_valref;
-  vec->size   = size;
+  vec->size   = 0;
   vec->stride = 1;
 
-#ifdef ARRAY_ONLY
-  memset(vec->valref, 0, size*sizeof(VAL));
-#endif
   return vec;
 }
 
 // --- copy
 
-static inline void
-copy(VAL *dst, U32 dst_n, VAL *src, I32 src_s)
+static inline VAL*
+copy(VAL *dst, U32 *dst_n, VAL *src, I32 src_s, U32 src_n)
 {
-  VAL *end = dst + dst_n;
+  VAL *end = dst + src_n;
 
-  while (dst != end) {
-    *dst++ = RETAIN(*src);
-    src += src_s;
-  }
+  while (dst != end)
+    *dst++ = RETAIN(*src), ++*dst_n, src += src_s;
+
+  return dst;
 }
 
 // ----- allocator
@@ -159,34 +156,26 @@ defmethod(OBJ, galloc, TP) // lazy alloc
   retmethod(_1);
 endmethod
 
-// ----- initializers
-
-defmethod(OBJ, ginitWith, T, T) // copy
-  PRE
-    test_assert(self->size == self2->size, "incompatible " TS "sizes");
-    
-  POST
-    // automatically trigger ginvariant
-
-  BODY
-    copy(self->valref,self->size,self2->valref,self2->stride);
-    
-    retmethod(_1);
-endmethod
-
 // ----- constructors
+
+defmethod(OBJ, gclone, T) // clone
+  PRE POST BODY
+    struct T* vec = T_alloc(self->size);
+    OBJ _vec = (OBJ)vec; PROTECT(_vec);
+
+    copy(vec->valref,&vec->size,self->valref,self->stride,self->size);
+
+    UNPROTECT(_vec);
+    retmethod(_vec);
+endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, TP, T);
 defmethod(OBJ,  ginitWith         , TP, T) // clone
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
+  PRE POST BODY
     struct T* vec = T_alloc(self2->size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
 
-    copy(vec->valref,vec->size,self2->valref,self2->stride);
+    copy(vec->valref,&vec->size,self2->valref,self2->stride,self2->size);
 
     UNPROTECT(_vec);
     retmethod(_vec);
@@ -194,18 +183,16 @@ endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, TP, Slice);
 defmethod(OBJ,  ginitWith         , TP, Slice) // Int sequence
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
+  PRE POST BODY
     U32 size = Slice_size(self2);
     
     struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
   
-    for (U32 i = 0; i < size; i++)
+    for (U32 i = 0; i < size; i++) {
       vec->valref[i] = RETAIN(VALINT(Slice_eval(self2,i)));
+      vec->size++;
+    }
 
     UNPROTECT(_vec);
     retmethod(_vec);
@@ -213,18 +200,16 @@ endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, TP, Range);
 defmethod(OBJ,  ginitWith         , TP, Range) // Int sequence
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
+  PRE POST BODY
     U32 size = Range_size(self2);
     
     struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
   
-    for (U32 i = 0; i < size; i++)
+    for (U32 i = 0; i < size; i++) {
       vec->valref[i] = RETAIN(VALINT(Range_eval(self2,i)));
+      vec->size++;
+    }
 
     UNPROTECT(_vec);
     retmethod(_vec);
@@ -232,19 +217,17 @@ endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, TP, XRange);
 defmethod(OBJ,  ginitWith         , TP, XRange) // Float sequence
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
+  PRE POST BODY
     U32 size = XRange_size(self2);
-    
+
     struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
   
-    for (U32 i = 0; i < size; i++)
+    for (U32 i = 0; i < size; i++) {
       vec->valref[i] = RETAIN(VALFLT(XRange_eval(self2,i)));
-
+      vec->size++;
+    }
+    
     UNPROTECT(_vec);
     retmethod(_vec);
 endmethod
@@ -253,21 +236,20 @@ defalias (OBJ, (ginitWith2)gnewWith2, TP, Int, Object);
 defmethod(OBJ,  ginitWith2          , TP, Int, Object) // element
   PRE
     test_assert(self2->value >= 0, "negative " TS " size");
-
   POST
-    // automatically trigger ginvariant
-
   BODY
     VAL val = TOVAL(_3);
-
-    struct T* vec = T_alloc(self2->value);
+    U32 size = self2->value;
+    
+    struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
 
-    VAL *dst = vec->valref;
-    VAL *end = vec->valref + vec->size;
+    U32 *dst_n = &vec->size;
+    VAL *dst   = vec->valref;
+    VAL *end   = dst + size;
 
     while (dst != end)
-      *dst++ = RETAIN(val);
+      *dst++ = RETAIN(val), ++*dst_n;
 
     UNPROTECT(_vec);
     retmethod(_vec);
@@ -277,25 +259,29 @@ defalias (OBJ, (ginitWith2)gnewWith2, TP, Int, Functor);
 defmethod(OBJ,  ginitWith2          , TP, Int, Functor) // generator
   PRE
     test_assert(self2->value >= 0, "negative " TS " size");
-
   POST
-    // automatically trigger ginvariant
-
   BODY
-    struct T* vec = T_alloc(self2->value);
+    U32 size = self2->value;
+    struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PRT(_vec);
 
-    VAL *dst = vec->valref;
-    VAL *end = vec->valref + vec->size;
-    int argc = garity(_3);
+    U32 *dst_n = &vec->size;
+    VAL *dst   = vec->valref;
+    VAL *end   = dst + size;
+    int argc   = garity(_3);
+    OBJ res;
 
     if (!argc)
-      while (dst != end)
-        *dst++ = RETAIN(TOVAL(geval(_3)));
+      while (dst != end) {
+        res = geval(_3);
+        *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
+      }
 
     else
-      for (I32 i = 0; dst != end; i++)
-        *dst++ = RETAIN(TOVAL(geval1(_3, aInt(i))));
+      for (I32 i = 0; dst != end; i++) {
+        res = geval1(_3, aInt(i));
+        *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
+      }
 
     UNPRT(_vec);
     retmethod(_vec);
@@ -306,18 +292,15 @@ defmethod(OBJ,  ginitWith2          , TP, T, Slice) // sub vector
   PRE
     test_assert( Slice_first(self3) < self2->size &&
                  Slice_last (self3) < self2->size, "slice out of range" );
-
   POST
-    // automatically trigger ginvariant
-
   BODY
     I32 start  = Slice_start (self3)*self2->stride;
     I32 stride = Slice_stride(self3)*self2->stride;
-
-    struct T* vec = T_alloc(self3->size);
+    U32 size   = self3->size;
+    struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PROTECT(_vec);
 
-    copy(vec->valref,vec->size,self2->valref+start,stride);
+    copy(vec->valref,&vec->size,self2->valref+start,stride,size);
 
     UNPROTECT(_vec);
     retmethod(_vec);
@@ -333,26 +316,24 @@ endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, T, IntVector);
 defmethod(OBJ,  ginitWith2          , TP, T, IntVector) // random sequence
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
-    struct T* vec = T_alloc(self3->size);
+  PRE POST BODY
+    U32 size = self3->size;
+    struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PRT(_vec);
 
-    VAL *dst   = vec->valref;
-    VAL *end   = vec->valref + vec->size;
-    VAL *src   = self2->valref;
-    U32  src_n = self2->size;
-    I32  src_s = self2->stride;
-    I32 *idx   = self3->value;
+    U32  val_n = self2->size;
+    I32  val_s = self2->stride;
+    VAL *val   = self2->valref;
     I32  idx_s = self3->stride;
+    I32 *idx   = self3->value;
+    U32 *dst_n = &vec->size;
+    VAL *dst   = vec->valref;
+    VAL *end   = dst + size;
 
     while (dst != end) {
-      U32 i = Range_index(*idx, src_n);
-      test_assert( i < src_n, "index out of range" );
-      *dst++ = RETAIN(src[i*src_s]);
+      U32 i = Range_index(*idx, val_n);
+      test_assert( i < val_n, "index out of range" );
+      *dst++ = RETAIN(val[i*val_s]), ++*dst_n;
       idx += idx_s;
     }
 
@@ -365,13 +346,12 @@ endmethod
 #ifdef ARRAY_ONLY
 
 defmethod(OBJ, gdeinit, T)
-  VAL *val = self->valref;
-  VAL *end = self->valref + self->size;
+  U32 *val_n = &self->size;
+  VAL *val   = self->valref;
+  VAL *end   = val + *val_n;
 
-  while (val != end) { // take care of protection cases
-    if (*val) RELEASE(*val);
-    ++val;
-  }
+  while (val != end)
+    --end, RELEASE(*end), --*val_n;
 
   retmethod(_1);
 endmethod
@@ -383,9 +363,10 @@ endmethod
 #ifdef ARRAY_ONLY
 
 defmethod(void, ginvariant, T, (STR)func, (STR)file, (int)line)
-  VAL *val   = self->valref;
-  VAL *end   = self->valref + self->size*self->stride;
+  U32  size  = self->size;
   I32  val_s = self->stride;
+  VAL *val   = self->valref;
+  VAL *end   = val + val_s*size;
 
   while (val != end && *val)
     val += val_s;
@@ -398,44 +379,44 @@ endmethod
 // ----- constructors from C array
 
 #ifdef CHRVECTOR_ONLY
-defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, TP, (I8*)ref, (U32)n);
-defmethod(OBJ,  ginitWithChrPtr               , TP, (I8*)ref, (U32)n)
-  retmethod( ginitWith(_1, aChrVectorRef(ref,n)) );
+defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, TP, (I8*)ref, (U32)n, (I32)s);
+defmethod(OBJ,  ginitWithChrPtr               , TP, (I8*)ref, (U32)n, (I32)s)
+  retmethod( gclone(aChrVectorRef(ref,n,s)) );
 endmethod
 #endif
 
 #ifdef SHTVECTOR_ONLY
-defalias (OBJ, (ginitWithShtPtr)gnewWithShtPtr, TP, (I16*)ref, (U32)n);
-defmethod(OBJ,  ginitWithShtPtr               , TP, (I16*)ref, (U32)n)
-  retmethod( ginitWith(_1, aShtVectorRef(ref,n)) );
+defalias (OBJ, (ginitWithShtPtr)gnewWithShtPtr, TP, (I16*)ref, (U32)n, (I32)s);
+defmethod(OBJ,  ginitWithShtPtr               , TP, (I16*)ref, (U32)n, (I32)s)
+  retmethod( gclone(aShtVectorRef(ref,n,s)) );
 endmethod
 #endif
 
 #ifdef INTVECTOR_ONLY
-defalias (OBJ, (ginitWithIntPtr)gnewWithIntPtr, TP, (I32*)ref, (U32)n);
-defmethod(OBJ,  ginitWithIntPtr               , TP, (I32*)ref, (U32)n)
-  retmethod( ginitWith(_1, aIntVectorRef(ref,n)) );
+defalias (OBJ, (ginitWithIntPtr)gnewWithIntPtr, TP, (I32*)ref, (U32)n, (I32)s);
+defmethod(OBJ,  ginitWithIntPtr               , TP, (I32*)ref, (U32)n, (I32)s)
+  retmethod( gclone(aIntVectorRef(ref,n,s)) );
 endmethod
 #endif
 
 #ifdef LNGVECTOR_ONLY
-defalias (OBJ, (ginitWithLngPtr)gnewWithLngPtr, TP, (I64*)ref, (U32)n);
-defmethod(OBJ,  ginitWithLngPtr               , TP, (I64*)ref, (U32)n)
-  retmethod( ginitWith(_1, aLngVectorRef(ref,n)) );
+defalias (OBJ, (ginitWithLngPtr)gnewWithLngPtr, TP, (I64*)ref, (U32)n, (I32)s);
+defmethod(OBJ,  ginitWithLngPtr               , TP, (I64*)ref, (U32)n, (I32)s)
+  retmethod( gclone(aLngVectorRef(ref,n,s)) );
 endmethod
 #endif
 
 #ifdef FLTVECTOR_ONLY
-defalias (OBJ, (ginitWithFltPtr)gnewWithFltPtr, TP, (F64*)ref, (U32)n);
-defmethod(OBJ,  ginitWithFltPtr               , TP, (F64*)ref, (U32)n)
-  retmethod( ginitWith(_1, aFltVectorRef(ref,n)) );
+defalias (OBJ, (ginitWithFltPtr)gnewWithFltPtr, TP, (F64*)ref, (U32)n, (I32)s);
+defmethod(OBJ,  ginitWithFltPtr               , TP, (F64*)ref, (U32)n, (I32)s)
+  retmethod( gclone(aFltVectorRef(ref,n,s)) );
 endmethod
 #endif
 
 #ifdef CPXVECTOR_ONLY
-defalias (OBJ, (ginitWithCpxPtr)gnewWithCpxPtr, TP, (C64*)ref, (U32)n);
-defmethod(OBJ,  ginitWithCpxPtr               , TP, (C64*)ref, (U32)n)
-  retmethod( ginitWith(_1, aCpxVectorRef(ref,n)) );
+defalias (OBJ, (ginitWithCpxPtr)gnewWithCpxPtr, TP, (C64*)ref, (U32)n, (I32)s);
+defmethod(OBJ,  ginitWithCpxPtr               , TP, (C64*)ref, (U32)n, (I32)s)
+  retmethod( gclone(aCpxVectorRef(ref,n,s)) );
 endmethod
 #endif
 

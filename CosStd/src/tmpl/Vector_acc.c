@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.5 2009/09/04 10:22:36 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.6 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -90,8 +90,8 @@ defmethod(void, gputAt, T, Int, Object)
     if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, self->size);
  
-    VAL *dst = self->valref + i*self->stride;
     VAL  val = TOVAL(_3);
+    VAL *dst = self->valref + i*self->stride;
     
     ASSIGN(*dst,val);
 endmethod
@@ -101,13 +101,11 @@ defmethod(void, gputAt, T, Slice, Object)
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
   POST
-    // automatically trigger ginvariant
-  
   BODY
-    VAL *dst   = Slice_start (self2)*self->stride + self->valref;
-    I32  dst_s = Slice_stride(self2)*self->stride;
     U32  dst_n = Slice_size  (self2);
-    VAL *end   = dst + dst_n*dst_s;
+    I32  dst_s = Slice_stride(self2)*self->stride;
+    VAL *dst   = Slice_start (self2)*self->stride + self->valref;
+    VAL *end   = dst + dst_s*dst_n;
     VAL  val   = TOVAL(_3);
 
     while (dst != end) {
@@ -124,18 +122,14 @@ defmethod(void, gputAt, T, Range, Object)
 endmethod
 
 defmethod(void, gputAt, T, IntVector, Object)
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
-    VAL *dst   = self->valref;
+  PRE POST BODY
     U32  dst_n = self->size;
     I32  dst_s = self->stride;
-    I32 *idx   = self2->value;
+    VAL *dst   = self->valref;
     U32  idx_n = self2->size;
     I32  idx_s = self2->stride;
-    I32 *end   = idx + idx_n*idx_s;
+    I32 *idx   = self2->value;
+    I32 *end   = idx + idx_s*idx_n;
     VAL  val   = TOVAL(_3);
 
     while (idx != end) {

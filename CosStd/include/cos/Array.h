@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.27 2009/09/04 12:09:17 ldeniau Exp $
+ | $Id: Array.h,v 1.28 2009/09/14 13:35:13 ldeniau Exp $
  |
 */
 
@@ -40,27 +40,27 @@
 
 /* NOTE-USER: Array class cluster constructors
 
-   aArray    (obj,...)           -> Block array    (automatic)
-   aArrayRef (buffer,size)       -> Array          (automatic)
-   aArrayView(array ,slice)      -> Array view     (automatic)
+   aArray    (obj,...)              -> Block array    (automatic)
+   aArrayView(array ,slice)         -> Array view     (automatic)
+   aArrayRef (buffer,size[,stride]) -> Array          (automatic)
 
-   gnewWith (Array,array)        -> Block array    (clone)
-   gnewWith (Array,slice)        -> Block array    (Ints)
-   gnewWith (Array,range)        -> Block array    (Ints)
-   gnewWith2(Array,size,obj)     -> Block array    (element)
-   gnewWith2(Array,size,fun)     -> Block array    (generator)
-   gnewWith2(Array,array,slice)  -> Block array    (subarray)
-   gnewWith2(Array,array,range)  -> Block array    (subarray)
-   gnewWith2(Array,array,intvec) -> Block array    (sequence)
+   gnewWith (Array,array)           -> Block array    (clone)
+   gnewWith (Array,slice)           -> Block array    (Ints)
+   gnewWith (Array,range)           -> Block array    (Ints)
+   gnewWith2(Array,size,obj)        -> Block array    (element)
+   gnewWith2(Array,size,fun)        -> Block array    (generator)
+   gnewWith2(Array,array,slice)     -> Block array    (subarray)
+   gnewWith2(Array,array,range)     -> Block array    (subarray)
+   gnewWith2(Array,array,intvec)    -> Block array    (sequence)
 
-   gnew     (Array)              -> Dynamic array
-   gnewWith (Array,capacity)     -> Dynamic array  (pre-allocated)
+   gnew     (Array)                 -> Dynamic array
+   gnewWith (Array,capacity)        -> Dynamic array  (pre-allocated)
 
-   gnewWith (Array,fun)          -> Lazy array     (generator)
-   gnewWith2(Array,fun,array)    -> Lazy array     (generator)
+   gnewWith (Array,fun)             -> Lazy array     (generator)
+   gnewWith2(Array,fun,array)       -> Lazy array     (generator)
 
-   gnewWith2(View,array,slice)   -> Array view     (view)
-   gnewWith2(View,array,range)   -> Array view     (view)
+   gnewWith2(View,array,slice)      -> Array view     (view)
+   gnewWith2(View,array,range)      -> Array view     (view)
 
    where:
    - All arrays are mutable and strided
@@ -142,11 +142,6 @@ struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*, BO
 #define atArrayN(TN,...) \
   ( (struct Array*)&(struct TN) {{ {{ cos_object_auto(TN) }}, \
     (OBJ[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 }} )
-          
-// --- ArrayRef
-
-#define atArrayRef(buffer,size) \
-  ( &(struct Array) { {{ cos_object_auto(Array) }}, (buffer), (size), 1 } )
 
 // --- ArrayView
 
@@ -157,5 +152,16 @@ struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*, BO
 #define atArraySubView(array,slice) ArrayView_init( \
   (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \
   array,slice,1)
+
+// --- ArrayRef
+
+#define atArrayRef(...) \
+  COS_PP_CAT_NARG(atArrayRef_,__VA_ARGS__)(__VA_ARGS__)
+
+#define atArrayRef_2(buffer,size) \
+        atArrayRef_3(buffer,size,1)
+
+#define atArrayRef_3(buffer,size,stride) \
+  ( &(struct Array) { {{ cos_object_auto(Array) }}, buffer, size, stride } )
 
 #endif // COS_ARRAY_H

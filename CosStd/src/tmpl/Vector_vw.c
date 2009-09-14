@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.7 2009/09/04 12:09:20 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.8 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -93,17 +93,13 @@ defmethod(OBJ,  ginitWith2          , mSubView, T, Range) // vector view
 endmethod
 
 defmethod(OBJ, ginitWith3, TV, T, Slice, Int) // vector view
-  PRE
-  POST
-    // automatically trigger ginvariant
-  
-  BODY
+  PRE POST BODY
     PRT(_1);
-    OBJ ref = gretain(_2); PRT(ref);
-
-    test_assert( !cos_object_isKindOf(ref, classref(TD)),
+    test_assert( !cos_object_isKindOf(_2, classref(TD)),
                  TS " views accept only non-dynamic " TS );
 
+    OBJ ref = gretain(_2); PRT(ref);
+    
     TV_init(self1, STATIC_CAST(struct T*, ref), self3, self4->value);
 
     UNPRT(_1);

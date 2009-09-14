@@ -1,16 +1,16 @@
-#ifndef COS_GEN_VECTOP_H
-#define COS_GEN_VECTOP_H
+#ifndef COS_GEN_STREAM_H
+#define COS_GEN_STREAM_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS generic for (extra) vector operators
+ | COS generics for streams
  |
  o---------------------------------------------------------------------o
  |
  | C Object System
  |
- | Copyright (c) 2006+ Laurent Deniau, laurent.deniau@cern.ch
+ | Copyright (c) 2006+ Laurent Deniau, laurent.deniau*cern.ch
  |
  | For more information, see:
  | http://cern.ch/laurent.deniau/cos.html
@@ -32,25 +32,22 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: vectop.h,v 1.2 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: stream.h,v 1.1 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
-#include <cos/Generic.h>
+#include <cos/Object.h>
 
-defgeneric(OBJ, (GenOperator) gsum , _1);
-defgeneric(OBJ, (GenOperator) gprod, _1);
+defgeneric(OBJ , gopen , _1, _2, mode);
+defgeneric(OBJ , gclose, _1);
 
-// mapSum
-defgeneric(OBJ, (GenOperator) gmapSum , fun, _1);
-defgeneric(OBJ, (GenOperator) gmapSum2, fun, _1, _2);
+// return True or False
+defgeneric(OBJ, gget    , _1, _2);
+defgeneric(OBJ, ggetData, _1, (void*)ref, (U32*)n);
 
+defgeneric(OBJ, gput    , _1, _2);
+defgeneric(OBJ, gputData, _1, (void*)ref, (U32*)n);
 
-// stat estimator
-defgeneric(OBJ, (GenOperator) gmean , _1);
-defgeneric(OBJ, (GenOperator) gstdev, _1);
+defgeneric(OBJ, gflush  , _1);
 
-// inner product
-defgeneric(OBJ, (GenOperator) gdot   , _1, _2);
-
-#endif // COS_GEN_VECTOP_H
+#endif // COS_GEN_STREAM_H

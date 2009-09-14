@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.c,v 1.14 2009/09/04 12:09:19 ldeniau Exp $
+ | $Id: FltVector.c,v 1.15 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -104,6 +104,6 @@ makclass(FltVector, FloatingVector);
 #include "./tmpl/Vector_acc.c"
 #include "./tmpl/Vector_alg.c"
 #include "./tmpl/Vector_fun.c"
-#include "./tmpl/Vector_fct.c"
-#include "./tmpl/Vector_vfn.c"
+// #include "./tmpl/Vector_fct.c"
+// #include "./tmpl/Vector_vfn.c"
 

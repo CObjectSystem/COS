@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.4 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: String_fun.c,v 1.5 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -50,22 +50,25 @@ useclass(String);
 
 // ----- foreach (in place, discard fun returned value)
 
-defmethod(void, gforeach, String, Functor)
-  U8* val = self->value;
-  U8* end = self->value + self->size;
-
-  while (val != end)
-    geval1(_2, aChar(*val++));
-endmethod
-
-// ----- apply (in place map)
+// ----- apply (in-place map with returned value discarded)
 
 defmethod(void, gapply, Functor, String)
-  U8* val = self2->value;
-  U8* end = self2->value + self2->size;
+  U32 size = self2->size;
+  U8* val  = self2->value;
+  U8* end  = val + size;
 
   while (val != end)
-    *val++ = gchr(geval1(_1, aChar(*val)));
+    geval1(_1, aChar(*val++));
+endmethod
+
+defmethod(void, gapply2, Functor, String, String)
+  U32 size = self2->size < self3->size ? self2->size : self3->size;
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
+  U8* end  = val + size;
+
+  while (val != end)
+    geval2(_1, aChr(*val++, *val2++));
 endmethod
 
 // ----- map, map2, map3, map4
@@ -210,7 +213,7 @@ defmethod(OBJ, greject, String, Functor)
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, greduce, String, Functor, Object)
+defmethod(OBJ, greduce1, String, Functor, Object)
   U8* src = self->value;
   U8* end = self->value + self->size;
   OBJ res = _3;
@@ -221,7 +224,7 @@ defmethod(OBJ, greduce, String, Functor, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, grreduce, String, Functor, Object)
+defmethod(OBJ, grreduce1, String, Functor, Object)
   U8* src = self->value + self->size;
   U8* end = self->value;
   OBJ res   = _3;
@@ -232,7 +235,7 @@ defmethod(OBJ, grreduce, String, Functor, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gaccumulate, String, Functor, Object)
+defmethod(OBJ, gaccumulate1, String, Functor, Object)
   struct String* str = String_alloc(self->size+1);
   OBJ _str = (OBJ)str; PRT(_str);
 
@@ -251,7 +254,7 @@ defmethod(OBJ, gaccumulate, String, Functor, Object)
   retmethod(gautoDelete(_str));
 endmethod
 
-defmethod(OBJ, graccumulate, String, Functor, Object)
+defmethod(OBJ, graccumulate1, String, Functor, Object)
   struct String* str = String_alloc(self->size+1);
   OBJ _str = (OBJ)str; PRT(_str);
 

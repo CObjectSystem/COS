@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.4 2009/09/08 00:49:44 ldeniau Exp $
+ | $Id: XRange.c,v 1.5 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -94,48 +94,50 @@ endmethod
 
 // ----- foreach
 
-defmethod(void, gforeach, XRange, Functor)
-  U32 n = XRange_size(self);
+defmethod(void, gapply, Functor, XRange)
+  U32 size = XRange_size(self2);
   
-  for (U32 i = 0; i < n; i++)
-    geval1(_2, aFloat(XRange_eval(self,i)));
+  for (U32 i = 0; i < size; i++)
+    geval1(_1, aFloat(XRange_eval(self2,i)));
 endmethod
 
-defmethod(void, gforeach, XRange, FltFunction1)
-  U32 n = XRange_size(self);
-  F64FCT1 fct = self2->fct;
+defmethod(void, gapply, FltFunction1, XRange)
+  U32 size = XRange_size(self2);
+  F64FCT1 fct = self->fct;
 
-  for (U32 i = 0; i < n; i++)
-    fct(XRange_eval(self,i));
+  for (U32 i = 0; i < size; i++)
+    fct(XRange_eval(self2,i));
 endmethod
 
 // ----- map
 
 defmethod(OBJ, gmap, Functor, XRange)
-  struct FltVector* vec = FltVector_alloc(XRange_size(self2));
+  U32 size = XRange_size(self2);
+  struct FltVector* vec = FltVector_alloc(size);
   OBJ _vec = gautoDelete( (OBJ)vec );
 
+  U32 *dst_n = &vec->size;
   F64 *dst   = vec->value;
-  U32  dst_n = vec->size;
   U32  i;
 
-  for (i = 0; i < dst_n; i++)
-    dst[i] = gflt( geval1(_1, aFloat(XRange_eval(self2,i))) );
+  for (i = 0; i < size; i++)
+    *dst++ = gflt( geval1(_1, aFloat(XRange_eval(self2,i))) ), ++*dst_n;
 
   retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap, FltFunction1, XRange)
-  struct FltVector* vec = FltVector_alloc(XRange_size(self2));
+  U32 size = XRange_size(self2);
+  struct FltVector* vec = FltVector_alloc(size);
   OBJ _vec = gautoDelete( (OBJ)vec );
 
-  F64    *dst   = vec->value;
-  U32     dst_n = vec->size;
-  F64FCT1 fct   = self->fct;
-  U32     i;
+  U32 *dst_n  = &vec->size;
+  F64 *dst    = vec->value;
+  F64FCT1 fct = self->fct;
+  U32  i;
 
-  for (i = 0; i < dst_n; i++)
-    dst[i] = fct(XRange_eval(self2,i));
+  for (i = 0; i < size; i++)
+    *dst++ = fct(XRange_eval(self2,i)), ++*dst_n;
 
   retmethod(_vec);
 endmethod

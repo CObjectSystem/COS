@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.c,v 1.7 2009/09/04 12:09:19 ldeniau Exp $
+ | $Id: CpxVector.c,v 1.8 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -105,6 +105,6 @@ makclass(CpxVector, FloatingVector);
 #include "./tmpl/Vector_acc.c"
 #include "./tmpl/Vector_alg.c"
 #include "./tmpl/Vector_fun.c"
-#include "./tmpl/Vector_fct.c"
-#include "./tmpl/Vector_vfn.c"
+// #include "./tmpl/Vector_fct.c"
+// #include "./tmpl/Vector_vfn.c"
 

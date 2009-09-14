@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ShtVector.h,v 1.4 2009/09/04 12:09:17 ldeniau Exp $
+ | $Id: ShtVector.h,v 1.5 2009/09/14 13:35:13 ldeniau Exp $
  |
 */
 
@@ -116,7 +116,7 @@ struct ShtVector* ShtVectorView_init(struct ShtVectorView*, struct ShtVector*,
 // ----- automatic constructors
 
 #define atShtVector(...)                 atVector    (Sht,I16,__VA_ARGS__)
-#define atShtVectorRef(buffer,size)      atVectorRef (Sht,buffer,size)
+#define atShtVectorRef(...)              atVectorRef (Sht,    __VA_ARGS__)
 #define atShtVectorView(vector,slice)    atVectorView(Sht,vector,slice,0)
 #define atShtVectorSubView(vector,slice) atVectorView(Sht,vector,slice,1)
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.15 2009/09/04 12:09:17 ldeniau Exp $
+ | $Id: Vector.h,v 1.16 2009/09/14 13:35:13 ldeniau Exp $
  |
 */
 
@@ -40,30 +40,30 @@
 
 /* NOTE-USER: Vector class cluster constructors
 
-   aTVector    (val,...)            -> Block vector    (automatic)
-   aTVectorRef (buffer,size)        -> Vector          (automatic)
-   aTVectorView(vector,slice)       -> Vector view     (automatic)
+   aTVector    (val,...)              -> Block vector    (automatic)
+   aTVectorView(vector,slice)         -> Vector view     (automatic)
+   aTVectorRef (buffer,size[,stride]) -> Vector          (automatic)
 
-   gnewWith (TVector,vector)        -> Block vector    (clone)
-   gnewWith (TVector,slice)         -> Block vector    (sequence)
-   gnewWith (TVector,range)         -> Block vector    (sequence)
-   gnewWith2(TVector,size,obj)      -> Block vector    (element)
-   gnewWith2(TVector,size,fun)      -> Block vector    (generator)
-   gnewWith2(TVector,vector,slice)  -> Block vector    (subvector)
-   gnewWith2(TVector,vector,range)  -> Block vector    (subvector)
-   gnewWith2(TVector,vector,intvec) -> Block vector    (sequence)
+   gnewWith (TVector,vector)          -> Block vector    (clone)
+   gnewWith (TVector,slice)           -> Block vector    (sequence)
+   gnewWith (TVector,range)           -> Block vector    (sequence)
+   gnewWith2(TVector,size,obj)        -> Block vector    (element)
+   gnewWith2(TVector,size,fun)        -> Block vector    (generator)
+   gnewWith2(TVector,vector,slice)    -> Block vector    (subvector)
+   gnewWith2(TVector,vector,range)    -> Block vector    (subvector)
+   gnewWith2(TVector,vector,intvec)   -> Block vector    (sequence)
    
-   gnew     (TVector)               -> Dynamic vector
-   gnewWith (TVector,capacity)      -> Dynamic vector  (pre-allocated)
+   gnew     (TVector)                 -> Dynamic vector
+   gnewWith (TVector,capacity)        -> Dynamic vector  (pre-allocated)
 
-   gnewWith (TVector,fun)           -> Lazy vector     (generator)
-   gnewWith2(TVector,fun,vector)    -> Lazy vector     (generator)
+   gnewWith (TVector,fun)             -> Lazy vector     (generator)
+   gnewWith2(TVector,fun,vector)      -> Lazy vector     (generator)
 
-   gnewWith2(View,vector,slice)     -> Vector view     (view)
-   gnewWith2(View,vector,range)     -> Vector view     (view)
+   gnewWith2(View,vector,slice)       -> Vector view     (view)
+   gnewWith2(View,vector,range)       -> Vector view     (view)
 
-   gnewWith2(SubView,vector,slice)  -> Vector view     (substride view)
-   gnewWith2(SubView,vector,range)  -> Vector view     (substride view)
+   gnewWith2(SubView,vector,slice)    -> Vector view     (substride view)
+   gnewWith2(SubView,vector,range)    -> Vector view     (substride view)
 
    where:
    - T stands for Int, Lng, Flt, Cpx
@@ -109,14 +109,6 @@ endclass
   ( &(struct TN) { {{{{{ cos_object_auto(TN) }}}}}, \
     (E[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 } ))
 
-// --- VectorRef
-
-#define atVectorRef(P,buffer,size) \
-  atVectorRef_Default(COS_PP_CAT(P,Vector), buffer, size)
-
-#define atVectorRef_Default(T,buffer,size) \
-  ( &(struct T) { {{{{{ cos_object_auto(T) }}}}}, (buffer), (size), 1 } )
-
 // --- VectorView
 
 #define atVectorView(P,vector,slice,sub) COS_PP_CAT(P,VectorView_init) ( \
@@ -124,5 +116,16 @@ endclass
 
 #define atVectorView_Default(T) \
   ( &(struct T) {{ {{{{{ cos_object_auto(T) }}}}}, 0, 0, 0 }, 0 } )
+
+// --- VectorRef
+
+#define atVectorRef(P,...) \
+  COS_PP_CAT_NARG(atVectorRef_,__VA_ARGS__)(COS_PP_CAT(P,Vector),__VA_ARGS__)
+
+#define atVectorRef_2(T,buffer,size) \
+        atVectorRef_3(T,buffer,size,1) \
+
+#define atVectorRef_3(T,buffer,size,stride) \
+  ( &(struct T) { {{{{{ cos_object_auto(T) }}}}}, buffer, size, stride } )
 
 #endif // COS_VECTOR_H

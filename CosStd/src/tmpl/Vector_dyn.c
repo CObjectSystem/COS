@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.9 2009/09/04 10:22:36 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.10 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -65,11 +65,7 @@ defmethod(OBJ,  ginitWith         , TP, Int) // Dynamic vector with capacity
 endmethod
 
 defmethod(OBJ, ginitWith, TD, Int)
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
+  PRE POST BODY
     PRT(_1);
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
@@ -186,11 +182,13 @@ defmethod(void, gclear, TD)
   struct T  *vec  = &vecf->T;
 
 #ifdef ARRAY_ONLY
-  VAL *val = vec->valref + vec->size;
-  VAL *end = vec->valref;
+  U32 *val_n = &vec->size;
+  VAL *val   = vec->valref;
+  VAL *end   = val + *val_n;
 
-  while (val != end)
-    --val, RELEASE(*val), *val = 0;
+  while (val != end) {
+    --end, RELEASE(*end), --*val_n;
+  }
 #endif
 
   vec->size = 0;
@@ -262,46 +260,31 @@ extra_size(U32 capacity, U32 size)
 }
 
 defmethod(void, gprepend, TD, Object)
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
+  PRE POST BODY
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
     if (vec->valref == vecf->_valref)
       genlarge(_1, aInt(-extra_size(vecf->capacity, 1)));
 
-    vec->valref[-1] = RETAIN(TOVAL(_2));
-    vec->valref--;
-    vec->size++;
+    vec->valref[-1] = RETAIN(TOVAL(_2)), vec->valref--, vec->size++;
 endmethod
 
 defmethod(void, gappend, TD, Object)
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
+  PRE POST BODY
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
     if (vec->size == vecf->capacity)
       genlarge(_1, aInt(extra_size(vecf->capacity, 1)));
       
-    vec->valref[vec->size] = RETAIN(TOVAL(_2));
-    vec->size++;
+    vec->valref[vec->size] = RETAIN(TOVAL(_2)), vec->size++;
 endmethod
 
 // ----- prepend, append vector
 
 defmethod(void, gprepend, TD, T)
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
+  PRE POST BODY
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
@@ -314,33 +297,26 @@ defmethod(void, gprepend, TD, T)
     VAL *end   = src + src_n*src_s;
 
     while (src != end) {
-      vec->valref[-1] = RETAIN(*src);
-      vec->valref--;
-      vec->size++;
+      vec->valref[-1] = RETAIN(*src), vec->valref--, vec->size++;
       src += src_s;
     }
 endmethod
 
 defmethod(void, gappend, TD, T)
-  PRE
-  POST
-    // automatically trigger ginvariant
-
-  BODY
+  PRE POST BODY
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
     if (vecf->capacity-vec->size < self2->size)
       genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
 
-    VAL *src   = self2->valref;
     U32  src_n = self2->size;
     I32  src_s = self2->stride;
-    VAL *end   = src + src_n*src_s;
+    VAL *src   = self2->valref;
+    VAL *end   = src + src_s*src_n;
 
     while (src != end) {
-      vec->valref[vec->size] = RETAIN(*src);
-      vec->size++;
+      vec->valref[vec->size] = RETAIN(*src), vec->size++;
       src += src_s;
     }
 endmethod

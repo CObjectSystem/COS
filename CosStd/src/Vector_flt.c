@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_flt.c,v 1.3 2009/09/08 00:49:44 ldeniau Exp $
+ | $Id: Vector_flt.c,v 1.4 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@
 #include <math.h>
 #include <complex.h>
 
-// ----- sum (Kahan Formula)
+// ----- sum (Kahan formula)
 
 #undef  DEFMETHOD
 #define DEFMETHOD(T,E,O) \
@@ -155,7 +155,7 @@ defmethod(OBJ, gmapSum2, TF, T, TE) \
     t = s + y; \
     c = (t - s) - y; \
     s = t; \
-    val  += val_s; \
+    val += val_s; \
   } \
 \
   retmethod(gautoDelete(O(s))); \
@@ -182,8 +182,8 @@ endmethod
 
 // ---- standard deviation
 
-static F64 sqrDiff(F64 x, F64 m) {
-  return (x-m)*(x-m);
+static F64 sqrDiff(F64 x, F64 a) {
+  return (x-a)*(x-a);
 }
 
 defmethod(OBJ, gstdev, Sequence)
@@ -197,8 +197,9 @@ defmethod(OBJ, gstdev, Sequence)
     if (!COS_CONTRACT)
       size = gsize(_1);
 
-    OBJ mean = gdivBy(gsum(_1),aInt(size)); PRT(mean);
-    OBJ stdev = gautoDelete(gsqroot(gmapSum2(aFltFunction(sqrDiff,0,0), _1, mean)));
+    OBJ rms   = aFltFunction(sqrDiff,0,0);
+    OBJ mean  = gdivBy(gsum(_1),aInt(size)); PRT(mean);
+    OBJ stdev = gautoDelete(gsqroot(gmapSum2(rms, _1, mean)));
     UNPRT(mean); gdelete(mean);
 
     retmethod( stdev );

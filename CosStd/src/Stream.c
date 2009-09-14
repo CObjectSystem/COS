@@ -1,10 +1,7 @@
-#ifndef COS_GEN_VECTOP_H
-#define COS_GEN_VECTOP_H
-
 /*
  o---------------------------------------------------------------------o
  |
- | COS generic for (extra) vector operators
+ | COS Stream
  |
  o---------------------------------------------------------------------o
  |
@@ -32,25 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: vectop.h,v 1.2 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Stream.c,v 1.1 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
-#include <cos/Generic.h>
+#include <cos/Stream.h>
 
-defgeneric(OBJ, (GenOperator) gsum , _1);
-defgeneric(OBJ, (GenOperator) gprod, _1);
+// -----
 
-// mapSum
-defgeneric(OBJ, (GenOperator) gmapSum , fun, _1);
-defgeneric(OBJ, (GenOperator) gmapSum2, fun, _1, _2);
+makclass(Stream);
 
 
-// stat estimator
-defgeneric(OBJ, (GenOperator) gmean , _1);
-defgeneric(OBJ, (GenOperator) gstdev, _1);
-
-// inner product
-defgeneric(OBJ, (GenOperator) gdot   , _1, _2);
-
-#endif // COS_GEN_VECTOP_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.h,v 1.8 2009/09/04 12:09:17 ldeniau Exp $
+ | $Id: CpxVector.h,v 1.9 2009/09/14 13:35:13 ldeniau Exp $
  |
 */
 
@@ -116,7 +116,7 @@ struct CpxVector* CpxVectorView_init(struct CpxVectorView*, struct CpxVector*,
 // ----- automatic constructors
 
 #define atCpxVector(...)                 atVector    (Cpx,C64,__VA_ARGS__)
-#define atCpxVectorRef(buffer,size)      atVectorRef (Cpx,buffer,size)
+#define atCpxVectorRef(...)              atVectorRef (Cpx,    __VA_ARGS__)
 #define atCpxVectorView(vector,slice)    atVectorView(Cpx,vector,slice,0)
 #define atCpxVectorSubView(vector,slice) atVectorView(Cpx,vector,slice,1)
 

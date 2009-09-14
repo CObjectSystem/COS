@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: carray.h,v 1.2 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: carray.h,v 1.3 2009/09/14 13:35:13 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #include <stdlib.h>
 
 /* NOTE-INFO: low level temporary C array
-   the array is allocated on the stack if its size < TMPARRAY_MAXCHARS
+   the array is allocated on the stack if its size <= TMPARRAY_LIMIT
    otherwise it is allocated on the heap.
 
    {
@@ -54,7 +54,7 @@
    }
 */
 
-#define TMPARRAY_MAXCHARS (1024 * sizeof(void*))
+#define TMPARRAY_LIMIT (1024 * sizeof(void*))
 
 #define TMPARRAY_CREATE(T,name,nelem) \
         TMPARRAY_CREATE_(T,name,nelem, \
@@ -64,8 +64,8 @@
 
 #define TMPARRAY_CREATE_(T,name,N,P,A,S) \
   U32 S = N; T *P, \
-    A[S*sizeof(T) <= TMPARRAY_MAXCHARS ? S : 0]; \
-  if (S*sizeof(T) <= TMPARRAY_MAXCHARS) P = A; \
+    A[S*sizeof(T) <= TMPARRAY_LIMIT ? S : 0]; \
+  if (S*sizeof(T) <= TMPARRAY_LIMIT) P = A; \
   else { \
     useclass(ExBadAlloc); \
     if ( !(P = malloc(S * sizeof(T))) ) THROW(ExBadAlloc); \

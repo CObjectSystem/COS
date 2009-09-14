@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.11 2009/09/08 00:49:44 ldeniau Exp $
+ | $Id: Slice.c,v 1.12 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -92,48 +92,50 @@ endmethod
 
 // ----- foreach
 
-defmethod(void, gforeach, Slice, Functor)
-  U32 n = Slice_size(self);
+defmethod(void, gapply, Functor, Slice)
+  U32 size = Slice_size(self2);
   
-  for (U32 i = 0; i < n; i++)
-    geval1(_2, aInt(Slice_eval(self,i)));
+  for (U32 i = 0; i < size; i++)
+    geval1(_1, aInt(Slice_eval(self2,i)));
 endmethod
 
-defmethod(void, gforeach, Slice, IntFunction1)
-  U32 n = Slice_size(self);
-  I32FCT1 fct = self2->fct;
+defmethod(void, gapply, IntFunction1, Slice)
+  U32 size = Slice_size(self2);
+  I32FCT1 fct = self->fct;
 
-  for (U32 i = 0; i < n; i++)
-    fct(Slice_eval(self,i));
+  for (U32 i = 0; i < size; i++)
+    fct(Slice_eval(self2,i));
 endmethod
 
 // ----- map
 
 defmethod(OBJ, gmap, Functor, Slice)
-  struct IntVector* vec = IntVector_alloc(Slice_size(self2));
+  U32 size = Slice_size(self2);
+  struct IntVector* vec = IntVector_alloc(size);
   OBJ _vec = gautoDelete( (OBJ)vec );
 
+  U32 *dst_n = &vec->size;
   I32 *dst   = vec->value;
-  U32  dst_n = vec->size;
   U32  i;
 
-  for (i = 0; i < dst_n; i++)
-    dst[i] = gint( geval1(_1, aInt(Slice_eval(self2,i))) );
+  for (i = 0; i < size; i++)
+    *dst++ = gint( geval1(_1, aInt(Slice_eval(self2,i))) ), ++*dst_n;
 
   retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap, IntFunction1, Slice)
-  struct IntVector* vec = IntVector_alloc(Slice_size(self2));
+  U32 size = Slice_size(self2);
+  struct IntVector* vec = IntVector_alloc(size);
   OBJ _vec = gautoDelete( (OBJ)vec );
 
-  I32    *dst   = vec->value;
-  U32     dst_n = vec->size;
-  I32FCT1 fct   = self1->fct;
-  U32     i;
+  U32 *dst_n  = &vec->size;
+  I32 *dst    = vec->value;
+  I32FCT1 fct = self1->fct;
+  U32  i;
 
-  for (i = 0; i < dst_n; i++)
-    dst[i] = fct(Slice_eval(self2,i));
+  for (i = 0; i < size; i++)
+    *dst++ = fct(Slice_eval(self2,i)), ++*dst_n;
 
    retmethod(_vec);
 endmethod

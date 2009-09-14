@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ChrVector.h,v 1.2 2009/09/04 12:09:17 ldeniau Exp $
+ | $Id: ChrVector.h,v 1.3 2009/09/14 13:35:13 ldeniau Exp $
  |
 */
 
@@ -116,7 +116,7 @@ struct ChrVector* ChrVectorView_init(struct ChrVectorView*, struct ChrVector*,
 // ----- automatic constructors
 
 #define atChrVector(...)                 atVector    (Chr,I8,__VA_ARGS__)
-#define atChrVectorRef(buffer,size)      atVectorRef (Chr,buffer,size)
+#define atChrVectorRef(...)              atVectorRef (Chr,   __VA_ARGS__)
 #define atChrVectorView(vector,slice)    atVectorView(Chr,vector,slice,0)
 #define atChrVectorSubView(vector,slice) atVectorView(Chr,vector,slice,1)
 

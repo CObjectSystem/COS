@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.5 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: String.c,v 1.6 2009/09/14 13:35:15 ldeniau Exp $
  |
 */
 
@@ -234,8 +234,9 @@ defmethod(OBJ,  ginitWith2          , pmString, String, IntVector) // random seq
     retmethod(_str);
 endmethod
 
-defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, pmString, (I8*)ref, (U32)n);
-defmethod(OBJ,  ginitWithChrPtr               , pmString, (I8*)ref, (U32)n)
+defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, pmString, (I8*)ref, (U32)n, (I32)s);
+defmethod(OBJ,  ginitWithChrPtr               , pmString, (I8*)ref, (U32)n, (I32)s)
+  test_assert(s == 1, "strings are not strided");
   retmethod( ginitWith(_1, aStringRef((U8*)ref,n)) );
 endmethod
 
