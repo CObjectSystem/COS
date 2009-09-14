@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.18 2009/06/14 17:47:38 ldeniau Exp $
+ | $Id: base.h,v 1.19 2009/09/14 13:41:18 ldeniau Exp $
  |
 */
 
@@ -83,11 +83,11 @@
 #define COS_STATIC_CAST(typename,value) \
         ((typename)(value))
 
-// compile time assert (not perfect...)
+// compile time assert
 #define COS_STATIC_ASSERT(tag,cond) \
         enum { COS_PP_CAT(COS_ERROR__,tag) = 1/(cond) }
 
-// type alignment (not perfect...)
+// type alignment
 #define COS_TYPE_ALIGNMENT(T) \
         offsetof(struct { char c; T t; },t)
 
@@ -96,9 +96,13 @@
         (COS_TYPE_ALIGNMENT(T1) == COS_TYPE_ALIGNMENT(T2) && \
          sizeof(T1) == sizeof(T2))
 
+// struct field layout alignment
+#define COS_FIELD_ALIGNMENT(S1,S2,F) \
+        (offsetof(struct S1,F) == offsetof(struct S2,F))
+
 // struct field layout compatibility (not perfect...)
 #define COS_FIELD_COMPATIBILITY(S1,S2,F) \
-        (offsetof(struct S1,F) == offsetof(struct S2,F) && \
+        (COS_FIELD_ALIGNMENT(S1,S2,F) && \
          sizeof(((struct S1*)0)->F) == sizeof(((struct S2*)0)->F))
 
 // array size

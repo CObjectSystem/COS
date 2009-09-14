@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.1 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: File.c,v 1.2 2009/09/14 13:41:18 ldeniau Exp $
  |
 */
 
@@ -56,7 +56,9 @@ useclass(ClosedFile);
 // -----
 
 STATIC_ASSERT(OpenFile_vs_ClosedFile__invalid_layout_compatibility,
-              COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,fd) );
+              COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,fd)
+           && COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,fs)
+           && COS_FIELD_ALIGNMENT    (OpenFile,ClosedFile,fb) );
 
 // ----- allocator
 
