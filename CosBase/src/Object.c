@@ -29,16 +29,17 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.18 2009/09/10 21:38:24 ldeniau Exp $
+ | $Id: Object.c,v 1.19 2009/09/16 15:28:11 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <cos/prp/object.h>
 #include <cos/gen/object.h>
 #include <cos/gen/message.h>
 #include <cos/gen/init.h>
 #include <cos/gen/new.h>
+
+#include <cos/prp/object.h>
 
 #include <stdlib.h>
 
@@ -52,7 +53,9 @@ useclass(ExBadAlloc, ExBadMessage);
 
 // ----- properties (read-only)
 
-defproperty(Object, (id)class, (OBJ)cos_class_get);
+defmethod(OBJ, ggetAt, Object, mP_class)
+  retmethod(gclass(_1));
+endmethod
 
 // ----- allocator, deallocator
 
