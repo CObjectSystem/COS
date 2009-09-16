@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.14 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: Exception.c,v 1.15 2009/09/16 14:51:41 ldeniau Exp $
  |
 */
 
@@ -60,6 +60,7 @@ makclass(ExBadCast       ,Exception);
 makclass(ExBadDomain     ,Exception);
 makclass(ExBadFormat     ,Exception);
 makclass(ExBadMessage    ,Exception);
+makclass(ExBadMode       ,Exception);
 makclass(ExBadPredicate  ,Exception);
 makclass(ExBadProperty   ,Exception);
 makclass(ExBadRange      ,Exception);
