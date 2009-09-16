@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.5 2009/09/16 17:02:56 ldeniau Exp $
+ | $Id: String.h,v 1.6 2009/09/16 22:30:05 ldeniau Exp $
  |
 */
 
@@ -114,7 +114,7 @@ endclass
 // ----- String view
 
 defclass(StringView, String)
-  struct String *string;
+  struct String *ref;
 endclass
 
 // ----- initializers, allocators (for the class cluster)
@@ -153,10 +153,15 @@ struct String* StringView_init(struct StringView*, struct String*, struct Slice*
 // --- inliners
 
 static COS_ALWAYS_INLINE struct String*
-String_init(struct String *str, STR cstr) {
+String_init(struct String *str, STR cstr)
+{
   size_t size = strlen(cstr);
-  if (size < str->size) str->size = size;
+  
+  if (size < str->size)
+    str->size = size;
+
   memcpy(str->value, cstr, str->size);
+
   return str;
 }
 

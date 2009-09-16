@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.8 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.9 2009/09/16 22:30:10 ldeniau Exp $
  |
 */
 
@@ -100,7 +100,7 @@ defmethod(OBJ, ginitWith3, TV, T, Slice, Int) // vector view
 
     OBJ ref = gretain(_2); PRT(ref);
     
-    TV_init(self1, STATIC_CAST(struct T*, ref), self3, self4->value);
+    TV_init(self, STATIC_CAST(struct T*, ref), self3, self4->value);
 
     UNPRT(_1);
     retmethod(_1);

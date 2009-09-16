@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.10 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.11 2009/09/16 22:30:10 ldeniau Exp $
  |
 */
 
@@ -73,14 +73,14 @@ defmethod(OBJ, ginitWith, TD, Int)
     test_assert(self2->value >= 0, "negative " TS " capacity");
 
     if (self2->value > 0) {
-      vec->valref = malloc(self2->value * sizeof *vec->valref);
-      if (!vec->valref) THROW(ExBadAlloc);
+      vecf->_valref = malloc(self2->value * sizeof *vec->valref);
+      if (!vecf->_valref) THROW(ExBadAlloc);
     } else
-      vec->valref = 0;
+      vecf->_valref = 0;
 
     vec->size      = 0;
     vec->stride    = 1;
-    vecf->_valref  = vec->valref;
+    vec->valref    = vecf->_valref;
     vecf->capacity = self2->value;
 
     UNPRT(_1);
@@ -140,7 +140,7 @@ defmethod(void, genlarge, TD, Int) // negative size means enlarge front
 
   capacity += size;
   
-  VAL *_valref = realloc(vecf->_valref, capacity*sizeof(VAL));
+  VAL *_valref = realloc(vecf->_valref, capacity*sizeof *vecf->_valref);
   if (!_valref) THROW(ExBadAlloc);
 
   vec -> valref  = _valref + offset;
@@ -148,7 +148,7 @@ defmethod(void, genlarge, TD, Int) // negative size means enlarge front
   vecf->capacity = capacity;
   
   if (front) // move data to book the new space front
-    vec->valref = memmove(vec->valref+size, _valref+offset, vec->size*sizeof(VAL));
+    vec->valref = memmove(vec->valref+size, _valref+offset, vec->size*sizeof *vec->valref);
 endmethod
 
 // ----- adjustment (capacity -> size)
@@ -159,14 +159,14 @@ defmethod(void, gadjust, TD)
 
   // move data to base
   if (vec->valref != vecf->_valref)
-    vec->valref = memmove(vecf->_valref, vec->valref, vec->size*sizeof(VAL));
+    vec->valref = memmove(vecf->_valref, vec->valref, vec->size*sizeof *vecf->_valref);
 
   // shrink storage
   if (vec->size != vecf->capacity) {
-    VAL *_valref = realloc(vecf->_valref, vec->size*sizeof(VAL));
+    VAL *_valref = realloc(vecf->_valref, vec->size*sizeof *vecf->_valref);
     if (!_valref) THROW(ExBadAlloc);
 
-    vec ->valref   = _valref;
+    vec -> valref  = _valref;
     vecf->_valref  = _valref;
     vecf->capacity = vec->size;
   }
@@ -191,7 +191,8 @@ defmethod(void, gclear, TD)
   }
 #endif
 
-  vec->size = 0;
+  vec->size   = 0;
+  vec->valref = vecf->_valref;
 endmethod
 
 // ----- dropFirst, dropLast, drop
@@ -200,8 +201,8 @@ defmethod(void, gdropFirst, TD)
   struct T *vec = &self->TF.T;
 
   if (vec->size) {
-    --vec->size;
-    ++vec->valref;
+    vec->size--;
+    vec->valref++;
    RELEASE(vec->valref[-1]);
   }
 endmethod
@@ -210,7 +211,7 @@ defmethod(void, gdropLast, TD)
   struct T *vec = &self->TF.T;
 
   if (vec->size) {
-    --vec->size;
+    vec->size--;
     RELEASE(vec->valref[vec->size]);
   }
 endmethod
@@ -230,13 +231,13 @@ defmethod(void, gdrop, TD, Int)
 #else // ARRAY_ONLY
   if (front)
     while (n-- > 0) {
-      --vec->size;
-      ++vec->valref;
+      vec->size--;
+      vec->valref++;
       RELEASE(vec->valref[-1]);
     }
   else
     while (n-- > 0) {
-      --vec->size;
+      vec->size--;
       RELEASE(vec->valref[vec->size]);
     }
 #endif
@@ -288,7 +289,7 @@ defmethod(void, gprepend, TD, T)
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
-    if (vec->valref-vecf->_valref < self2->size)
+    if (vec->valref - vecf->_valref < self2->size)
       genlarge(_1, aInt(-extra_size(vecf->capacity, self2->size)));
 
     VAL *src   = self2->valref;
@@ -307,7 +308,7 @@ defmethod(void, gappend, TD, T)
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
-    if (vecf->capacity-vec->size < self2->size)
+    if (vecf->capacity - vec->size < self2->size)
       genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
 
     U32  src_n = self2->size;
@@ -355,7 +356,7 @@ prepareRandomInsert(struct T *vec, struct IntVector *self2)
 
   // shift post data to the end
   VAL *dst = lst + vec->valref;
-  memmove(dst+idx_n, dst, (vec->size - (dst-vec->valref))*sizeof(VAL));
+  memmove(dst+idx_n, dst, (vec->size - (dst-vec->valref))*sizeof *dst);
   vec->size += idx_n;
 
   // prepare insertion slots (start from the end)
@@ -394,7 +395,7 @@ defmethod(void, ginsertAt, TD, Int, Object)
  
     VAL *dst = vec->valref+i;
 
-    memmove(dst+1, dst, (vec->size-i)*sizeof(VAL));
+    memmove(dst+1, dst, (vec->size-i)*sizeof *dst);
     *dst = RETAIN(TOVAL(_3));
     vec->size++;
 endmethod
@@ -427,7 +428,7 @@ defmethod(void, ginsertAt, TD, Slice, Object)
     }
 
     // shift post data to the end
-    memmove(dst+dst_n, dst, (vec->size - (dst-vec->valref))*sizeof(VAL));
+    memmove(dst+dst_n, dst, (vec->size - (dst-vec->valref))*sizeof *dst);
     vec->size += dst_n;
 
     VAL *end = dst - dst_s*dst_n;
@@ -511,7 +512,7 @@ defmethod(void, ginsertAt, TD, Slice, T)
     }
 
     // shift post data to the end
-    memmove(dst+dst_n, dst, (vec->size - (dst-vec->valref))*sizeof(VAL));
+    memmove(dst+dst_n, dst, (vec->size - (dst-vec->valref))*sizeof *dst);
     vec->size += dst_n;
 
     VAL *end   = dst - dst_s*dst_n;
@@ -586,7 +587,7 @@ defmethod(void, gremoveAt, TD, Int)
 
     vec->size--;
     RELEASE(*dst);
-    memmove(dst, dst+1, (vec->size-i)*sizeof(VAL));
+    memmove(dst, dst+1, (vec->size-i)*sizeof *dst);
 endmethod
 
 defmethod(void, gremoveAt, TD, Slice)
@@ -629,7 +630,7 @@ defmethod(void, gremoveAt, TD, Slice)
     }
 
     // shift post data to the beginning
-    memmove(dst, dst+dst_n, (vec->size - (dst-vec->valref))*sizeof(VAL));
+    memmove(dst, dst+dst_n, (vec->size - (dst-vec->valref))*sizeof *dst);
     vec->size -= dst_n;
 endmethod
 
@@ -654,7 +655,7 @@ defmethod(void, gremoveAt, TD, IntVector)
   U32  lst   = 0;
 
   TMPARRAY_CREATE(U8,flg,dst_n);
-  memset(flg,0,dst_n);
+  memset(flg,0,dst_n*sizeof *flg);
 
   // release
   while (idx != end) {
@@ -682,7 +683,7 @@ defmethod(void, gremoveAt, TD, IntVector)
       dst[sht] = *dst;
     }
 
-    memmove(dst, dst+idx_n, (vec->size - (dst-vec->valref))*sizeof(VAL));
+    memmove(dst, dst+idx_n, (vec->size - (dst-vec->valref))*sizeof *dst);
     vec->size -= idx_n;
   }
 

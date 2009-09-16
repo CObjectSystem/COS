@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.4 2009/08/21 12:10:00 ldeniau Exp $
+ | $Id: String_vw.c,v 1.5 2009/09/16 22:30:10 ldeniau Exp $
  |
 */
 
@@ -53,18 +53,14 @@ useclass(String, StringView);
 struct String*
 StringView_init(struct StringView *strv, struct String *str, struct Slice *slc)
 {
-  U32 first = Slice_first(slc);
-  U32 last  = Slice_last (slc);
-  U32 size  = Slice_size (slc);
-
-  test_assert( first < str->size &&
-               last  < str->size, "slice out of range" );
+  test_assert( Slice_first(slc) < str->size &&
+               Slice_last (slc) < str->size, "slice out of range" );
 
   struct String* svw = &strv->String;
 
-  svw->value   = first + str->value;
-  svw->size    = size;
-  strv->string = str;
+  svw->value = Slice_start(slc) + str->value;
+  svw->size  = Slice_size (slc);
+  strv->ref  = str;
 
   return svw;
 }
@@ -76,45 +72,59 @@ defmethod(OBJ,  ginitWith2          , mView, String, Slice) // string view
   retmethod( ginitWith2(galloc(StringView),_2,_3) );
 endmethod
 
+defalias (OBJ, (ginitWith2)gnewWith2, mView, String, Range);
+defmethod(OBJ,  ginitWith2          , mView, String, Range) // string view
+  struct Range range = Range_normalize(self3,self2->size);
+  struct Slice slice = Slice_fromRange(&range);
+  
+  retmethod( ginitWith2(galloc(StringView),_2,(OBJ)&slice) );
+endmethod
+
 defmethod(OBJ, ginitWith2, StringView, String, Slice)
-  test_assert( !cos_object_isKindOf(_2, classref(StringDyn)),
-               "string views accept only non-Dyn strings" );
+  PRE POST BODY
+    PRT(_1);
+    test_assert( !cos_object_isKindOf(_2, classref(StringDyn)),
+                 "string views accept only non-dynamic string" );
 
-  StringView_init(self, self2, self3);
+    OBJ ref = gretain(_2); PRT(ref);
+    
+    StringView_init(self, STATIC_CAST(struct String*, ref), self3);
 
-  retmethod(_1);
+    UNPRT(_1);
+    retmethod(_1);
 endmethod
 
 // ----- destructor
 
 defmethod(OBJ, gdeinit, StringView)
-  if (self->string)              // take care of protection cases
-    grelease( (OBJ)self->string );
+  if (self->ref)              // take care of protection cases
+    grelease( (OBJ)self->ref );
   retmethod(_1);
 endmethod
 
 // ----- invariant
 
 defmethod(void, ginvariant, StringView, (STR)func, (STR)file, (int)line)
-  test_assert( cos_object_isKindOf((OBJ)self->string, classref(String)),
+  test_assert( cos_object_isKindOf((OBJ)self->ref, classref(String)),
                "string view points to something not a string", func, file, line);
 
-  test_assert( !cos_object_isKindOf((OBJ)self->string, classref(StringDyn)),
+  test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(StringDyn)),
                "string view points to a dynamic string", func, file, line);
 
-  struct String *str = STATIC_CAST(struct String*, self->string);
+  struct String *str = self->ref;
 
-  I32 start = (str->value - self->String.value);
+  I32 start = str->value - self->String.value;
   U32 size  = self->String.size;
 
-  struct Slice *slc = atSlice(start, size, 1);
+  struct Slice *slc = atSlice(start, size);
 
   U32 first = Slice_first(slc);
   U32 last  = Slice_last (slc);
 
-  test_assert( first < self->string->size && last < self->string->size,
+  test_assert( first < self->ref->size && last < self->ref->size,
                "string view is out of range", func, file, line);
 
-  next_method(self, func, file, line);
+  if (next_method_p)
+    next_method(self, func, file, line);
 endmethod
 

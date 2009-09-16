@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.28 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: Array.h,v 1.29 2009/09/16 22:30:05 ldeniau Exp $
  |
 */
 
@@ -153,7 +153,7 @@ struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*, BO
   (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \
   array,slice,1)
 
-// --- ArrayRef
+// --- ArrayRef (low-level)
 
 #define atArrayRef(...) \
   COS_PP_CAT_NARG(atArrayRef_,__VA_ARGS__)(__VA_ARGS__)

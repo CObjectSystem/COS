@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.3 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: File.c,v 1.4 2009/09/16 22:30:10 ldeniau Exp $
  |
 */
 
@@ -71,6 +71,8 @@ STATIC_ASSERT(OpenFile_vs_ClosedFile__invalid_layout_compatibility,
 #ifndef FILE_BUFSIZ
 #define FILE_BUFSIZ (64*1024)
 #endif
+
+STATIC_ASSERT(FILE_BUFSIZ_is_too_small, FILE_BUFSIZ >= BUFSIZ);
 
 // ----- properties
 

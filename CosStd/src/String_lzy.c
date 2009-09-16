@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_lzy.c,v 1.3 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: String_lzy.c,v 1.4 2009/09/16 22:30:10 ldeniau Exp $
  |
 */
 
@@ -56,38 +56,40 @@ useclass(ExBadArity, StringLzy);
 
 defalias (OBJ, (ginitWith)gnewWith, pmString, Functor);
 defmethod(OBJ,  ginitWith         , pmString, Functor) // generator
-  retmethod( ginitWith3(_1,_2,aStringRef(0,0),aInt(0)) );
-endmethod
-
-defalias (OBJ, (ginitWith2)gnewWith2, pmString, Functor, Int);
-defmethod(OBJ,  ginitWith2          , pmString, Functor, Int) // generator
-  retmethod( ginitWith3(_1,_2,aStringRef(0,0),_3) );
+  retmethod( ginitWith3(galloc(StringLzy),_2,aStringRef(0,0),aInt(0)) );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmString, Functor, String);
 defmethod(OBJ,  ginitWith2          , pmString, Functor, String) // generator
-  retmethod( ginitWith3(_1,_2,_3,aInt(self3->size*2)) );
+  retmethod( ginitWith3(galloc(StringLzy),_2,_3,aInt(self3->size*2)) );
+endmethod
+
+defalias (OBJ, (ginitWith2)gnewWith2, pmString, Functor, Int);
+defmethod(OBJ,  ginitWith2          , pmString, Functor, Int) // generator
+  retmethod( ginitWith3(galloc(StringLzy),_2,aStringRef(0,0),_3) );
 endmethod
 
 defalias (OBJ, (ginitWith3)gnewWith3, pmString, Functor, String, Int);
 defmethod(OBJ,  ginitWith3          , pmString, Functor, String, Int) // generator
-  defnext(OBJ,  ginitWith, StringLzy, Int); // dynamic string
+  retmethod( ginitWith3(galloc(StringLzy),_2,_3,_4) );
+endmethod
 
-  OBJ _str = galloc(StringLzy); PRT(_str);
-  struct StringLzy *str = STATIC_CAST(struct StringLzy*, _str);
-  
-  next_method(str, self4);
+defmethod(OBJ,  ginitWith3, StringLzy, Functor, String, Int) // generator
+  defnext(OBJ,  ginitWith , StringLzy, Int); // forward to dynamic string
 
-  str->generator = gretain(_2);
-  str->arity     = garity (_2);
+  next_method(self, self4);
 
-  test_assert( (U32)str->arity < 3, "invalid generator arity" );
+  PRT(_1);
+  self->generator = gretain(_2);
+  self->arity     = garity (_2);
+
+  test_assert( (U32)self->arity < 3, "invalid generator arity" );
 
   if (self3->size > 0)
-    gappend(_str,_3);
+    gappend(_1,_3);
 
-  UNPRT(_str);
-  retmethod(_str);
+  UNPRT(_1);
+  retmethod(_1);
 endmethod
 
 // ----- destructor
@@ -121,12 +123,12 @@ defmethod(OBJ, ggetAt, StringLzy, Int)
 
   case 1:
     while (str->size <= i)
-      gappend(_1, geval1(self->generator, _1));
+      gappend(_1, geval(self->generator, _1));
     break;
 
   case 2:
     while (str->size <= i)
-      gappend(_1, geval2(self->generator, _1, aInt(str->size)));
+      gappend(_1, geval(self->generator, _1, aInt(str->size)));
     break;
 
   default:
@@ -136,4 +138,5 @@ defmethod(OBJ, ggetAt, StringLzy, Int)
   retmethod( gautoDelete(aChar(str->value[i])) );
 endmethod
 
+// NOTE-TODO: other getters?
 

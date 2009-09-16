@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_lzy.c,v 1.3 2009/09/04 10:22:36 ldeniau Exp $
+ | $Id: Vector_lzy.c,v 1.4 2009/09/16 22:30:10 ldeniau Exp $
  |
 */
 
@@ -116,12 +116,12 @@ defmethod(OBJ, ggetAt, TL, Int)
 
   case 1:
     while (vec->size <= i)
-      gappend(_1, geval1(self->generator, _1));
+      gappend(_1, geval(self->generator, _1));
     break;
 
   case 2:
     while (vec->size <= i)
-      gappend(_1, geval2(self->generator, _1, aInt(vec->size)));
+      gappend(_1, geval(self->generator, _1, aInt(vec->size)));
     break;
 
   default:
@@ -132,3 +132,4 @@ defmethod(OBJ, ggetAt, TL, Int)
 endmethod
 
 // NOTE-TODO: other getters?
+
