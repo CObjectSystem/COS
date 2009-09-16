@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.1 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Stream.c,v 1.2 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -38,5 +38,6 @@
 // -----
 
 makclass(Stream);
+makclass(ExBadStream, Exception);
 
 

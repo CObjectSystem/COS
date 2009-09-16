@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.10 2009/08/29 21:33:40 ldeniau Exp $
+ | $Id: String_alg.c,v 1.11 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -59,7 +59,7 @@ defmethod(OBJ, gisEqual, String, String)
   if (self->size != self2->size)
     retmethod(False);
 
-  retmethod( memcmp(self->value,self2->value,self->size) ? True : False );
+  retmethod( memcmp(self->value,self2->value,self->size) ? False : True );
 endmethod
 
 // ----- comparison
@@ -78,8 +78,9 @@ defmethod(void, greverse, String)
   if (self->size < 2)
     retmethod();
 
+  U32 size = self->size;
   U8* val = self->value;
-  U8* end = self->value + (self->size-1);
+  U8* end = val + (size-1);
   U8  tmp;
 
   while (val != end)
@@ -91,16 +92,15 @@ endmethod
 
 defmethod(OBJ, gzip, String, String)
   U32 size = self->size < self2->size ? self->size : self2->size;
-
   struct String* str = String_alloc(2*size);
 
-  U8* dst  = str->value;
-  U8* end  = str->value + str->size;
-  U8* src1 = self->value; 
+  U8* src  = self->value; 
   U8* src2 = self2->value;
+  U8* dst  = str->value;
+  U8* end  = dst + 2*size;
 
   while (dst != end) {
-    *dst++ = *src1++;
+    *dst++ = *src ++;
     *dst++ = *src2++;
   }
 
@@ -109,18 +109,17 @@ endmethod
 
 defmethod(OBJ, gzip3, String, String, String)
   U32 size = self->size < self2->size ? self->size : self2->size;
-  if (size > self3->size) size = self3->size;
-
+      size = self3->size < size ? self3->size : size;
   struct String* str = String_alloc(3*size);
 
-  U8* dst  = str->value;
-  U8* end  = str->value + str->size;
-  U8* src1 = self->value; 
+  U8* src  = self->value; 
   U8* src2 = self2->value;
   U8* src3 = self3->value;
+  U8* dst  = str->value;
+  U8* end  = dst + 3*size;
 
   while (dst != end) {
-    *dst++ = *src1++;
+    *dst++ = *src ++;
     *dst++ = *src2++;
     *dst++ = *src3++;
   }
@@ -132,8 +131,8 @@ endmethod
 
 defmethod(OBJ, gcat, String, String)
   U32 size = self->size + self2->size;
-
   struct String *str = String_alloc(size);
+
   U8* dst = str->value;
 
   memcpy(dst,self ->value,self ->size); dst += self->size;
@@ -144,8 +143,8 @@ endmethod
 
 defmethod(OBJ, gcat3, String, String, String)
   U32 size = self->size + self2->size + self3->size;
-
   struct String *str = String_alloc(size);
+
   U8* dst = str->value;
 
   memcpy(dst,self ->value,self ->size); dst += self ->size;
@@ -157,8 +156,8 @@ endmethod
 
 defmethod(OBJ, gcat4, String, String, String, String)
   U32 size = self->size + self2->size + self3->size + self4->size;
-
   struct String *str = String_alloc(size);
+
   U8* dst = str->value;
 
   memcpy(dst,self ->value,self ->size); dst += self ->size;
@@ -172,8 +171,8 @@ endmethod
 defmethod(OBJ, gcat5, String, String, String, String, String)
   U32 size = self->size + self2->size +
              self3->size + self4->size + self5->size;
-
   struct String *str = String_alloc(size);
+
   U8* dst = str->value;
 
   memcpy(dst,self ->value,self ->size); dst += self ->size;
@@ -183,6 +182,22 @@ defmethod(OBJ, gcat5, String, String, String, String, String)
   memcpy(dst,self5->value,self5->size);
 
   retmethod(gautoDelete( (OBJ)str ));
+endmethod
+
+// ----- search (object)
+
+defmethod(OBJ, gfind, String, Object)
+  U8 val = (U32)gchr(_2);
+  U8*  p = memchr(self->value, val, self->size);
+  
+  retmethod(p ? gautoDelete(aChar(*p)) : Nil);  
+endmethod
+
+defmethod(OBJ, gifind, String, Object)
+  U8 val = (U32)gchr(_2);
+  U8*  p = memchr(self->value, val, self->size);
+
+  retmethod(p ? gautoDelete(aInt(p-self->value)) : Nil);
 endmethod
 
 // ----- search (char)

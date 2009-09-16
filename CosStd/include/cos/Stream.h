@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.h,v 1.1 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: Stream.h,v 1.2 2009/09/16 17:02:56 ldeniau Exp $
  |
 */
 
@@ -48,6 +48,17 @@
 */
 
 defclass(Stream)
+endclass
+
+// ----- standard streams
+
+extern OBJ StdIn, StdOut, StdErr;
+
+// ----- exception for streams
+
+#include <cos/Exception.h>
+
+defclass(ExBadStream, Exception)
 endclass
 
 #endif // COS_STREAM_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.6 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.7 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -49,7 +49,7 @@ defmethod(OBJ, gfirst, T)
   retmethod( self->size ? AUTODELETE(VALOBJ(self->valref[0])) : Nil );
 endmethod
 
-// ----- getters (index, slice, intvector)
+// ----- getters (index, slice, range, intvector)
 
 defmethod(OBJ, ggetAt, T, Int)
   U32 i;
@@ -148,15 +148,13 @@ defmethod(void, gputAt, T, Slice, T)
                  Slice_last (self2) < self->size, "slice out of range" );
     test_assert( Slice_size (self2) <= self3->size, "source " TS " is too small" );
   POST    
-    // automatically trigger ginvariant
-
   BODY
-    VAL *dst   = Slice_start (self2)*self->stride + self->valref;
-    I32  dst_s = Slice_stride(self2)*self->stride;
     U32  dst_n = Slice_size  (self2);
-    VAL *src   = self3->valref;
+    I32  dst_s = Slice_stride(self2)*self->stride;
+    VAL *dst   = Slice_start (self2)*self->stride + self->valref;
     I32  src_s = self3->stride;
-    VAL *end   = dst + dst_n*dst_s;
+    VAL *src   = self3->valref;
+    VAL *end   = dst + dst_s*dst_n;
 
     while (dst != end) {
       ASSIGN(*dst,*src);
@@ -169,18 +167,16 @@ defmethod(void, gputAt, T, IntVector, T)
   PRE
     test_assert( self2->size <= self3->size, "source " TS " is too small" );
   POST
-    // automatically trigger ginvariant
-
   BODY
-    VAL *dst   = self->valref;
     U32  dst_n = self->size;
     I32  dst_s = self->stride;
-    I32 *idx   = self2->value;
+    VAL *dst   = self->valref;
     U32  idx_n = self2->size;
     I32  idx_s = self2->stride;
-    VAL *src   = self3->valref;
+    I32 *idx   = self2->value;
     I32  src_s = self3->stride;
-    I32 *end   = idx + idx_n*idx_s;
+    VAL *src   = self3->valref;
+    I32 *end   = idx + idx_s*idx_n;
 
     while (idx != end) {
       U32 i = Range_index(*idx, dst_n);

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.1 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: sequence.h,v 1.2 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -40,5 +40,6 @@
 
 // sequence properties
 defproperty(array);
+defproperty(slice);
 
 #endif // COS_PRP_SEQUENCE_H

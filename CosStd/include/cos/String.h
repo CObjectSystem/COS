@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.4 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: String.h,v 1.5 2009/09/16 17:02:56 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,8 @@
 
 /* NOTE-USER: String class cluster constructors
 
-   aString    (cstring)            -> Block string    (automatic)
+   aStr       ("string")           -> String          (automatic)
+   aString    (c-string)           -> String          (automatic)
    aStringRef (buffer,size)        -> String          (automatic)
    aStringView(string,slice)       -> String view     (automatic)
 
@@ -78,17 +79,10 @@ endclass
 
 // ----- automatic constructors
 
-#define aString(...)     ( (OBJ)atString    (__VA_ARGS__) )
+#define aStr(...)        ( (OBJ)atStr       (__VA_ARGS__) ) // C-string literal
+#define aString(...)     ( (OBJ)atString    (__VA_ARGS__) ) // C-string
 #define aStringRef(...)  ( (OBJ)atStringRef (__VA_ARGS__) )
 #define aStringView(...) ( (OBJ)atStringView(__VA_ARGS__) )
-
-// --- shortcuts
-
-#ifndef COS_NOSHORTCUT
-
-#define aStr(...)  aString(__VA_ARGS__)
-
-#endif
 
 /***********************************************************
  * Implementation (private)
@@ -131,14 +125,13 @@ struct String* StringView_init(struct StringView*, struct String*, struct Slice*
 
 // ----- automatic constructors
 
-#define atString(cstr) ( (struct String*) \
-  ( &(struct StringN) {{ {{{ cos_object_auto(StringN) }}}, \
-  (U8[]){ cstr }, strlen( cstr ) }} ))
+#define atStr(cstr) \
+  ( &(struct String) { {{{ cos_object_auto(String) }}}, \
+    (U8[]){ cstr }, sizeof cstr -1 })
 
-// --- StringRef
-
-#define atStringRef(buffer,size) \
-  ( &(struct String) { {{{ cos_object_auto(String) }}}, (buffer), (size) } )
+#define atString(cstr) String_init( \
+  ( &(struct String) { {{{ cos_object_auto(String) }}}, \
+    (U8[STRING_AUTOMAXSIZE]){ "" }, STRING_AUTOMAXSIZE-1 }), cstr )
 
 // --- StringView
 
@@ -146,4 +139,25 @@ struct String* StringView_init(struct StringView*, struct String*, struct Slice*
   (&(struct StringView) {{ {{{ cos_object_auto(StringView) }}}, 0, 0 }, 0 }), \
   string,slice)
 
-#endif // COS_ARRAY_H
+// --- StringRef (low-level, size = sizeof buffer -1)
+
+#define atStringRef(buffer,size) \
+  ( &(struct String) { {{{ cos_object_auto(String) }}}, (buffer), (size) } )
+
+// --- some constant
+
+#ifndef STRING_AUTOMAXSIZE
+#define STRING_AUTOMAXSIZE 1024
+#endif
+
+// --- inliners
+
+static COS_ALWAYS_INLINE struct String*
+String_init(struct String *str, STR cstr) {
+  size_t size = strlen(cstr);
+  if (size < str->size) str->size = size;
+  memcpy(str->value, cstr, str->size);
+  return str;
+}
+
+#endif // COS_STRING_H

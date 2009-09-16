@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.12 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Slice.c,v 1.13 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -47,12 +47,20 @@
 #include <cos/gen/value.h>
 
 #include <cos/prp/object.h>
+#include <cos/prp/sequence.h>
 
 makclass(Slice, ValueSequence);
 
 // -----
 
 useclass(Slice);
+
+// ----- properties
+
+defmethod(OBJ, ggetAt, Object, mP_slice)
+  struct Slice slc = gslice(_1);
+  retmethod( gautoDelete((OBJ)&slc) );
+endmethod
 
 // ----- new
 
@@ -81,10 +89,6 @@ defmethod(OBJ, gisEqual, Slice, Slice)
 endmethod
 
 // ----- size
-
-#define size(siz) gautoDelete(aInt(siz))
-defproperty(Slice, size, size);
-#undef  size
 
 defmethod(U32, gsize, Slice)
   retmethod(self->size);

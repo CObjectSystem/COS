@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.4 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.5 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -46,7 +46,7 @@ defmethod(void, gapply, Functor, T)
   VAL *end   = val + val_s*size;
 
   while (val != end) {
-    geval1(_1, VALOBJ(*val));
+    geval(_1, VALOBJ(*val));
     val += val_s;
   }
 endmethod
@@ -60,7 +60,7 @@ defmethod(void, gapply2, Functor, T, T)
   VAL *end    = val + val_s*size;
 
   while (val != end) {
-    geval2(_1, VALOBJ(*val), VALOBJ(*val2));
+    geval(_1, VALOBJ(*val), VALOBJ(*val2));
     val  += val_s;
     val2 += val2_s;
   }
@@ -78,7 +78,7 @@ defmethod(void, gapply3, Functor, T, T, T)
   VAL *end    = val + val_s*size;
 
   while (val != end) {
-    geval3(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3));
+    geval(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3));
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
@@ -100,7 +100,7 @@ defmethod(void, gapply4, Functor, T, T, T, T)
   VAL *end    = val + val_s*size;
 
   while (val != end) {
-    geval4(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3), VALOBJ(*val4));
+    geval(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3), VALOBJ(*val4));
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
@@ -123,7 +123,7 @@ defmethod(OBJ, gmap, Functor, T)
   OBJ  res;
 
   while (dst != end) {
-    res = geval1(_1, VALOBJ(*val));
+    res = geval(_1, VALOBJ(*val));
     *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
     val += val_s;
   }
@@ -146,7 +146,7 @@ defmethod(OBJ, gmap2, Functor, T, T)
   OBJ  res;
 
   while (dst != end) {
-    res = geval2(_1, VALOBJ(*val), VALOBJ(*val2));
+    res = geval(_1, VALOBJ(*val), VALOBJ(*val2));
     *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
@@ -173,7 +173,7 @@ defmethod(OBJ, gmap3, Functor, T, T, T)
   OBJ  res;
 
   while (dst != end) {
-    res = geval3(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3));
+    res = geval(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3));
     *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
@@ -204,7 +204,7 @@ defmethod(OBJ, gmap4, Functor, T, T, T, T)
   OBJ  res;
 
   while (dst != end) {
-    res = geval4(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3), VALOBJ(*val4));
+    res = geval(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3), VALOBJ(*val4));
     *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
@@ -224,7 +224,7 @@ defmethod(OBJ, gall, T, Functor)
   VAL *end   = val + val_s*size;
 
   while (val != end) {
-    if (geval1(_2, VALOBJ(*val)) != True)
+    if (geval(_2, VALOBJ(*val)) != True)
       retmethod(False);
     val += val_s;
   }
@@ -239,7 +239,7 @@ defmethod(OBJ, gany, T, Functor)
   VAL *end   = val + val_s*size;
 
   while (val != end) {
-    if (geval1(_2, VALOBJ(*val)) == True)
+    if (geval(_2, VALOBJ(*val)) == True)
       retmethod(True);
     val += val_s;
   }
@@ -255,7 +255,7 @@ defmethod(U32, gcount, T, Functor)
   U32  cnt   = 0;
 
   while (val != end) {
-    if (geval1(_2, VALOBJ(*val)) == True)
+    if (geval(_2, VALOBJ(*val)) == True)
       ++cnt;
     val += val_s;
   }
@@ -276,7 +276,7 @@ defmethod(OBJ, gselect, T, Functor)
   VAL *end   = dst + size;
 
   while (dst != end) {
-    if (geval1(_2, VALOBJ(*val)) == True)
+    if (geval(_2, VALOBJ(*val)) == True)
       *dst++ = RETAIN(*val), vec->size++;
     val += val_s;
   }
@@ -296,7 +296,7 @@ defmethod(OBJ, greject, T, Functor)
   VAL *end   = dst + size;
 
   while (dst != end) {
-    if (geval1(_2, VALOBJ(*val)) != True)
+    if (geval(_2, VALOBJ(*val)) != True)
       *dst++ = RETAIN(*val), vec->size++;
     val += val_s;
   }
@@ -319,7 +319,7 @@ defmethod(OBJ, greduce, T, Functor)
     val += val_s;
     
     while (val != end) {
-      res = geval2(_2, res, VALOBJ(*val));
+      res = geval(_2, res, VALOBJ(*val));
       val += val_s;
     }
   }
@@ -340,7 +340,7 @@ defmethod(OBJ, grreduce, T, Functor)
 
     while (val != end) {
       end -= val_s;
-      res = geval2(_2, VALOBJ(*end), res);
+      res = geval(_2, VALOBJ(*end), res);
     }
   }
 
@@ -355,7 +355,7 @@ defmethod(OBJ, greduce1, T, Functor, Object)
   OBJ  res   = _3;
   
   while (val != end) {
-    res = geval2(_2, res, VALOBJ(*val));
+    res = geval(_2, res, VALOBJ(*val));
     val += val_s;
   }
 
@@ -371,7 +371,7 @@ defmethod(OBJ, grreduce1, T, Functor, Object)
   
   while (val != end) {
     end -= val_s;
-    res = geval2(_2, VALOBJ(*end), res);
+    res = geval(_2, VALOBJ(*end), res);
   }
 
   retmethod(res);
@@ -387,7 +387,7 @@ defmethod(OBJ, greduce2, T, T, Functor, Object)
   OBJ  res    = _4;
 
   while (val != end) {
-    res = geval3(_3, res, VALOBJ(*val), VALOBJ(*val2));
+    res = geval(_3, res, VALOBJ(*val), VALOBJ(*val2));
     val  += val_s;
     val2 += val2_s;
   }
@@ -407,7 +407,7 @@ defmethod(OBJ, grreduce2, T, T, Functor, Object)
   while (val != end) {
     end  -= val_s;
     end2 -= val2_s;
-    res = geval3(_3, VALOBJ(*end), VALOBJ(*end2), res);
+    res = geval(_3, VALOBJ(*end), VALOBJ(*end2), res);
   }
   
   retmethod(res);
@@ -432,7 +432,7 @@ defmethod(OBJ, gaccumulate, T, Functor)
     val += val_s, --end;
     
     while (dst != end) {
-      res = geval2(_2, VALOBJ(*dst), VALOBJ(*val));
+      res = geval(_2, VALOBJ(*dst), VALOBJ(*val));
       *++dst = RETAIN(TOVAL(res)), ++*dst_n;
       val += val_s;
     }
@@ -459,7 +459,7 @@ defmethod(OBJ, graccumulate, T, Functor)
 
     while (dst != end) {
       val -= val_s;
-      res = geval2(_2, VALOBJ(*val), VALOBJ(*end));
+      res = geval(_2, VALOBJ(*val), VALOBJ(*end));
       *--end = RETAIN(TOVAL(res)), ++*dst_n;
     }
   }
@@ -482,7 +482,7 @@ defmethod(OBJ, gaccumulate1, T, Functor, Object)
   *dst = RETAIN(TOVAL(_3)), ++*dst_n;
   
   while (dst != end) {
-    res = geval2(_2, VALOBJ(*dst), VALOBJ(*val));
+    res = geval(_2, VALOBJ(*dst), VALOBJ(*val));
     *++dst = RETAIN(TOVAL(res)), ++*dst_n;
     val += val_s;
   }
@@ -506,7 +506,7 @@ defmethod(OBJ, graccumulate1, T, Functor, Object)
 
   while (dst != end) {
     val -= val_s,
-    res = geval2(_2, VALOBJ(*val), VALOBJ(*end));
+    res = geval(_2, VALOBJ(*val), VALOBJ(*end));
     *--end = RETAIN(TOVAL(res)), ++*dst_n;
   }
 
@@ -530,7 +530,7 @@ defmethod(OBJ, gaccumulate2, T, T, Functor, Object)
   *dst = RETAIN(TOVAL(_4)), ++*dst_n;
   
   while (dst != end) {
-    res = geval3(_3, VALOBJ(*dst), VALOBJ(*val), VALOBJ(*val2));
+    res = geval(_3, VALOBJ(*dst), VALOBJ(*val), VALOBJ(*val2));
     *++dst = RETAIN(TOVAL(res)), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
@@ -558,7 +558,7 @@ defmethod(OBJ, graccumulate2, T, T, Functor, Object)
   while (dst != end) {
     val  -= val_s,
     val2 -= val2_s,
-    res = geval3(_3, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*end));
+    res = geval(_3, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*end));
     *--end = RETAIN(TOVAL(res)), ++*dst_n;
   }
 
@@ -582,7 +582,7 @@ defmethod(OBJ, gunique, T, Functor)
     val += val_s;
 
     while (val != end) {
-      if (geval2(_2, VALOBJ(*dst), VALOBJ(*val)) != True)
+      if (geval(_2, VALOBJ(*dst), VALOBJ(*val)) != True)
         *++dst = RETAIN(*val), vec->size++;
       val += val_s;
     }
@@ -599,7 +599,7 @@ findFun(VAL *val, U32 val_n, I32 val_s, OBJ _2)
 {
   if (!val_n) return 0;
 
-  OBJ res = geval1(_2, VALOBJ(*val)); // compare first element
+  OBJ res = geval(_2, VALOBJ(*val)); // compare first element
 
   if (res == True || res == Equal) // found
     return val;
@@ -610,7 +610,7 @@ findFun(VAL *val, U32 val_n, I32 val_s, OBJ _2)
 
     val += val_s;
     while (val != end) {
-      if (geval1(_2, VALOBJ(*val)) == True) // found
+      if (geval(_2, VALOBJ(*val)) == True) // found
         return val;
       val += val_s;
     }
@@ -624,7 +624,7 @@ findFun(VAL *val, U32 val_n, I32 val_s, OBJ _2)
 
     while (lo <= hi) {
       U32 i = (lo + hi) / 2;
-      res = geval1(_2, VALOBJ(val[i*val_s]));
+      res = geval(_2, VALOBJ(val[i*val_s]));
 
       if (res == Equal)
         return val + i*val_s; // found
@@ -720,7 +720,7 @@ pivot(void)
  */
 
 #undef  GCMP
-#define GCMP(a,b) geval2(fun,VALOBJ(a),VALOBJ(b))
+#define GCMP(a,b) geval(fun,VALOBJ(a),VALOBJ(b))
 
 static void
 qsortFun(VAL a[], I32 r, OBJ fun)
@@ -839,7 +839,7 @@ qsortSFun(VAL a[], I32 r, I32 s, OBJ fun)
 // ----- indirect sorting (return permutation)
 
 #undef  GCMP
-#define GCMP(a,b) geval2(fun,VALOBJ(o[a*s]),VALOBJ(o[b*s]))
+#define GCMP(a,b) geval(fun,VALOBJ(o[a*s]),VALOBJ(o[b*s]))
 
 static void
 iqsortSFun(I32 a[], I32 r, VAL o[], I32 s, OBJ fun)
@@ -942,7 +942,7 @@ defmethod(OBJ, gisSorted, T, Functor)
   VAL *end   = val + val_s*(size-1);
 
   while (val != end) {
-    if (geval2(_2, VALOBJ(*val), VALOBJ(val[val_s])) == Greater)
+    if (geval(_2, VALOBJ(*val), VALOBJ(val[val_s])) == Greater)
       retmethod(False);
     val += val_s;
   }

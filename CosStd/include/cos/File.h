@@ -32,26 +32,37 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.h,v 1.1 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: File.h,v 1.2 2009/09/16 17:02:56 ldeniau Exp $
  |
 */
 
 #include <cos/Stream.h>
-#include <stdio.h>
 
 defclass(File,Stream)
 endclass
 
-defclass(OpenFile,File)
+/***********************************************************
+ * Implementation (private)
+ */
+
+#include <stdio.h>
+
+// ----- File state machine
+
+defclass(OpenFile,File) // final class
   FILE *fd;
-  U32   fs;
-  char  fb[];
+  BOOL  own;
+  OBJ   name;
+  U32   buf_size;
+  char  file_buf[];
 endclass
 
-defclass(ClosedFile,File)
+defclass(ClosedFile,File) // final class
   FILE *fd;
-  U32   fs;
-  char  fb[];
+  BOOL  own;
+  OBJ   name;
+  U32   buf_size;
+  char  file_buf[];
 endclass
 
 #endif // COS_FILE_H

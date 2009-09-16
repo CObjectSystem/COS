@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.5 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: String_fun.c,v 1.6 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -47,8 +47,7 @@
 // ----- 
 
 useclass(String);
-
-// ----- foreach (in place, discard fun returned value)
+useclass(Lesser,Equal,Greater);
 
 // ----- apply (in-place map with returned value discarded)
 
@@ -58,7 +57,7 @@ defmethod(void, gapply, Functor, String)
   U8* end  = val + size;
 
   while (val != end)
-    geval1(_1, aChar(*val++));
+    geval(_1, aChar(*val++));
 endmethod
 
 defmethod(void, gapply2, Functor, String, String)
@@ -68,301 +67,316 @@ defmethod(void, gapply2, Functor, String, String)
   U8* end  = val + size;
 
   while (val != end)
-    geval2(_1, aChr(*val++, *val2++));
+    geval(_1, aChr(*val++, *val2++));
+endmethod
+
+defmethod(void, gapply3, Functor, String, String, String)
+  U32 size = self2->size < self3->size ? self2->size : self3->size;
+      size = self4->size < size ? self4->size : size;
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
+  U8* val3 = self4->value;
+  U8* end  = val + size;
+
+  while (val != end)
+    geval(_1, aChr(*val++, *val2++, *val3++));
+endmethod
+
+defmethod(void, gapply4, Functor, String, String, String, String)
+  U32 size = self2->size < self3->size ? self2->size : self3->size;
+      size = self4->size < size ? self4->size : size;
+      size = self5->size < size ? self5->size : size;
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
+  U8* val3 = self4->value;
+  U8* val4 = self5->value;
+  U8* end  = val + size;
+
+  while (val != end)
+    geval(_1, aChr(*val++, *val2++, *val3++, *val4++));
 endmethod
 
 // ----- map, map2, map3, map4
 
 defmethod(OBJ, gmap, Functor, String)
-  struct String* str = String_alloc(self2->size);
-  OBJ _str = (OBJ)str; PRT(_str);
+  U32 size = self2->size;
+  struct String* str = String_alloc(size);
+  OBJ _str = gautoDelete( (OBJ)str );
 
+  U8* val = self2->value;
   U8* dst = str->value;
-  U8* end = str->value + str->size;
-  U8* src = self2->value;
-
+  U8* end = dst + size;
+  
   while (dst != end)
-    *dst++ = gchr(geval1(_1,aChar(*src++)));
+    *dst++ = (U32)gchr(geval(_1,aChar(*val++)));
 
-  UNPRT(_str);
-  retmethod(gautoDelete(_str));
+  retmethod(_str);
 endmethod
 
 defmethod(OBJ, gmap2, Functor, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
-
   struct String* str = String_alloc(size);
-  OBJ _str = (OBJ)str; PRT(_str);
+  OBJ _str = gautoDelete( (OBJ)str );
 
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
   U8* dst  = str->value;
-  U8* end  = str->value + str->size;
-  U8* src1 = self2->value;
-  U8* src2 = self3->value;
+  U8* end  = dst + size;
 
   while (dst != end)
-    *dst++ = gchr(geval2(_1,aChar(*src1++),aChar(*src2++)));
+    *dst++ = (U32)gchr(geval(_1,aChar(*val++),aChar(*val2++)));
 
-  UNPRT(_str);
-  retmethod(gautoDelete(_str));
+  retmethod(_str);
 endmethod
 
 defmethod(OBJ, gmap3, Functor, String, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
-  if (size > self4->size) size = self4->size;
-
+      size = self4->size < size ? self4->size : size;
   struct String* str = String_alloc(size);
-  OBJ _str = (OBJ)str; PRT(_str);
+  OBJ _str = gautoDelete( (OBJ)str );
 
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
+  U8* val3 = self4->value;
   U8* dst  = str->value;
-  U8* end  = str->value + str->size;
-  U8* src1 = self2->value;
-  U8* src2 = self3->value;
-  U8* src3 = self4->value;
+  U8* end  = dst + size;
 
   while (dst != end)
-    *dst++ = gchr(geval3(_1,aChr(*src1++),aChr(*src2++),aChr(*src3++)));
+    *dst++ = (U32)gchr(geval(_1,aChr(*val++),aChr(*val2++),aChr(*val3++)));
 
-  UNPRT(_str);
-  retmethod(gautoDelete(_str));
+  retmethod(_str);
 endmethod
 
 defmethod(OBJ, gmap4, Functor, String, String, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
-  if (size > self4->size) size = self4->size;
-  if (size > self5->size) size = self5->size;
-
+      size = self4->size < size ? self4->size : size;
+      size = self5->size < size ? self5->size : size;
   struct String* str = String_alloc(size);
-  OBJ _str = (OBJ)str; PRT(_str);
+  OBJ _str = gautoDelete( (OBJ)str );
 
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
+  U8* val3 = self4->value;
+  U8* val4 = self5->value;
   U8* dst  = str->value;
-  U8* end  = str->value + str->size;
-  U8* src1 = self2->value;
-  U8* src2 = self3->value;
-  U8* src3 = self4->value;
-  U8* src4 = self5->value;
+  U8* end  = dst + size;
 
   while (dst != end)
-    *dst++ = gchr(geval4(_1,aChr(*src1++),aChr(*src2++),
-                            aChr(*src3++),aChr(*src4++)));
+    *dst++ = (U32)gchr(geval(_1,aChr(*val ++),aChr(*val2++),
+                                aChr(*val3++),aChr(*val4++)));
 
-  UNPRT(_str);
-  retmethod(gautoDelete(_str));
+  retmethod(_str);
 endmethod
 
 // ----- all, any
 
 defmethod(OBJ, gall, String, Functor)
-  U8* val = self->value;
-  U8* end = self->value + self->size;
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
 
   while (val != end)
-    if (geval1(_2, aChar(*val++)) != True)
+    if (geval(_2, aChar(*val++)) != True)
       retmethod(False);
       
   retmethod(True);
 endmethod
 
 defmethod(OBJ, gany, String, Functor)
-  U8* val = self->value;
-  U8* end = self->value + self->size;
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
 
   while (val != end)
-    if (geval1(_2, aChar(*val++)) == True)
+    if (geval(_2, aChar(*val++)) == True)
       retmethod(True);
 
   retmethod(False);
 endmethod
 
-// ----- filter, fold, scan
+defmethod(U32, gcount, String, Functor)
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+  U32 cnt  = 0;
 
-defmethod(OBJ, gselect, String, Functor)
-  OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
-  struct String* str = STATIC_CAST(struct String*, _str);
+  while (val != end)
+    if (geval(_2, aChar(*val++)) == True)
+      ++cnt;
 
-  U8* dst = str ->value;
-  U8* src = self->value;
-  U8* end = self->value + self->size;
-
-  while (src != end) {
-    if (geval1(_2, aChar(*src)) == True)
-      *dst++ = *src, ++str->size;
-    src++;
-  }
-
-  gadjust(_str);
-  UNPRT(_str);
-  retmethod(gautoDelete(_str));
+  retmethod(cnt);
 endmethod
 
-defmethod(OBJ, greject, String, Functor)
-  OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
-  struct String* str = STATIC_CAST(struct String*, _str);
+// ----- reduce
 
-  U8* dst = str ->value;
-  U8* src = self->value;
-  U8* end = self->value + self->size;
-
-  while (src != end) {
-    if (geval1(_2, aChar(*src)) == False)
-      *dst++ = *src, ++str->size;
-    src++;
+defmethod(OBJ, greduce, String, Functor)
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+  OBJ res  = Nil;
+  
+  if (val != end) {
+    res = gautoDelete(gclone(aChar(*val++)));
+    
+    while (val != end)
+      res = geval(_2, res, aChar(*val++));
   }
 
-  gadjust(_str);
-  UNPRT(_str);
-  retmethod(gautoDelete(_str));
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, grreduce, String, Functor)
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+  OBJ res  = Nil;
+  
+  if (val != end) {
+    res = gautoDelete(gclone(aChar(*--end)));
+    
+    while (val != end)
+      res = geval(_2, aChar(*--end), res);
+  }
+
+  retmethod(res);
 endmethod
 
 defmethod(OBJ, greduce1, String, Functor, Object)
-  U8* src = self->value;
-  U8* end = self->value + self->size;
-  OBJ res = _3;
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+  OBJ res  = _3;
   
-  while (src != end)
-    res = geval2(_2, res, aChar(*src++));
+  while (val != end)
+    res = geval(_2, res, aChar(*val++));
 
   retmethod(res);
 endmethod
 
 defmethod(OBJ, grreduce1, String, Functor, Object)
-  U8* src = self->value + self->size;
-  U8* end = self->value;
-  OBJ res   = _3;
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+  OBJ res  = _3;
   
-  while (src != end)
-    res = geval2(_2, aChar(*--src), res);
+  while (val != end)
+    res = geval(_2, aChar(*--end), res);
 
   retmethod(res);
 endmethod
 
-defmethod(OBJ, gaccumulate1, String, Functor, Object)
-  struct String* str = String_alloc(self->size+1);
-  OBJ _str = (OBJ)str; PRT(_str);
-
-  U8* dst = str->value;
-  U8* end = str->value + str->size;
-  U8* src = self->value;
-
-  *dst++ = gchr(_3);
+defmethod(OBJ, greduce2, String, String, Functor, Object)
+  U32 size = self->size < self2->size ? self->size : self2->size;
+  U8* val  = self->value;
+  U8* val2 = self2->value;
+  U8* end  = val + size;
+  OBJ res  = _4;
   
-  while (dst != end) {
-    *dst = gchr( geval2(_2, aChar(dst[-1]), aChar(*src++)) );
-    dst++;
-  }
+  while (val != end)
+    res = geval(_3, res, aChar(*val++), aChar(*val2++));
 
-  UNPRT(_str);
-  retmethod(gautoDelete(_str));
+  retmethod(res);
 endmethod
 
-defmethod(OBJ, graccumulate1, String, Functor, Object)
-  struct String* str = String_alloc(self->size+1);
-  OBJ _str = (OBJ)str; PRT(_str);
+defmethod(OBJ, grreduce2, String, String, Functor, Object)
+  U32 size = self->size < self2->size ? self->size : self2->size;
+  U8* end  = self->value + self->size;
+  U8* end2 = self2->value + self2->size;
+  U8* val  = end - size;
+  OBJ res  = _4;
+  
+  while (val != end)
+    res = geval(_2, aChar(*--end), aChar(*--end2), res);
 
-  U8* dst = str->value + str->size;
-  U8* end = str->value;
-  U8* src = self->value + self->size;
-
-  *--dst = gchr(_3);
-
-  while (dst != end) {
-    dst--;
-    *dst = gchr( geval2(_2, aChar(*--src), aChar(dst[1])) );
-  }
-
-  UNPRT(_str);
-  retmethod(gautoDelete(_str));
+  retmethod(res);
 endmethod
 
 // ----- unique (remove contiguous duplicates)
 
 defmethod(OBJ, gunique, String, Functor)
-  if (self->size < 1)
-    retmethod( gautoDelete(gclone(_1)) );
-
-  OBJ _str = gnewWith(String,aInt(self->size)); PRT(_str);
+  U32 size = self->size;
+  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
+  U8* val = self->value;
   U8* dst = str ->value;
-  U8* src = self->value;
-  U8* end = self->value + (self->size-1);
+  U8* end = val + size;
 
-  while (src != end)
-    if (geval2(_2, aChar(src[0]), aChar(src[1])) != True)
-      *dst++ = *src++, ++str->size;
-  *dst++ = *src++;
+  if (val != end) {
+    *dst = *val++;
 
+    while (val != end) {
+      if (geval(_2, aChar(*dst), aChar(*val)) != True)
+        *++dst = *val;
+      val++;
+    }
+  }
+  
   gadjust(_str);
-  UNPRT(_str);
-  retmethod(gautoDelete(_str));
+  retmethod(_str);
 endmethod
 
 // ----- search (functor)
 
-static I32
-ifind(struct String *self, OBJ _2)
+static U8*
+findFun(U8* val, U32 val_n, OBJ _2)
 {
-  useclass(Lesser, Equal, Greater);
+  if (!val_n) return 0;
 
-  if (self->size == 0)
-    return(-1);
-
-  U8* val = self->value;
-  OBJ res = geval1(_2, aChar(*val)); // bsearch order
+  OBJ res = geval(_2, aChar(*val)); // compare first element
 
   if (res == True || res == Equal) // found
-    return(0);
+    return val;
 
   // linear search
   if (res == False) {
-    U8* end = self->value + self->size;
-    
-    val++;
-    while (val != end) {
-      if (geval1(_2, aChar(*val)) == True) // found
-        return(val-self->value);
-      val++;
-    }
+    U8* end = val + val_n;
 
-    return(-1);
+    for (val++; val != end; val++)
+      if (geval(_2, aChar(*val)) == True) // found
+        return val;
+
+    return 0; // not found
   }
 
   // binary search
-  if (res == Lesser)
-    return(-1);
+  if (res == Greater) {
+    U32 lo = 1, hi = val_n-1;
 
-  test_assert( res == Greater,
-    "find expects functor returning TrueFalse or Ordered predicates" );
+    while (lo <= hi) {
+      U32 i = (lo + hi) / 2;
+      res = geval(_2, aChar(val[i]));
 
-  U32 lo = 1, hi = self->size-1;
+      if (res == Equal)
+        return val + i; // found
 
-  while (lo <= hi) {
-    U32 i = (lo + hi) / 2;
-    res = geval1(_2, aChar(val[i]));
-
-    if (res == Equal)
-      return(i); // found
-
-    if (res == Lesser)
-      hi = i-1;
-    else
-      lo = i+1;
+      if (res == Lesser)
+        hi = i-1;
+      else
+        lo = i+1;
+    }
   }
-
-  return(-1);
+  
+  return 0; // not found
 }
 
 // ---
 
 defmethod(OBJ, gfind, String, Functor)
-  I32 i = ifind(self,_2);
-  
-  retmethod(i >= 0 ? gautoDelete(aChar(self->value[i])) : Nil);  
+  U32 val_n = self->size;
+  U8* val   = self->value;
+
+  U8* p = findFun(val,val_n,_2);
+
+  retmethod(p ? gautoDelete(aChar(*p)) : Nil);  
 endmethod
 
 defmethod(OBJ, gifind, String, Functor)
-  I32 i = ifind(self,_2);
+  U32 val_n = self->size;
+  U8* val   = self->value;
 
-  retmethod(i >= 0 ? gautoDelete( aInt(i) ) : Nil);
+  U8* p = findFun(val,val_n,_2);
+
+  retmethod(p ? gautoDelete(aInt(p-val)) : Nil);  
 endmethod
-
 

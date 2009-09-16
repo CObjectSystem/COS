@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.7 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: functor.h,v 1.8 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -41,15 +41,20 @@
 #endif 
 
 defgeneric(I32, garity, fun);
-defgeneric(OBJ, geval , fun);
+defgeneric(OBJ, geval0, fun);
 defgeneric(OBJ, geval1, fun, (OBJ)arg1);
 defgeneric(OBJ, geval2, fun, (OBJ)arg1,(OBJ)arg2);
 defgeneric(OBJ, geval3, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3);
 defgeneric(OBJ, geval4, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4);
 defgeneric(OBJ, geval5, fun, (OBJ)arg1,(OBJ)arg2,(OBJ)arg3,(OBJ)arg4,(OBJ)arg5);
-defgeneric(OBJ, gevalN, fun, args); // rank 2
+defgeneric(OBJ, gevaln, fun, args); // rank 2
 
 defgeneric(OBJ, gcompose, _1);      // compose Array of functors
+
+// ----- wrapper
+
+#define geval(...) \
+   COS_PP_CAT(geval,COS_PP_DECR(COS_PP_NARG(__VA_ARGS__)))(__VA_ARGS__)
 
 #endif // COS_GEN_FUNCTOR_H
 

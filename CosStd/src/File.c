@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.2 2009/09/14 13:41:18 ldeniau Exp $
+ | $Id: File.c,v 1.3 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -37,10 +37,13 @@
 #include <cos/Number.h>
 #include <cos/String.h>
 
+#include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>
 #include <cos/gen/value.h>
+
+#include <cos/prp/object.h>
 
 // -----
 
@@ -51,14 +54,27 @@ makclass(ClosedFile,File);
 
 // -----
 
-useclass(ClosedFile);
+useclass(File, ClosedFile);
+useclass(ExBadStream);
 
 // -----
 
 STATIC_ASSERT(OpenFile_vs_ClosedFile__invalid_layout_compatibility,
               COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,fd)
-           && COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,fs)
-           && COS_FIELD_ALIGNMENT    (OpenFile,ClosedFile,fb) );
+           && COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,own)
+           && COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,name)
+           && COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,buf_size)
+           && COS_FIELD_ALIGNMENT    (OpenFile,ClosedFile,file_buf) );
+
+// ----- some constant
+
+#ifndef FILE_BUFSIZ
+#define FILE_BUFSIZ (64*1024)
+#endif
+
+// ----- properties
+
+defproperty(OpenFile, name, );
 
 // ----- allocator
 
@@ -66,56 +82,42 @@ defmethod(OBJ, galloc, pmFile)
   retmethod(_1); // lazy alloc
 endmethod
 
-// ----- constructors
+// ----- cluster constructors
 
 defalias (OBJ, (ginit)gnew, pmFile);
 defmethod(OBJ,  ginit     , pmFile)
-  retmethod(gnew(ClosedFile));
+  PRE POST BODY
+    retmethod( ginitWith(gallocWithSize(ClosedFile, FILE_BUFSIZ), aInt(FILE_BUFSIZ)) );
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmFile, Int);
 defmethod(OBJ,  ginitWith         , pmFile, Int)
   PRE
     test_assert(self2->value >= 0, "negative file buffer size");
-  POST BODY
-    retmethod(ginitWith(gallocWithSize(ClosedFile, self2->value), _2));
-endmethod
-
-defalias (OBJ, (ginitWith2)gnewWith2, pmFile, String, String);
-defmethod(OBJ,  ginitWith2          , pmFile, String, String)
-  retmethod(gnewWith2(ClosedFile,_2,_3));
+  POST
+  BODY
+    retmethod( ginitWith(gallocWithSize(ClosedFile, self2->value), _2) );
 endmethod
 
 // ----- initializers
 
-defmethod(OBJ, ginit, ClosedFile)
-  retmethod(_1);
-endmethod
-
 defmethod(OBJ, ginitWith, ClosedFile, Int)
-  self->fs = self2->value;
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith2, ClosedFile, String, String)
-  self->fd = fopen(gstr(_2), gstr(_3));
-  test_assert( self->fd, "unable to open file");
-
-  int done = cos_object_unsafeChangeClass(_1, classref(OpenFile), classref(File));
-  test_assert( done, "unable to change from ClosedFile to OpenFile");
-
-  if (self->fs) {
-    int err = setvbuf(self->fd, self->fb, _IOFBF, self->fs);
-    test_assert( !err, "unable to set file buffer");
-  }
-
+  self->fd = 0;
+  self->own = NO;
+  self->name = 0;
+  self->buf_size = self2->value;
   retmethod(_1);
 endmethod
 
 // ----- destructors
 
 defmethod(OBJ, gdeinit, OpenFile)
-  if (self->fd) fclose(self->fd);
+  if (self->fd && self->own)
+    fclose(self->fd);
+
+  if (self->name)
+    grelease(self->name);
+
   retmethod(_1);
 endmethod
 
@@ -123,47 +125,103 @@ defmethod(OBJ, gdeinit, ClosedFile)
   retmethod(_1);
 endmethod
 
-// ----- open, close
+// ----- invariants
 
-defalias(OBJ, (ginitWith2)gopen, ClosedFile, String, String);
+defmethod(void, ginvariant, ClosedFile, (STR)func, (STR)file, (int)line)
+  test_assert(!self->fd  , "ClosedFile has a file descriptor", func, file, line);
+  test_assert(!self->own , "ClosedFile own a file descriptor", func, file, line);
+  test_assert(!self->name, "ClosedFile has a file name"      , func, file, line);
+endmethod
 
-defmethod(OBJ, gclose, OpenFile)
-  test_assert( fclose(self->fd), "unable to close file");
-  self->fd = 0;
+defmethod(void, ginvariant, OpenFile, (STR)func, (STR)file, (int)line)
+  test_assert(self->fd  , "OpenFile hasn't a file descriptor", func, file, line);
+  test_assert(self->name, "OpenFile hasn't a file name"      , func, file, line);
+endmethod
 
-  int done = cos_object_unsafeChangeClass(_1, classref(ClosedFile), classref(File));
-  test_assert( done, "unable to change from OpenFile to CloseFile");
+// ----- open, close, flush, remove
 
-  retmethod(_1);
+defmethod(OBJ, gopen, ClosedFile, String, String)
+  BOOL ch_cls;
+  BOOL ch_buf;
+
+  PRE
+  POST
+    test_assert(ch_buf, "unable to set file buffer");
+    test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
+
+  BODY
+    self->fd = fopen(gstr(_2), gstr(_3));
+    if (!self->fd)
+      THROW( gnewWith(ExBadStream, gcat(aStr("unable to open file "), _2)) );
+
+    self->own = YES;
+    self->name = gretain(_2);
+    ch_buf = !setvbuf(self->fd, self->file_buf, _IOFBF, self->buf_size);
+    ch_cls = cos_object_unsafeChangeClass(_1, classref(OpenFile), classref(File));
+
+    retmethod(_1);
+endmethod
+
+defmethod(void, gclose, OpenFile)
+  BOOL ch_cls;
+
+  PRE
+  POST
+    test_assert(ch_cls, "unable to change from OpenFile to ClosedFile");
+
+  BODY
+    ch_cls = cos_object_unsafeChangeClass(_1, classref(ClosedFile), classref(File));
+    
+    if (fclose(self->fd))
+      THROW( gnewWith(ExBadStream, gcat(aStr("unable to close file "), self->name)) );
+
+    grelease(self->name);
+
+    self->fd  = 0;
+    self->own = NO;
+    self->name = 0;
+endmethod
+
+defmethod(void, gflush, OpenFile)
+  if (fflush(self->fd))
+    THROW( gnewWith(ExBadStream, gcat(aStr("unable to flush file "), self->name)) );
+endmethod
+
+defmethod(void, gremove, OpenFile)
+  OBJ name = gretain(self->name); PRT(name);
+  gclose(_1);
+
+  if (remove(gstr(name)))
+    THROW( gnewWith(ExBadStream, gcat(aStr("unable to remove file "), name)) );
+
+  UNPRT(name);
+  grelease(name);
 endmethod
 
 // ----- get, gets
 
 defmethod(OBJ, gget, OpenFile, Char)
-  self2->Int.value = fgetc(self->fd);
-  
-  retmethod(self2->Int.value == EOF ? False : True);
+  retmethod((self2->Int.value = getc(self->fd)) == EOF ? False : True);
 endmethod
 
 defmethod(OBJ, gget, OpenFile, StringDyn)
-  enum { N = 1024*sizeof(void*) };
+  enum { N = 1024*sizeof(void*)-1 };
+  
   FILE *fd = self->fd;
-  U8 str[N];
+  U8 str[N+1];
 
   while (1) {
     int c = 0, i = 0;
     
-    while (i < N && (c = fgetc(fd)) != EOF) {
+    while (i < N && (c = getc(fd)) != EOF) {
       if (c == '\n') {
-        if ((c = fgetc(fd)) != EOF && c != '\r') ungetc(c, fd);
+        if ((c = getc(fd)) != EOF && c != '\r') ungetc(c, fd);
         break;
       }
-      
       if (c == '\r') {
-        if ((c = fgetc(fd)) != EOF && c != '\n') ungetc(c, fd);
+        if ((c = getc(fd)) != EOF && c != '\n') ungetc(c, fd);
         break;
       }
-
       str[i++] = (unsigned)c;
     }
     
@@ -185,7 +243,7 @@ endmethod
 // ----- put, puts
 
 defmethod(OBJ, gput, OpenFile, Char)
-  retmethod(fputc(self2->Int.value, self->fd) == EOF ? False : True);
+  retmethod(putc(self2->Int.value, self->fd) == EOF ? False : True);
 endmethod
 
 defmethod(OBJ, gput, OpenFile, String)
@@ -198,5 +256,48 @@ defmethod(OBJ, gputData, OpenFile, (void*)ref, (U32*)n)
   *n = fwrite(ref, 1, size, self->fd);
 
   retmethod(*n < size ? False : True);
+endmethod
+
+// ----- get/set file (low-level)
+
+defmethod(FILE*, ggetFILE, OpenFile)
+  retmethod(self->fd);
+endmethod
+
+defmethod(void, gsetFILE, ClosedFile, (FILE*)fd, (STR)tag)
+  BOOL ch_cls = ch_cls; // NOTE-INFO: remove (justified) warning
+
+  PRE
+    test_assert(fd , "null file descriptor");
+    test_assert(tag, "null file tag");
+
+  POST
+    test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
+
+  BODY
+    self->fd   = fd;
+    self->own  = NO;
+    self->name = gretain(aString(tag));
+    ch_cls = cos_object_unsafeChangeClass(_1, classref(OpenFile), classref(File));
+endmethod
+
+// ----- StdIn, StdOut, StdErr
+
+OBJ StdIn, StdOut, StdErr;
+
+defmethod(void, ginitialize, pmFile)
+  if (!StdIn) {
+    gsetFILE(StdIn  = gnew(File), stdin , "stdin" );
+    gsetFILE(StdOut = gnew(File), stdout, "stdout");
+    gsetFILE(StdErr = gnew(File), stderr, "stderr");
+  }
+endmethod
+
+defmethod(void, gdeinitialize, pmFile)
+  if (StdIn) {
+    gdelete(StdIn);
+    gdelete(StdOut);
+    gdelete(StdErr);
+  }
 endmethod
 

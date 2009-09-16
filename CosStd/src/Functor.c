@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.14 2009/08/08 16:36:09 ldeniau Exp $
+ | $Id: Functor.c,v 1.15 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -174,18 +174,18 @@ endmethod
 
 // --- Functor1
 
-defmethod(OBJ, geval, Functor1)
+defmethod(OBJ, geval0, Functor1)
   retmethod(self->fct(self->arg));
 endmethod
 
 // --- Functor2
 
-defmethod(OBJ, geval, Functor2)
+defmethod(OBJ, geval0, Functor2)
   switch (self->arity) {
   case 3: // 1 1
     retmethod(self->fct(self->arg[0],self->arg[1]));
   default:
-    THROW( gnewWithStr(ExBadArity, "geval(Functor2)") );
+    THROW( gnewWithStr(ExBadArity, "geval0(Functor2)") );
   }
 endmethod
 
@@ -202,12 +202,12 @@ endmethod
 
 // --- Functor3
 
-defmethod(OBJ, geval, Functor3)
+defmethod(OBJ, geval0, Functor3)
   switch (self->arity) {
   case 7: // 1 1 1
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2]));
   default:
-    THROW( gnewWithStr(ExBadArity, "geval(Functor3)") );
+    THROW( gnewWithStr(ExBadArity, "geval0(Functor3)") );
   }
 endmethod
 
@@ -239,12 +239,12 @@ endmethod
 
 // --- Functor4
 
-defmethod(OBJ, geval, Functor4)
+defmethod(OBJ, geval0, Functor4)
   switch (self->arity) {
   case 15: // 1 1 1 1
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],self->arg[3]));
   default:
-    THROW( gnewWithStr(ExBadArity, "geval(Functor4)") );
+    THROW( gnewWithStr(ExBadArity, "geval0(Functor4)") );
   }
 endmethod
 
@@ -299,12 +299,12 @@ endmethod
 
 // --- Functor5
 
-defmethod(OBJ, geval, Functor5)
+defmethod(OBJ, geval0, Functor5)
   switch (self->arity) {
   case 31: // 1 1 1 1 1
     retmethod(self->fct(self->arg[0],self->arg[1],self->arg[2],self->arg[3],self->arg[4]));
   default:
-    THROW( gnewWithStr(ExBadArity, "geval(Functor5)") );
+    THROW( gnewWithStr(ExBadArity, "geval0(Functor5)") );
   }
 endmethod
 

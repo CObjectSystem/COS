@@ -32,22 +32,27 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stream.h,v 1.1 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: stream.h,v 1.2 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
+#include <stdio.h>
 
-defgeneric(OBJ , gopen , _1, _2, mode);
-defgeneric(OBJ , gclose, _1);
+defgeneric(OBJ , gopen  , _1, name, mode);
+defgeneric(void, gclose , _1);
+defgeneric(void, gflush , _1);
+defgeneric(void, gremove, _1);
 
-// return True or False
+// return True (success) or False (failure)
 defgeneric(OBJ, gget    , _1, _2);
 defgeneric(OBJ, ggetData, _1, (void*)ref, (U32*)n);
 
 defgeneric(OBJ, gput    , _1, _2);
 defgeneric(OBJ, gputData, _1, (void*)ref, (U32*)n);
 
-defgeneric(OBJ, gflush  , _1);
+// low-level FILE access (may be removed in the future)
+defgeneric(FILE*, ggetFILE, _1);
+defgeneric(void , gsetFILE, _1, (FILE*)fd, (STR)tag);
 
 #endif // COS_GEN_STREAM_H

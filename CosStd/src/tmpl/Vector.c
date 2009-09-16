@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.6 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Vector.c,v 1.7 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
@@ -50,9 +50,6 @@
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
-
-#include <cos/prp/object.h>
-#include <cos/prp/sequence.h>
 
 #include <cos/carray.h>
 
@@ -78,17 +75,6 @@ makclass(COS_PP_CAT(T,N), T);
 useclass(T);
 useclass(ExBadAlloc);
 useclass(Lesser,Equal,Greater);
-
-// ----- properties
-
-#define size(siz) gautoDelete(aInt(siz))
-#define class(vec) T
-
-defproperty(T,   size , size);
-defproperty(T, ()class, class);
-
-#undef size
-#undef class
 
 // --- getters
 
@@ -279,7 +265,7 @@ defmethod(OBJ,  ginitWith2          , TP, Int, Functor) // generator
 
     else
       for (I32 i = 0; dst != end; i++) {
-        res = geval1(_3, aInt(i));
+        res = geval(_3, aInt(i));
         *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
       }
 

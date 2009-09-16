@@ -29,14 +29,25 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Container.c,v 1.1 2009/02/10 13:04:50 ldeniau Exp $
+ | $Id: Container.c,v 1.2 2009/09/16 17:03:02 ldeniau Exp $
  |
 */
 
 #include <cos/Container.h>
+#include <cos/Number.h>
+
+#include <cos/gen/object.h>
+#include <cos/gen/value.h>
+
+#include <cos/prp/object.h>
 
 // -----
 
 makclass(Container);
 
+// ----- properties
+
+defmethod(OBJ, ggetAt, Object, mP_size)
+  retmethod( gautoDelete(aInt(gsize(_1))) );
+endmethod
 
