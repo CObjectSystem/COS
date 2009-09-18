@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.3 2009/09/16 22:30:10 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.4 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -39,6 +39,7 @@
 
 #include <cos/gen/container.h>
 #include <cos/gen/object.h>
+#include <cos/gen/string.h>
 #include <cos/gen/value.h>
 
 #include <stdlib.h>
@@ -55,9 +56,16 @@ useclass(String, StringDyn, ExBadAlloc);
 
 // -----
 
-#define STRING_GROWTH_RATE 1.618034 // golden ratio
+#ifndef STRING_GROWTH_RATE
+#define STRING_GROWTH_RATE SEQUENCE_GROWTH_RATE
+#endif
 
-STATIC_ASSERT(string_growth_rate_is_too_small, STRING_GROWTH_RATE >= 1.5);
+#ifndef STRING_MINSIZE
+#define STRING_MINSIZE 1024
+#endif
+
+STATIC_ASSERT(string_growth_rate_is_too_small , STRING_GROWTH_RATE >= 1.5);
+STATIC_ASSERT(string_minimun_size_is_too_small, STRING_MINSIZE     >= 256);
 
 // ----- constructors
 
@@ -116,6 +124,21 @@ endmethod
 
 // ----- memory management
 
+static I32
+extra_size(U32 old_capacity, U32 size)
+{
+  U32 new_capacity = old_capacity < STRING_MINSIZE ? STRING_MINSIZE : old_capacity;
+  
+  while (new_capacity - old_capacity < size)
+    new_capacity *= STRING_GROWTH_RATE;
+
+  I32 extra = new_capacity - old_capacity;
+  
+  test_assert(extra > 0 && (U32)extra > size, "string size overflow");
+
+  return extra;
+}
+
 defmethod(void, genlarge, StringDyn, Float) // negative factor means enlarge front
   PRE
     test_assert(self2->value < -1 ||
@@ -132,23 +155,18 @@ defmethod(void, genlarge, StringDyn, Float) // negative factor means enlarge fro
 endmethod
 
 defmethod(void, genlarge, StringDyn, Int) // negative size means enlarge front
-  enum { MIN_SIZE = 1024 };
-  
   PRE
     test_assert(self2->value, "invalid growing size");
   POST
   BODY
-    struct StringFix *strf = &self->StringFix;
-    struct String    *str  = &strf->String;
+    struct StringFix* strf = &self->StringFix;
+    struct String*    str  = &strf->String;
     U32           capacity = strf->capacity;
     ptrdiff_t       offset = str->value - strf->_value;
     BOOL             front = self2->value < 0;
     I32               size = front ? -self2->value : self2->value;
-    
-    if (size < MIN_SIZE)
-      size = MIN_SIZE;
 
-    capacity += size;
+    capacity += size = extra_size(capacity, size);
     
     U8* _value = realloc(strf->_value, capacity*sizeof *strf->_value);
     if (!_value) THROW(ExBadAlloc);
@@ -158,12 +176,12 @@ defmethod(void, genlarge, StringDyn, Int) // negative size means enlarge front
     strf->capacity = capacity;
 
     if (front) // move data to book the new space front
-      str->value = memmove(str->value+size, _value+offset, str->size*sizeof *str->value);
+      str->value = memmove(str->value+size, str->value, str->size*sizeof *str->value);
 endmethod
 
 // ----- adjustment (capacity -> size)
 
-defmethod(void, gadjust, StringDyn)
+defmethod(OBJ, gadjust, StringDyn)
   BOOL ch_cls;
 
   PRE
@@ -188,6 +206,8 @@ defmethod(void, gadjust, StringDyn)
     }
 
     ch_cls = cos_object_changeClass(_1, classref(StringFix));
+
+    retmethod(_1);
 endmethod
 
 // ----- clear (size -> 0)
@@ -215,6 +235,13 @@ defmethod(void, gdropLast, StringDyn)
     str->size--;
 endmethod
 
+defmethod(void, gchop, StringDyn, Char)
+  struct String *str = &self->StringFix.String;
+
+  if (str->size && str->value[str->size-1] == (U32)self2->Int.value)
+    str->size--;
+endmethod
+
 defmethod(void, gdrop, StringDyn, Int)
   struct String *str = &self->StringFix.String;
   BOOL front = self2->value < 0;
@@ -228,23 +255,6 @@ defmethod(void, gdrop, StringDyn, Int)
     str->value += n;
 endmethod
 
-// ----- compute extra size
-
-static inline I32
-extra_size(U32 capacity, U32 size)
-{
-  F64 factor = STRING_GROWTH_RATE;
-
-  while (capacity*(factor - 1.0) < size)
-    factor *= STRING_GROWTH_RATE;
-
-  I32 extra = capacity*(factor - 1.0);
-  
-  test_assert(extra > 0 && (U32)extra > size, "string size overflow");
-
-  return extra;
-}
-
 // ----- prepend, append char
 
 defmethod(void, gprepend, StringDyn, Char)
@@ -253,7 +263,7 @@ defmethod(void, gprepend, StringDyn, Char)
     struct String    *str  = &strf->String;
 
     if (str->value == strf->_value)
-      genlarge(_1, aInt(-extra_size(strf->capacity, 1)));
+      genlarge(_1, aInt(-1));
 
     *--str->value = self2->Int.value, str->size++;
 endmethod
@@ -263,9 +273,9 @@ defmethod(void, gappend, StringDyn, Char)
     struct StringFix *strf = &self->StringFix;
     struct String    *str  = &strf->String;
 
-    if (str->size == strf->capacity)
-      genlarge(_1, aFloat(STRING_GROWTH_RATE));
-      
+    if (str->value + str->size == strf->_value + strf->capacity)
+      genlarge(_1, aInt(1));
+
     str->value[str->size++] = self2->Int.value;
 endmethod
 
@@ -277,7 +287,7 @@ defmethod(void, gprepend, StringDyn, Object)
     struct String    *str  = &strf->String;
 
     if (str->value == strf->_value)
-      genlarge(_1, aInt(-extra_size(strf->capacity, 1)));
+      genlarge(_1, aInt(-1));
 
     str->value[-1] = (U32)gchr(_2), str->value--, str->size++;
 endmethod
@@ -287,9 +297,9 @@ defmethod(void, gappend, StringDyn, Object)
     struct StringFix *strf = &self->StringFix;
     struct String    *str  = &strf->String;
 
-    if (str->size == strf->capacity)
-      genlarge(_1, aInt(extra_size(strf->capacity, 1)));
-      
+    if (str->value + str->size == strf->_value + strf->capacity)
+      genlarge(_1, aInt(1));
+
     str->value[str->size] = (U32)gchr(_2), str->size++;
 endmethod
 
@@ -300,8 +310,8 @@ defmethod(void, gprepend, StringDyn, String)
     struct StringFix *strf = &self->StringFix;
     struct String    *str  = &strf->String;
 
-    if (str->value - strf->_value < self2->size)
-      genlarge(_1, aInt(-extra_size(strf->capacity, self2->size)));
+    if (str->value < strf->_value + self2->size)
+      genlarge(_1, aInt(-self2->size));
 
     str->value -= self2->size;
     str->size  += self2->size;
@@ -313,8 +323,8 @@ defmethod(void, gappend, StringDyn, String)
     struct StringFix *strf = &self->StringFix;
     struct String    *str  = &strf->String;
 
-    if (str->value - strf->_value < self2->size)
-      genlarge(_1, aInt(extra_size(strf->capacity, self2->size)));
+    if (str->value + str->size + self2->size > strf->_value + strf->capacity)
+      genlarge(_1, aInt(self2->size));
 
     memcpy(str->value+str->size, self2->value, self2->size*sizeof *str->value);
     str->size += self2->size;
@@ -334,7 +344,7 @@ defmethod(void, ginsertAt, StringDyn, Int, Object)
     struct String    *str  = &strf->String;
 
     if (str->size == strf->capacity)
-      genlarge(_1, aInt(extra_size(strf->capacity, 1)));
+      genlarge(_1, aInt(1));
 
     if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, str->size);
@@ -358,7 +368,7 @@ defmethod(void, ginsertAt, StringDyn, Int, String)
     struct String    *str  = &strf->String;
 
     if (str->size == strf->capacity)
-      genlarge(_1, aInt(extra_size(strf->capacity, self3->size)));
+      genlarge(_1, aInt(self3->size));
 
     if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, str->size);

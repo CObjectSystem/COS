@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.7 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: String.c,v 1.8 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -55,6 +55,10 @@ makclass(StringN, String);
 
 useclass(ExBadAlloc);
 useclass(String, StringView);
+
+// -----
+
+STATIC_ASSERT(string_auto_max_size_is_too_small, STRING_AUTO_MAXSIZE >= 64);
 
 // --- getters
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_lzy.c,v 1.4 2009/09/16 22:30:10 ldeniau Exp $
+ | $Id: Vector_lzy.c,v 1.5 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -96,7 +96,7 @@ endmethod
 
 // ----- adjustment (capacity -> size)
 
-defmethod(void, gadjust, TL)
+defmethod(OBJ, gadjust, TL)
   if (self->generator)
     grelease(self->generator);
   next_method(self);

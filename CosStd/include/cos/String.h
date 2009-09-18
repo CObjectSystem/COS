@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.6 2009/09/16 22:30:05 ldeniau Exp $
+ | $Id: String.h,v 1.7 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -79,8 +79,8 @@ endclass
 
 // ----- automatic constructors
 
-#define aStr(...)        ( (OBJ)atStr       (__VA_ARGS__) ) // C-string literal
-#define aString(...)     ( (OBJ)atString    (__VA_ARGS__) ) // C-string
+#define aStr(...)     COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),aStr_)) // C-string literal
+#define aString(...)     ( (OBJ)atString    (__VA_ARGS__) )       // C-string
 #define aStringRef(...)  ( (OBJ)atStringRef (__VA_ARGS__) )
 #define aStringView(...) ( (OBJ)atStringView(__VA_ARGS__) )
 
@@ -125,13 +125,15 @@ struct String* StringView_init(struct StringView*, struct String*, struct Slice*
 
 // ----- automatic constructors
 
+#define aStr_(cstr) ( (OBJ)atStr(cstr) )
+
 #define atStr(cstr) \
   ( &(struct String) { {{{ cos_object_auto(String) }}}, \
     (U8[]){ cstr }, sizeof cstr -1 })
 
 #define atString(cstr) String_init( \
   ( &(struct String) { {{{ cos_object_auto(String) }}}, \
-    (U8[STRING_AUTOMAXSIZE]){ "" }, STRING_AUTOMAXSIZE-1 }), cstr )
+    (U8[STRING_AUTO_MAXSIZE]){ "" }, STRING_AUTO_MAXSIZE-1 }), cstr )
 
 // --- StringView
 
@@ -146,8 +148,8 @@ struct String* StringView_init(struct StringView*, struct String*, struct Slice*
 
 // --- some constant
 
-#ifndef STRING_AUTOMAXSIZE
-#define STRING_AUTOMAXSIZE 1024
+#ifndef STRING_AUTO_MAXSIZE
+#define STRING_AUTO_MAXSIZE 1024
 #endif
 
 // --- inliners

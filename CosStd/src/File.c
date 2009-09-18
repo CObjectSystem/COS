@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.4 2009/09/16 22:30:10 ldeniau Exp $
+ | $Id: File.c,v 1.5 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -140,7 +140,7 @@ defmethod(void, ginvariant, OpenFile, (STR)func, (STR)file, (int)line)
   test_assert(self->name, "OpenFile hasn't a file name"      , func, file, line);
 endmethod
 
-// ----- open, close, flush, remove
+// ----- open, close, flush, gisEmpty, remove
 
 defmethod(OBJ, gopen, ClosedFile, String, String)
   BOOL ch_cls;
@@ -189,6 +189,10 @@ defmethod(void, gflush, OpenFile)
     THROW( gnewWith(ExBadStream, gcat(aStr("unable to flush file "), self->name)) );
 endmethod
 
+defmethod(OBJ, gisEmpty, OpenFile)
+  retmethod(feof(self->fd) ? True : False);
+endmethod
+
 defmethod(void, gremove, OpenFile)
   OBJ name = gretain(self->name); PRT(name);
   gclose(_1);
@@ -200,64 +204,12 @@ defmethod(void, gremove, OpenFile)
   grelease(name);
 endmethod
 
-// ----- get, gets
+// ----- generic putLn
 
-defmethod(OBJ, gget, OpenFile, Char)
-  retmethod((self2->Int.value = getc(self->fd)) == EOF ? False : True);
-endmethod
-
-defmethod(OBJ, gget, OpenFile, StringDyn)
-  enum { N = 1024*sizeof(void*)-1 };
+defmethod(OBJ, gputLn, OpenFile, Object)
+  int err = gput(_1,_2) != True || putc('\n', self->fd) == EOF;
   
-  FILE *fd = self->fd;
-  U8 str[N+1];
-
-  while (1) {
-    int c = 0, i = 0;
-    
-    while (i < N && (c = getc(fd)) != EOF) {
-      if (c == '\n') {
-        if ((c = getc(fd)) != EOF && c != '\r') ungetc(c, fd);
-        break;
-      }
-      if (c == '\r') {
-        if ((c = getc(fd)) != EOF && c != '\n') ungetc(c, fd);
-        break;
-      }
-      str[i++] = (unsigned)c;
-    }
-    
-    if (i) gappend(_2, aStringRef(str,i));
-    
-    if (c == EOF || c == '\n' || c == '\r')
-      retmethod(c == EOF ? False : True);
-  }
-endmethod
-
-defmethod(OBJ, ggetData, OpenFile, (void*)ref, (U32*)n)
-  size_t size = *n;
-  
-  *n = fread(ref, 1, size, self->fd);
-
-  retmethod(*n < size ? False : True);
-endmethod
-
-// ----- put, puts
-
-defmethod(OBJ, gput, OpenFile, Char)
-  retmethod(putc(self2->Int.value, self->fd) == EOF ? False : True);
-endmethod
-
-defmethod(OBJ, gput, OpenFile, String)
-  retmethod(fwrite(self2->value, 1, self2->size, self->fd) < self2->size ? False : True);
-endmethod
-
-defmethod(OBJ, gputData, OpenFile, (void*)ref, (U32*)n)
-  size_t size = *n;
-
-  *n = fwrite(ref, 1, size, self->fd);
-
-  retmethod(*n < size ? False : True);
+  retmethod(err ? False : True);
 endmethod
 
 // ----- get/set file (low-level)

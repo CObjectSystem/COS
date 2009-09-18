@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_lzy.c,v 1.4 2009/09/16 22:30:10 ldeniau Exp $
+ | $Id: String_lzy.c,v 1.5 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -103,7 +103,7 @@ endmethod
 
 // ----- adjustment (capacity -> size)
 
-defmethod(void, gadjust, StringLzy)
+defmethod(OBJ, gadjust, StringLzy)
   if (self->generator)
     grelease(self->generator);
   next_method(self);

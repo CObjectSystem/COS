@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.6 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: String_fun.c,v 1.7 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -312,8 +312,7 @@ defmethod(OBJ, gunique, String, Functor)
     }
   }
   
-  gadjust(_str);
-  retmethod(_str);
+  retmethod(gadjust(_str));
 endmethod
 
 // ----- search (functor)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.15 2009/08/29 23:52:05 ldeniau Exp $
+ | $Id: container.h,v 1.16 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -58,17 +58,19 @@ defgeneric(OBJ , gback     , _1);
 // seq-like accessor
 defgeneric(void, gprepend  , _1, what);
 defgeneric(void, gappend   , _1, what);
+defgeneric(void, gchop     , _1, what);
 defgeneric(void, gdrop     , _1, num); // front if num<0
 defgeneric(void, gdropFirst, _1);
 defgeneric(void, gdropLast , _1);
 defgeneric(OBJ , gfirst    , _1);
 defgeneric(OBJ , glast     , _1);
 
+
 // check for elements
 defgeneric(OBJ , gisEmpty  , _1);
 
 // adjust object (e.g. capacity to size)
-defgeneric(void, gadjust   , _1);
+defgeneric(OBJ , gadjust   , _1);
 
 // englarge object memory (e.g. front if by<0)
 defgeneric(void, genlarge  , _1, by);

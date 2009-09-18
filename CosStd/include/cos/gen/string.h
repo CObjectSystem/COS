@@ -1,10 +1,10 @@
-#ifndef COS_GEN_STREAM_H
-#define COS_GEN_STREAM_H
+#ifndef COS_GEN_STRING_H
+#define COS_GEN_STRING_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS generics for streams
+ | COS generics for strings
  |
  o---------------------------------------------------------------------o
  |
@@ -32,28 +32,28 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stream.h,v 1.3 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: string.h,v 1.1 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <stdio.h>
 
-defgeneric(OBJ , gopen  , _1, name, mode);
-defgeneric(void, gclose , _1);
-defgeneric(void, gflush , _1);
-defgeneric(void, gremove, _1);
+// return True or False
+defgeneric(OBJ, gisAlnum , _1);
+defgeneric(OBJ, gisAlpha , _1);
+defgeneric(OBJ, gisBlank , _1);
+defgeneric(OBJ, gisCntrl , _1);
+defgeneric(OBJ, gisDigit , _1);
+defgeneric(OBJ, gisGraph , _1);
+defgeneric(OBJ, gisLower , _1);
+defgeneric(OBJ, gisPrint , _1);
+defgeneric(OBJ, gisPunct , _1);
+defgeneric(OBJ, gisSpace , _1);
+defgeneric(OBJ, gisUpper , _1);
+defgeneric(OBJ, gisXDigit, _1);
 
-// return True (success) or False (failure)
-defgeneric(OBJ, gget    , _1, _2);
-defgeneric(OBJ, ggetLine, _1, _2);
-defgeneric(OBJ, ggetData, _1, _2);
+// in place
+defgeneric(OBJ, gtoLower , _1);
+defgeneric(OBJ, gtoUpper , _1);
 
-defgeneric(OBJ, gput    , _1, _2);
-defgeneric(OBJ, gputLn  , _1, _2);
-
-// low-level FILE access (may be removed in the future)
-defgeneric(FILE*, ggetFILE, _1);
-defgeneric(void , gsetFILE, _1, (FILE*)fd, (STR)tag);
-
-#endif // COS_GEN_STREAM_H
+#endif // COS_GEN_STRING_H

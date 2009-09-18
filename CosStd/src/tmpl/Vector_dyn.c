@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.11 2009/09/16 22:30:10 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.12 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -48,9 +48,16 @@ useclass(TD);
 
 // -----
 
-#define VECTOR_GROWTH_RATE 1.618034 // golden ratio
+#ifndef VECTOR_GROWTH_RATE
+#define VECTOR_GROWTH_RATE SEQUENCE_GROWTH_RATE
+#endif
 
-STATIC_ASSERT(vector_growth_rate_is_too_small, VECTOR_GROWTH_RATE >= 1.5);
+#ifndef VECTOR_MINSIZE
+#define VECTOR_MINSIZE 1024
+#endif
+
+STATIC_ASSERT(vector_growth_rate_is_too_small , VECTOR_GROWTH_RATE >= 1.5);
+STATIC_ASSERT(vector_minimun_size_is_too_small, VECTOR_MINSIZE    >= 256);
 
 // ----- constructors
 
@@ -110,6 +117,21 @@ endmethod
 
 // ----- memory management
 
+static I32
+extra_size(U32 old_capacity, U32 size)
+{
+  U32 new_capacity = old_capacity < VECTOR_MINSIZE ? VECTOR_MINSIZE : old_capacity;
+  
+  while (new_capacity - old_capacity < size)
+    new_capacity *= VECTOR_GROWTH_RATE;
+
+  I32 extra = new_capacity - old_capacity;
+  
+  test_assert(extra > 0 && (U32)extra > size, TS "size overflow");
+
+  return extra;
+}
+
 defmethod(void, genlarge, TD, Float) // negative factor means enlarge front
   PRE
     test_assert(self2->value < -1 ||
@@ -126,53 +148,59 @@ defmethod(void, genlarge, TD, Float) // negative factor means enlarge front
 endmethod
 
 defmethod(void, genlarge, TD, Int) // negative size means enlarge front
-  enum { MIN_SIZE = 1024 };
-  
-  struct TF*  vecf = &self->TF;
-  struct T*    vec = &vecf->T;
-  U32     capacity = vecf->capacity;
-  ptrdiff_t offset = vec->valref - vecf->_valref;
-  BOOL       front = self2->value < 0;
-  U32         size = front ? -self2->value : self2->value;
+  PRE
+    test_assert(self2->value, "invalid growing size");
+  POST
+  BODY
+    struct TF*  vecf = &self->TF;
+    struct T*   vec  = &vecf->T;
+    U32     capacity = vecf->capacity;
+    ptrdiff_t offset = vec->valref - vecf->_valref;
+    BOOL       front = self2->value < 0;
+    U32         size = front ? -self2->value : self2->value;
 
-  if (size < MIN_SIZE)
-    size = MIN_SIZE;
+    capacity += size = extra_size(capacity, size);
+    
+    VAL *_valref = realloc(vecf->_valref, capacity*sizeof *vecf->_valref);
+    if (!_valref) THROW(ExBadAlloc);
 
-  capacity += size;
-  
-  VAL *_valref = realloc(vecf->_valref, capacity*sizeof *vecf->_valref);
-  if (!_valref) THROW(ExBadAlloc);
-
-  vec -> valref  = _valref + offset;
-  vecf->_valref  = _valref;
-  vecf->capacity = capacity;
-  
-  if (front) // move data to book the new space front
-    vec->valref = memmove(vec->valref+size, _valref+offset, vec->size*sizeof *vec->valref);
+    vec -> valref  = _valref + offset;
+    vecf->_valref  = _valref;
+    vecf->capacity = capacity;
+    
+    if (front) // move data to book the new space front
+      vec->valref = memmove(vec->valref+size, vec->valref, vec->size*sizeof *vec->valref);
 endmethod
 
 // ----- adjustment (capacity -> size)
 
-defmethod(void, gadjust, TD)
-  struct TF *vecf = &self->TF;
-  struct T  *vec  = &vecf->T;
+defmethod(OBJ, gadjust, TD)
+  BOOL ch_cls;
+  
+  PRE
+  POST
+    test_assert( ch_cls, "unable to change from dynamic to fixed size " TS );
+  BODY
+    struct TF *vecf = &self->TF;
+    struct T  *vec  = &vecf->T;
 
-  // move data to base
-  if (vec->valref != vecf->_valref)
-    vec->valref = memmove(vecf->_valref, vec->valref, vec->size*sizeof *vecf->_valref);
+    // move data to base
+    if (vec->valref != vecf->_valref)
+      vec->valref = memmove(vecf->_valref, vec->valref, vec->size*sizeof *vecf->_valref);
 
-  // shrink storage
-  if (vec->size != vecf->capacity) {
-    VAL *_valref = realloc(vecf->_valref, vec->size*sizeof *vecf->_valref);
-    if (!_valref) THROW(ExBadAlloc);
+    // shrink storage
+    if (vec->size != vecf->capacity) {
+      VAL *_valref = realloc(vecf->_valref, vec->size*sizeof *vecf->_valref);
+      if (!_valref) THROW(ExBadAlloc);
 
-    vec -> valref  = _valref;
-    vecf->_valref  = _valref;
-    vecf->capacity = vec->size;
-  }
+      vec -> valref  = _valref;
+      vecf->_valref  = _valref;
+      vecf->capacity = vec->size;
+    }
 
-  test_assert( cos_object_changeClass(_1, classref(TF)),
-               "unable to change from dynamic to fixed size " TS );
+    ch_cls = cos_object_changeClass(_1, classref(TF));
+    
+    retmethod(_1);
 endmethod
 
 // ----- clear (size -> 0)
@@ -245,28 +273,13 @@ endmethod
 
 // ----- prepend, append object
 
-static inline I32
-extra_size(U32 capacity, U32 size)
-{
-  F64 factor = VECTOR_GROWTH_RATE;
-
-  while (capacity*(factor - 1.0) < size)
-    factor *= VECTOR_GROWTH_RATE;
-
-  I32 extra = capacity*(factor - 1.0);
-  
-  test_assert(extra > 0 && (U32)extra > size, TS "size overflow");
-
-  return extra;
-}
-
 defmethod(void, gprepend, TD, Object)
   PRE POST BODY
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
     if (vec->valref == vecf->_valref)
-      genlarge(_1, aInt(-extra_size(vecf->capacity, 1)));
+      genlarge(_1, aInt(-1));
 
     vec->valref[-1] = RETAIN(TOVAL(_2)), vec->valref--, vec->size++;
 endmethod
@@ -276,8 +289,8 @@ defmethod(void, gappend, TD, Object)
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
-    if (vec->size == vecf->capacity)
-      genlarge(_1, aInt(extra_size(vecf->capacity, 1)));
+    if (vec->valref + vec->size == vecf->_valref + vecf->capacity)
+      genlarge(_1, aInt(1));
       
     vec->valref[vec->size] = RETAIN(TOVAL(_2)), vec->size++;
 endmethod
@@ -289,8 +302,8 @@ defmethod(void, gprepend, TD, T)
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
-    if (vec->valref - vecf->_valref < self2->size)
-      genlarge(_1, aInt(-extra_size(vecf->capacity, self2->size)));
+    if (vec->valref < vecf->_valref + self2->size)
+      genlarge(_1, aInt(-self2->size));
 
     VAL *src   = self2->valref;
     U32  src_n = self2->size;
@@ -308,8 +321,8 @@ defmethod(void, gappend, TD, T)
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
 
-    if (vecf->capacity - vec->size < self2->size)
-      genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
+    if (vec->valref + vec->size + self2->size > vecf->_valref + vecf->capacity)
+      genlarge(_1, aInt(self2->size));
 
     U32  src_n = self2->size;
     I32  src_s = self2->stride;
@@ -388,7 +401,7 @@ defmethod(void, ginsertAt, TD, Int, Object)
     struct T  *vec  = &vecf->T;
 
     if (vec->size == vecf->capacity)
-      genlarge(_1, aInt(extra_size(vecf->capacity, 1)));
+      genlarge(_1, aInt(1));
 
     if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, vec->size);
@@ -416,7 +429,7 @@ defmethod(void, ginsertAt, TD, Slice, Object)
     U32  dst_n = Slice_size(self2);
 
     if (vec->size + dst_n > vecf->capacity)
-      genlarge(_1, aInt(extra_size(vecf->capacity, dst_n)));
+      genlarge(_1, aInt(dst_n));
 
     // always start from the end (reverse fill with positive stride)
     if (Slice_stride(self2) > 0) {
@@ -461,7 +474,7 @@ defmethod(void, ginsertAt, TD, IntVector, Object)
 
   // enlarge
   if (vec->size + self2->size > vecf->capacity)
-    genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
+    genlarge(_1, aInt(self2->size));
 
   test_assert( prepareRandomInsert(vec,self2), "index out of range" );
 
@@ -500,7 +513,7 @@ defmethod(void, ginsertAt, TD, Slice, T)
     U32  dst_n = Slice_size(self2);
 
     if (vec->size + dst_n > vecf->capacity)
-      genlarge(_1, aInt(extra_size(vecf->capacity, dst_n)));
+      genlarge(_1, aInt(dst_n));
 
     // always start from the end (reverse fill with positive stride)
     if (Slice_stride(self2) > 0) {
@@ -545,7 +558,7 @@ defmethod(void, ginsertAt, TD, IntVector, T)
 
     // enlarge
     if (vec->size + self2->size > vecf->capacity)
-      genlarge(_1, aInt(extra_size(vecf->capacity, self2->size)));
+      genlarge(_1, aInt(self2->size));
 
     test_assert( prepareRandomInsert(vec,self2), "index out of range" );
 

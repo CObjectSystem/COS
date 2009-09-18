@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.5 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.6 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -281,8 +281,7 @@ defmethod(OBJ, gselect, T, Functor)
     val += val_s;
   }
 
-  gadjust(_vec);
-  retmethod(_vec);
+  retmethod(gadjust(_vec));
 endmethod
 
 defmethod(OBJ, greject, T, Functor)
@@ -301,8 +300,7 @@ defmethod(OBJ, greject, T, Functor)
     val += val_s;
   }
 
-  gadjust(_vec);
-  retmethod(_vec);
+  retmethod(gadjust(_vec));
 endmethod
 
 // ----- reduce
@@ -588,8 +586,7 @@ defmethod(OBJ, gunique, T, Functor)
     }
   }
   
-  gadjust(_vec);
-  retmethod(_vec);
+  retmethod(gadjust(_vec));
 endmethod
 
 // ----- finding

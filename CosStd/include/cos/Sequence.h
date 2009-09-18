@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.10 2009/07/24 12:36:26 ldeniau Exp $
+ | $Id: Sequence.h,v 1.11 2009/09/18 16:42:30 ldeniau Exp $
  |
 */
 
@@ -43,6 +43,8 @@ endclass
 
 defclass(ValueSequence, Sequence)
 endclass
+
+#define SEQUENCE_GROWTH_RATE 1.618034 // golden ratio
 
 /***********************************************************
  * Implementation (private)
