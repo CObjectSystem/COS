@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_io.c,v 1.1 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: String_io.c,v 1.2 2009/09/18 16:55:25 ldeniau Exp $
  |
 */
 
@@ -139,9 +139,6 @@ defmethod(OBJ, ggetData, OpenFile, StringDyn)
     struct StringFix *strf = &self2->StringFix;
     struct String    *str  = &strf->String;
 
-    FILE *fd    = self->fd;
-    U32  *val_n = &str->size;
-
     // clear
     str->size  = 0;
     str->value = strf->_value;
@@ -151,12 +148,13 @@ defmethod(OBJ, ggetData, OpenFile, StringDyn)
     while(1) {
       U8* val = str->value + str->size;
       U8* end = strf->_value + strf->capacity;
-    
-      while (val != end && (c = getc(fd)) != EOF)
-        *val++ = (unsigned)c, ++*val_n;
+
+      size_t n = fread(val, 1, end-val, self->fd);
+          
+      str->size += n;
       
-      if (c == EOF)
-        retmethod(c == EOF ? False : True);
+      if (val + n < end)
+        retmethod(False);
 
       genlarge(_2, aInt(1));
     }
