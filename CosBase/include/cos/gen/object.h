@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.28 2009/08/19 10:14:22 ldeniau Exp $
+ | $Id: object.h,v 1.29 2009/09/18 16:17:46 ldeniau Exp $
  |
 */
 
@@ -71,6 +71,8 @@ defgeneric(OBJ , gautoRelease  , _1);
 defgeneric(U32 , gretainCount  , _1);
 
 // identity, conversion, coercion
+defgeneric(OBJ , gisNil        , _1);     // returns True or False
+defgeneric(OBJ , gisNull       , _1);     // returns True or False
 defgeneric(OBJ , gisKindOf     , _1, _2); // returns True or False
 defgeneric(OBJ , gisInstanceOf , _1, _2); // returns True or False
 defgeneric(OBJ , gclass        , _1);

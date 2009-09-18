@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Nil.h,v 1.4 2009/02/25 23:06:08 ldeniau Exp $
+ | $Id: Nil.h,v 1.5 2009/09/18 16:17:46 ldeniau Exp $
  |
 */
 
@@ -45,8 +45,10 @@
    Nil and classes deriving from Nil cannot have instance, also called
    class-objects from which properties and predicates derive.
    
-   Use Nil instead to set an object reference to a no-object state.
+   Use Nil (instead of 0) if you mean "no-object".
    Remember, message cannot be sent to (OBJ)0, but it can to Nil.
+   
+   Use Null (instead of Nil or 0) if you mean "no-data" object.
 */
 
 defclass(Nil,_)

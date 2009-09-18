@@ -1,7 +1,10 @@
+#ifndef COS_NULL_H
+#define COS_NULL_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Nil (root class)
+ | COS TrueFalse
  |
  o---------------------------------------------------------------------o
  |
@@ -29,25 +32,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Nil.c,v 1.5 2009/09/18 16:17:46 ldeniau Exp $
+ | $Id: Null.h,v 1.1 2009/09/18 16:17:46 ldeniau Exp $
  |
 */
 
-#include <cos/Nil.h>
+#include <cos/Predicate.h>
 
-#include <cos/gen/object.h>
+/* NOTE-USER: Null behavior
 
-// -----
+   Null and classes deriving from Null are insentive to message (by default).
 
-makclass(Nil,_);
+   Use Null (instead of Nil or 0) if you mean "no-data" object (predicate).
+   Remember, message cannot be sent to (OBJ)0, but it can to Null.
 
-// -----
+   Use Nil (instead of Null) if you mean "no-object".
+*/
 
-defmethod(OBJ, gisNil, mNil)
-  retmethod(True);
-endmethod
+defclass(Null, Predicate)
+endclass
 
-defmethod(OBJ, gisNil, Object)
-  retmethod(False);
-endmethod
-
+#endif // COS_NULL_H
