@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Null.c,v 1.1 2009/09/18 16:17:46 ldeniau Exp $
+ | $Id: Null.c,v 1.2 2009/09/21 07:55:33 ldeniau Exp $
  |
 */
 
@@ -63,10 +63,10 @@ trace(SEL sel, OBJ obj[])
 }
 
 static COS_ALWAYS_INLINE void
-chkret(SEL sel, OBJ* ret, struct mNull* null)
+chkret(SEL sel, OBJ* ret)
 {
   if (COS_GEN_ISOBJ(sel))
-    *ret = (OBJ)null;
+    *ret = Nil;
 }
 
 // ----- rank 1
@@ -82,13 +82,13 @@ endmethod
 defmethod(void, gunrecognizedMessage2, mNull, Object)
   OBJ obj[2]; obj[0]=_1, obj[1]=_2;
   trace(_sel,obj);
-  chkret(_sel,_ret,self1);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage2, Object, mNull)
   OBJ obj[2]; obj[0]=_1, obj[1]=_2;
   trace(_sel,obj);
-  chkret(_sel,_ret,self2);
+  chkret(_sel,_ret);
 endmethod
 
 // ----- rank 3
@@ -96,19 +96,19 @@ endmethod
 defmethod(void, gunrecognizedMessage3, mNull, Object, Object)
   OBJ obj[3]; obj[0]=_1, obj[1]=_2, obj[2]=_3;
   trace(_sel,obj);
-  chkret(_sel,_ret,self1);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Object, mNull, Object)
   OBJ obj[3]; obj[0]=_1, obj[1]=_2, obj[2]=_3;
   trace(_sel,obj);
-  chkret(_sel,_ret,self2);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Object, Object, mNull)
   OBJ obj[3]; obj[0]=_1, obj[1]=_2, obj[2]=_3;
   trace(_sel,obj);
-  chkret(_sel,_ret,self3);
+  chkret(_sel,_ret);
 endmethod
 
 // ----- rank 4
@@ -116,25 +116,25 @@ endmethod
 defmethod(void, gunrecognizedMessage4, mNull, Object, Object, Object)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4;
   trace(_sel,obj);
-  chkret(_sel,_ret,self1);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Object, mNull, Object, Object)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4;
   trace(_sel,obj);
-  chkret(_sel,_ret,self2);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Object, Object, mNull, Object)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4;
   trace(_sel,obj);
-  chkret(_sel,_ret,self3);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Object, Object, Object, mNull)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4;
   trace(_sel,obj);
-  chkret(_sel,_ret,self4);
+  chkret(_sel,_ret);
 endmethod
 
 // ----- rank 5
@@ -142,30 +142,30 @@ endmethod
 defmethod(void, gunrecognizedMessage5, mNull, Object, Object, Object, Object)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
   trace(_sel,obj);
-  chkret(_sel,_ret,self1);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, mNull, Object, Object, Object)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
   trace(_sel,obj);
-  chkret(_sel,_ret,self2);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Object, mNull, Object, Object)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
   trace(_sel,obj);
-  chkret(_sel,_ret,self3);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Object, Object, mNull, Object)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
   trace(_sel,obj);
-  chkret(_sel,_ret,self4);
+  chkret(_sel,_ret);
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, mNull)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
   trace(_sel,obj);
-  chkret(_sel,_ret,self5);
+  chkret(_sel,_ret);
 endmethod
 
