@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.13 2009/09/18 16:17:46 ldeniau Exp $
+ | $Id: Proxy.c,v 1.14 2009/09/21 09:36:58 ldeniau Exp $
  |
 */
 
@@ -64,119 +64,368 @@ defmethod(OBJ, gdeinit, Proxy)
   retmethod(_1);
 endmethod
 
-// ----- understanding
+// ----- understanding (1+3+7+15+31=57 cases)
 
-// ----- rank 1
+// ----- rank 1 (2^1-1=1 case)
 
 defmethod(OBJ, gunderstandMessage1, Proxy, (SEL)msg)
-  next_method(self1,msg);
-  if (RETVAL == False) forward_message(self1->obj);
+  next_method(self,msg);
+  if (RETVAL == False)
+    forward_message(self->obj);
 endmethod
 
-// ----- rank 2
+// ----- rank 2 (2^2-1=3 cases)
 
 defmethod(OBJ, gunderstandMessage2, Proxy, Object, (SEL)msg)
-  next_method(self1,self2,msg);
-  if (RETVAL == False) forward_message(self1->obj,_2);
+  next_method(self,self2,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2);
 endmethod
 
 defmethod(OBJ, gunderstandMessage2, Object, Proxy, (SEL)msg)
-  next_method(self1,self2,msg);
-  if (RETVAL == False) forward_message(_1,self2->obj);
+  next_method(self,self2,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj);
 endmethod
 
 defmethod(OBJ, gunderstandMessage2, Proxy, Proxy, (SEL)msg)
-  next_method(self1,self2,msg);
-  if (RETVAL == False) forward_message(self2->obj,self2->obj);
+  next_method(self,self2,msg);
+  if (RETVAL == False)
+    forward_message(self2->obj,self2->obj);
 endmethod
 
-// ----- rank 3
+// ----- rank 3 (2^3-1=7 cases)
 
 defmethod(OBJ, gunderstandMessage3, Proxy, Object, Object, (SEL)msg)
-  next_method(self1,self2,self3,msg);
-  if (RETVAL == False) forward_message(self1->obj,_2,_3);
+  next_method(self,self2,self3,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,_3);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Object, Proxy, Object, (SEL)msg)
-  next_method(self1,self2,self3,msg);
-  if (RETVAL == False) forward_message(_1,self2->obj,_3);
+  next_method(self,self2,self3,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,_3);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Object, Object, Proxy, (SEL)msg)
-  next_method(self1,self2,self3,msg);
-  if (RETVAL == False) forward_message(_1,_2,self3->obj);
+  next_method(self,self2,self3,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,self3->obj);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Proxy, Proxy, Object, (SEL)msg)
-  next_method(self1,self2,self3,msg);
-  if (RETVAL == False) forward_message(self1->obj,self2->obj,_3);
+  next_method(self,self2,self3,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,_3);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Proxy, Object, Proxy, (SEL)msg)
-  next_method(self1,self2,self3,msg);
-  if (RETVAL == False) forward_message(self1->obj,_2,self3->obj);
+  next_method(self,self2,self3,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,self3->obj);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Object, Proxy, Proxy, (SEL)msg)
-  next_method(self1,self2,self3,msg);
-  if (RETVAL == False) forward_message(_1,self2->obj,self3->obj);
+  next_method(self,self2,self3,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,self3->obj);
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Proxy, Proxy, Proxy, (SEL)msg)
-  next_method(self1,self2,self3,msg);
-  if (RETVAL == False) forward_message(self1->obj,self2->obj,self3->obj);
+  next_method(self,self2,self3,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,self3->obj);
 endmethod
 
-// ----- rank 4
+// ----- rank 4 (2^4-1=15 cases)
 
 defmethod(OBJ, gunderstandMessage4, Proxy, Object, Object, Object, (SEL)msg)
-  next_method(self1,self2,self3,self4,msg);
-  if (RETVAL == False) forward_message(self1->obj,_2,_3,_4);
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,_3,_4);
 endmethod
 
 defmethod(OBJ, gunderstandMessage4, Object, Proxy, Object, Object, (SEL)msg)
-  next_method(self1,self2,self3,self4,msg);
-  if (RETVAL == False) forward_message(_1,self2->obj,_3,_4);
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,_3,_4);
 endmethod
 
 defmethod(OBJ, gunderstandMessage4, Object, Object, Proxy, Object, (SEL)msg)
-  next_method(self1,self2,self3,self4,msg);
-  if (RETVAL == False) forward_message(_1,_2,self3->obj,_4);
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,self3->obj,_4);
 endmethod
 
 defmethod(OBJ, gunderstandMessage4, Object, Object, Object, Proxy, (SEL)msg)
-  next_method(self1,self2,self3,self4,msg);
-  if (RETVAL == False) forward_message(_1,_2,_3,self4->obj);
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,_3,self4->obj);
 endmethod
 
-// ----- rank 5
+
+defmethod(OBJ, gunderstandMessage4, Proxy, Proxy, Object, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,_3,_4);
+endmethod
+
+defmethod(OBJ, gunderstandMessage4, Proxy, Object, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,self3->obj,_4);
+endmethod
+
+defmethod(OBJ, gunderstandMessage4, Proxy, Object, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,_3,self4->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage4, Object, Proxy, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,self3->obj,_4);
+endmethod
+
+defmethod(OBJ, gunderstandMessage4, Object, Proxy, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,_3,self4->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage4, Object, Object, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,self3->obj,self4->obj);
+endmethod
+
+
+defmethod(OBJ, gunderstandMessage4, Proxy, Proxy, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,self3->obj,_4);
+endmethod
+
+defmethod(OBJ, gunderstandMessage4, Proxy, Proxy, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,_3,self4->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage4, Proxy, Object, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,self3->obj,self4->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage4, Object, Proxy, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,self3->obj,self4->obj);
+endmethod
+
+
+defmethod(OBJ, gunderstandMessage4, Proxy, Proxy, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,self3->obj,self4->obj);
+endmethod
+
+// ----- rank 5 (2^5-1=31 cases)
 
 defmethod(OBJ, gunderstandMessage5, Proxy, Object, Object, Object, Object, (SEL)msg)
-  next_method(self1,self2,self3,self4,self5,msg);
-  if (RETVAL == False) forward_message(self1->obj,_2,_3,_4,_5);
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,_3,_4,_5);
 endmethod
 
 defmethod(OBJ, gunderstandMessage5, Object, Proxy, Object, Object, Object, (SEL)msg)
-  next_method(self1,self2,self3,self4,self5,msg);
-  if (RETVAL == False) forward_message(_1,self2->obj,_3,_4,_5);
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,_3,_4,_5);
 endmethod
 
 defmethod(OBJ, gunderstandMessage5, Object, Object, Proxy, Object, Object, (SEL)msg)
-  next_method(self1,self2,self3,self4,self5,msg);
-  if (RETVAL == False) forward_message(_1,_2,self3->obj,_4,_5);
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,self3->obj,_4,_5);
 endmethod
 
 defmethod(OBJ, gunderstandMessage5, Object, Object, Object, Proxy, Object, (SEL)msg)
-  next_method(self1,self2,self3,self4,self5,msg);
-  if (RETVAL == False) forward_message(_1,_2,_3,self4->obj,_5);
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,_3,self4->obj,_5);
 endmethod
 
 defmethod(OBJ, gunderstandMessage5, Object, Object, Object, Object, Proxy, (SEL)msg)
-  next_method(self1,self2,self3,self4,self5,msg);
-  if (RETVAL == False) forward_message(_1,_2,_3,_4,self5->obj);
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,_3,_4,self5->obj);
 endmethod
 
-// ----- unrecognized
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Proxy, Object, Object, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,_3,_4,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Object, Proxy, Object, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,self3->obj,_4,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Object, Object, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,_3,self4->obj,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Object, Object, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,_3,_4,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Proxy, Proxy, Object, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,self3->obj,_4,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Proxy, Object, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,_3,self4->obj,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Proxy, Object, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,_3,_4,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Object, Proxy, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,self3->obj,self4->obj,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Object, Proxy, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,self3->obj,_4,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Object, Object, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,_3,self4->obj,self5->obj);
+endmethod
+
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Proxy, Proxy, Object, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,self3->obj,_4,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Proxy, Object, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,_3,self4->obj,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Proxy, Object, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,_3,_4,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Object, Proxy, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,self3->obj,self4->obj,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Object, Proxy, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,self3->obj,_4,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Object, Object, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,_3,self4->obj,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Proxy, Proxy, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,self3->obj,self4->obj,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Proxy, Proxy, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,self3->obj,_4,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Proxy, Object, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,_3,self4->obj,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Object, Proxy, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,_2,self3->obj,self4->obj,self5->obj);
+endmethod
+
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Proxy, Proxy, Proxy, Object, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,self3->obj,self4->obj,_5);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Proxy, Proxy, Object, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,self3->obj,_4,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Proxy, Object, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,_3,self4->obj,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Object, Proxy, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,_2,self3->obj,self4->obj,self5->obj);
+endmethod
+
+defmethod(OBJ, gunderstandMessage5, Object, Proxy, Proxy, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(_1,self2->obj,self3->obj,self4->obj,self5->obj);
+endmethod
+
+
+defmethod(OBJ, gunderstandMessage5, Proxy, Proxy, Proxy, Proxy, Proxy, (SEL)msg)
+  next_method(self,self2,self3,self4,self5,msg);
+  if (RETVAL == False)
+    forward_message(self->obj,self2->obj,self3->obj,self4->obj,self5->obj);
+endmethod
+
+// ----- unrecognized (1+3+7+15+31=57 cases)
 
 static COS_ALWAYS_INLINE void
 chkret(SEL sel, OBJ* ret, struct Proxy* pxy)
@@ -204,18 +453,43 @@ chkret3(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy*
   }
 }
 
-// ----- rank 1
+static COS_ALWAYS_INLINE void
+chkret4(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3,
+                           struct Proxy* pxy4)
+{
+  if (COS_GEN_ISOBJ(sel)) {
+         if (*ret == pxy1->obj) *ret = (OBJ)pxy1;
+    else if (*ret == pxy2->obj) *ret = (OBJ)pxy2;
+    else if (*ret == pxy3->obj) *ret = (OBJ)pxy3;
+    else if (*ret == pxy4->obj) *ret = (OBJ)pxy4;
+  }
+}
+
+static COS_ALWAYS_INLINE void
+chkret5(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3,
+                           struct Proxy* pxy4, struct Proxy* pxy5)
+{
+  if (COS_GEN_ISOBJ(sel)) {
+         if (*ret == pxy1->obj) *ret = (OBJ)pxy1;
+    else if (*ret == pxy2->obj) *ret = (OBJ)pxy2;
+    else if (*ret == pxy3->obj) *ret = (OBJ)pxy3;
+    else if (*ret == pxy4->obj) *ret = (OBJ)pxy4;
+    else if (*ret == pxy5->obj) *ret = (OBJ)pxy5;
+  }
+}
+
+// ----- rank 1 (2^1-1=1 case)
 
 defmethod(void, gunrecognizedMessage1, Proxy)
-  forward_message(self1->obj);
-  chkret(_sel,_ret,self1);
+  forward_message(self->obj);
+  chkret(_sel,_ret,self);
 endmethod
 
-// ----- rank 2
+// ----- rank 2 (2^2-1=3 cases)
 
 defmethod(void, gunrecognizedMessage2, Proxy, Object)
-  forward_message(self1->obj,_2);
-  chkret(_sel,_ret,self1);
+  forward_message(self->obj,_2);
+  chkret(_sel,_ret,self);
 endmethod
 
 defmethod(void, gunrecognizedMessage2, Object, Proxy)
@@ -223,16 +497,17 @@ defmethod(void, gunrecognizedMessage2, Object, Proxy)
   chkret(_sel,_ret,self2);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage2, Proxy, Proxy)
-  forward_message(self1->obj,self2->obj);
-  chkret2(_sel,_ret,self1,self2);
+  forward_message(self->obj,self2->obj);
+  chkret2(_sel,_ret,self,self2);
 endmethod
 
-// ----- rank 3
+// ----- rank 3 (2^3-1=7 cases)
 
 defmethod(void, gunrecognizedMessage3, Proxy, Object, Object)
-  forward_message(self1->obj,_2,_3);
-  chkret(_sel,_ret,self1);
+  forward_message(self->obj,_2,_3);
+  chkret(_sel,_ret,self);
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Object, Proxy, Object)
@@ -245,14 +520,15 @@ defmethod(void, gunrecognizedMessage3, Object, Object, Proxy)
   chkret(_sel,_ret,self3);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage3, Proxy, Proxy, Object)
-  forward_message(self1->obj,self2->obj,_3);
-  chkret2(_sel,_ret,self1,self2);
+  forward_message(self->obj,self2->obj,_3);
+  chkret2(_sel,_ret,self,self2);
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Proxy, Object, Proxy)
-  forward_message(self1->obj,_2,self3->obj);
-  chkret2(_sel,_ret,self1,self3);
+  forward_message(self->obj,_2,self3->obj);
+  chkret2(_sel,_ret,self,self3);
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Object, Proxy, Proxy)
@@ -260,16 +536,17 @@ defmethod(void, gunrecognizedMessage3, Object, Proxy, Proxy)
   chkret2(_sel,_ret,self2,self3);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage3, Proxy, Proxy, Proxy)
-  forward_message(self1->obj,self2->obj,self3->obj);
-  chkret3(_sel,_ret,self1,self2,self3);
+  forward_message(self->obj,self2->obj,self3->obj);
+  chkret3(_sel,_ret,self,self2,self3);
 endmethod
 
-// ----- rank 4
+// ----- rank 4 (2^4-1=15 cases)
 
 defmethod(void, gunrecognizedMessage4, Proxy, Object, Object, Object)
-  forward_message(self1->obj,_2,_3,_4);
-  chkret(_sel,_ret,self1);
+  forward_message(self->obj,_2,_3,_4);
+  chkret(_sel,_ret,self);
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Object, Proxy, Object, Object)
@@ -287,11 +564,69 @@ defmethod(void, gunrecognizedMessage4, Object, Object, Object, Proxy)
   chkret(_sel,_ret,self4);
 endmethod
 
-// ----- rank 5
+
+defmethod(void, gunrecognizedMessage4, Proxy, Proxy, Object, Object)
+  forward_message(self->obj,self2->obj,_3,_4);
+  chkret2(_sel,_ret,self,self2);
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Proxy, Object, Proxy, Object)
+  forward_message(self->obj,_2,self3->obj,_4);
+  chkret2(_sel,_ret,self,self3);
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Proxy, Object, Object, Proxy)
+  forward_message(self->obj,_2,_3,self4->obj);
+  chkret2(_sel,_ret,self,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Object, Proxy, Proxy, Object)
+  forward_message(_1,self2->obj,self3->obj,_4);
+  chkret2(_sel,_ret,self2,self3);
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Object, Proxy, Object, Proxy)
+  forward_message(_1,self2->obj,_3,self4->obj);
+  chkret2(_sel,_ret,self2,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Object, Object, Proxy, Proxy)
+  forward_message(_1,_2,self3->obj,self4->obj);
+  chkret2(_sel,_ret,self3,self4);
+endmethod
+
+
+defmethod(void, gunrecognizedMessage4, Proxy, Proxy, Proxy, Object)
+  forward_message(self->obj,self2->obj,self3->obj,_4);
+  chkret3(_sel,_ret,self,self2,self3);
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Proxy, Proxy, Object, Proxy)
+  forward_message(self->obj,self2->obj,_3,self4->obj);
+  chkret3(_sel,_ret,self,self2,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Proxy, Object, Proxy, Proxy)
+  forward_message(self->obj,_2,self3->obj,self4->obj);
+  chkret3(_sel,_ret,self,self3,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Object, Proxy, Proxy, Proxy)
+  forward_message(_1,self2->obj,self3->obj,self4->obj);
+  chkret3(_sel,_ret,self2,self3,self4);
+endmethod
+
+
+defmethod(void, gunrecognizedMessage4, Proxy, Proxy, Proxy, Proxy)
+  forward_message(self->obj,self2->obj,self3->obj,self4->obj);
+  chkret4(_sel,_ret,self,self2,self3,self4);
+endmethod
+
+// ----- rank 5 (2^5-1=31 cases)
 
 defmethod(void, gunrecognizedMessage5, Proxy, Object, Object, Object, Object)
-  forward_message(self1->obj,_2,_3,_4,_5);
-  chkret(_sel,_ret,self1);
+  forward_message(self->obj,_2,_3,_4,_5);
+  chkret(_sel,_ret,self);
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Proxy, Object, Object, Object)
@@ -312,5 +647,139 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Proxy)
   forward_message(_1,_2,_3,_4,self5->obj);
   chkret(_sel,_ret,self5);
+endmethod
+
+
+defmethod(void, gunrecognizedMessage5, Proxy, Proxy, Object, Object, Object)
+  forward_message(self->obj,self2->obj,_3,_4,_5);
+  chkret2(_sel,_ret,self,self2);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Object, Proxy, Object, Object)
+  forward_message(self->obj,_2,self3->obj,_4,_5);
+  chkret2(_sel,_ret,self,self3);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Object, Object, Proxy, Object)
+  forward_message(self->obj,_2,_3,self4->obj,_5);
+  chkret2(_sel,_ret,self,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Object, Object, Object, Proxy)
+  forward_message(self->obj,_2,_3,_4,self5->obj);
+  chkret2(_sel,_ret,self,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Proxy, Proxy, Object, Object)
+  forward_message(_1,self2->obj,self3->obj,_4,_5);
+  chkret2(_sel,_ret,self2,self3);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Proxy, Object, Proxy, Object)
+  forward_message(_1,self2->obj,_3,self4->obj,_5);
+  chkret2(_sel,_ret,self2,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Proxy, Object, Object, Proxy)
+  forward_message(_1,self2->obj,_3,_4,self5->obj);
+  chkret2(_sel,_ret,self2,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Object, Proxy, Proxy, Object)
+  forward_message(_1,_2,self3->obj,self4->obj,_5);
+  chkret2(_sel,_ret,self3,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Object, Proxy, Object, Proxy)
+  forward_message(_1,_2,self3->obj,_4,self5->obj);
+  chkret2(_sel,_ret,self3,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Object, Object, Proxy, Proxy)
+  forward_message(_1,_2,_3,self4->obj,self5->obj);
+  chkret2(_sel,_ret,self4,self5);
+endmethod
+
+
+defmethod(void, gunrecognizedMessage5, Proxy, Proxy, Proxy, Object, Object)
+  forward_message(self->obj,self2->obj,self3->obj,_4,_5);
+  chkret3(_sel,_ret,self,self2,self3);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Proxy, Object, Proxy, Object)
+  forward_message(self->obj,self2->obj,_3,self4->obj,_5);
+  chkret3(_sel,_ret,self,self2,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Proxy, Object, Object, Proxy)
+  forward_message(self->obj,self2->obj,_3,_4,self5->obj);
+  chkret3(_sel,_ret,self,self2,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Object, Proxy, Proxy, Object)
+  forward_message(self->obj,_2,self3->obj,self4->obj,_5);
+  chkret3(_sel,_ret,self,self3,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Object, Proxy, Object, Proxy)
+  forward_message(self->obj,_2,self3->obj,_4,self5->obj);
+  chkret3(_sel,_ret,self,self3,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Object, Object, Proxy, Proxy)
+  forward_message(self->obj,_2,_3,self4->obj,self5->obj);
+  chkret3(_sel,_ret,self,self4,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Proxy, Proxy, Proxy, Object)
+  forward_message(_1,self2->obj,self3->obj,self4->obj,_5);
+  chkret3(_sel,_ret,self2,self3,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Proxy, Proxy, Object, Proxy)
+  forward_message(_1,self2->obj,self3->obj,_4,self5->obj);
+  chkret3(_sel,_ret,self2,self3,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Proxy, Object, Proxy, Proxy)
+  forward_message(_1,self2->obj,_2,self4->obj,self5->obj);
+  chkret3(_sel,_ret,self2,self4,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Object, Proxy, Proxy, Proxy)
+  forward_message(_1,_2,self3->obj,self4->obj,self5->obj);
+  chkret3(_sel,_ret,self3,self4,self5);
+endmethod
+
+
+defmethod(void, gunrecognizedMessage5, Proxy, Proxy, Proxy, Proxy, Object)
+  forward_message(self->obj,self2->obj,self3->obj,self4->obj,_5);
+  chkret4(_sel,_ret,self,self2,self3,self4);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Proxy, Proxy, Object, Proxy)
+  forward_message(self->obj,self2->obj,self3->obj,_4,self5->obj);
+  chkret4(_sel,_ret,self,self2,self3,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Proxy, Object, Proxy, Proxy)
+  forward_message(self->obj,self2->obj,_3,self4->obj,self5->obj);
+  chkret4(_sel,_ret,self,self2,self4,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Proxy, Object, Proxy, Proxy, Proxy)
+  forward_message(self->obj,_2,self3->obj,self4->obj,self5->obj);
+  chkret4(_sel,_ret,self,self3,self4,self5);
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Proxy, Proxy, Proxy, Proxy)
+  forward_message(_1,self2->obj,self3->obj,self4->obj,self5->obj);
+  chkret4(_sel,_ret,self2,self3,self4,self5);
+endmethod
+
+
+defmethod(void, gunrecognizedMessage5, Proxy, Proxy, Proxy, Proxy, Proxy)
+  forward_message(self->obj,self2->obj,self3->obj,self4->obj,self5->obj);
+  chkret5(_sel,_ret,self,self2,self3,self4,self5);
 endmethod
 

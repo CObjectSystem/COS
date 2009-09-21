@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.19 2009/09/14 13:41:18 ldeniau Exp $
+ | $Id: base.h,v 1.20 2009/09/21 09:36:57 ldeniau Exp $
  |
 */
 
@@ -157,6 +157,7 @@
 #define COS_RC_STATIC   ((I32)-1)
 #define COS_RC_AUTO     ((I32) 0)
 #define COS_RC_UNIT     ((I32) 1)
+#define COS_RC_INVALID  ((I32) 0xDEADC0DE)
 
 // mangled names: <sym-name>_<cls1-name>[_..._<cls5-name>]
 #define COS_SYM_NAME(NAME,CS) \

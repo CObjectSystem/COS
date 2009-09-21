@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.19 2009/09/16 15:28:11 ldeniau Exp $
+ | $Id: Object.c,v 1.20 2009/09/21 09:36:58 ldeniau Exp $
  |
 */
 
@@ -84,7 +84,12 @@ endmethod
 // ----- deallocator
 
 defmethod(void, gdealloc, Object)
-  free(_1);
+  PRE
+    test_assert(self->id && self->rc != COS_RC_INVALID, "object already destroyed");
+  BODY
+    self->id = 0;
+    self->rc = COS_RC_INVALID;
+    free(_1);
 endmethod
 
 // ----- clone
