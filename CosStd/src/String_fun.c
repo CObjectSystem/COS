@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.7 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: String_fun.c,v 1.8 2009/09/21 10:15:14 ldeniau Exp $
  |
 */
 
@@ -50,6 +50,15 @@ useclass(String);
 useclass(Lesser,Equal,Greater);
 
 // ----- apply (in-place map with returned value discarded)
+
+defmethod(void, gapplyWhile, Functor, String)
+  U32 size = self2->size;
+  U8* val  = self2->value;
+  U8* end  = val + size;
+
+  while (val != end && geval(_1, aChar(*val++)) != Nil)
+    ;
+endmethod
 
 defmethod(void, gapply, Functor, String)
   U32 size = self2->size;
@@ -97,6 +106,23 @@ defmethod(void, gapply4, Functor, String, String, String, String)
 endmethod
 
 // ----- map, map2, map3, map4
+
+defmethod(OBJ, gmapWhile, Functor, String)
+  U32 size = self2->size;
+  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  struct String* str = STATIC_CAST(struct String*, _str);
+  OBJ res;
+  
+  U8*  val   = self2->value;
+  U32 *dst_n = &str->size;
+  U8*  dst   = str->value;
+  U8*  end   = val + size;
+
+  while (val != end && (res = geval(_1, aChar(*val++))) != Nil)
+    *dst++ = (U32)gchr(res), ++*dst_n;
+
+  retmethod(gadjust(_str));
+endmethod
 
 defmethod(OBJ, gmap, Functor, String)
   U32 size = self2->size;
