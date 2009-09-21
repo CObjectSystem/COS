@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_io.c,v 1.2 2009/09/18 16:55:25 ldeniau Exp $
+ | $Id: String_io.c,v 1.3 2009/09/21 07:55:06 ldeniau Exp $
  |
 */
 
@@ -47,27 +47,19 @@
 
 // ----- put
 
-defmethod(OBJ, gput, OpenFile, String)
-  retmethod(fwrite(self2->value, 1, self2->size, self->fd) < self2->size ? False : True);
-endmethod
-
-// ----- putLn
-
-defmethod(OBJ, gputLn, OpenFile, String)
-  int err = fwrite(self2->value, 1, self2->size, self->fd) != self2->size
-         || putc('\n', self->fd) == EOF;
-         
+defmethod(OBJ, gput, OutFile, String)
+  int err = fwrite(self2->value, 1, self2->size, self->OpenFile.fd) < self2->size;
   retmethod(err ? False : True);
 endmethod
 
 // ----- get string (stops on white spaces)
 
-defmethod(OBJ, gget, OpenFile, StringDyn)
+defmethod(OBJ, gget, InFile, StringDyn)
   PRE POST BODY
     struct StringFix *strf = &self2->StringFix;
     struct String    *str  = &strf->String;
 
-    FILE *fd    = self->fd;
+    FILE *fd    = self->OpenFile.fd;
     U32  *val_n = &str->size;
     int   c;
 
@@ -95,12 +87,12 @@ endmethod
 
 // ----- getLine
 
-defmethod(OBJ, ggetLine, OpenFile, StringDyn)
+defmethod(OBJ, ggetLine, InFile, StringDyn)
   PRE POST BODY
     struct StringFix *strf = &self2->StringFix;
     struct String    *str  = &strf->String;
 
-    FILE *fd    = self->fd;
+    FILE *fd    = self->OpenFile.fd;
     U32  *val_n = &str->size;
     int   c     = 0;
 
@@ -134,7 +126,7 @@ endmethod
 
 // ----- dynamic size getData
 
-defmethod(OBJ, ggetData, OpenFile, StringDyn)
+defmethod(OBJ, ggetData, InFile, StringDyn)
   PRE POST BODY
     struct StringFix *strf = &self2->StringFix;
     struct String    *str  = &strf->String;
@@ -149,7 +141,7 @@ defmethod(OBJ, ggetData, OpenFile, StringDyn)
       U8* val = str->value + str->size;
       U8* end = strf->_value + strf->capacity;
 
-      size_t n = fread(val, 1, end-val, self->fd);
+      size_t n = fread(val, 1, end-val, self->OpenFile.fd);
           
       str->size += n;
       
@@ -162,11 +154,11 @@ endmethod
 
 // ----- fixed size getData
 
-defmethod(OBJ, ggetData, OpenFile, String)
+defmethod(OBJ, ggetData, InFile, String)
   PRE POST BODY
     size_t n;
    
-    n = fread(self2->value, 1, self2->size, self->fd);
+    n = fread(self2->value, 1, self2->size, self->OpenFile.fd);
 
     retmethod(n < self2->size ? False : True);
 endmethod

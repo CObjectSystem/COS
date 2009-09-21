@@ -29,16 +29,19 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.5 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: File.c,v 1.6 2009/09/21 07:55:06 ldeniau Exp $
  |
 */
 
 #include <cos/File.h>
+#include <cos/Functor.h>
 #include <cos/Number.h>
 #include <cos/String.h>
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
+#include <cos/gen/functor.h>
+#include <cos/gen/message.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>
 #include <cos/gen/value.h>
@@ -47,24 +50,29 @@
 
 // -----
 
-makclass(File,Stream);
+makclass(File, Stream);
 
-makclass(OpenFile  ,File);
-makclass(ClosedFile,File);
+makclass(ClosedFile,     File);
+makclass(  OpenFile,     File);
+makclass(    InFile, OpenFile);
+makclass(   OutFile, OpenFile);
+makclass( InOutFile,   InFile);
+makclass( OutInFile,  OutFile);
 
 // -----
 
-useclass(File, ClosedFile);
-useclass(ExBadStream);
+useclass(File, ClosedFile, InOutFile, OutInFile);
+useclass(ExBadStream, AutoRelease, Array);
 
 // -----
 
 STATIC_ASSERT(OpenFile_vs_ClosedFile__invalid_layout_compatibility,
-              COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,fd)
-           && COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,own)
-           && COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,name)
-           && COS_FIELD_COMPATIBILITY(OpenFile,ClosedFile,buf_size)
-           && COS_FIELD_ALIGNMENT    (OpenFile,ClosedFile,file_buf) );
+              COS_FIELD_COMPATIBILITY(OpenFile , ClosedFile, fd)
+           && COS_FIELD_COMPATIBILITY(OpenFile , ClosedFile, own)
+           && COS_FIELD_COMPATIBILITY(OpenFile , ClosedFile, name)
+           && COS_FIELD_COMPATIBILITY(OpenFile , ClosedFile, buf_size)
+           && COS_FIELD_ALIGNMENT    (InOutFile, ClosedFile, file_buf)
+           && COS_FIELD_ALIGNMENT    (OutInFile, ClosedFile, file_buf));
 
 // ----- some constant
 
@@ -113,6 +121,10 @@ endmethod
 
 // ----- destructors
 
+defmethod(OBJ, gdeinit, ClosedFile)
+  retmethod(_1);
+endmethod
+
 defmethod(OBJ, gdeinit, OpenFile)
   if (self->fd && self->own)
     fclose(self->fd);
@@ -120,10 +132,6 @@ defmethod(OBJ, gdeinit, OpenFile)
   if (self->name)
     grelease(self->name);
 
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gdeinit, ClosedFile)
   retmethod(_1);
 endmethod
 
@@ -152,6 +160,8 @@ defmethod(OBJ, gopen, ClosedFile, String, String)
     test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
 
   BODY
+    struct Class *cls;
+    
     self->fd = fopen(gstr(_2), gstr(_3));
     if (!self->fd)
       THROW( gnewWith(ExBadStream, gcat(aStr("unable to open file "), _2)) );
@@ -159,7 +169,14 @@ defmethod(OBJ, gopen, ClosedFile, String, String)
     self->own = YES;
     self->name = gretain(_2);
     ch_buf = !setvbuf(self->fd, self->file_buf, _IOFBF, self->buf_size);
-    ch_cls = cos_object_unsafeChangeClass(_1, classref(OpenFile), classref(File));
+    
+    cls = self3->value[0] == 'r' ? classref(InOutFile) : classref(OutInFile);
+
+    if ((self3->size >= 2 && self3->value[1] == '+') ||
+        (self3->size >= 3 && self3->value[2] == '+'))
+      cls = cls->spr;
+    
+    ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
 
     retmethod(_1);
 endmethod
@@ -173,25 +190,37 @@ defmethod(void, gclose, OpenFile)
 
   BODY
     ch_cls = cos_object_unsafeChangeClass(_1, classref(ClosedFile), classref(File));
-    
+
     if (fclose(self->fd))
       THROW( gnewWith(ExBadStream, gcat(aStr("unable to close file "), self->name)) );
 
     grelease(self->name);
 
-    self->fd  = 0;
+    self->fd = 0;
     self->own = NO;
     self->name = 0;
 endmethod
 
-defmethod(void, gflush, OpenFile)
-  if (fflush(self->fd))
-    THROW( gnewWith(ExBadStream, gcat(aStr("unable to flush file "), self->name)) );
+// ----- flush
+
+defmethod(void, gflush, InFile)
+  // no flush on input file
 endmethod
+
+defmethod(void, gflush, OutFile)
+  struct OpenFile *file = &self->OpenFile;
+
+  if (fflush(file->fd))
+    THROW( gnewWith(ExBadStream, gcat(aStr("unable to flush file "), file->name)) );
+endmethod
+
+// ----- empty
 
 defmethod(OBJ, gisEmpty, OpenFile)
   retmethod(feof(self->fd) ? True : False);
 endmethod
+
+// ----- remove
 
 defmethod(void, gremove, OpenFile)
   OBJ name = gretain(self->name); PRT(name);
@@ -204,12 +233,130 @@ defmethod(void, gremove, OpenFile)
   grelease(name);
 endmethod
 
+// ----- primitives
+
+defmethod(I32, ggetChr, OutFile)
+  retmethod( getc(self->OpenFile.fd) );
+endmethod
+
+defmethod(I32, gputChr, OutFile, (I32)chr)
+  retmethod( putc(chr, self->OpenFile.fd) );
+endmethod
+
+defmethod(I32, gungetChr, OutFile, (I32)chr)
+  retmethod( ungetc(chr, self->OpenFile.fd) );
+endmethod
+
+// ----- generic get, getLine, getData
+
+defalias (OBJ, (gget)ggetLine, InFile, Class);
+defalias (OBJ, (gget)ggetData, InFile, Class);
+defmethod(OBJ,  gget         , InFile, Class)
+  OBJ obj = gautoDelete(gnew(_2));
+  forward_message(_1,obj);
+  retmethod(RETVAL == True ? obj : Nil);
+endmethod
+
 // ----- generic putLn
 
-defmethod(OBJ, gputLn, OpenFile, Object)
-  int err = gput(_1,_2) != True || putc('\n', self->fd) == EOF;
+defmethod(OBJ, gputLn, OutFile, Object)
+  int err = gput(_1,_2) != True || putc('\n', self->OpenFile.fd) == EOF;
   
   retmethod(err ? False : True);
+endmethod
+
+// ----- generic mapWhile
+
+defmethod(void, gapplyWhile, Functor, OpenFile)
+  OBJ pool = gnew(AutoRelease);
+
+  while (!feof(self2->fd) && geval(_1,_2) != Nil) ;
+
+  gdelete(pool);
+endmethod
+
+defmethod(OBJ, gmapWhile, Functor, OpenFile)
+  OBJ recs = gautoDelete(gnew(Array));
+  OBJ pool = gnew(AutoRelease);
+  OBJ res;
+
+  while (!feof(self2->fd) && (res = geval(_1,_2)) != Nil)
+    gpush(recs, res);
+
+  gdelete(pool);
+  retmethod(gadjust(recs));
+endmethod
+
+// ----- read-write -> write-read (multiple inheritance)
+
+defmethod(void, gunrecognizedMessage1, InOutFile)
+  if (ginstancesUnderstandMessage1(OutInFile, _sel) != True)
+    next_method(self);
+  
+  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File)),
+              "unable to change from InOutFile to OutInFile");
+
+  forward_message(_1);
+endmethod
+
+defmethod(void, gunrecognizedMessage2, InOutFile, Object)
+  if (ginstancesUnderstandMessage2(OutInFile, _2, _sel) != True)
+    next_method(self,self2);
+  
+  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File)),
+              "unable to change from InOutFile to OutInFile");
+
+  forward_message(_1,_2);
+endmethod
+
+defmethod(void, gunrecognizedMessage3, InOutFile, Object, Object)
+  if (ginstancesUnderstandMessage3(OutInFile, _2, _3, _sel) != True)
+    next_method(self,self2,self3);
+  
+  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File)),
+              "unable to change from InOutFile to OutInFile");
+
+  forward_message(_1,_2,_3);
+endmethod
+
+// ----- write-read -> read-write
+
+defmethod(void, gunrecognizedMessage1, OutInFile)
+  if (ginstancesUnderstandMessage1(InOutFile, _sel) != True)
+    next_method(self);
+  
+  fflush(self->OutFile.OpenFile.fd);
+
+  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File)),
+              "unable to change from OutInFile to InOutFile");
+
+  forward_message(_1);
+endmethod
+
+defmethod(void, gunrecognizedMessage2, OutInFile, Object)
+  if (ginstancesUnderstandMessage2(InOutFile, _2, _sel) != True)
+    next_method(self,self2);
+  
+  // flush FILE buffer
+  fflush(self->OutFile.OpenFile.fd);
+
+  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File)),
+              "unable to change from OutInFile to InOutFile");
+
+  forward_message(_1,_2);
+endmethod
+
+defmethod(void, gunrecognizedMessage3, OutInFile, Object, Object)
+  if (ginstancesUnderstandMessage3(InOutFile, _2, _3, _sel) != True)
+    next_method(self,self2,self3);
+  
+  // flush FILE buffer
+  fflush(self->OutFile.OpenFile.fd);
+
+  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File)),
+              "unable to change from OutInFile to InOutFile");
+
+  forward_message(_1,_2,_3);
 endmethod
 
 // ----- get/set file (low-level)
@@ -218,21 +365,30 @@ defmethod(FILE*, ggetFILE, OpenFile)
   retmethod(self->fd);
 endmethod
 
-defmethod(void, gsetFILE, ClosedFile, (FILE*)fd, (STR)tag)
+defmethod(void, gsetFILE, ClosedFile, (FILE*)fd, (STR)mode, (STR)name)
   BOOL ch_cls = ch_cls; // NOTE-INFO: remove (justified) warning
 
   PRE
-    test_assert(fd , "null file descriptor");
-    test_assert(tag, "null file tag");
+    test_assert(fd  , "null file descriptor");
+    test_assert(mode, "null file mode");
+    test_assert(name, "null file name");
 
   POST
     test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
 
   BODY
+    struct Class *cls;
+
     self->fd   = fd;
     self->own  = NO;
-    self->name = gretain(aString(tag));
-    ch_cls = cos_object_unsafeChangeClass(_1, classref(OpenFile), classref(File));
+    self->name = gretain(aString(name));
+
+    cls = mode[0] == 'r' ? classref(InOutFile) : classref(OutInFile);
+
+    if (mode[1] == '+' || (mode[1] && mode[2] == '+'))
+      cls = cls->spr;
+    
+    ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
 endmethod
 
 // ----- StdIn, StdOut, StdErr
@@ -241,9 +397,9 @@ OBJ StdIn, StdOut, StdErr;
 
 defmethod(void, ginitialize, pmFile)
   if (!StdIn) {
-    gsetFILE(StdIn  = gnew(File), stdin , "stdin" );
-    gsetFILE(StdOut = gnew(File), stdout, "stdout");
-    gsetFILE(StdErr = gnew(File), stderr, "stderr");
+    gsetFILE(StdIn  = gnew(File), stdin , "r", "stdin" );
+    gsetFILE(StdOut = gnew(File), stdout, "w", "stdout");
+    gsetFILE(StdErr = gnew(File), stderr, "w", "stderr");
   }
 endmethod
 

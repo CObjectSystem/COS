@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.6 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.7 2009/09/21 07:55:06 ldeniau Exp $
  |
 */
 
@@ -563,6 +563,38 @@ defmethod(OBJ, graccumulate2, T, T, Functor, Object)
   retmethod(_vec);
 endmethod
 
+// ----- applyWhile, mapWhile
+
+defmethod(void, gapplyWhile, Functor, T)
+  U32 size   = self2->size;
+  I32  val_s = self2->stride;
+  VAL *val   = self2->valref;
+  VAL *end   = val + val_s*size;
+
+  while (val != end && geval(_1, VALOBJ(*val)) != Nil)
+    val += val_s;
+endmethod
+
+defmethod(OBJ, gmapWhile, Functor, T)
+  U32 size = self2->size;
+  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  struct T* vec = STATIC_CAST(struct T*, _vec);
+  OBJ res;
+
+  I32  val_s = self2->stride;
+  VAL *val   = self2->valref;
+  U32 *dst_n = &vec->size;
+  VAL *dst   = vec->valref;
+  VAL *end   = val + val_s*size;
+
+  while (val != end && (res = geval(_1, VALOBJ(*val))) != Nil) {
+    *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_vec));
+endmethod
+
 // ----- unique (remove contiguous duplicates)
 
 defmethod(OBJ, gunique, T, Functor)
@@ -572,6 +604,7 @@ defmethod(OBJ, gunique, T, Functor)
 
   I32  val_s = self->stride;
   VAL *val   = self->valref;
+  U32 *dst_n = &vec->size;
   VAL *dst   = vec ->valref;
   VAL *end   = val + val_s*size;
 
@@ -581,11 +614,11 @@ defmethod(OBJ, gunique, T, Functor)
 
     while (val != end) {
       if (geval(_2, VALOBJ(*dst), VALOBJ(*val)) != True)
-        *++dst = RETAIN(*val), vec->size++;
+        *++dst = RETAIN(*val), ++*dst_n;
       val += val_s;
     }
   }
-  
+
   retmethod(gadjust(_vec));
 endmethod
 

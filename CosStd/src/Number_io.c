@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_io.c,v 1.1 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: Number_io.c,v 1.2 2009/09/21 07:55:06 ldeniau Exp $
  |
 */
 
@@ -42,79 +42,65 @@
 
 // ----- get
 
-defmethod(OBJ, gget, OpenFile, Char)
-  retmethod((self2->Int.value = getc(self->fd)) == EOF ? False : True);
+defmethod(OBJ, gget, InFile, Char)
+  retmethod((self2->Int.value = getc(self->OpenFile.fd)) == EOF ? False : True);
 endmethod
 
-defmethod(OBJ, gget, OpenFile, Short)
-  retmethod(fscanf(self->fd, "%d", &self2->Int.value) != 1 ? False : True);
+defmethod(OBJ, gget, InFile, Short)
+  retmethod(fscanf(self->OpenFile.fd, "%d", &self2->Int.value) != 1 ? False : True);
 endmethod
 
-defmethod(OBJ, gget, OpenFile, Int)
-  retmethod(fscanf(self->fd, "%d", &self2->value) != 1 ? False : True);
+defmethod(OBJ, gget, InFile, Int)
+  retmethod(fscanf(self->OpenFile.fd, "%d", &self2->value) != 1 ? False : True);
 endmethod
 
-defmethod(OBJ, gget, OpenFile, Float)
-  retmethod(fscanf(self->fd, "%lf", &self2->value) != 1 ? False : True);
+defmethod(OBJ, gget, InFile, Long)
+  long long val;
+  int res = fscanf(self->OpenFile.fd, "%lld", &val) != 1;
+  self2->value = val;
+  retmethod(res ? False : True);
 endmethod
 
-defmethod(OBJ, gget, OpenFile, Complex)
+defmethod(OBJ, gget, InFile, Float)
+  retmethod(fscanf(self->OpenFile.fd, "%lf", &self2->value) != 1 ? False : True);
+endmethod
+
+defmethod(OBJ, gget, InFile, Complex)
   C64 *cx = &self2->value;
   F64 *re = (F64*)cx;
   F64 *im = re+1;
 
-  retmethod(fscanf(self->fd, "(%lf,%lf)", re, im) != 2 ? False : True);
+  retmethod(fscanf(self->OpenFile.fd, "(%lf,%lf)", re, im) != 2 ? False : True);
 endmethod
 
 // ----- put
 
-defmethod(OBJ, gput, OpenFile, Char)
-  retmethod(putc(self2->Int.value, self->fd) == EOF ? False : True);
+defmethod(OBJ, gput, OutFile, Char)
+  retmethod(putc(self2->Int.value, self->OpenFile.fd) == EOF ? False : True);
 endmethod
 
-defmethod(OBJ, gput, OpenFile, Short)
-  retmethod(fprintf(self->fd, "%d", self2->Int.value) == EOF ? False : True);
+defmethod(OBJ, gput, OutFile, Short)
+  retmethod(fprintf(self->OpenFile.fd, "%d", self2->Int.value) == EOF ? False : True);
 endmethod
 
-defmethod(OBJ, gput, OpenFile, Int)
-  retmethod(fprintf(self->fd, "%d", self2->value) == EOF ? False : True);
+defmethod(OBJ, gput, OutFile, Int)
+  retmethod(fprintf(self->OpenFile.fd, "%d", self2->value) == EOF ? False : True);
 endmethod
 
-defmethod(OBJ, gput, OpenFile, Float)
-  retmethod(fprintf(self->fd, "%g", self2->value) == EOF ? False : True);
+defmethod(OBJ, gput, OutFile, Long)
+  long long val = self2->value;
+  retmethod(fprintf(self->OpenFile.fd, "%lld", val) == EOF ? False : True);
 endmethod
 
-defmethod(OBJ, gput, OpenFile, Complex)
+defmethod(OBJ, gput, OutFile, Float)
+  retmethod(fprintf(self->OpenFile.fd, "%g", self2->value) == EOF ? False : True);
+endmethod
+
+defmethod(OBJ, gput, OutFile, Complex)
   C64 *cx = &self2->value;
   F64 *re = (F64*)cx;
   F64 *im = re+1;
 
-  retmethod(fprintf(self->fd, "(%g,%g)", *re, *im) == EOF ? False : True);
-endmethod
-
-// ----- putLn
-
-defmethod(OBJ, gputLn, OpenFile, Char)
-  retmethod(putc(self2->Int.value, self->fd) == EOF ? False : True);
-endmethod
-
-defmethod(OBJ, gputLn, OpenFile, Short)
-  retmethod(fprintf(self->fd, "%d\n", self2->Int.value) == EOF ? False : True);
-endmethod
-
-defmethod(OBJ, gputLn, OpenFile, Int)
-  retmethod(fprintf(self->fd, "%d\n", self2->value) == EOF ? False : True);
-endmethod
-
-defmethod(OBJ, gputLn, OpenFile, Float)
-  retmethod(fprintf(self->fd, "%g\n", self2->value) == EOF ? False : True);
-endmethod
-
-defmethod(OBJ, gputLn, OpenFile, Complex)
-  C64 *cx = &self2->value;
-  F64 *re = (F64*)cx;
-  F64 *im = re+1;
-
-  retmethod(fprintf(self->fd, "(%g,%g)\n", *re, *im) == EOF ? False : True);
+  retmethod(fprintf(self->OpenFile.fd, "(%g,%g)", *re, *im) == EOF ? False : True);
 endmethod
 

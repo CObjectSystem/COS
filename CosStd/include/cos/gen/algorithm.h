@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.19 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: algorithm.h,v 1.20 2009/09/21 07:55:06 ldeniau Exp $
  |
 */
 
@@ -92,7 +92,7 @@ defgeneric(OBJ , graccumulate2, _1, _2, fun, ini);
 
 // mapWhile, applyWhile
 defgeneric(OBJ , gmapWhile  , fun, _1); // stops when fun return Nil
-defgeneric(OBJ , gapplyWhile, fun, _1); // stops when fun return Nil
+defgeneric(void, gapplyWhile, fun, _1); // stops when fun return Nil
 
 // generate
 defgeneric(OBJ , ggenerate , fun);      // stops when fun return Nil
