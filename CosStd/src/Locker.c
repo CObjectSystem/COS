@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Locker.c,v 1.6 2009/08/29 21:33:39 ldeniau Exp $
+ | $Id: Locker.c,v 1.7 2009/09/21 09:49:38 ldeniau Exp $
  |
 */
 
@@ -44,7 +44,7 @@ makclass(Locker,Proxy);
 
 // -----
 
-#if !COS_POSIX    // ----------------------------------------------
+#if !COS_HAVE_POSIX    // ----------------------------------------------
 
 defmethod(OBJ, galloc, pmLocker)
   retmethod(_1);
@@ -54,7 +54,7 @@ defmethod(OBJ, ginitWith, pmLocker, Object)
   retmethod(_2);
 endmethod
 
-#else // if COS_POSIX ---------------------------------------------
+#else // if COS_HAVE_POSIX ---------------------------------------------
 
 // ----- ctor/dtor
 
@@ -70,10 +70,8 @@ endmethod
 
 #undef  SORT
 #undef  LOCK
-#undef  CHCK
 #define SORT(l1,l2) if (l1 >  l2) { struct Locker *tmp=l1; l1=l2, l2=tmp; }
 #define LOCK(l1,l2) if (l1 != l2) { lock(l2); }
-#define CHCK(l)     if (*(OBJ*)_ret == l->Proxy.obj) { *(OBJ*)_ret = (OBJ)l; }
 
 // ----- rank1-{lock,unlock,clear,chkret}
 
@@ -95,12 +93,6 @@ clear(OBJ obj)
   unlock(STATIC_CAST(struct Locker*, obj));
 }
 
-static inline void
-chkret(struct Locker *l1, SEL sel, void *_ret)
-{
-  if (COS_GEN_ORET(sel)) CHCK(l1);
-}
-
 // ----- rank2-{lock,unlock,chkret}
 
 static inline void
@@ -116,14 +108,6 @@ unlock2(struct Locker *l1, struct Locker *l2)
 {
   unlock(l1);
   if (l1 != l2) unlock(l2);
-}
-
-static inline void
-chkret2(struct Locker *l1, struct Locker *l2, SEL sel, void *_ret)
-{
-  if (COS_GEN_ORET(sel)) {
-    CHCK(l1) else CHCK(l2);
-  }
 }
 
 // ----- rank3-{lock,unlock,chkret}
@@ -145,15 +129,6 @@ unlock3(struct Locker *l1, struct Locker *l2, struct Locker *l3)
   unlock(l1);
   if (l1 != l2) unlock(l2);
   if (l1 != l3 && l2 != l3) unlock(l3);
-}
-
-static inline void
-chkret3(struct Locker *l1, struct Locker *l2, struct Locker *l3,
-        SEL sel, void *_ret)
-{
-  if (COS_GEN_ORET(sel)) {
-    CHCK(l1) else CHCK(l2) else CHCK(l3);
-  }
 }
 
 // ----- rank4-{lock,unlock,chkret}
@@ -178,15 +153,6 @@ unlock4(struct Locker *l1, struct Locker *l2, struct Locker *l3,
   if (l1 != l2) unlock(l2);
   if (l1 != l3 && l2 != l3) unlock(l3);
   if (l1 != l4 && l2 != l4 && l3 != l4) unlock(l4);
-}
-
-static inline void
-chkret4(struct Locker *l1, struct Locker *l2, struct Locker *l3,
-        struct Locker *l4, SEL sel, void *_ret)
-{
-  if (COS_GEN_ORET(sel)) {
-    CHCK(l1) else CHCK(l2) else CHCK(l3) else CHCK(l4);
-  }
 }
 
 // ----- rank5-{lock,unlock,chkret}
@@ -216,18 +182,10 @@ unlock5(struct Locker *l1, struct Locker *l2, struct Locker *l3,
   if (l1 != l5 && l2 != l5 && l3 != l5 && l4 != l5) unlock(l5);
 }
  
-static inline void
-chkret5(struct Locker *l1, struct Locker *l2, struct Locker *l3,
-        struct Locker *l4, struct Locker *l5, SEL sel, void *_ret)
-{
-  if (COS_GEN_ORET(sel)) {
-    CHCK(l1) else CHCK(l2) else CHCK(l3) else CHCK(l4) else CHCK(l5);
-  }
-}
+// ----- error/forward (1+3+7+15+31=57 cases)
 
-// ----- error/forward (1+3+7+15+31=57 cases!)
+// ----- rank 1 (2^1-1=1 case)
 
-// rank 1 (2^1-1=1 cases)
 defmethod(void, gunrecognizedMessage1, Locker)
   OPRT(_1,clear);
   lock(self);
@@ -236,7 +194,8 @@ defmethod(void, gunrecognizedMessage1, Locker)
   UNPRT(_1);
 endmethod
 
-// rank 2 (2^2-1=3 cases)
+// ----- rank 2 (2^2-1=3 cases)
+
 defmethod(void, gunrecognizedMessage2, Locker, Object)
   OPRT(_1,clear);
   lock(self);
@@ -253,6 +212,7 @@ defmethod(void, gunrecognizedMessage2, Object, Locker)
   UNPRT(_2);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage2, Locker, Locker)
   OPRT(_1,clear); OPRT(_2,clear);
   lock2(self,self2);
@@ -261,7 +221,8 @@ defmethod(void, gunrecognizedMessage2, Locker, Locker)
   UNPRT(_1);
 endmethod
 
-// rank 3 (2^3-1=7 cases)
+// ----- rank 3 (2^3-1=7 cases)
+
 defmethod(void, gunrecognizedMessage3, Locker, Object, Object)
   OPRT(_1,clear);
   lock(self);
@@ -285,6 +246,7 @@ defmethod(void, gunrecognizedMessage3, Object, Object, Locker)
   unlock(self3);
   UNPRT(_3);
 endmethod
+
 
 defmethod(void, gunrecognizedMessage3, Locker, Locker, Object)
   OPRT(_1,clear); OPRT(_2,clear);
@@ -310,6 +272,7 @@ defmethod(void, gunrecognizedMessage3, Object, Locker, Locker)
   UNPRT(_2);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage3, Locker, Locker, Locker)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_3,clear);
   lock3(self,self2,self3);
@@ -318,7 +281,8 @@ defmethod(void, gunrecognizedMessage3, Locker, Locker, Locker)
   UNPRT(_1);
 endmethod
 
-// rank 4 (2^4-1=15 cases)
+// ----- rank 4 (2^4-1=15 cases)
+
 defmethod(void, gunrecognizedMessage4, Locker, Object, Object, Object)
   OPRT(_1,clear);
   lock(self);
@@ -351,11 +315,11 @@ defmethod(void, gunrecognizedMessage4, Object, Object, Object, Locker)
   UNPRT(_4);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage4, Locker, Locker, Object, Object)
   OPRT(_1,clear); OPRT(_2,clear);
   lock2(self,self2);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,_3,_4);
-  chkret2(self,self2,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock2(self,self2);
   UNPRT(_1);
 endmethod
@@ -363,8 +327,7 @@ endmethod
 defmethod(void, gunrecognizedMessage4, Locker, Object, Locker, Object)
   OPRT(_1,clear); OPRT(_3,clear);
   lock2(self,self3);
-  forward_message(self->Proxy.obj,_2,self3->Proxy.obj,_4);
-  chkret2(self,self3,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock2(self,self3);
   UNPRT(_1);
 endmethod
@@ -372,8 +335,7 @@ endmethod
 defmethod(void, gunrecognizedMessage4, Locker, Object, Object, Locker)
   OPRT(_1,clear); OPRT(_4,clear);
   lock2(self,self4);
-  forward_message(self->Proxy.obj,_2,_3,self4->Proxy.obj);
-  chkret2(self,self4,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock2(self,self4);
   UNPRT(_1);
 endmethod
@@ -381,8 +343,7 @@ endmethod
 defmethod(void, gunrecognizedMessage4, Object, Locker, Locker, Object)
   OPRT(_2,clear); OPRT(_3,clear);
   lock2(self2,self3);
-  forward_message(_1,self2->Proxy.obj,self3->Proxy.obj,_4);
-  chkret2(self2,self3,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock2(self2,self3);
   UNPRT(_2);
 endmethod
@@ -390,8 +351,7 @@ endmethod
 defmethod(void, gunrecognizedMessage4, Object, Locker, Object, Locker)
   OPRT(_2,clear); OPRT(_4,clear);
   lock2(self2,self4);
-  forward_message(_1,self2->Proxy.obj,_3,self4->Proxy.obj);
-  chkret2(self2,self4,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock2(self2,self4);
   UNPRT(_2);
 endmethod
@@ -399,17 +359,16 @@ endmethod
 defmethod(void, gunrecognizedMessage4, Object, Object, Locker, Locker)
   OPRT(_3,clear); OPRT(_4,clear);
   lock2(self3,self4);
-  forward_message(_1,_2,self3->Proxy.obj,self4->Proxy.obj);
-  chkret2(self3,self4,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock2(self3,self4);
   UNPRT(_3);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage4, Locker, Locker, Locker, Object)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_3,clear);
   lock3(self,self2,self3);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,self3->Proxy.obj,_4);
-  chkret3(self,self2,self3,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock3(self,self2,self3);
   UNPRT(_1);
 endmethod
@@ -417,8 +376,7 @@ endmethod
 defmethod(void, gunrecognizedMessage4, Locker, Locker, Object, Locker)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_4,clear);
   lock3(self,self2,self4);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,_3,self4->Proxy.obj);
-  chkret3(self,self2,self4,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock3(self,self2,self4);
   UNPRT(_1);
 endmethod
@@ -426,8 +384,7 @@ endmethod
 defmethod(void, gunrecognizedMessage4, Locker, Object, Locker, Locker)
   OPRT(_1,clear); OPRT(_3,clear); OPRT(_4,clear);
   lock3(self,self3,self4);
-  forward_message(self->Proxy.obj,_2,self3->Proxy.obj,self4->Proxy.obj);
-  chkret3(self,self3,self4,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock3(self,self3,self4);
   UNPRT(_1);
 endmethod
@@ -435,22 +392,22 @@ endmethod
 defmethod(void, gunrecognizedMessage4, Object, Locker, Locker, Locker)
   OPRT(_2,clear); OPRT(_3,clear); OPRT(_4,clear);
   lock3(self2,self3,self4);
-  forward_message(_1,self2->Proxy.obj,self3->Proxy.obj,self4->Proxy.obj);
-  chkret3(self2,self3,self4,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock3(self2,self3,self4);
   UNPRT(_2);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage4, Locker, Locker, Locker, Locker)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_3,clear); OPRT(_4,clear);
   lock4(self,self2,self3,self4);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,self3->Proxy.obj,self4->Proxy.obj);
-  chkret4(self,self2,self3,self4,_sel,_ret);
+  next_method(self,self2,self3,self4);
   unlock4(self,self2,self3,self4);
   UNPRT(_1);
 endmethod
 
-// rank 5 (2^5-1=31 cases)
+// ----- rank 5 (2^5-1=31 cases)
+
 defmethod(void, gunrecognizedMessage5, Locker, Object, Object, Object, Object)
   OPRT(_1,clear);
   lock(self);
@@ -491,11 +448,11 @@ defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Locker)
   UNPRT(_5);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage5, Locker, Locker, Object, Object, Object)
   OPRT(_1,clear); OPRT(_2,clear);
   lock2(self,self2);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,_3,_4,_5);
-  chkret2(self,self2,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self,self2);
   UNPRT(_1);
 endmethod
@@ -503,8 +460,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Object, Locker, Object, Object)
   OPRT(_1,clear); OPRT(_3,clear);
   lock2(self,self3);
-  forward_message(self->Proxy.obj,_2,self3->Proxy.obj,_4,_5);
-  chkret2(self,self3,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self,self3);
   UNPRT(_1);
 endmethod
@@ -512,8 +468,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Object, Object, Locker, Object)
   OPRT(_1,clear); OPRT(_4,clear);
   lock2(self,self4);
-  forward_message(self->Proxy.obj,_2,_3,self4->Proxy.obj,_5);
-  chkret2(self,self4,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self,self4);
   UNPRT(_1);
 endmethod
@@ -521,8 +476,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Object, Object, Object, Locker)
   OPRT(_1,clear); OPRT(_5,clear);
   lock2(self,self5);
-  forward_message(self->Proxy.obj,_2,_3,_4,self5->Proxy.obj);
-  chkret2(self,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self,self5);
   UNPRT(_1);
 endmethod
@@ -530,8 +484,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Locker, Locker, Object, Object)
   OPRT(_2,clear); OPRT(_3,clear);
   lock2(self2,self3);
-  forward_message(_1,self2->Proxy.obj,self3->Proxy.obj,_4,_5);
-  chkret2(self2,self3,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self2,self3);
   UNPRT(_2);
 endmethod
@@ -539,8 +492,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Locker, Object, Locker, Object)
   OPRT(_2,clear); OPRT(_4,clear);
   lock2(self2,self4);
-  forward_message(_1,self2->Proxy.obj,_3,self4->Proxy.obj,_5);
-  chkret2(self2,self4,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self2,self4);
   UNPRT(_2);
 endmethod
@@ -548,8 +500,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Locker, Object, Object, Locker)
   OPRT(_2,clear); OPRT(_5,clear);
   lock2(self2,self5);
-  forward_message(_1,self2->Proxy.obj,_3,_4,self5->Proxy.obj);
-  chkret2(self2,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self2,self5);
   UNPRT(_2);
 endmethod
@@ -557,8 +508,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Object, Locker, Locker, Object)
   OPRT(_3,clear); OPRT(_4,clear);
   lock2(self3,self4);
-  forward_message(_1,_2,self3->Proxy.obj,self4->Proxy.obj,_5);
-  chkret2(self3,self4,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self3,self4);
   UNPRT(_3);
 endmethod
@@ -566,8 +516,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Object, Locker, Object, Locker)
   OPRT(_3,clear); OPRT(_5,clear);
   lock2(self3,self5);
-  forward_message(_1,_2,self3->Proxy.obj,_4,self5->Proxy.obj);
-  chkret2(self3,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self3,self5);
   UNPRT(_3);
 endmethod
@@ -575,17 +524,16 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Object, Object, Locker, Locker)
   OPRT(_4,clear); OPRT(_5,clear);
   lock2(self4,self5);
-  forward_message(_1,_2,_3,self4->Proxy.obj,self5->Proxy.obj);
-  chkret2(self4,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock2(self4,self5);
   UNPRT(_4);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage5, Locker, Locker, Locker, Object, Object)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_3,clear);
   lock3(self,self2,self3);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,self3->Proxy.obj,_4,_5);
-  chkret3(self,self2,self3,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self,self2,self3);
   UNPRT(_1);
 endmethod
@@ -593,8 +541,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Locker, Object, Locker, Object)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_4,clear);
   lock3(self,self2,self4);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,_3,self4->Proxy.obj,_5);
-  chkret3(self,self2,self4,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self,self2,self4);
   UNPRT(_1);
 endmethod
@@ -602,8 +549,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Locker, Object, Object, Locker)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_5,clear);
   lock3(self,self2,self5);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,_3,_4,self5->Proxy.obj);
-  chkret3(self,self2,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self,self2,self5);
   UNPRT(_1);
 endmethod
@@ -611,8 +557,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Object, Locker, Locker, Object)
   OPRT(_1,clear); OPRT(_3,clear); OPRT(_4,clear);
   lock3(self,self3,self4);
-  forward_message(self->Proxy.obj,_2,self3->Proxy.obj,self4->Proxy.obj,_5);
-  chkret3(self,self3,self4,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self,self3,self4);
   UNPRT(_1);
 endmethod
@@ -620,8 +565,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Object, Locker, Object, Locker)
   OPRT(_1,clear); OPRT(_3,clear); OPRT(_5,clear);
   lock3(self,self3,self5);
-  forward_message(self->Proxy.obj,_2,self3->Proxy.obj,_4,self5->Proxy.obj);
-  chkret3(self,self3,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self,self3,self5);
   UNPRT(_1);
 endmethod
@@ -629,8 +573,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Object, Object, Locker, Locker)
   OPRT(_1,clear); OPRT(_4,clear); OPRT(_5,clear);
   lock3(self,self4,self5);
-  forward_message(self->Proxy.obj,_2,_3,self4->Proxy.obj,self5->Proxy.obj);
-  chkret3(self,self4,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self,self4,self5);
   UNPRT(_1);
 endmethod
@@ -638,8 +581,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Locker, Locker, Locker, Object)
   OPRT(_2,clear); OPRT(_3,clear); OPRT(_4,clear);
   lock3(self2,self3,self4);
-  forward_message(_1,self2->Proxy.obj,self3->Proxy.obj,self4->Proxy.obj,_5);
-  chkret3(self2,self3,self4,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self2,self3,self4);
   UNPRT(_2);
 endmethod
@@ -647,8 +589,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Locker, Locker, Object, Locker)
   OPRT(_2,clear); OPRT(_3,clear); OPRT(_5,clear);
   lock3(self2,self3,self5);
-  forward_message(_1,self2->Proxy.obj,self3->Proxy.obj,_4,self5->Proxy.obj);
-  chkret3(self2,self3,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self2,self3,self5);
   UNPRT(_2);
 endmethod
@@ -656,8 +597,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Locker, Object, Locker, Locker)
   OPRT(_2,clear); OPRT(_4,clear); OPRT(_5,clear);
   lock3(self2,self4,self5);
-  forward_message(_1,self2->Proxy.obj,_3,self4->Proxy.obj,self5->Proxy.obj);
-  chkret3(self2,self4,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self2,self4,self5);
   UNPRT(_2);
 endmethod
@@ -665,17 +605,16 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Object, Locker, Locker, Locker)
   OPRT(_3,clear); OPRT(_4,clear); OPRT(_5,clear);
   lock3(self3,self4,self5);
-  forward_message(_1,_2,self3->Proxy.obj,self4->Proxy.obj,self5->Proxy.obj);
-  chkret3(self3,self4,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock3(self3,self4,self5);
   UNPRT(_3);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage5, Locker, Locker, Locker, Locker, Object)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_3,clear); OPRT(_4,clear);
   lock4(self,self2,self3,self4);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,self3->Proxy.obj,self4->Proxy.obj,_5);
-  chkret4(self,self2,self3,self4,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock4(self,self2,self3,self4);
   UNPRT(_1);
 endmethod
@@ -683,8 +622,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Locker, Locker, Object, Locker)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_3,clear); OPRT(_5,clear);
   lock4(self,self2,self3,self5);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,self3->Proxy.obj,_4,self5->Proxy.obj);
-  chkret4(self,self2,self3,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock4(self,self2,self3,self5);
   UNPRT(_1);
 endmethod
@@ -692,8 +630,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Locker, Object, Locker, Locker)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_4,clear); OPRT(_5,clear);
   lock4(self,self2,self4,self5);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,_3,self4->Proxy.obj,self5->Proxy.obj);
-  chkret4(self,self2,self4,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock4(self,self2,self4,self5);
   UNPRT(_1);
 endmethod
@@ -701,8 +638,7 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Locker, Object, Locker, Locker, Locker)
   OPRT(_1,clear); OPRT(_3,clear); OPRT(_4,clear); OPRT(_5,clear);
   lock4(self,self3,self4,self5);
-  forward_message(self->Proxy.obj,_2,self3->Proxy.obj,self4->Proxy.obj,self5->Proxy.obj);
-  chkret4(self,self3,self4,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock4(self,self3,self4,self5);
   UNPRT(_1);
 endmethod
@@ -710,20 +646,19 @@ endmethod
 defmethod(void, gunrecognizedMessage5, Object, Locker, Locker, Locker, Locker)
   OPRT(_2,clear); OPRT(_3,clear); OPRT(_4,clear); OPRT(_5,clear);
   lock4(self2,self3,self4,self5);
-  forward_message(_1,self2->Proxy.obj,self3->Proxy.obj,self4->Proxy.obj,self5->Proxy.obj);
-  chkret4(self2,self3,self4,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock4(self2,self3,self4,self5);
   UNPRT(_2);
 endmethod
 
+
 defmethod(void, gunrecognizedMessage5, Locker, Locker, Locker, Locker, Locker)
   OPRT(_1,clear); OPRT(_2,clear); OPRT(_3,clear); OPRT(_4,clear); OPRT(_5,clear);
   lock5(self,self2,self3,self4,self5);
-  forward_message(self->Proxy.obj,self2->Proxy.obj,self3->Proxy.obj,self4->Proxy.obj,self5->Proxy.obj);
-  chkret5(self,self2,self3,self4,self5,_sel,_ret);
+  next_method(self,self2,self3,self4,self5);
   unlock5(self,self2,self3,self4,self5);
   UNPRT(_1);
 endmethod
 
-#endif // if COS_POSIX
+#endif // if COS_HAVE_POSIX
 
