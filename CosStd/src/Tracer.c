@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Tracer.c,v 1.8 2009/09/21 09:49:38 ldeniau Exp $
+ | $Id: Tracer.c,v 1.9 2009/09/21 09:51:05 ldeniau Exp $
  |
 */
 
@@ -68,13 +68,15 @@ endmethod
 
 // ----- behavior
 
-// rank 1
+// ----- rank 1
+
 defmethod(void, gunrecognizedMessage1, Tracer)
   trace(self, _sel, (OBJ[]){self->Proxy.obj}, 1);
   next_method(self);
 endmethod
 
-// rank 2
+// ----- rank 2
+
 defmethod(void, gunrecognizedMessage2, Tracer, Object)
   trace(self, _sel, (OBJ[]){self->Proxy.obj, _2}, 1);
   next_method(self,self2);
@@ -85,7 +87,8 @@ defmethod(void, gunrecognizedMessage2, Object, Tracer)
   next_method(self,self2);
 endmethod
 
-// rank 3
+// ----- rank 3
+
 defmethod(void, gunrecognizedMessage3, Tracer, Object, Object)
   trace(self, _sel, (OBJ[]){self->Proxy.obj, _2, _3}, 1);
   next_method(self,self2,self3);
@@ -101,7 +104,8 @@ defmethod(void, gunrecognizedMessage3, Object, Object, Tracer)
   next_method(self,self2,self3);
 endmethod
 
-// rank 4
+// ----- rank 4
+
 defmethod(void, gunrecognizedMessage4, Tracer, Object, Object, Object)
   trace(self, _sel, (OBJ[]){self->Proxy.obj, _2, _3, _4}, 1);
   next_method(self,self2,self3,self4);
@@ -122,7 +126,8 @@ defmethod(void, gunrecognizedMessage4, Object, Object, Object, Tracer)
   next_method(self,self2,self3,self4);
 endmethod
 
-// rank 5
+// ----- rank 5
+
 defmethod(void, gunrecognizedMessage5, Tracer, Object, Object, Object, Object)
   trace(self, _sel, (OBJ[]){self->Proxy.obj, _2, _3, _4, _5}, 1);
   next_method(self,self2,self3,self4,self5);
