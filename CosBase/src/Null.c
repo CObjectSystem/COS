@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Null.c,v 1.2 2009/09/21 07:55:33 ldeniau Exp $
+ | $Id: Null.c,v 1.3 2009/09/21 07:56:50 ldeniau Exp $
  |
 */
 
@@ -74,7 +74,7 @@ chkret(SEL sel, OBJ* ret)
 defmethod(void, gunrecognizedMessage1, mNull)
   OBJ obj[1]; obj[0]=_1;
   trace(_sel,obj);
-  chkret(_sel,_ret,self1);
+  chkret(_sel,_ret);
 endmethod
 
 // ----- rank 2
