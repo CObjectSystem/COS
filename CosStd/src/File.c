@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.6 2009/09/21 07:55:06 ldeniau Exp $
+ | $Id: File.c,v 1.7 2009/09/25 08:58:59 ldeniau Exp $
  |
 */
 
@@ -54,25 +54,38 @@ makclass(File, Stream);
 
 makclass(ClosedFile,     File);
 makclass(  OpenFile,     File);
+
+// text file
+
 makclass(    InFile, OpenFile);
 makclass(   OutFile, OpenFile);
 makclass( InOutFile,   InFile);
 makclass( OutInFile,  OutFile);
 
+// binary file
+
+makclass(    InBinFile,     InFile);
+makclass(   OutBinFile,    OutFile);
+makclass( InOutBinFile,  InBinFile);
+makclass( OutInBinFile, OutBinFile);
+
 // -----
 
-useclass(File, ClosedFile, InOutFile, OutInFile);
+useclass(File, ClosedFile, InOutFile, OutInFile, InOutBinFile, OutInBinFile);
 useclass(ExBadStream, AutoRelease, Array);
 
 // -----
 
 STATIC_ASSERT(OpenFile_vs_ClosedFile__invalid_layout_compatibility,
-              COS_FIELD_COMPATIBILITY(OpenFile , ClosedFile, fd)
-           && COS_FIELD_COMPATIBILITY(OpenFile , ClosedFile, own)
-           && COS_FIELD_COMPATIBILITY(OpenFile , ClosedFile, name)
-           && COS_FIELD_COMPATIBILITY(OpenFile , ClosedFile, buf_size)
-           && COS_FIELD_ALIGNMENT    (InOutFile, ClosedFile, file_buf)
-           && COS_FIELD_ALIGNMENT    (OutInFile, ClosedFile, file_buf));
+     COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, fd)
+  && COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, own)
+  && COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, name)
+  && COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, buf_size)
+  && COS_FIELD_ALIGNMENT    (InOutFile   , ClosedFile, file_buf)
+  && COS_FIELD_ALIGNMENT    (OutInFile   , ClosedFile, file_buf)
+  && COS_FIELD_ALIGNMENT    (InOutBinFile, ClosedFile, file_buf)
+  && COS_FIELD_ALIGNMENT    (OutInBinFile, ClosedFile, file_buf)
+);
 
 // ----- some constant
 
@@ -170,7 +183,11 @@ defmethod(OBJ, gopen, ClosedFile, String, String)
     self->name = gretain(_2);
     ch_buf = !setvbuf(self->fd, self->file_buf, _IOFBF, self->buf_size);
     
-    cls = self3->value[0] == 'r' ? classref(InOutFile) : classref(OutInFile);
+    if ((self3->size >= 2 && self3->value[1] == 'b') ||
+        (self3->size >= 3 && self3->value[2] == 'b'))
+      cls = self3->value[0] == 'r' ? classref(InOutBinFile) : classref(OutInBinFile);
+    else
+      cls = self3->value[0] == 'r' ? classref(InOutFile) : classref(OutInFile);
 
     if ((self3->size >= 2 && self3->value[1] == '+') ||
         (self3->size >= 3 && self3->value[2] == '+'))
@@ -235,7 +252,7 @@ endmethod
 
 // ----- primitives
 
-defmethod(I32, ggetChr, OutFile)
+defmethod(I32, ggetChr, InFile)
   retmethod( getc(self->OpenFile.fd) );
 endmethod
 
@@ -253,7 +270,12 @@ defalias (OBJ, (gget)ggetLine, InFile, Class);
 defalias (OBJ, (gget)ggetData, InFile, Class);
 defmethod(OBJ,  gget         , InFile, Class)
   OBJ obj = gautoDelete(gnew(_2));
-  forward_message(_1,obj);
+  
+  forward_message(_1, obj);
+
+  if (gunderstandMessage1(obj, genericref(gadjust)))
+    gadjust(obj);
+
   retmethod(RETVAL == True ? obj : Nil);
 endmethod
 
@@ -285,78 +307,6 @@ defmethod(OBJ, gmapWhile, Functor, OpenFile)
 
   gdelete(pool);
   retmethod(gadjust(recs));
-endmethod
-
-// ----- read-write -> write-read (multiple inheritance)
-
-defmethod(void, gunrecognizedMessage1, InOutFile)
-  if (ginstancesUnderstandMessage1(OutInFile, _sel) != True)
-    next_method(self);
-  
-  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File)),
-              "unable to change from InOutFile to OutInFile");
-
-  forward_message(_1);
-endmethod
-
-defmethod(void, gunrecognizedMessage2, InOutFile, Object)
-  if (ginstancesUnderstandMessage2(OutInFile, _2, _sel) != True)
-    next_method(self,self2);
-  
-  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File)),
-              "unable to change from InOutFile to OutInFile");
-
-  forward_message(_1,_2);
-endmethod
-
-defmethod(void, gunrecognizedMessage3, InOutFile, Object, Object)
-  if (ginstancesUnderstandMessage3(OutInFile, _2, _3, _sel) != True)
-    next_method(self,self2,self3);
-  
-  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File)),
-              "unable to change from InOutFile to OutInFile");
-
-  forward_message(_1,_2,_3);
-endmethod
-
-// ----- write-read -> read-write
-
-defmethod(void, gunrecognizedMessage1, OutInFile)
-  if (ginstancesUnderstandMessage1(InOutFile, _sel) != True)
-    next_method(self);
-  
-  fflush(self->OutFile.OpenFile.fd);
-
-  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File)),
-              "unable to change from OutInFile to InOutFile");
-
-  forward_message(_1);
-endmethod
-
-defmethod(void, gunrecognizedMessage2, OutInFile, Object)
-  if (ginstancesUnderstandMessage2(InOutFile, _2, _sel) != True)
-    next_method(self,self2);
-  
-  // flush FILE buffer
-  fflush(self->OutFile.OpenFile.fd);
-
-  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File)),
-              "unable to change from OutInFile to InOutFile");
-
-  forward_message(_1,_2);
-endmethod
-
-defmethod(void, gunrecognizedMessage3, OutInFile, Object, Object)
-  if (ginstancesUnderstandMessage3(InOutFile, _2, _3, _sel) != True)
-    next_method(self,self2,self3);
-  
-  // flush FILE buffer
-  fflush(self->OutFile.OpenFile.fd);
-
-  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File)),
-              "unable to change from OutInFile to InOutFile");
-
-  forward_message(_1,_2,_3);
 endmethod
 
 // ----- get/set file (low-level)

@@ -29,12 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_chr.c,v 1.1 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: String_chr.c,v 1.2 2009/09/25 08:58:59 ldeniau Exp $
  |
 */
 
 #include <cos/String.h>
 #include <cos/Number.h>
+#include <cos/Slice.h>
 
 #include <cos/gen/object.h>
 #include <cos/gen/string.h>
@@ -102,4 +103,42 @@ defmethod(OBJ, gtoUpper, Char)
   self->Int.value = toupper(self->Int.value);
   retmethod(_1);
 endmethod
+
+// ----- trim (remove white spaces)
+
+useclass(View);
+
+defmethod(OBJ, gtrim, String)
+  U32 size = self->size;
+
+  if (!size) retmethod(_1);
+  
+  U8* val  = self->value;
+  U8* end  = val + size-1;
+
+  while (val != end && isspace(*val)) ++val;
+  while (val != end && isspace(*end)) --end;
+
+  retmethod( gautoDelete(gnewWith2(View, _1, aSlice(val-self->value,end-val+1))) );
+endmethod
+
+defmethod(OBJ, gtrim, StringDyn)
+  struct String *str = &self->StringFix.String;
+  U32 size = str->size;
+
+  if (!size) retmethod(_1);
+  
+  U8* val  = str->value;
+  U8* end  = val + size-1;
+
+  while (val != end && isspace(*val)) ++val;
+  while (val != end && isspace(*end)) --end;
+
+  str->value = val;
+  str->size  = end-val+1;
+
+  retmethod(_1);
+endmethod
+
+
 

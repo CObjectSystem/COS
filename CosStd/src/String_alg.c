@@ -29,13 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.11 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: String_alg.c,v 1.12 2009/09/25 08:58:59 ldeniau Exp $
  |
 */
 
 #include <cos/String.h>
 #include <cos/IntVector.h>
 #include <cos/Number.h>
+#include <cos/Slice.h>
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/compare.h>
@@ -47,7 +48,7 @@
 
 // -----
 
-useclass(String, ExBadAlloc);
+useclass(String, View, Array, ExBadAlloc);
 useclass(Lesser,Equal,Greater);
 
 // ----- equality
@@ -182,6 +183,35 @@ defmethod(OBJ, gcat5, String, String, String, String, String)
   memcpy(dst,self5->value,self5->size);
 
   retmethod(gautoDelete( (OBJ)str ));
+endmethod
+
+// ----- split (object)
+
+defmethod(OBJ, gsplit, String, Object)
+  U32 size = self->size;
+  U8* src  = self->value;
+  U8  val  = (U32)gchr(_2);
+  OBJ strs = gautoDelete(gnew(Array));
+  OBJ str  = 0; PRT(str);
+
+  while(size) {
+    U8* end = memchr(src, val, size);
+    U32 beg = src-self->value;
+    U32 len = end ? end-src : size;
+    
+    str = gnewWith2(View, _1, aSlice(beg,len));
+    gpush(strs, str);
+    gdelete(str);
+    str = 0;
+
+    if (!end) break;
+
+    src   = end+1;
+    size -= len+1;
+  }
+  
+  UNPRT(str);
+  retmethod(gadjust(strs));
 endmethod
 
 // ----- search (object)
@@ -538,7 +568,8 @@ defmethod(OBJ, gfind, String, String)
   
   PRE
   POST
-    U8 *q = BruteForce(self->value, self->size, self2->value, self2->size);
+    self->value[self->size] = self2->value[self2->size] = '\0';
+    U8 *q = (U8*)strstr((STR)self->value, (STR)self2->value);
     test_assert( p == q, "bug in substring searching");
 
   BODY
@@ -554,7 +585,8 @@ defmethod(OBJ, gifind, String, String)
   
   PRE
   POST
-    U8 *q = BruteForce(self->value, self->size, self2->value, self2->size);
+    self->value[self->size] = self2->value[self2->size] = '\0';
+    U8 *q = (U8*)strstr((STR)self->value, (STR)self2->value);
     test_assert( p == q, "bug in substring searching");
 
   BODY

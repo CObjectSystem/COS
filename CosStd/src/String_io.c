@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_io.c,v 1.3 2009/09/21 07:55:06 ldeniau Exp $
+ | $Id: String_io.c,v 1.4 2009/09/25 08:58:59 ldeniau Exp $
  |
 */
 
@@ -39,17 +39,27 @@
 #include <cos/Number.h>
 
 #include <cos/gen/container.h>
+#include <cos/gen/message.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>
 #include <cos/gen/value.h>
 
 #include <ctype.h>
 
+// ----- Binary File
+
+defmethod(OBJ, gget, InBinFile, String)
+  int res = fread(self2->value, self2->size, 1, self->InFile.OpenFile.fd) != 1;
+  retmethod(res ? False : True);
+endmethod
+
+// ----- Text File
+
 // ----- put
 
 defmethod(OBJ, gput, OutFile, String)
-  int err = fwrite(self2->value, 1, self2->size, self->OpenFile.fd) < self2->size;
-  retmethod(err ? False : True);
+  int res = fwrite(self2->value, self2->size, 1, self->OpenFile.fd) != 1;
+  retmethod(res ? False : True);
 endmethod
 
 // ----- get string (stops on white spaces)
@@ -155,11 +165,7 @@ endmethod
 // ----- fixed size getData
 
 defmethod(OBJ, ggetData, InFile, String)
-  PRE POST BODY
-    size_t n;
-   
-    n = fread(self2->value, 1, self2->size, self->OpenFile.fd);
-
-    retmethod(n < self2->size ? False : True);
+  int res = fread(self2->value, self2->size, 1, self->OpenFile.fd) != 1;
+  retmethod(res ? False : True);
 endmethod
 

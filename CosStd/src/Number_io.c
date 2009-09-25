@@ -29,25 +29,79 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_io.c,v 1.2 2009/09/21 07:55:06 ldeniau Exp $
+ | $Id: Number_io.c,v 1.3 2009/09/25 08:58:59 ldeniau Exp $
  |
 */
 
 #include <cos/Number.h>
 #include <cos/File.h>
+#include <cos/String.h>
 
+#include <cos/gen/container.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>
 #include <cos/gen/value.h>
+
+// ----- Binary File
+
+// ----- get
+
+defmethod(OBJ, gget, InBinFile, Char)
+  retmethod((self2->Int.value = getc(self->InFile.OpenFile.fd)) == EOF ? False : True);
+endmethod
+
+defmethod(OBJ, gget, InBinFile, Int)
+  int res = fread(&self2->value, 1, sizeof self2->value, self->InFile.OpenFile.fd) != 1;
+  retmethod(res ? False : True);
+endmethod
+
+defmethod(OBJ, gget, InBinFile, Long)
+  int res = fread(&self2->value, 1, sizeof self2->value, self->InFile.OpenFile.fd) != 1;
+  retmethod(res ? False : True);
+endmethod
+
+defmethod(OBJ, gget, InBinFile, Float)
+  int res = fread(&self2->value, 1, sizeof self2->value, self->InFile.OpenFile.fd) != 1;
+  retmethod(res ? False : True);
+endmethod
+
+defmethod(OBJ, gget, InBinFile, Complex)
+  int res = fread(&self2->value, 1, sizeof self2->value, self->InFile.OpenFile.fd) != 1;
+  retmethod(res ? False : True);
+endmethod
+
+// ----- put
+
+defmethod(OBJ, gput, OutBinFile, Char)
+  retmethod(putc(self2->Int.value, self->OutFile.OpenFile.fd) == EOF ? False : True);
+endmethod
+
+defmethod(OBJ, gput, OutBinFile, Int)
+  int res = fwrite(&self2->value, 1, sizeof self2->value, self->OutFile.OpenFile.fd) != 1;
+  retmethod(res ? False : True);
+endmethod
+
+defmethod(OBJ, gput, OutBinFile, Long)
+  int res = fwrite(&self2->value, 1, sizeof self2->value, self->OutFile.OpenFile.fd) != 1;
+  retmethod(res ? False : True);
+endmethod
+
+defmethod(OBJ, gput, OutBinFile, Float)
+  int res = fwrite(&self2->value, 1, sizeof self2->value, self->OutFile.OpenFile.fd) != 1;
+  retmethod(res ? False : True);
+endmethod
+
+defmethod(OBJ, gput, OutBinFile, Complex)
+  int res = fwrite(&self2->value, 1, sizeof self2->value, self->OutFile.OpenFile.fd) != 1;
+  retmethod(res ? False : True);
+endmethod
+
+// ----- Text File
 
 // ----- get
 
 defmethod(OBJ, gget, InFile, Char)
   retmethod((self2->Int.value = getc(self->OpenFile.fd)) == EOF ? False : True);
-endmethod
-
-defmethod(OBJ, gget, InFile, Short)
-  retmethod(fscanf(self->OpenFile.fd, "%d", &self2->Int.value) != 1 ? False : True);
 endmethod
 
 defmethod(OBJ, gget, InFile, Int)
@@ -79,10 +133,6 @@ defmethod(OBJ, gput, OutFile, Char)
   retmethod(putc(self2->Int.value, self->OpenFile.fd) == EOF ? False : True);
 endmethod
 
-defmethod(OBJ, gput, OutFile, Short)
-  retmethod(fprintf(self->OpenFile.fd, "%d", self2->Int.value) == EOF ? False : True);
-endmethod
-
 defmethod(OBJ, gput, OutFile, Int)
   retmethod(fprintf(self->OpenFile.fd, "%d", self2->value) == EOF ? False : True);
 endmethod
@@ -102,5 +152,179 @@ defmethod(OBJ, gput, OutFile, Complex)
   F64 *im = re+1;
 
   retmethod(fprintf(self->OpenFile.fd, "(%g,%g)", *re, *im) == EOF ? False : True);
+endmethod
+
+// ----- Text String (String stream)
+
+// ----- get
+
+defmethod(OBJ, gget, StringDyn, Char)
+  struct String *str = &self->StringFix.String;
+  
+  if (str->size) {
+    self2->Int.value = str->value[0];
+    str->value++, str->size--;
+    retmethod(True);
+  } 
+  retmethod(False);
+endmethod
+
+defmethod(OBJ, gget, StringDyn, Int)
+  struct String *str = &self->StringFix.String;
+
+  if (str->size) {
+    str->value[str->size] = '\0';
+    int n = 0;
+    int res = sscanf((STR)str->value, "%d%n", &self2->value, &n) == 2;
+    str->value += n, str->size -= n;
+    retmethod(res ? True : False);
+  }
+  retmethod(False);
+endmethod
+
+defmethod(OBJ, gget, StringDyn, Long)
+  struct String *str = &self->StringFix.String;
+
+  if (str->size) {
+    str->value[str->size] = '\0';
+    long long val = 0;
+    int n = 0;
+    int res = sscanf((STR)str->value, "%lld%n", &val, &n) == 2;
+    str->value += n, str->size -= n, self2->value = val;
+    retmethod(res ? True : False);
+  }
+  retmethod(False);
+endmethod
+
+defmethod(OBJ, gget, StringDyn, Float)
+  struct String *str = &self->StringFix.String;
+
+  if (str->size) {
+    str->value[str->size] = '\0';
+    int n = 0;
+    int res = sscanf((STR)str->value, "%lf%n", &self2->value, &n) == 2;
+    str->value += n, str->size -= n;
+    retmethod(res ? True : False);
+  }
+  retmethod(False);
+endmethod
+
+defmethod(OBJ, gget, StringDyn, Complex)
+  struct String *str = &self->StringFix.String;
+
+  if (str->size) {
+    str->value[str->size] = '\0';
+    C64 *cx = &self2->value;
+    F64 *re = (F64*)cx;
+    F64 *im = re+1;
+    int n = 0;
+    int res = sscanf((STR)str->value, "(%lf,%lf)%n", re, im, &n) == 3;
+    str->value += n, str->size -= n;
+    retmethod(res ? True : False);
+  }
+  retmethod(False);
+endmethod
+
+// ----- put
+
+defmethod(OBJ, gput, StringDyn, Char)
+  PRE POST BODY
+    struct StringFix *strf = &self->StringFix;
+    struct String    *str  = &strf->String;
+
+    if (str->value + str->size == strf->_value + strf->capacity)
+      genlarge(_1, aInt(1));
+
+    str->value[str->size++] = self2->Int.value;
+
+    retmethod(True);
+endmethod
+
+defmethod(OBJ, gput, StringDyn, Int)
+  PRE POST BODY
+    struct StringFix *strf = &self->StringFix;
+    struct String    *str  = &strf->String;
+    ptrdiff_t extra;
+
+retry:
+    extra = (strf->_value + strf->capacity) - (str->value + str->size);
+    int n = snprintf((char*)str->value+str->size, extra+1, "%d", self2->value);
+    if (n > extra) {
+      genlarge(_1, aInt(n));      
+      goto retry;
+    }
+
+    if (n != EOF) {
+      str->size += n;
+      retmethod(True);
+    }
+    retmethod(False);
+endmethod
+
+defmethod(OBJ, gput, StringDyn, Long)
+  PRE POST BODY
+    struct StringFix *strf = &self->StringFix;
+    struct String    *str  = &strf->String;
+    long long val = self2->value;
+    ptrdiff_t extra;
+
+retry:
+    extra = (strf->_value + strf->capacity) - (str->value + str->size);
+    int n = snprintf((char*)str->value+str->size, extra+1, "%lld", val);
+    if (n > extra) {
+      genlarge(_1, aInt(n));      
+      goto retry;
+    }
+
+    if (n != EOF) {
+      str->size += n;
+      retmethod(True);
+    }
+    retmethod(False);
+endmethod
+
+defmethod(OBJ, gput, StringDyn, Float)
+  PRE POST BODY
+    struct StringFix *strf = &self->StringFix;
+    struct String    *str  = &strf->String;
+    ptrdiff_t extra;
+
+retry:
+    extra = (strf->_value + strf->capacity) - (str->value + str->size);
+    int n = snprintf((char*)str->value+str->size, extra+1, "%g", self2->value);
+    if (n > extra) {
+      genlarge(_1, aInt(n));      
+      goto retry;
+    }
+
+    if (n != EOF) {
+      str->size += n;
+      retmethod(True);
+    }
+    retmethod(False);
+endmethod
+
+defmethod(OBJ, gput, StringDyn, Complex)
+  PRE POST BODY
+    struct StringFix *strf = &self->StringFix;
+    struct String    *str  = &strf->String;
+    C64 *cx = &self2->value;
+    F64 *re = (F64*)cx;
+    F64 *im = re+1;
+    ptrdiff_t extra;
+
+retry:
+    extra = (strf->_value + strf->capacity) - (str->value + str->size);
+    int n = snprintf((char*)str->value+str->size, extra+1, "(%g,%g)", *re, *im);
+    if (n > extra) {
+      genlarge(_1, aInt(n));      
+      goto retry;
+    }
+
+    if (n != EOF) {
+      str->size += n;
+      retmethod(True);
+    }
+    retmethod(False);
 endmethod
 

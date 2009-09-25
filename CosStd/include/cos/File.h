@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.h,v 1.3 2009/09/21 07:55:05 ldeniau Exp $
+ | $Id: File.h,v 1.4 2009/09/25 08:58:59 ldeniau Exp $
  |
 */
 
@@ -64,18 +64,20 @@ defclass(OpenFile, File)
   U32   buf_size;
 endclass
 
-defclass(InFile, OpenFile)
-endclass
+// ----- text file
 
-defclass(OutFile, OpenFile)
-endclass
+defclass(InFile , OpenFile) endclass
+defclass(OutFile, OpenFile) endclass
 
-defclass(InOutFile, InFile)
-  char file_buf[];
-endclass
+defclass(InOutFile, InFile ) char file_buf[]; endclass
+defclass(OutInFile, OutFile) char file_buf[]; endclass
 
-defclass(OutInFile, OutFile)
-  char file_buf[];
-endclass
+// ----- binary file
+
+defclass(InBinFile , InFile) endclass
+defclass(OutBinFile, OutFile) endclass
+
+defclass(InOutBinFile, InBinFile ) char file_buf[]; endclass
+defclass(OutInBinFile, OutBinFile) char file_buf[]; endclass
 
 #endif // COS_FILE_H

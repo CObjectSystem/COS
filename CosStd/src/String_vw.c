@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.5 2009/09/16 22:30:10 ldeniau Exp $
+ | $Id: String_vw.c,v 1.6 2009/09/25 08:58:59 ldeniau Exp $
  |
 */
 
@@ -113,7 +113,7 @@ defmethod(void, ginvariant, StringView, (STR)func, (STR)file, (int)line)
 
   struct String *str = self->ref;
 
-  I32 start = str->value - self->String.value;
+  I32 start = self->String.value - str->value;
   U32 size  = self->String.size;
 
   struct Slice *slc = atSlice(start, size);
@@ -121,8 +121,8 @@ defmethod(void, ginvariant, StringView, (STR)func, (STR)file, (int)line)
   U32 first = Slice_first(slc);
   U32 last  = Slice_last (slc);
 
-  test_assert( first < self->ref->size && last < self->ref->size,
-               "string view is out of range", func, file, line);
+  test_assert( first < self->ref->size &&
+               last  < self->ref->size, "string view is out of range", func, file, line);
 
   if (next_method_p)
     next_method(self, func, file, line);

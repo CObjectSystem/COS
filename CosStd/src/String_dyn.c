@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.4 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.5 2009/09/25 08:58:59 ldeniau Exp $
  |
 */
 
@@ -38,7 +38,9 @@
 #include <cos/Range.h>
 
 #include <cos/gen/container.h>
+#include <cos/gen/message.h>
 #include <cos/gen/object.h>
+#include <cos/gen/stream.h>
 #include <cos/gen/string.h>
 #include <cos/gen/value.h>
 
@@ -442,4 +444,22 @@ defalias(void, (gappend  )gpush, StringDyn, Char  );
 defalias(void, (gappend  )gpush, StringDyn, Object);
 defalias(void, (gdropLast)gpop , StringDyn);
 defalias(OBJ , (glast    )gtop , String);
+
+// ----- generic get, getLine, getData from class
+
+// NOTE-TODO: implement type-specific io on string stream
+
+defalias (OBJ, (gget)ggetLine, StringDyn, Class);
+defalias (OBJ, (gget)ggetData, StringDyn, Class);
+defmethod(OBJ,  gget         , StringDyn, Class)
+  OBJ obj = gautoDelete(gnew(_2));
+  
+  forward_message(_1, obj);
+
+  if (gunderstandMessage1(obj, genericref(gadjust)))
+    gadjust(obj);
+
+  retmethod(RETVAL == True ? obj : Nil);
+endmethod
+
 
