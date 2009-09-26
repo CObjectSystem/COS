@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.6 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: String_vw.c,v 1.7 2009/09/26 09:02:07 ldeniau Exp $
  |
 */
 
@@ -38,6 +38,7 @@
 #include <cos/View.h>
 
 #include <cos/gen/object.h>
+#include <cos/gen/value.h>
 
 // -----
 
@@ -47,6 +48,13 @@ makclass(StringView, String);
 
 useclass(ExBadAlloc);
 useclass(String, StringView);
+
+// ----- getters
+
+defmethod(STR, gstr, StringView)
+  gstr((OBJ)self->ref);
+  retmethod((STR)self->String.value);
+endmethod
 
 // ----- initializer
 

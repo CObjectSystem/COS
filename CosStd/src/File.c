@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.7 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: File.c,v 1.8 2009/09/26 09:02:07 ldeniau Exp $
  |
 */
 
@@ -42,6 +42,7 @@
 #include <cos/gen/container.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/message.h>
+#include <cos/gen/new.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>
 #include <cos/gen/value.h>
@@ -72,7 +73,7 @@ makclass( OutInBinFile, OutBinFile);
 // -----
 
 useclass(File, ClosedFile, InOutFile, OutInFile, InOutBinFile, OutInBinFile);
-useclass(ExBadStream, AutoRelease, Array);
+useclass(ExBadStream, AutoRelease, Array, String);
 
 // -----
 
@@ -163,6 +164,36 @@ endmethod
 
 // ----- open, close, flush, gisEmpty, remove
 
+static struct Class*
+mode2class(STR str)
+{
+  enum { INVALID=0, READ=1, WRITE=2, BOTH=4, BINARY=8 };
+  unsigned m = INVALID;
+
+  while (*str)
+    switch (*str++) {
+    case 'r': m |= READ;   break;
+    case 'a':
+    case 'w': m |= WRITE;  break;
+    case 'b': m |= BINARY; break;
+    case '+': m |= BOTH;   break;
+    }
+
+  switch(m) {
+  case READ:                 return classref(InFile);
+  case READ | BINARY:        return classref(InBinFile);
+  case READ | BOTH:          return classref(InOutFile);
+  case READ | BOTH | BINARY: return classref(InOutBinFile);
+
+  case WRITE:                 return classref(OutFile);
+  case WRITE | BINARY:        return classref(OutBinFile);
+  case WRITE | BOTH:          return classref(OutInFile);
+  case WRITE | BOTH | BINARY: return classref(OutInBinFile);
+
+  default : test_assert(0, "invalid file mode"); return 0;
+  }
+}
+
 defmethod(OBJ, gopen, ClosedFile, String, String)
   BOOL ch_cls;
   BOOL ch_buf;
@@ -173,9 +204,8 @@ defmethod(OBJ, gopen, ClosedFile, String, String)
     test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
 
   BODY
-    struct Class *cls;
-    
-    self->fd = fopen(gstr(_2), gstr(_3));
+    STR mode = gstr(_3);
+    self->fd = fopen(gstr(_2), mode);
     if (!self->fd)
       THROW( gnewWith(ExBadStream, gcat(aStr("unable to open file "), _2)) );
 
@@ -183,16 +213,7 @@ defmethod(OBJ, gopen, ClosedFile, String, String)
     self->name = gretain(_2);
     ch_buf = !setvbuf(self->fd, self->file_buf, _IOFBF, self->buf_size);
     
-    if ((self3->size >= 2 && self3->value[1] == 'b') ||
-        (self3->size >= 3 && self3->value[2] == 'b'))
-      cls = self3->value[0] == 'r' ? classref(InOutBinFile) : classref(OutInBinFile);
-    else
-      cls = self3->value[0] == 'r' ? classref(InOutFile) : classref(OutInFile);
-
-    if ((self3->size >= 2 && self3->value[1] == '+') ||
-        (self3->size >= 3 && self3->value[2] == '+'))
-      cls = cls->spr;
-    
+    struct Class *cls = mode2class(mode);
     ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
 
     retmethod(_1);
@@ -273,7 +294,7 @@ defmethod(OBJ,  gget         , InFile, Class)
   
   forward_message(_1, obj);
 
-  if (gunderstandMessage1(obj, genericref(gadjust)))
+  if (gunderstandMessage1(obj, genericref(gadjust)) == True)
     gadjust(obj);
 
   retmethod(RETVAL == True ? obj : Nil);
@@ -320,24 +341,18 @@ defmethod(void, gsetFILE, ClosedFile, (FILE*)fd, (STR)mode, (STR)name)
 
   PRE
     test_assert(fd  , "null file descriptor");
-    test_assert(mode, "null file mode");
     test_assert(name, "null file name");
+    test_assert(mode, "null file mode");
 
   POST
     test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
 
   BODY
-    struct Class *cls;
-
     self->fd   = fd;
     self->own  = NO;
-    self->name = gretain(aString(name));
+    self->name = gretain(gautoDelete(gnewWithStr(String, name)));
 
-    cls = mode[0] == 'r' ? classref(InOutFile) : classref(OutInFile);
-
-    if (mode[1] == '+' || (mode[1] && mode[2] == '+'))
-      cls = cls->spr;
-    
+    struct Class *cls = mode2class(mode);
     ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
 endmethod
 

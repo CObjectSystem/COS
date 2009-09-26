@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.5 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.6 2009/09/26 09:02:07 ldeniau Exp $
  |
 */
 
@@ -89,15 +89,13 @@ defmethod(OBJ, ginitWith, StringDyn, Int)
 
     test_assert(self2->value >= 0, "negative string capacity");
 
-    if (self2->value > 0) {
-      strf->_value = malloc(self2->value * sizeof *str->value);
-      if (!strf->_value) THROW(ExBadAlloc);
-    } else
-      strf->_value = 0;
+    U32 capacity = self2->value;
+    strf->_value = malloc((capacity+1) * sizeof *str->value);
+    if (!strf->_value) THROW(ExBadAlloc);
 
     str->size      = 0;
     str->value     = strf->_value;
-    strf->capacity = self2->value;
+    strf->capacity = capacity;
 
     UNPRT(_1);
     retmethod(_1);
@@ -107,10 +105,7 @@ endmethod
 
 defmethod(OBJ, gdeinit, StringFix)
   next_method(self);
-
-  if (self->_value)            // take care of protection cases
-    free(self->_value);
-
+  free(self->_value);
   retmethod(_1);
 endmethod
 
@@ -170,7 +165,7 @@ defmethod(void, genlarge, StringDyn, Int) // negative size means enlarge front
 
     capacity += size = extra_size(capacity, size);
     
-    U8* _value = realloc(strf->_value, capacity*sizeof *strf->_value);
+    U8* _value = realloc(strf->_value, (capacity+1)*sizeof *strf->_value);
     if (!_value) THROW(ExBadAlloc);
 
     str -> value   = _value + offset;
@@ -199,12 +194,13 @@ defmethod(OBJ, gadjust, StringDyn)
 
     // shrink storage
     if (str->size != strf->capacity) {
-      U8* _value = realloc(strf->_value, str->size*sizeof *strf->_value);
+      U32 capacity = str->size;
+      U8* _value = realloc(strf->_value, (capacity+1)*sizeof *strf->_value);
       if (!_value) THROW(ExBadAlloc);
 
       str -> value   = _value;
       strf->_value   = _value;
-      strf->capacity = str->size;
+      strf->capacity = capacity;
     }
 
     ch_cls = cos_object_changeClass(_1, classref(StringFix));
@@ -444,22 +440,4 @@ defalias(void, (gappend  )gpush, StringDyn, Char  );
 defalias(void, (gappend  )gpush, StringDyn, Object);
 defalias(void, (gdropLast)gpop , StringDyn);
 defalias(OBJ , (glast    )gtop , String);
-
-// ----- generic get, getLine, getData from class
-
-// NOTE-TODO: implement type-specific io on string stream
-
-defalias (OBJ, (gget)ggetLine, StringDyn, Class);
-defalias (OBJ, (gget)ggetData, StringDyn, Class);
-defmethod(OBJ,  gget         , StringDyn, Class)
-  OBJ obj = gautoDelete(gnew(_2));
-  
-  forward_message(_1, obj);
-
-  if (gunderstandMessage1(obj, genericref(gadjust)))
-    gadjust(obj);
-
-  retmethod(RETVAL == True ? obj : Nil);
-endmethod
-
 

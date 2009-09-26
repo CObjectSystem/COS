@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_str.c,v 1.1 2009/09/25 08:59:46 ldeniau Exp $
+ | $Id: Number_str.c,v 1.2 2009/09/26 09:02:07 ldeniau Exp $
  |
 */
 
@@ -45,109 +45,99 @@
 // ----- get
 
 defmethod(OBJ, gget, String, Char)
-  PRE POST BODY
-    if (self->size) {
-      self2->Int.value = self->value[0];
-      retmethod(True);
-    } 
-    retmethod(False);
+  if (self->size) {
+    self2->Int.value = self->value[0];
+    retmethod(True);
+  } 
+  retmethod(False);
 endmethod
 
 defmethod(OBJ, gget, String, Int)
-  PRE POST BODY
-    if (self->size) {
-      self->value[self->size] = '\0';
-      retmethod(sscanf((STR)self->value, "%d", &self2->value) == 1 ? True : False);
-    }
-    retmethod(False);
+  if (self->size) {
+    int res = sscanf(gstr(_1), "%d", &self2->value) == 1;
+    retmethod(res ? True : False);
+  }
+  retmethod(False);
 endmethod
 
 defmethod(OBJ, gget, String, Long)
-  PRE POST BODY
-    if (self->size) {
-      self->value[self->size] = '\0';
-      long long val = 0;
-      int res = sscanf((STR)self->value, "%lld", &val) == 1;
-      self2->value = val;
-      retmethod(res ? True : False);
-    }
-    retmethod(False);
+  if (self->size) {
+    long long val = 0;
+    int res = sscanf(gstr(_1), "%lld", &val) == 1;
+    self2->value = val;
+    retmethod(res ? True : False);
+  }
+  retmethod(False);
 endmethod
 
 defmethod(OBJ, gget, String, Float)
-  PRE POST BODY
-    if (self->size) {
-      self->value[self->size] = '\0';
-      retmethod(sscanf((STR)self->value, "%lf", &self2->value) == 1 ? True : False);
-    }
-    retmethod(False);
+  if (self->size) {
+    int res = sscanf(gstr(_1), "%lf", &self2->value) == 1;
+    retmethod(res ? True : False);
+  }
+  retmethod(False);
 endmethod
 
 defmethod(OBJ, gget, String, Complex)
-  PRE POST BODY
-    if (self->size) {
-      C64 *cx = &self2->value;
-      F64 *re = (F64*)cx;
-      F64 *im = re+1;
+  if (self->size) {
+    C64 *cx = &self2->value;
+    F64 *re = (F64*)cx;
+    F64 *im = re+1;
 
-      self->value[self->size] = '\0';
-      retmethod(sscanf((STR)self->value, "(%lf,%lf)", re, im) == 2 ? True : False);
-    }
-    retmethod(False);
+    int res = sscanf(gstr(_1), "(%lf,%lf)", re, im) == 2;
+    retmethod(res ? True : False);
+  }
+  retmethod(False);
 endmethod
 
 // ----- put
 
 defmethod(OBJ, gput, String, Char)
-  PRE POST BODY
-    if (self->size) {
-      self->value[0] = self2->Int.value, self->size = 1;
-      retmethod(True);
-    }
-    retmethod(False);
+  if (self->size) {
+    self->value[0] = self2->Int.value, self->size = 1;
+    retmethod(True);
+  }
+  retmethod(False);
 endmethod
 
 defmethod(OBJ, gput, String, Int)
-  PRE POST BODY
-    int n = snprintf((char*)self->value, self->size+1, "%d", self2->value);
-    if (n != EOF && (U32)n <= self->size) {
-      self->size = n;
-      retmethod(True);
-    }
-    retmethod(False);
+  int n = snprintf((char*)self->value, self->size+1, "%d", self2->value);
+  if (n != EOF && n > 0 && (U32)n <= self->size) {
+    self->size = n;
+    retmethod(True);
+  }
+  retmethod(False);
 endmethod
 
 defmethod(OBJ, gput, String, Long)
-  PRE POST BODY
-    long long val = self2->value;
-    int n = snprintf((char*)self->value, self->size+1, "%lld", val);
-    if (n != EOF && (U32)n <= self->size) {
-      self->size = n;
-      retmethod(True);
-    }
-    retmethod(False);
+  long long val = self2->value;
+  int n = snprintf((char*)self->value, self->size+1, "%lld", val);
+  if (n != EOF && n > 0 && (U32)n <= self->size) {
+    self->size = n;
+    retmethod(True);
+  }
+  retmethod(False);
 endmethod
 
 defmethod(OBJ, gput, String, Float)
-  PRE POST BODY
-    int n = snprintf((char*)self->value, self->size+1, "%g", self2->value);
-    if (n != EOF && (U32)n <= self->size) {
-      self->size = n;
-      retmethod(True);
-    }
-    retmethod(False);
+  int n = snprintf((char*)self->value, self->size+1, "%g", self2->value);
+  if (n != EOF && n > 0 && (U32)n <= self->size) {
+    self->size = n;
+    retmethod(True);
+  }
+  retmethod(False);
 endmethod
 
 defmethod(OBJ, gput, String, Complex)
-  PRE POST BODY
-    C64 *cx = &self2->value;
-    F64 *re = (F64*)cx;
-    F64 *im = re+1;
+  C64 *cx = &self2->value;
+  F64 *re = (F64*)cx;
+  F64 *im = re+1;
 
-    int n = snprintf((char*)self->value, self->size+1, "(%g,%g)", *re, *im);
-    if (n != EOF && (U32)n <= self->size) {
-      self->size = n;
-      retmethod(True);
-    }
-    retmethod(False);
+  int n = snprintf((char*)self->value, self->size+1, "(%g,%g)", *re, *im);
+  if (n != EOF && n > 0 && (U32)n <= self->size) {
+    self->size = n;
+    retmethod(True);
+  }
+  retmethod(False);
 endmethod
+

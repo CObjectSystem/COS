@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_io.c,v 1.4 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: String_io.c,v 1.5 2009/09/26 09:02:07 ldeniau Exp $
  |
 */
 
@@ -165,7 +165,25 @@ endmethod
 // ----- fixed size getData
 
 defmethod(OBJ, ggetData, InFile, String)
+  if (!self2->size)
+    retmethod(True);
+
   int res = fread(self2->value, self2->size, 1, self->OpenFile.fd) != 1;
   retmethod(res ? False : True);
+endmethod
+
+// ----- generic get, getLine, getData from class
+
+defalias (OBJ, (gget)ggetLine, String, Class);
+defalias (OBJ, (gget)ggetData, String, Class);
+defmethod(OBJ,  gget         , String, Class)
+  OBJ obj = gautoDelete(gnew(_2));
+  
+  forward_message(_1, obj);
+
+  if (gunderstandMessage1(obj, genericref(gadjust)) == True)
+    gadjust(obj);
+
+  retmethod(RETVAL == True ? obj : Nil);
 endmethod
 

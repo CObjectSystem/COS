@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_io.c,v 1.3 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: Number_io.c,v 1.4 2009/09/26 09:02:07 ldeniau Exp $
  |
 */
 
@@ -254,7 +254,7 @@ retry:
       goto retry;
     }
 
-    if (n != EOF) {
+    if (n != EOF && n > 0) {
       str->size += n;
       retmethod(True);
     }
@@ -276,7 +276,7 @@ retry:
       goto retry;
     }
 
-    if (n != EOF) {
+    if (n != EOF && n > 0) {
       str->size += n;
       retmethod(True);
     }
@@ -297,7 +297,7 @@ retry:
       goto retry;
     }
 
-    if (n != EOF) {
+    if (n != EOF && n > 0) {
       str->size += n;
       retmethod(True);
     }
@@ -321,7 +321,7 @@ retry:
       goto retry;
     }
 
-    if (n != EOF) {
+    if (n != EOF && n > 0) {
       str->size += n;
       retmethod(True);
     }

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.8 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: String.c,v 1.9 2009/09/26 09:02:07 ldeniau Exp $
  |
 */
 
@@ -114,7 +114,6 @@ endmethod
 // ----- constructors
 
 defmethod(OBJ, gclone, String) // clone
-  PRE POST BODY
     struct String* str = String_alloc(self->size);
 
     memcpy(str->value, self->value, str->size);
@@ -122,9 +121,18 @@ defmethod(OBJ, gclone, String) // clone
     retmethod((OBJ)str);
 endmethod
 
+defalias (OBJ, (ginitWithStr)gnewWithStr, pmString, (STR)str);
+defmethod(OBJ,  ginitWithStr            , pmString, (STR)str)
+    U32 size = strlen(str);
+    struct String* s = String_alloc(size);
+
+    memcpy(s->value, str, size);
+
+    retmethod((OBJ)s);
+endmethod
+
 defalias (OBJ, (ginitWith)gnewWith, pmString, String);
 defmethod(OBJ,  ginitWith         , pmString, String) // clone
-  PRE POST BODY
     struct String* str = String_alloc(self2->size);
 
     memcpy(str->value, self2->value, str->size);
