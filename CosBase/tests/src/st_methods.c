@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.15 2009/04/17 21:13:56 ldeniau Exp $
+ | $Id: st_methods.c,v 1.16 2009/09/28 14:04:06 ldeniau Exp $
  |
 */
 
@@ -189,9 +189,9 @@ st_memory(void)
   STEST( "retain", P, gretain(arr[i++]) );
 
   i = 0;
-  lvl = cos_logmsg_set(COS_LOGMSG_WARN);
+  lvl = cos_logmsg_setLevel(COS_LOGMSG_WARN);
   STEST( "autoRelease", P, gautoRelease(arr[i++]) );
-  cos_logmsg_set(lvl);
+  cos_logmsg_setLevel(lvl);
 
   i = 0;
   STEST( "delete", P, gdelete(arr[i++]) );

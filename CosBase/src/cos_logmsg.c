@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.13 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.14 2009/09/28 14:04:06 ldeniau Exp $
  |
 */
 
@@ -49,10 +49,10 @@ STATIC_ASSERT(COS_LOGMSG_value_must_be_within_trace_and_abort,
               COS_LOGMSG >= COS_LOGMSG_TRACE && COS_LOGMSG <= COS_LOGMSG_ABORT);
 
 FILE *cos_logmsg_out    = 0;
-int   cos_logmsg_level_ = COS_LOGMSG;
+int   cos_logmsg_level_ = COS_LOGMSG; // not thread safe
 
 int
-cos_logmsg_set(int lvl)
+cos_logmsg_setLevel(int lvl)
 {
   int old = cos_logmsg_level_;
   

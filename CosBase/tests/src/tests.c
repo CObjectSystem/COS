@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.20 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: tests.c,v 1.21 2009/09/28 14:04:06 ldeniau Exp $
  |
 */
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   int cache_trc = NO;
   int i;
   
-  cos_logmsg_set(COS_LOGMSG_DEBUG);
+  cos_logmsg_setLevel(COS_LOGMSG_DEBUG);
 
   for (i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "-d"))
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     if (!strcmp(argv[i], "-s"))
       speed_tst = YES;
     if (!strcmp(argv[i], "-t"))
-      cos_logmsg_set(COS_LOGMSG_TRACE);
+      cos_logmsg_setLevel(COS_LOGMSG_TRACE);
   }
 
   if (alloc_trc)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.33 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: cosapi.h,v 1.34 2009/09/28 14:04:05 ldeniau Exp $
  |
 */
 
@@ -99,6 +99,7 @@ void   cos_contract_invariant2(OBJ,OBJ,STR,STR,int);
 void   cos_contract_invariant3(OBJ,OBJ,OBJ,STR,STR,int);
 void   cos_contract_invariant4(OBJ,OBJ,OBJ,OBJ,STR,STR,int);
 void   cos_contract_invariant5(OBJ,OBJ,OBJ,OBJ,OBJ,STR,STR,int);
+int    cos_contract_setLevel  (int lvl); // return previous level
 
 void   cos_exception_assert(STR,STR,STR,int);
 void   cos_exception_errno(int,STR,STR,int);
@@ -141,7 +142,7 @@ void   cos_module_load(STR*); // null terminated array of module names
 ((void)(cos_logmsg_level_ <= (lvl) && (cos_logmsg_(lvl,func,file,line,__VA_ARGS__),0)))
 
 void cos_logmsg_(int,STR,STR,int,STR,...) __attribute__((__format__(__printf__,5,6)));
-int  cos_logmsg_set(int lvl); // return previous level
+int  cos_logmsg_setLevel(int lvl); // return previous level
 
 /* NOTE-INFO: memory tracer
 */

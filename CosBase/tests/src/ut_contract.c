@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_contract.c,v 1.6 2009/04/19 17:52:37 ldeniau Exp $
+ | $Id: ut_contract.c,v 1.7 2009/09/28 14:04:06 ldeniau Exp $
  |
 */
 
@@ -68,6 +68,8 @@ void
 ut_contract(void)
 {
   useclass(A,B,C,D,E);
+
+  int lvl = cos_contract_setLevel(COS_CONTRACT_ALL);
   
   UTEST_START("contract")
 
@@ -78,4 +80,6 @@ ut_contract(void)
     UTEST( check_ctr(E,1,"E-PRE-BODY-POST-INV") );
     
   UTEST_END
+
+  cos_contract_setLevel(lvl);
 }

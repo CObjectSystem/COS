@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.12 2009/08/05 13:13:27 ldeniau Exp $
+ | $Id: contract.h,v 1.13 2009/09/28 14:04:05 ldeniau Exp $
  |
 */
 
@@ -172,6 +172,7 @@
  */
 
 // contract level
+#define COS_CONTRACT_NO   0
 #define COS_CONTRACT_PRE  1
 #define COS_CONTRACT_POST 2
 #define COS_CONTRACT_ALL  3
