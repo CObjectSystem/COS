@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.15 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: Functor.c,v 1.16 2009/09/30 12:09:58 ldeniau Exp $
  |
 */
 
@@ -40,15 +40,99 @@
 
 makclass(Functor);
 
-makclass(Functor1 , Functor);
-makclass(Functor2 , Functor);
-makclass(Functor3 , Functor);
-makclass(Functor4 , Functor);
-makclass(Functor5 , Functor);
+makclass(Functor0, Functor);
+makclass(Functor1, Functor);
+makclass(Functor2, Functor);
+makclass(Functor3, Functor);
+makclass(Functor4, Functor);
+makclass(Functor5, Functor);
 
 useclass(ExBadArity);
 
+// ----- initializers
+
+struct Functor*
+Functor0_init(struct Functor0* fun)
+{
+  fun->arity = 0;
+  fun->Functor.Object.id = cos_class_id(classref(Function0));
+
+  return &fun->Functor;
+}
+
+struct Functor*
+Functor1_init(struct Functor1* fun)
+{
+  fun->arity = fun->arg != 0;
+
+  if (!fun->arity) // change type to function
+    fun->Functor.Object.id = cos_class_id(classref(Function1));
+
+  return &fun->Functor;
+}
+
+struct Functor*
+Functor2_init(struct Functor2* fun)
+{
+  fun->arity = (fun->arg[0] != 0)
+            | ((fun->arg[1] != 0) << 1);
+
+  if (!fun->arity) // change type to function
+    fun->Functor.Object.id = cos_class_id(classref(Function2));
+
+  return &fun->Functor;
+}
+
+struct Functor*
+Functor3_init(struct Functor3* fun)
+{
+  fun->arity = (fun->arg[0] != 0)
+            | ((fun->arg[1] != 0) << 1)
+            | ((fun->arg[2] != 0) << 2);
+
+  if (!fun->arity) // change type to function
+    fun->Functor.Object.id = cos_class_id(classref(Function3));
+
+  return &fun->Functor;
+}
+
+struct Functor*
+Functor4_init(struct Functor4* fun)
+{
+  fun->arity = (fun->arg[0] != 0)
+            | ((fun->arg[1] != 0) << 1)
+            | ((fun->arg[2] != 0) << 2)
+            | ((fun->arg[3] != 0) << 3);
+
+  if (!fun->arity) // change type to function
+    fun->Functor.Object.id = cos_class_id(classref(Function4));
+
+  return &fun->Functor;
+}
+
+struct Functor*
+Functor5_init(struct Functor5* fun)
+{
+  fun->arity = (fun->arg[0] != 0)
+            | ((fun->arg[1] != 0) << 1)
+            | ((fun->arg[2] != 0) << 2)
+            | ((fun->arg[3] != 0) << 3)
+            | ((fun->arg[4] != 0) << 4);
+
+  if (!fun->arity) // change type to function
+    fun->Functor.Object.id = cos_class_id(classref(Function5));
+
+  return &fun->Functor;
+}
+
 // ----- ctors
+
+defmethod(OBJ, ginitWith, Functor0, Functor0)
+  self->fct   = self2->fct;
+  self->arity = self2->arity;
+  
+  retmethod(_1);
+endmethod
 
 defmethod(OBJ, ginitWith, Functor1, Functor1)
   self->fct   = self2->fct;
@@ -150,8 +234,12 @@ static const U8 argc[32] = {
     4,  5
 };
 
-defmethod(I32, garity, Functor1)
+defmethod(I32, garity, Functor0)
   retmethod(0);
+endmethod
+
+defmethod(I32, garity, Functor1)
+  retmethod(1-argc[self->arity]);
 endmethod
 
 defmethod(I32, garity, Functor2)
@@ -171,6 +259,12 @@ defmethod(I32, garity, Functor5)
 endmethod
 
 // ----- eval
+
+// --- Functor0
+
+defmethod(OBJ, geval0, Functor0)
+  retmethod(self->fct());
+endmethod
 
 // --- Functor1
 

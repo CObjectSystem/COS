@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_io.c,v 1.5 2009/09/26 09:02:07 ldeniau Exp $
+ | $Id: String_io.c,v 1.6 2009/09/30 12:09:58 ldeniau Exp $
  |
 */
 
@@ -186,4 +186,13 @@ defmethod(OBJ,  gget         , String, Class)
 
   retmethod(RETVAL == True ? obj : Nil);
 endmethod
+
+// ----- gput
+
+defmethod(OBJ, gput, StringDyn, String)
+  gappend(_1,_2);
+  retmethod(True);
+endmethod
+
+
 

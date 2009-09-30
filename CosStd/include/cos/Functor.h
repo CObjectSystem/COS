@@ -32,15 +32,22 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.17 2009/08/15 14:54:57 ldeniau Exp $
+ | $Id: Functor.h,v 1.18 2009/09/30 12:09:54 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-// ----- definitions
+// ----- Functor class cluster
 
 defclass(Functor)
+endclass
+
+// ----- Functor with non-zero arity
+
+defclass(Functor0,Functor)
+  OBJFCT0 fct;
+  I32     arity;
 endclass
 
 defclass(Functor1,Functor)
@@ -76,6 +83,10 @@ endclass
 // ----- Functor with zero arity
 
 defclass(Function, Functor)
+endclass
+
+defclass(Function0, Function)
+  OBJFCT0 fct;
 endclass
 
 defclass(Function1, Function)
@@ -129,79 +140,29 @@ endclass
  * Implementation (private)
  */
 
-#define atFunctor(F,...) \
+#define atFunctor(...) \
+  COS_PP_IF(COS_PP_2ARGS(__VA_ARGS__)) \
+    (atFunctorF(__VA_ARGS__),atFunctor0(__VA_ARGS__))
+
+#define atFunctor0(F,...) \
+  Functor0_init( &(struct Functor0) { \
+    { cos_object_auto(Functor0) }, F, 0 })
+
+#define atFunctorF(F,...) \
   atFunctorN(COS_PP_NARG(__VA_ARGS__),F,__VA_ARGS__)
 
 #define atFunctorN(N,F,...) \
   COS_PP_CAT3(Functor,N,_init)( &(struct COS_PP_CAT(Functor,N)) { \
-    { cos_object_auto(COS_PP_CAT(Functor,N)) }, \
-    F, -1, COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
+    { cos_object_auto(COS_PP_CAT(Functor,N)) }, F, -1, \
+      COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
 
 // ----- initializers
 
-static inline struct Functor1*
-Functor1_init(struct Functor1* fun)
-{
-  fun->arity = fun->arg != 0;
-
-  if (!fun->arity) // change type to function
-    fun->Functor.Object.id = cos_class_id(classref(Function1));
-
-  return fun;
-}
-
-static inline struct Functor2*
-Functor2_init(struct Functor2* fun)
-{
-  fun->arity = (fun->arg[0] != 0)
-            | ((fun->arg[1] != 0) << 1);
-
-  if (!fun->arity) // change type to function
-    fun->Functor.Object.id = cos_class_id(classref(Function2));
-
-  return fun;
-}
-
-static inline struct Functor3*
-Functor3_init(struct Functor3* fun)
-{
-  fun->arity = (fun->arg[0] != 0)
-            | ((fun->arg[1] != 0) << 1)
-            | ((fun->arg[2] != 0) << 2);
-
-  if (!fun->arity) // change type to function
-    fun->Functor.Object.id = cos_class_id(classref(Function3));
-
-  return fun;
-}
-
-static inline struct Functor4*
-Functor4_init(struct Functor4* fun)
-{
-  fun->arity = (fun->arg[0] != 0)
-            | ((fun->arg[1] != 0) << 1)
-            | ((fun->arg[2] != 0) << 2)
-            | ((fun->arg[3] != 0) << 3);
-
-  if (!fun->arity) // change type to function
-    fun->Functor.Object.id = cos_class_id(classref(Function4));
-
-  return fun;
-}
-
-static inline struct Functor5*
-Functor5_init(struct Functor5* fun)
-{
-  fun->arity = (fun->arg[0] != 0)
-            | ((fun->arg[1] != 0) << 1)
-            | ((fun->arg[2] != 0) << 2)
-            | ((fun->arg[3] != 0) << 3)
-            | ((fun->arg[4] != 0) << 4);
-
-  if (!fun->arity) // change type to function
-    fun->Functor.Object.id = cos_class_id(classref(Function5));
-
-  return fun;
-}
+struct Functor* Functor0_init(struct Functor0*);
+struct Functor* Functor1_init(struct Functor1*);
+struct Functor* Functor2_init(struct Functor2*);
+struct Functor* Functor3_init(struct Functor3*);
+struct Functor* Functor4_init(struct Functor4*);
+struct Functor* Functor5_init(struct Functor5*);
 
 #endif // COS_FUNCTOR_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.2 2009/08/05 09:58:59 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.3 2009/09/30 12:09:58 ldeniau Exp $
  |
 */
 
@@ -38,6 +38,7 @@
 #include <cos/gen/functor.h>
 
 makclass(Function , Functor);
+makclass(Function0, Function);
 makclass(Function1, Function);
 makclass(Function2, Function);
 makclass(Function3, Function);
@@ -45,6 +46,9 @@ makclass(Function4, Function);
 makclass(Function5, Function);
 
 // ----- type compatibility within the class cluster
+
+STATIC_ASSERT(functor0_to_function0_compatibility,
+              COS_FIELD_COMPATIBILITY(Function0,Functor0,fct));
 
 STATIC_ASSERT(functor1_to_function1_compatibility,
               COS_FIELD_COMPATIBILITY(Function1,Functor1,fct));
@@ -63,37 +67,41 @@ STATIC_ASSERT(functor5_to_function5_compatibility,
 
 // ----- ctors
 
+defmethod(OBJ, ginitWith, Function0, Function0)
+  self->fct = self2->fct;
+  retmethod(_1);
+endmethod
+
 defmethod(OBJ, ginitWith, Function1, Function1)
   self->fct = self2->fct;
-  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Function2, Function2)
   self->fct = self2->fct;
-  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Function3, Function3)
   self->fct = self2->fct;
-  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Function4, Function4)
   self->fct = self2->fct;
-  
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWith, Function5, Function5)
   self->fct = self2->fct;
-  
   retmethod(_1);
 endmethod
 
 // ----- arity
+
+defmethod(I32, garity, Function0)
+  retmethod(0);
+endmethod
 
 defmethod(I32, garity, Function1)
   retmethod(1);
@@ -116,6 +124,10 @@ defmethod(I32, garity, Function5)
 endmethod
 
 // ----- eval
+
+defmethod(OBJ, geval0, Function0)
+  retmethod(self->fct());
+endmethod
 
 defmethod(OBJ, geval1, Function1, (OBJ)arg1)
   retmethod(self->fct(arg1));

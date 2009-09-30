@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.8 2009/09/26 09:02:07 ldeniau Exp $
+ | $Id: File.c,v 1.9 2009/09/30 12:09:58 ldeniau Exp $
  |
 */
 
@@ -311,22 +311,16 @@ endmethod
 // ----- generic mapWhile
 
 defmethod(void, gapplyWhile, Functor, OpenFile)
-  OBJ pool = gnew(AutoRelease);
-
   while (!feof(self2->fd) && geval(_1,_2) != Nil) ;
-
-  gdelete(pool);
 endmethod
 
 defmethod(OBJ, gmapWhile, Functor, OpenFile)
   OBJ recs = gautoDelete(gnew(Array));
-  OBJ pool = gnew(AutoRelease);
   OBJ res;
 
   while (!feof(self2->fd) && (res = geval(_1,_2)) != Nil)
     gpush(recs, res);
 
-  gdelete(pool);
   retmethod(gadjust(recs));
 endmethod
 

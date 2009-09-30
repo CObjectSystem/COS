@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.21 2009/09/21 10:15:14 ldeniau Exp $
+ | $Id: algorithm.h,v 1.22 2009/09/30 12:09:58 ldeniau Exp $
  |
 */
 
@@ -122,9 +122,10 @@ defgeneric(OBJ, gfind , _1, fun); // return Nil if not found
 defgeneric(OBJ, gifind, _1, fun); // return an index/key or Nil
 
 // seq-like algorithms (fun must return TrueFalse)
-defgeneric(OBJ, gunique, _1, fun); // remove contiguous equal elements
-defgeneric(OBJ, ggroup , _1, fun); // split when false
-defgeneric(OBJ, gsplit , _1, fun); // split when true
+defgeneric(OBJ, gunique     , _1, fun); // remove contiguous equal elements
+defgeneric(OBJ, ggroup      , _1, fun); // split when false
+defgeneric(OBJ, gsplit      , _1, fun); // split when true
+defgeneric(OBJ, gintersperse, _1, obj);
 
 // set-like algorithms
 defgeneric(OBJ, gdiff     , _1, _2, fun);

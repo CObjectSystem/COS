@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.16 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: container.h,v 1.17 2009/09/30 12:09:58 ldeniau Exp $
  |
 */
 
@@ -64,7 +64,6 @@ defgeneric(void, gdropFirst, _1);
 defgeneric(void, gdropLast , _1);
 defgeneric(OBJ , gfirst    , _1);
 defgeneric(OBJ , glast     , _1);
-
 
 // check for elements
 defgeneric(OBJ , gisEmpty  , _1);
