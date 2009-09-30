@@ -1,10 +1,10 @@
-#ifndef COS_TESTS_TESTS_H
-#define COS_TESTS_TESTS_H
+#ifndef COS_ARRAY_UTL_H
+#define COS_ARRAY_UTL_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS testsuites - tests suite
+ | COS Array - utilities
  |
  o---------------------------------------------------------------------o
  |
@@ -32,14 +32,35 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.h,v 1.5 2009/09/30 21:53:01 ldeniau Exp $
+ | $Id: Array_utl.h,v 1.1 2009/09/30 21:53:40 ldeniau Exp $
  |
 */
 
-void ut_slice(void);
-void ut_range(void);
-void ut_xrange(void);
-void ut_array(void);
-void ut_string(void);
+static inline void
+swap(OBJ *val1, OBJ *val2)
+{
+  OBJ tmp = *val1;
+  *val1 = *val2;
+  *val2 = tmp;
+}
 
-#endif // COS_TESTS_TESTS_H
+static inline void
+assign(OBJ *dst, OBJ val)
+{
+  OBJ tmp = *dst;
+  *dst = gretain(val);
+  grelease(tmp);
+}
+
+static inline OBJ*
+copy(OBJ *dst, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
+{
+  OBJ *end = dst + src_n;
+
+  while (dst != end)
+    *dst++ = gretain(*src), ++*dst_n, src += src_s;
+
+  return dst;
+}
+
+#endif // COS_ARRAY_UTL_H

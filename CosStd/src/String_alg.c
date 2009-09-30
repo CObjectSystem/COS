@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.12 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: String_alg.c,v 1.13 2009/09/30 21:52:59 ldeniau Exp $
  |
 */
 
@@ -60,17 +60,19 @@ defmethod(OBJ, gisEqual, String, String)
   if (self->size != self2->size)
     retmethod(False);
 
-  retmethod( memcmp(self->value,self2->value,self->size) ? False : True );
+  retmethod( memcmp(self->value, self2->value, self->size) ? False : True );
 endmethod
 
 // ----- comparison
 
 defmethod(OBJ, gcompare, String, String)
-  U32 size = self->size < self2->size ? self->size : self2->size;
+  int res = memcmp(self->value, self2->value,
+                   self->size < self2->size ? self->size : self2->size);
 
-  int res = memcmp(self->value,self2->value,size);
-  
-  retmethod( res < 0 ? Lesser : res > 0 ? Greater : Equal );
+  retmethod( res < 0 ? Lesser  :
+             res > 0 ? Greater : 
+             self->size < self2->size ? Lesser  :
+             self->size > self2->size ? Greater : Equal );
 endmethod
 
 // ----- in place
