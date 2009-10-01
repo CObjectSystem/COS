@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.21 2009/08/08 16:16:30 ldeniau Exp $
+ | $Id: cosdef.h,v 1.22 2009/10/01 14:09:40 ldeniau Exp $
  |
 */
 
@@ -84,9 +84,10 @@ typedef _ComplexDouble       C64;
 typedef struct { F64 _[2]; } C64;
 #endif
 
-typedef const char*           STR; // string literal
-typedef struct OBJ*           OBJ; // object ADT
-typedef const struct Generic* SEL; // message selector
+typedef const char*           STR;  // string literal
+typedef struct OBJ*           OBJ;  // object ADT
+typedef const struct Generic* SEL;  // message selector
+typedef struct { OBJ _1,_2; } PAIR; // return by value
 
 typedef void (*FUNC)(void);
 typedef void (*FUNCV)(void*);
