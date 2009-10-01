@@ -277,6 +277,7 @@
                     <keyword>OBJ</keyword>
                     <keyword>SEL</keyword>
                     <keyword>STR</keyword>
+                    <keyword>PAIR</keyword>
                     <keyword>FUNC</keyword>
                     <keyword>IMP1</keyword>
                     <keyword>IMP2</keyword>
@@ -342,6 +343,7 @@
                     <keyword>STATIC_ASSERT</keyword>
                     <keyword>test_assert</keyword>
                     <keyword>test_invariant</keyword>
+                    <keyword>__FUNC__</keyword>
                 </context>
 
                 <!-- C99 booleans -->
