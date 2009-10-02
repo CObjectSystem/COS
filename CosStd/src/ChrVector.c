@@ -29,11 +29,10 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ChrVector.c,v 1.3 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: ChrVector.c,v 1.4 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
-#define    VECTOR_ONLY
 #define CHRVECTOR_ONLY
 
 #define T     ChrVector
@@ -63,12 +62,7 @@
 #define VS    Vector.ValueSequence.Sequence
 
 #define VAL       I8
-#define VALINT  
-#define VALFLT  
 #define VALOBJ(v) aChar(v)
-
-#define  valref  value
-#define _valref _value
 
 #define aTView(v,s)    aChrVectorView(v,s)
 #define aTRef(v,s)     aChrVectorRef(v,s)
@@ -76,18 +70,10 @@
 #define T_alloc(s)        ChrVector_alloc(s)
 #define TV_init(vw,v,s,b) ChrVectorView_init(vw,v,s,b)
 
-#define TOVALPTR        gchrPtr
-#define TOVAL(v)        gchr(v)
-#define VALUE(v)        v->Int.value
-#define ASSIGN(d,s)     (d = s)
-#define SWAP(v1,v2)     { VAL tmp = v1; v1 = v2; v2 = tmp; }
-#define EQUAL(v1,v2)    (v1 == v2 ? True : False)
-#define COMPARE(v1,v2)  (v1<v2 ? Lesser : v1>v2 ? Greater : Equal)
-#define RETAIN(v)       (v)
-#define RELEASE(v)      
-#define AUTODELETE(v)   gautoDelete(v)
-#define PROTECT(v)   
-#define UNPROTECT(v) 
+#define TOVALPTR      gchrPtr
+#define TOVAL(v)      gchr(v)
+#define VALUE(v)      v->Int.value
+#define EQUAL(v1,v2)  (v1 == v2)
 
 #include <cos/ChrVector.h>
 #include <cos/Function.h>
@@ -95,6 +81,8 @@
 makclass(ChrVector, IntegralVector);
 
 // vector templates
+#include "./tmpl/Vector_utl.h"
+
 #include "./tmpl/Vector.c"
 
 #include "./tmpl/Vector_dyn.c"

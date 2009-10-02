@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.9 2009/09/30 21:53:01 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.10 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,7 @@
 defmethod(void, gapplyWhile, Functor, T)
   U32 size   = self2->size;
   I32  val_s = self2->stride;
-  VAL *val   = self2->valref;
+  VAL *val   = self2->value;
   VAL *end   = val + val_s*size;
 
   while (val != end && geval(_1, VALOBJ(*val)) != Nil)
@@ -52,7 +52,7 @@ endmethod
 defmethod(void, gapply, Functor, T)
   U32  size  = self2->size;
   I32  val_s = self2->stride;
-  VAL *val   = self2->valref;
+  VAL *val   = self2->value;
   VAL *end   = val + val_s*size;
 
   while (val != end) {
@@ -64,9 +64,9 @@ endmethod
 defmethod(void, gapply2, Functor, T, T)
   U32  size   = self2->size < self3->size ? self2->size : self3->size;
   I32  val_s  = self2->stride;
-  VAL *val    = self2->valref;
+  VAL *val    = self2->value;
   I32  val2_s = self3->stride;
-  VAL *val2   = self3->valref;
+  VAL *val2   = self3->value;
   VAL *end    = val + val_s*size;
 
   while (val != end) {
@@ -80,11 +80,11 @@ defmethod(void, gapply3, Functor, T, T, T)
   U32  size   = self2->size < self3->size ? self2->size : self3->size;
        size   = self4->size < size ? self4->size : size;
   I32  val_s  = self2->stride;
-  VAL *val    = self2->valref;
+  VAL *val    = self2->value;
   I32  val2_s = self3->stride;
-  VAL *val2   = self3->valref;
+  VAL *val2   = self3->value;
   I32  val3_s = self4->stride;
-  VAL *val3   = self4->valref;
+  VAL *val3   = self4->value;
   VAL *end    = val + val_s*size;
 
   while (val != end) {
@@ -100,13 +100,13 @@ defmethod(void, gapply4, Functor, T, T, T, T)
        size   = self4->size < size ? self4->size : size;
        size   = self5->size < size ? self5->size : size;
   I32  val_s  = self2->stride;
-  VAL *val    = self2->valref;
+  VAL *val    = self2->value;
   I32  val2_s = self3->stride;
-  VAL *val2   = self3->valref;
+  VAL *val2   = self3->value;
   I32  val3_s = self4->stride;
-  VAL *val3   = self4->valref;
+  VAL *val3   = self4->value;
   I32  val4_s = self5->stride;
-  VAL *val4   = self5->valref;
+  VAL *val4   = self5->value;
   VAL *end    = val + val_s*size;
 
   while (val != end) {
@@ -118,22 +118,43 @@ defmethod(void, gapply4, Functor, T, T, T, T)
   }
 endmethod
 
-// ----- mapWhile, map, map2, map3, map4
+// ----- mapIf, mapWhile, map, map2, map3, map4
+
+defmethod(OBJ, gmapIf, Functor, T)
+  U32 size = self2->size;
+  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  struct T* vec = STATIC_CAST(struct T*, _vec);
+
+  I32  val_s = self2->stride;
+  VAL *val   = self2->value;
+  U32 *dst_n = &vec->size;
+  VAL *dst   = vec->value;
+  VAL *end   = val + val_s*size;
+  OBJ  res;
+
+  while (val != end) {
+    if ((res = geval(_1, VALOBJ(*val))) != Nil)
+      *dst++ = TOVAL(res), ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_vec));
+endmethod
 
 defmethod(OBJ, gmapWhile, Functor, T)
   U32 size = self2->size;
   OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
-  OBJ res;
 
   I32  val_s = self2->stride;
-  VAL *val   = self2->valref;
+  VAL *val   = self2->value;
   U32 *dst_n = &vec->size;
-  VAL *dst   = vec->valref;
+  VAL *dst   = vec->value;
   VAL *end   = val + val_s*size;
+  OBJ res;
 
   while (val != end && (res = geval(_1, VALOBJ(*val))) != Nil) {
-    *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
+    *dst++ = TOVAL(res), ++*dst_n;
     val += val_s;
   }
 
@@ -146,15 +167,15 @@ defmethod(OBJ, gmap, Functor, T)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s = self2->stride;
-  VAL *val   = self2->valref;
+  VAL *val   = self2->value;
   U32 *dst_n = &vec->size;
-  VAL *dst   = vec->valref;
+  VAL *dst   = vec->value;
   VAL *end   = dst + size;
   OBJ  res;
 
   while (dst != end) {
     res = geval(_1, VALOBJ(*val));
-    *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
+    *dst++ = TOVAL(res), ++*dst_n;
     val += val_s;
   }
 
@@ -167,17 +188,17 @@ defmethod(OBJ, gmap2, Functor, T, T)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s  = self2->stride;
-  VAL *val    = self2->valref;
+  VAL *val    = self2->value;
   I32  val2_s = self3->stride;
-  VAL *val2   = self3->valref;
+  VAL *val2   = self3->value;
   U32 *dst_n  = &vec->size;
-  VAL *dst    = vec->valref;
+  VAL *dst    = vec->value;
   VAL *end    = dst + size;
   OBJ  res;
 
   while (dst != end) {
     res = geval(_1, VALOBJ(*val), VALOBJ(*val2));
-    *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
+    *dst++ = TOVAL(res), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
   }
@@ -192,19 +213,19 @@ defmethod(OBJ, gmap3, Functor, T, T, T)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s  = self2->stride;
-  VAL *val    = self2->valref;
+  VAL *val    = self2->value;
   I32  val2_s = self3->stride;
-  VAL *val2   = self3->valref;
+  VAL *val2   = self3->value;
   I32  val3_s = self4->stride;
-  VAL *val3   = self4->valref;
+  VAL *val3   = self4->value;
   U32 *dst_n  = &vec->size;
-  VAL *dst    = vec->valref;
+  VAL *dst    = vec->value;
   VAL *end    = dst + size;
   OBJ  res;
 
   while (dst != end) {
     res = geval(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3));
-    *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
+    *dst++ = TOVAL(res), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
@@ -221,21 +242,21 @@ defmethod(OBJ, gmap4, Functor, T, T, T, T)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s  = self2->stride;
-  VAL *val    = self2->valref;
+  VAL *val    = self2->value;
   I32  val2_s = self3->stride;
-  VAL *val2   = self3->valref;
+  VAL *val2   = self3->value;
   I32  val3_s = self4->stride;
-  VAL *val3   = self4->valref;
+  VAL *val3   = self4->value;
   I32  val4_s = self5->stride;
-  VAL *val4   = self5->valref;
+  VAL *val4   = self5->value;
   U32 *dst_n  = &vec->size;
-  VAL *dst    = vec->valref;
+  VAL *dst    = vec->value;
   VAL *end    = dst + size;
   OBJ  res;
 
   while (dst != end) {
     res = geval(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3), VALOBJ(*val4));
-    *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
+    *dst++ = TOVAL(res), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
@@ -250,7 +271,7 @@ endmethod
 defmethod(OBJ, gall, T, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*size;
 
   while (val != end) {
@@ -265,7 +286,7 @@ endmethod
 defmethod(OBJ, gany, T, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*size;
 
   while (val != end) {
@@ -280,7 +301,7 @@ endmethod
 defmethod(U32, gcount, T, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*size;
   U32  cnt   = 0;
 
@@ -295,41 +316,61 @@ endmethod
 
 // ----- select, reject
 
-defmethod(OBJ, gselectWhile, T, Functor)
-  U32 size = self->size;
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
-
-  I32  val_s = self->stride;
-  VAL *val   = self->valref;
-  U32 *dst_n = &vec->size;
-  VAL *dst   = vec->valref;
-  VAL *end   = val + val_s*size;
-  OBJ  res;
-
-  while (val != end && (res = geval(_2, VALOBJ(*val))) != Nil) {
-    if (res == True)
-      *dst++ = RETAIN(*val), ++*dst_n;
-    val += val_s;
-  }
-
-  retmethod(gadjust(_vec));
-endmethod
-
 defmethod(OBJ, gselect, T, Functor)
   U32 size = self->size;
   OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   U32 *dst_n = &vec->size;
-  VAL *dst   = vec ->valref;
+  VAL *dst   = vec ->value;
   VAL *end   = val + val_s*size;
 
   while (val != end) {
     if (geval(_2, VALOBJ(*val)) == True)
-      *dst++ = RETAIN(*val), ++*dst_n;
+      *dst++ = *val, ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_vec));
+endmethod
+
+defmethod(OBJ, gselectIf, T, Functor)
+  U32 size = self->size;
+  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  struct T* vec = STATIC_CAST(struct T*, _vec);
+
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
+  U32 *dst_n = &vec->size;
+  VAL *dst   = vec->value;
+  VAL *end   = val + val_s*size;
+
+  while (val != end) {
+    if (geval(_2, VALOBJ(*val)) != Nil)
+      *dst++ = *val, ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_vec));
+endmethod
+
+defmethod(OBJ, gselectWhile, T, Functor)
+  U32 size = self->size;
+  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  struct T* vec = STATIC_CAST(struct T*, _vec);
+
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
+  U32 *dst_n = &vec->size;
+  VAL *dst   = vec->value;
+  VAL *end   = val + val_s*size;
+  OBJ  res;
+
+  while (val != end && (res = geval(_2, VALOBJ(*val))) != Nil) {
+    if (res == True)
+      *dst++ = *val, ++*dst_n;
     val += val_s;
   }
 
@@ -342,14 +383,55 @@ defmethod(OBJ, greject, T, Functor)
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   U32 *dst_n = &vec->size;
-  VAL *dst   = vec ->valref;
+  VAL *dst   = vec ->value;
   VAL *end   = val + val_s*size;
 
   while (val != end) {
     if (geval(_2, VALOBJ(*val)) != True)
-      *dst++ = RETAIN(*val), ++*dst_n;
+      *dst++ = *val, ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_vec));
+endmethod
+
+defmethod(OBJ, grejectIf, T, Functor)
+  U32 size = self->size;
+  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  struct T* vec = STATIC_CAST(struct T*, _vec);
+
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
+  U32 *dst_n = &vec->size;
+  VAL *dst   = vec ->value;
+  VAL *end   = val + val_s*size;
+
+  while (val != end) {
+    if (geval(_2, VALOBJ(*val)) == Nil)
+      *dst++ = *val, ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_vec));
+endmethod
+
+defmethod(OBJ, grejectWhile, T, Functor)
+  U32 size = self->size;
+  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  struct T* vec = STATIC_CAST(struct T*, _vec);
+
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
+  U32 *dst_n = &vec->size;
+  VAL *dst   = vec ->value;
+  VAL *end   = val + val_s*size;
+  OBJ  res;
+
+  while (val != end && (res = geval(_2, VALOBJ(*val))) != Nil) {
+    if (res == False)
+      *dst++ = *val, ++*dst_n;
     val += val_s;
   }
 
@@ -361,7 +443,7 @@ endmethod
 defmethod(OBJ, greduce, T, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*size;
   OBJ  res   = Nil;
 
@@ -381,7 +463,7 @@ endmethod
 defmethod(OBJ, grreduce, T, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*size;
   OBJ  res   = Nil;
 
@@ -401,7 +483,7 @@ endmethod
 defmethod(OBJ, greduce1, T, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*size;
   OBJ  res   = _3;
   
@@ -416,7 +498,7 @@ endmethod
 defmethod(OBJ, grreduce1, T, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*size;
   OBJ  res   = _3;
   
@@ -431,9 +513,9 @@ endmethod
 defmethod(OBJ, greduce2, T, T, Functor, Object)
   U32  size   = self->size < self2->size ? self->size : self2->size;
   I32  val_s  = self->stride;
-  VAL *val    = self->valref;
+  VAL *val    = self->value;
   I32  val2_s = self2->stride;
-  VAL *val2   = self2->valref;
+  VAL *val2   = self2->value;
   VAL *end    = val + val_s*size;
   OBJ  res    = _4;
 
@@ -449,9 +531,9 @@ endmethod
 defmethod(OBJ, grreduce2, T, T, Functor, Object)
   U32  size   = self->size < self2->size ? self->size : self2->size;
   I32  val_s  = self->stride;
-  VAL *end    = self->valref  + val_s*self->size;
+  VAL *end    = self->value  + val_s*self->size;
   I32  val2_s = self2->stride;
-  VAL *end2   = self2->valref + val2_s*self2->size;
+  VAL *end2   = self2->value + val2_s*self2->size;
   VAL *val    = end - val_s*size;
   OBJ  res    = _4;
 
@@ -472,19 +554,19 @@ defmethod(OBJ, gaccumulate, T, Functor)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   U32 *dst_n  = &vec->size;
-  VAL *dst   = vec->valref;
+  VAL *dst   = vec->value;
   VAL *end   = dst + size;
   OBJ  res;
 
   if (dst != end) {
-    *dst = RETAIN(*val), ++*dst_n;
+    *dst = *val, ++*dst_n;
     val += val_s, --end;
     
     while (dst != end) {
       res = geval(_2, VALOBJ(*dst), VALOBJ(*val));
-      *++dst = RETAIN(TOVAL(res)), ++*dst_n;
+      *++dst = TOVAL(res), ++*dst_n;
       val += val_s;
     }
   }
@@ -498,20 +580,20 @@ defmethod(OBJ, graccumulate, T, Functor)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s = self->stride;
-  VAL *val   = self->valref + val_s*size;
+  VAL *val   = self->value + val_s*size;
   U32 *dst_n  = &vec->size;
-  VAL *dst   = vec->valref;
+  VAL *dst   = vec->value;
   VAL *end   = dst + size;
   OBJ  res;
 
   if (dst != end) {
     val -= val_s;
-    *--end = RETAIN(*val), ++*dst_n;
+    *--end = *val, ++*dst_n;
 
     while (dst != end) {
       val -= val_s;
       res = geval(_2, VALOBJ(*val), VALOBJ(*end));
-      *--end = RETAIN(TOVAL(res)), ++*dst_n;
+      *--end = TOVAL(res), ++*dst_n;
     }
   }
   
@@ -524,17 +606,17 @@ defmethod(OBJ, gaccumulate1, T, Functor, Object)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   U32 *dst_n  = &vec->size;
-  VAL *dst   = vec->valref;
+  VAL *dst   = vec->value;
   VAL *end   = dst + size;
   OBJ  res;
 
-  *dst = RETAIN(TOVAL(_3)), ++*dst_n;
+  *dst = TOVAL(_3), ++*dst_n;
   
   while (dst != end) {
     res = geval(_2, VALOBJ(*dst), VALOBJ(*val));
-    *++dst = RETAIN(TOVAL(res)), ++*dst_n;
+    *++dst = TOVAL(res), ++*dst_n;
     val += val_s;
   }
 
@@ -547,18 +629,18 @@ defmethod(OBJ, graccumulate1, T, Functor, Object)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s = self->stride;
-  VAL *val   = self->valref + val_s*self->size;
+  VAL *val   = self->value + val_s*self->size;
   U32 *dst_n  = &vec->size;
-  VAL *dst   = vec->valref;
+  VAL *dst   = vec->value;
   VAL *end   = dst + size;
   OBJ  res;
 
-  *end = RETAIN(TOVAL(_3)), ++*dst_n;
+  *end = TOVAL(_3), ++*dst_n;
 
   while (dst != end) {
     val -= val_s,
     res = geval(_2, VALOBJ(*val), VALOBJ(*end));
-    *--end = RETAIN(TOVAL(res)), ++*dst_n;
+    *--end = TOVAL(res), ++*dst_n;
   }
 
   retmethod(_vec);
@@ -570,19 +652,19 @@ defmethod(OBJ, gaccumulate2, T, T, Functor, Object)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s  = self->stride;
-  VAL *val    = self->valref;
+  VAL *val    = self->value;
   I32  val2_s = self2->stride;
-  VAL *val2   = self2->valref;
+  VAL *val2   = self2->value;
   U32 *dst_n  = &vec->size;
-  VAL *dst    = vec->valref;
+  VAL *dst    = vec->value;
   VAL *end    = dst + size;
   OBJ  res;
 
-  *dst = RETAIN(TOVAL(_4)), ++*dst_n;
+  *dst = TOVAL(_4), ++*dst_n;
   
   while (dst != end) {
     res = geval(_3, VALOBJ(*dst), VALOBJ(*val), VALOBJ(*val2));
-    *++dst = RETAIN(TOVAL(res)), ++*dst_n;
+    *++dst = TOVAL(res), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
   }
@@ -596,21 +678,21 @@ defmethod(OBJ, graccumulate2, T, T, Functor, Object)
   OBJ _vec = gautoDelete( (OBJ)vec );
 
   I32  val_s  = self->stride;
-  VAL *val    = self->valref + val_s*self->size;
+  VAL *val    = self->value + val_s*self->size;
   I32  val2_s = self2->stride;
-  VAL *val2   = self2->valref + val2_s*self2->size;
+  VAL *val2   = self2->value + val2_s*self2->size;
   U32 *dst_n  = &vec->size;
-  VAL *dst    = vec->valref;
+  VAL *dst    = vec->value;
   VAL *end    = dst + size;
   OBJ  res;
 
-  *end = RETAIN(TOVAL(_4)), ++*dst_n;
+  *end = TOVAL(_4), ++*dst_n;
 
   while (dst != end) {
     val  -= val_s,
     val2 -= val2_s,
     res = geval(_3, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*end));
-    *--end = RETAIN(TOVAL(res)), ++*dst_n;
+    *--end = TOVAL(res), ++*dst_n;
   }
 
   retmethod(_vec);
@@ -624,18 +706,18 @@ defmethod(OBJ, gunique, T, Functor)
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   U32 *dst_n = &vec->size;
-  VAL *dst   = vec ->valref;
+  VAL *dst   = vec ->value;
   VAL *end   = val + val_s*size;
 
   if (val != end) {
-    *dst = RETAIN(*val);
+    *dst = *val;
     val += val_s;
 
     while (val != end) {
       if (geval(_2, VALOBJ(*dst), VALOBJ(*val)) != True)
-        *++dst = RETAIN(*val), ++*dst_n;
+        *++dst = *val, ++*dst_n;
       val += val_s;
     }
   }
@@ -651,14 +733,14 @@ defmethod(OBJ, gdiff, T, T, Functor)
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   I32  val_s  = self->stride;
-  VAL *val    = self->valref;
+  VAL *val    = self->value;
   U32 *dst_n  = &vec->size;
-  VAL *dst    = vec->valref;
+  VAL *dst    = vec->value;
   VAL *end    = val + val_s*size;
 
   while (val != end) {
     if (gfind(_2, aFun(geval2, _3, VALOBJ(*val), 0)) == Nil)
-      *dst++ = RETAIN(*val), ++*dst_n;
+      *dst++ = *val, ++*dst_n;
     val += val_s;
   }
 
@@ -717,19 +799,19 @@ findFun(VAL *val, U32 val_n, I32 val_s, OBJ _2)
 defmethod(OBJ, gfind, T, Functor)
   U32  val_n = self->size;
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
 
-  VAL *p = findFun(val,val_n,val_s,_2);
+  VAL *p = findFun(val, val_n, val_s, _2);
 
-  retmethod(p ? AUTODELETE(VALOBJ(*p)) : Nil);  
+  retmethod(p ? gautoDelete(VALOBJ(*p)) : Nil);
 endmethod
 
 defmethod(OBJ, gifind, T, Functor)
   U32  val_n = self->size;
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
 
-  VAL *p = findFun(val,val_n,val_s,_2);
+  VAL *p = findFun(val, val_n, val_s, _2);
 
   retmethod(p ? gautoDelete( aInt((p-val)/val_s) ) : Nil);
 endmethod
@@ -972,25 +1054,26 @@ iqsortSFun(I32 a[], I32 r, VAL o[], I32 s, OBJ fun)
 
 // ----- sorting methods
 
-defmethod(void, gsort, T, Functor)
-  qsortFun(self->valref, self->size-1, _2);
+defmethod(OBJ, gsort, T, Functor)
+  qsortFun(self->value, self->size-1, _2);
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsort, TV, Functor)
+defmethod(OBJ, gsort, TV, Functor)
   struct T *vec = &self->T;
 
   if (vec->stride == 1) {
-    qsortFun(vec->valref, vec->size-1, _2);
-    return;
+    qsortFun(vec->value, vec->size-1, _2);
+    retmethod(_1);
   }
 
   if (vec->stride == -1) { // should be faster than strided sort
-    qsortFun(vec->valref-vec->size+1, vec->size-1, _2);
-    greverse(_1);
-    return;
+    qsortFun(vec->value-vec->size+1, vec->size-1, _2);
+    retmethod(greverse(_1));
   }
 
-  qsortSFun(vec->valref, vec->size-1, vec->stride, _2);
+  qsortSFun(vec->value, vec->size-1, vec->stride, _2);
+  retmethod(_1);
 endmethod
 
 defmethod(OBJ, gisort, T, Functor)
@@ -999,7 +1082,7 @@ defmethod(OBJ, gisort, T, Functor)
   OBJ _vec = gautoDelete(gnewWith(IntVector, aSlice(0,self->size,1)));
   struct IntVector *vec = STATIC_CAST(struct IntVector*, _vec);
 
-  iqsortSFun(vec->value, vec->size-1, self->valref, self->stride, _2);
+  iqsortSFun(vec->value, vec->size-1, self->value, self->stride, _2);
 
   retmethod(_vec);
 endmethod
@@ -1011,7 +1094,7 @@ defmethod(OBJ, gisSorted, T, Functor)
   if (size < 2) retmethod(True);
 
   I32  val_s = self->stride;
-  VAL *val   = self->valref;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*(size-1);
 
   while (val != end) {

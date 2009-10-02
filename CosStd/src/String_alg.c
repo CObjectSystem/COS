@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.13 2009/09/30 21:52:59 ldeniau Exp $
+ | $Id: String_alg.c,v 1.14 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -77,9 +77,9 @@ endmethod
 
 // ----- in place
 
-defmethod(void, greverse, String)
+defmethod(OBJ, greverse, String)
   if (self->size < 2)
-    retmethod();
+    retmethod(_1);
 
   U32 size = self->size;
   U8* val = self->value;
@@ -89,6 +89,7 @@ defmethod(void, greverse, String)
   while (val != end)
     tmp = *val, *val++ = *end, *end++ = tmp;
 
+  retmethod(_1);
 endmethod
 
 // ----- zip, zip3
@@ -248,6 +249,151 @@ endmethod
 
 // ----- search (string)
 
+// -- KnuthMorrisPratt (linear)
+
+static U8*
+KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
+{
+  TMPARRAY_CREATE(I32,kmpNext,pat_n);
+
+  { // preprocessing
+    I32 i = 0, j = kmpNext[0] = -1;
+
+    while (i < pat_n) {
+      while (j > -1 && pat[i] != pat[j])
+        j = kmpNext[j];
+      i++;
+      j++;
+      if (pat[i] == pat[j])
+        kmpNext[i] = kmpNext[j];
+      else
+        kmpNext[i] = j;
+    }
+  }
+ 
+  { // searching
+    I32 i = 0;
+    U32 j = 0;
+
+    while (j < str_n) {
+      while (i > -1 && pat[i] != str[j])
+        i = kmpNext[i];
+      i++;
+      j++;
+      if (i >= pat_n) { // found
+        TMPARRAY_DESTROY(kmpNext);
+        return str + (j - i);
+      }
+    }
+  }
+
+  TMPARRAY_DESTROY(kmpNext);
+  return 0;
+}
+
+// -- find front-end
+
+static U8*
+findSub(U8 *str, U32 str_n, U8 *pat, U32 pat_n)
+{
+  // empty pattern
+  if (!pat_n) return str;
+
+  // substring is too short
+  if (str_n < pat_n) return 0;
+
+  // find first
+  U8 *p = memchr(str, *pat, str_n-pat_n+1);
+  if (!p) return 0;
+
+  // single char pattern
+  if (pat_n == 1) return p;
+
+  // linear seach
+  return KnuthMorrisPratt(p, str_n-(p-str), pat, pat_n);
+}
+
+// -- find methods
+
+defmethod(I32, gindexOf, String, String)
+    U8* p = findSub(self->value, self->size, self2->value, self2->size);
+    retmethod( p ? p - self->value : -1);
+endmethod
+
+defmethod(OBJ, gfind, String, String)
+  U8* p;
+  
+  PRE
+  POST
+    self->value[self->size] = self2->value[self2->size] = '\0';
+    U8 *q = (U8*)strstr((STR)self->value, (STR)self2->value);
+    test_assert( p == q, "bug in substring searching");
+
+  BODY
+    p = findSub(self->value, self->size, self2->value, self2->size);
+    if (!p) retmethod(Nil);
+    
+    OBJ svw = aStringView(self, atSlice(p-self->value,self2->size,1) );
+    retmethod(gautoDelete( svw ));
+endmethod
+
+defmethod(OBJ, gifind, String, String)
+  U8* p;
+  
+  PRE
+  POST
+    self->value[self->size] = self2->value[self2->size] = '\0';
+    U8 *q = (U8*)strstr((STR)self->value, (STR)self2->value);
+    test_assert( p == q, "bug in substring searching");
+
+  BODY
+    p = findSub(self->value, self->size, self2->value, self2->size);
+    if (!p) retmethod(Nil);
+    
+    OBJ slc = aSlice(p-self->value,self2->size,1);
+    retmethod(gautoDelete( slc ));  
+endmethod
+
+// More complex matching algorithm
+
+#if 0
+  // single character pattern
+  if (pat_n == 1)
+    return memchr(str, *pat, str_n-1+1);
+
+  // very short string or pattern
+  if (str_n * pat_n < 2*ASIZE) {
+    switch(pat_n) {
+    case  2: return BruteForce2(str, str_n, pat);
+    case  3: return BruteForce3(str, str_n, pat);
+    case  4: return BruteForce4(str, str_n, pat);
+    default: return BruteForce (str, str_n, pat, pat_n);
+    }
+  }
+
+  if (CHAR_BIT <= 10) {
+    switch (pat_n) {    
+  // short pattern
+    case  2: return QuickSearch2   (str, str_n, pat);
+    case  3: return QuickSearch3   (str, str_n, pat);
+    case  4: return QuickSearch4   (str, str_n, pat);
+    case  5: case 6: case 7: case 8:
+             return QuickSearch    (str, str_n, pat, pat_n);
+  // long pattern
+    default: return TurboBoyerMoore(str, str_n, pat, pat_n);
+    }
+  }
+  
+  if (CHAR_BIT > 10) {
+  // large alphabet
+    U8 *p = memchr(str, *pat, str_n-pat_n+1);
+    if (!p) return 0;
+    return KnuthMorrisPratt(p, str_n-(p-str), pat, pat_n);
+  }
+}
+#endif
+
+#if 0
 // -- BruteForce (quadratic to linear)
 
 static inline U8*
@@ -474,128 +620,5 @@ TurboBoyerMoore(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
   TMPARRAY_DESTROY(bmGs);
   return 0;
 }
-
-// -- KnuthMorrisPratt (linear)
-
-static U8*
-KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
-{
-  TMPARRAY_CREATE(I32,kmpNext,pat_n);
-
-  { // preprocessing
-    I32 i = 0, j = kmpNext[0] = -1;
-
-    while (i < pat_n) {
-      while (j > -1 && pat[i] != pat[j])
-        j = kmpNext[j];
-      i++;
-      j++;
-      if (pat[i] == pat[j])
-        kmpNext[i] = kmpNext[j];
-      else
-        kmpNext[i] = j;
-    }
-  }
- 
-  { // searching
-    I32 i = 0;
-    U32 j = 0;
-
-    while (j < str_n) {
-      while (i > -1 && pat[i] != str[j])
-        i = kmpNext[i];
-      i++;
-      j++;
-      if (i >= pat_n) { // found
-        TMPARRAY_DESTROY(kmpNext);
-        return str + (j - i);
-      }
-    }
-  }
-
-  TMPARRAY_DESTROY(kmpNext);
-  return 0;
-}
-
-// -- find front-end
-
-static U8*
-findSub(U8 *str, U32 str_n, U8 *pat, U32 pat_n)
-{
-  // string too short
-  if (str_n < pat_n) return 0;
-
-  // empty pattern
-  if (!pat_n) return str;
-
-  // single character pattern
-  if (pat_n == 1)
-    return memchr(str, *pat, str_n-1+1);
-
-  // very short string or pattern
-  if (str_n * pat_n < 2*ASIZE) {
-    switch(pat_n) {
-    case  2: return BruteForce2(str, str_n, pat);
-    case  3: return BruteForce3(str, str_n, pat);
-    case  4: return BruteForce4(str, str_n, pat);
-    default: return BruteForce (str, str_n, pat, pat_n);
-    }
-  }
-
-  if (CHAR_BIT <= 10) {
-    switch (pat_n) {    
-  // short pattern
-    case  2: return QuickSearch2   (str, str_n, pat);
-    case  3: return QuickSearch3   (str, str_n, pat);
-    case  4: return QuickSearch4   (str, str_n, pat);
-    case  5: case 6: case 7: case 8:
-             return QuickSearch    (str, str_n, pat, pat_n);
-  // long pattern
-    default: return TurboBoyerMoore(str, str_n, pat, pat_n);
-    }
-  }
-  
-  if (CHAR_BIT > 10) {
-  // large alphabet
-    U8 *p = memchr(str, *pat, str_n-pat_n+1);
-    if (!p) return 0;
-    return KnuthMorrisPratt(p, str_n-(p-str), pat, pat_n);
-  }
-}
-
-// -- find methods
-
-defmethod(OBJ, gfind, String, String)
-  U8* p;
-  
-  PRE
-  POST
-    self->value[self->size] = self2->value[self2->size] = '\0';
-    U8 *q = (U8*)strstr((STR)self->value, (STR)self2->value);
-    test_assert( p == q, "bug in substring searching");
-
-  BODY
-    p = findSub(self->value, self->size, self2->value, self2->size);
-    if (!p) retmethod(Nil);
-    
-    OBJ svw = aStringView(self, atSlice(p-self->value,self2->size,1) );
-    retmethod(gautoDelete( svw ));
-endmethod
-
-defmethod(OBJ, gifind, String, String)
-  U8* p;
-  
-  PRE
-  POST
-    self->value[self->size] = self2->value[self2->size] = '\0';
-    U8 *q = (U8*)strstr((STR)self->value, (STR)self2->value);
-    test_assert( p == q, "bug in substring searching");
-
-  BODY
-    p = findSub(self->value, self->size, self2->value, self2->size);
-    if (!p) retmethod(Nil);
-    
-    OBJ slc = aSlice(p-self->value,self2->size,1);
-    retmethod(gautoDelete( slc ));  
-endmethod
+#endif
 

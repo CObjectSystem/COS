@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.7 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.8 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -41,12 +41,12 @@
 
 defmethod(OBJ, glast, T)
   retmethod( self->size
-           ? AUTODELETE(VALOBJ(self->valref[(self->size-1)*self->stride]))
+           ? gautoDelete(VALOBJ(self->value[(self->size-1)*self->stride]))
            : Nil );
 endmethod
 
 defmethod(OBJ, gfirst, T)
-  retmethod( self->size ? AUTODELETE(VALOBJ(self->valref[0])) : Nil );
+  retmethod( self->size ? gautoDelete(VALOBJ(self->value[0])) : Nil );
 endmethod
 
 // ----- getters (index, slice, range, intvector)
@@ -62,7 +62,7 @@ defmethod(OBJ, ggetAt, T, Int)
     if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, self->size);
 
-    retmethod( AUTODELETE(VALOBJ(self->valref[i*self->stride])) );
+    retmethod( gautoDelete(VALOBJ(self->value[i*self->stride])) );
 endmethod
 
 defmethod(OBJ, ggetAt, T, Slice)
@@ -91,25 +91,25 @@ defmethod(void, gputAt, T, Int, Object)
       i = Range_index(self2->value, self->size);
  
     VAL  val = TOVAL(_3);
-    VAL *dst = self->valref + i*self->stride;
+    VAL *dst = self->value + i*self->stride;
     
-    ASSIGN(*dst,val);
+    *dst = val;
 endmethod
 
 defmethod(void, gputAt, T, Slice, Object)
   PRE
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
-  POST
+
   BODY
     U32  dst_n = Slice_size  (self2);
     I32  dst_s = Slice_stride(self2)*self->stride;
-    VAL *dst   = Slice_start (self2)*self->stride + self->valref;
+    VAL *dst   = Slice_start (self2)*self->stride + self->value;
     VAL *end   = dst + dst_s*dst_n;
     VAL  val   = TOVAL(_3);
 
     while (dst != end) {
-      ASSIGN(*dst,val);
+      *dst = val;
       dst += dst_s;
     }
 endmethod
@@ -122,22 +122,21 @@ defmethod(void, gputAt, T, Range, Object)
 endmethod
 
 defmethod(void, gputAt, T, IntVector, Object)
-  PRE POST BODY
-    U32  dst_n = self->size;
-    I32  dst_s = self->stride;
-    VAL *dst   = self->valref;
-    U32  idx_n = self2->size;
-    I32  idx_s = self2->stride;
-    I32 *idx   = self2->value;
-    I32 *end   = idx + idx_s*idx_n;
-    VAL  val   = TOVAL(_3);
+  U32  dst_n = self->size;
+  I32  dst_s = self->stride;
+  VAL *dst   = self->value;
+  U32  idx_n = self2->size;
+  I32  idx_s = self2->stride;
+  I32 *idx   = self2->value;
+  I32 *end   = idx + idx_s*idx_n;
+  VAL  val   = TOVAL(_3);
 
-    while (idx != end) {
-      U32 i = Range_index(*idx, dst_n);
-      test_assert( i < dst_n, "index out of range" );
-      ASSIGN(dst[i*dst_s],val);
-      idx += idx_s;
-    }
+  while (idx != end) {
+    U32 i = Range_index(*idx, dst_n);
+    test_assert( i < dst_n, "index out of range" );
+    dst[i*dst_s] = val;
+    idx += idx_s;
+  }
 endmethod
 
 // ----- array setters (slice, range, intvector)
@@ -147,17 +146,17 @@ defmethod(void, gputAt, T, Slice, T)
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
     test_assert( Slice_size (self2) <= self3->size, "source " TS " is too small" );
-  POST    
+
   BODY
     U32  dst_n = Slice_size  (self2);
     I32  dst_s = Slice_stride(self2)*self->stride;
-    VAL *dst   = Slice_start (self2)*self->stride + self->valref;
+    VAL *dst   = Slice_start (self2)*self->stride + self->value;
     I32  src_s = self3->stride;
-    VAL *src   = self3->valref;
+    VAL *src   = self3->value;
     VAL *end   = dst + dst_s*dst_n;
 
     while (dst != end) {
-      ASSIGN(*dst,*src);
+      *dst = *src;
       src += src_s;
       dst += dst_s;
     }
@@ -166,22 +165,22 @@ endmethod
 defmethod(void, gputAt, T, IntVector, T)
   PRE
     test_assert( self2->size <= self3->size, "source " TS " is too small" );
-  POST
+
   BODY
     U32  dst_n = self->size;
     I32  dst_s = self->stride;
-    VAL *dst   = self->valref;
+    VAL *dst   = self->value;
     U32  idx_n = self2->size;
     I32  idx_s = self2->stride;
     I32 *idx   = self2->value;
     I32  src_s = self3->stride;
-    VAL *src   = self3->valref;
+    VAL *src   = self3->value;
     I32 *end   = idx + idx_s*idx_n;
 
     while (idx != end) {
       U32 i = Range_index(*idx, dst_n);
       test_assert( i < dst_n, "index out of range" );
-      ASSIGN(dst[i*dst_s],*src);
+      dst[i*dst_s] = *src;
       src += src_s;
       idx += idx_s;
     }
@@ -204,14 +203,14 @@ defmethod(I32, gintAt, T, Int)
   U32 i;
 
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
       
-    retmethod( self->valref[i*self->stride] );
+    retmethod( self->value[i*self->stride] );
 endmethod
 
 #endif
@@ -223,14 +222,14 @@ defmethod(I64, glngAt, T, Int)
   U32 i;
 
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
 
-    retmethod( self->valref[i*self->stride] );
+    retmethod( self->value[i*self->stride] );
 endmethod
 
 #endif
@@ -243,14 +242,14 @@ defmethod(F64, gfltAt, T, Int)
   U32 i;
 
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
       
-    retmethod( self->valref[i*self->stride] );
+    retmethod( self->value[i*self->stride] );
 endmethod
 
 #endif
@@ -263,14 +262,14 @@ defmethod(C64, gcpxAt, T, Int)
   U32 i;
 
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
       
-    retmethod( self->valref[i*self->stride] );
+    retmethod( self->value[i*self->stride] );
 endmethod
 
 
@@ -286,14 +285,14 @@ defmethod(void, gputAt, T, Int, Char)
   U32 i;
   
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
       
-    self->valref[i*self->stride] = self3->Int.value;
+    self->value[i*self->stride] = self3->Int.value;
 endmethod
 
 #endif
@@ -306,14 +305,14 @@ defmethod(void, gputAt, T, Int, Short)
   U32 i;
   
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
       
-    self->valref[i*self->stride] = self3->Int.value;
+    self->value[i*self->stride] = self3->Int.value;
 endmethod
 
 #endif
@@ -325,14 +324,14 @@ defmethod(void, gputAt, T, Int, Int)
   U32 i;
   
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
       
-    self->valref[i*self->stride] = self3->value;
+    self->value[i*self->stride] = self3->value;
 endmethod
 
 #endif
@@ -344,14 +343,14 @@ defmethod(void, gputAt, T, Int, Long)
   U32 i;
   
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
       
-    self->valref[i*self->stride] = self3->value;
+    self->value[i*self->stride] = self3->value;
 endmethod
 
 #endif
@@ -362,14 +361,14 @@ defmethod(void, gputAt, T, Int, Float)
   U32 i;
   
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
       
-    self->valref[i*self->stride] = self3->value;
+    self->value[i*self->stride] = self3->value;
 endmethod
 
 #endif
@@ -380,14 +379,14 @@ defmethod(void, gputAt, T, Int, Complex)
   U32 i;
   
   PRE
-    i = Range_index(self2->valref, self->size);
+    i = Range_index(self2->value, self->size);
     test_assert( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->valref, self->size);
+      i = Range_index(self2->value, self->size);
       
-    self->valref[i*self->stride] = self3->value;
+    self->value[i*self->stride] = self3->value;
 endmethod
 
 #endif

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_lzy.c,v 1.5 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: Vector_lzy.c,v 1.6 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -128,7 +128,7 @@ defmethod(OBJ, ggetAt, TL, Int)
     THROW( gnewWithStr(ExBadArity, "lazy " TS " generator eval") );
   }
 
-  retmethod( AUTODELETE(VALOBJ(vec->valref[i*vec->stride])) );
+  retmethod( gautoDelete(VALOBJ(vec->value[i*vec->stride])) );
 endmethod
 
 // NOTE-TODO: other getters?

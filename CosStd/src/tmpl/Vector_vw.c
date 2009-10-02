@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.9 2009/09/16 22:30:10 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.10 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -56,7 +56,7 @@ TV_init(struct TV *vecv, struct T *vec, struct Slice *slc, BOOL isSub)
 
   struct T* vw = &vecv->T;
 
-  vw->valref = Slice_start (slc)*vec->stride + vec->valref;
+  vw->value  = Slice_start (slc)*vec->stride + vec->value;
   vw->size   = Slice_size  (slc);
   vw->stride = isSub ? Slice_stride(slc) : Slice_stride(slc)*vec->stride;
   vecv->ref  = vec;
@@ -93,17 +93,16 @@ defmethod(OBJ,  ginitWith2          , mSubView, T, Range) // vector view
 endmethod
 
 defmethod(OBJ, ginitWith3, TV, T, Slice, Int) // vector view
-  PRE POST BODY
-    PRT(_1);
-    test_assert( !cos_object_isKindOf(_2, classref(TD)),
-                 TS " views accept only non-dynamic " TS );
+  PRT(_1);
+  test_assert( !cos_object_isKindOf(_2, classref(TD)),
+                TS " views accept only non-dynamic " TS );
 
-    OBJ ref = gretain(_2); PRT(ref);
-    
-    TV_init(self, STATIC_CAST(struct T*, ref), self3, self4->value);
+  OBJ ref = gretain(_2); PRT(ref);
+  
+  TV_init(self, STATIC_CAST(struct T*, ref), self3, self4->value);
 
-    UNPRT(_1);
-    retmethod(_1);
+  UNPRT(_1);
+  retmethod(_1);
 endmethod
 
 // ----- destructor
@@ -125,7 +124,7 @@ defmethod(void, ginvariant, TV, (STR)func, (STR)file, (int)line)
 
   struct T *vec = self->ref;
 
-  I32 start  = (vec->valref - self->T.valref)/vec->stride;
+  I32 start  = (vec->value - self->T.value)/vec->stride;
   U32 size   = self->T.size;
   I32 stride = self->T.stride/vec->stride;
 

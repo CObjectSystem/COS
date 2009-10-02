@@ -29,11 +29,10 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.c,v 1.8 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: LngVector.c,v 1.9 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
-#define    VECTOR_ONLY
 #define LNGVECTOR_ONLY
 
 #define T     LngVector
@@ -63,12 +62,7 @@
 #define VS    Vector.ValueSequence.Sequence
 
 #define VAL       I64
-#define VALINT  
-#define VALFLT  
 #define VALOBJ(v) aLong(v)
-
-#define  valref  value
-#define _valref _value
 
 #define aTView(v,s)    aLngVectorView(v,s)
 #define aTRef(v,s)     aLngVectorRef(v,s)
@@ -79,15 +73,7 @@
 #define TOVALPTR        glngPtr
 #define TOVAL(v)        glng(v)
 #define VALUE(v)        v->value
-#define ASSIGN(d,s)     (d = s)
-#define SWAP(v1,v2)     { VAL tmp = v1; v1 = v2; v2 = tmp; }
-#define EQUAL(v1,v2)    (v1 == v2 ? True : False)
-#define COMPARE(v1,v2)  (v1<v2 ? Lesser : v1>v2 ? Greater : Equal)
-#define RETAIN(v)       (v)
-#define RELEASE(v)      
-#define AUTODELETE(v)   gautoDelete(v)
-#define PROTECT(v)   
-#define UNPROTECT(v) 
+#define EQUAL(v1,v2)    (v1 == v2)
 
 #include <cos/LngVector.h>
 #include <cos/Function.h>
@@ -95,6 +81,8 @@
 makclass(LngVector, IntegralVector);
 
 // vector templates
+#include "./tmpl/Vector_utl.h"
+
 #include "./tmpl/Vector.c"
 
 #include "./tmpl/Vector_dyn.c"

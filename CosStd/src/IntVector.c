@@ -29,11 +29,10 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.c,v 1.8 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: IntVector.c,v 1.9 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
-#define    VECTOR_ONLY
 #define INTVECTOR_ONLY
 
 #define T     IntVector
@@ -63,12 +62,7 @@
 #define VS    Vector.ValueSequence.Sequence
 
 #define VAL       I32
-#define VALINT  
-#define VALFLT  
 #define VALOBJ(v) aInt(v)
-
-#define  valref  value
-#define _valref _value
 
 #define aTView(v,s)    aIntVectorView(v,s)
 #define aTRef(v,s)     aIntVectorRef(v,s)
@@ -76,18 +70,10 @@
 #define T_alloc(s)        IntVector_alloc(s)
 #define TV_init(vw,v,s,b) IntVectorView_init(vw,v,s,b)
 
-#define TOVALPTR        gintPtr
-#define TOVAL(v)        gint(v)
-#define VALUE(v)        v->value
-#define ASSIGN(d,s)     (d = s)
-#define SWAP(v1,v2)     { VAL tmp = v1; v1 = v2; v2 = tmp; }
-#define EQUAL(v1,v2)    (v1 == v2 ? True : False)
-#define COMPARE(v1,v2)  (v1<v2 ? Lesser : v1>v2 ? Greater : Equal)
-#define RETAIN(v)       (v)
-#define RELEASE(v)      
-#define AUTODELETE(v)   gautoDelete(v)
-#define PROTECT(v)   
-#define UNPROTECT(v) 
+#define TOVALPTR      gintPtr
+#define TOVAL(v)      gint(v)
+#define VALUE(v)      v->value
+#define EQUAL(v1,v2)  (v1 == v2)
 
 #include <cos/IntVector.h>
 #include <cos/Function.h>
@@ -95,6 +81,8 @@
 makclass(IntVector, IntegralVector);
 
 // vector templates
+#include "./tmpl/Vector_utl.h"
+
 #include "./tmpl/Vector.c"
 
 #include "./tmpl/Vector_dyn.c"

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.22 2009/09/30 12:09:58 ldeniau Exp $
+ | $Id: algorithm.h,v 1.23 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -41,8 +41,8 @@
 #endif 
 
 // in place
-defgeneric(void, greverse , _1);
-defgeneric(void, gpermute , _1, idx);
+defgeneric(OBJ, greverse , _1);
+defgeneric(OBJ, gpermute , _1, idx);
 
 // cat
 defgeneric(OBJ, gcat , _1, _2);
@@ -61,6 +61,7 @@ defgeneric(OBJ, gmap     , fun, _1);
 defgeneric(OBJ, gmap2    , fun, _1, _2);
 defgeneric(OBJ, gmap3    , fun, _1, _2, _3);
 defgeneric(OBJ, gmap4    , fun, _1, _2, _3, _4);
+defgeneric(OBJ, gmapIf   , fun, _1); // discard if fun return Nil
 defgeneric(OBJ, gmapWhile, fun, _1); // stops when fun return Nil
 
 // apply (in-place map with returned value discarded)
@@ -71,9 +72,14 @@ defgeneric(void, gapply4    , fun, _1, _2, _3, _4);
 defgeneric(void, gapplyWhile, fun, _1); // stops when fun return Nil
 
 // filter
-defgeneric(OBJ, greject     , _1, fun); // filter-out
-defgeneric(OBJ, gselect     , _1, fun); // filter
-defgeneric(OBJ, gselectWhile, _1, fun); // stops when fun return Nil
+defgeneric(OBJ, gselect     , _1, fun); // keep it if fun return True
+defgeneric(OBJ, gselectIf   , _1, fun); // discard if fun return Nil
+defgeneric(OBJ, gselectWhile, _1, fun); // keep it if fun return True, stops when fun return Nil
+
+// filter-out
+defgeneric(OBJ, greject     , _1, fun); // keep it if fun return False
+defgeneric(OBJ, grejectIf   , _1, fun); // keep it if fun return Nil
+defgeneric(OBJ, grejectWhile, _1, fun); // keep it if fun return False, stops when fun return Nil
 
 // reduce, rreduce
 defgeneric(OBJ, greduce  , _1, fun);              // foldl1
@@ -112,22 +118,22 @@ defgeneric(OBJ, gmax, _1, _2 or fun); // fun should return Ordered or the max
 // note: gmin(_1, aFun(gmin,0,0) ) should work like a greduce(_1, aFun(gmin,0,0), maxVal)
 
 // sorting (fun must return Ordered)
-defgeneric(void, gsort    , _1, fun); // in place
-defgeneric(OBJ , gisort   , _1, fun); // return an array of indexes/keys
-defgeneric(OBJ , gisSorted, _1, fun); // return True or False
+defgeneric(OBJ, gsort    , _1, fun); // in place
+defgeneric(OBJ, gisort   , _1, fun); // return an array of indexes/keys
+defgeneric(OBJ, gisSorted, _1, fun); // return True or False
 
-// linear search if fun returns TrueFalse
-// binary search if fun returns Ordered (and it is sorted)
-defgeneric(OBJ, gfind , _1, fun); // return Nil if not found
-defgeneric(OBJ, gifind, _1, fun); // return an index/key or Nil
+// linear search if fun _2 returns TrueFalse
+// binary search if fun _2 returns Ordered (and it is sorted)
+// return Nil if not found
+defgeneric(OBJ, gfind   , _1, _2); // return object
+defgeneric(OBJ, gifind  , _1, _2); // return res such that ggetAt(_1,res) get object
+defgeneric(I32, gindexOf, _1, _2); // return index or -1
 
 // seq-like algorithms (fun must return TrueFalse)
 defgeneric(OBJ, gunique     , _1, fun); // remove contiguous equal elements
 defgeneric(OBJ, ggroup      , _1, fun); // split when false
 defgeneric(OBJ, gsplit      , _1, fun); // split when true
 defgeneric(OBJ, gintersperse, _1, obj);
-
-// set-like algorithms
 defgeneric(OBJ, gdiff     , _1, _2, fun);
 defgeneric(OBJ, gunion    , _1, _2, fun);
 defgeneric(OBJ, gmerge    , _1, _2, fun);

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.16 2009/09/30 21:52:59 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.17 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -57,50 +57,49 @@ useclass(ArrayDyn,ExBadAlloc);
 
 // -----
 
-#ifndef VECTOR_GROWTH_RATE
-#define VECTOR_GROWTH_RATE SEQUENCE_GROWTH_RATE
+#ifndef ARRAY_GROWTH_RATE
+#define ARRAY_GROWTH_RATE SEQUENCE_GROWTH_RATE
 #endif
 
-#ifndef VECTOR_MINSIZE
-#define VECTOR_MINSIZE 1024
+#ifndef ARRAY_MINSIZE
+#define ARRAY_MINSIZE 1024
 #endif
 
-STATIC_ASSERT(vector_growth_rate_is_too_small , VECTOR_GROWTH_RATE >= 1.5);
-STATIC_ASSERT(vector_minimun_size_is_too_small, VECTOR_MINSIZE    >= 256);
+STATIC_ASSERT(array_growth_rate_is_too_small , ARRAY_GROWTH_RATE >= 1.5);
+STATIC_ASSERT(array_minimun_size_is_too_small, ARRAY_MINSIZE     >= 256);
 
 // ----- constructors
 
 defalias (OBJ, (ginit)gnew, pmArray);
-defmethod(OBJ,  ginit     , pmArray) // Dynamic vector
+defmethod(OBJ,  ginit     , pmArray) // Dynamic array
   retmethod(ginitWith(galloc(ArrayDyn),aInt(0)));
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Int);
-defmethod(OBJ,  ginitWith         , pmArray, Int) // Dynamic vector with capacity
+defmethod(OBJ,  ginitWith         , pmArray, Int) // Dynamic array with capacity
   retmethod(ginitWith(galloc(ArrayDyn),_2));
 endmethod
 
 defmethod(OBJ, ginitWith, ArrayDyn, Int)
-  PRE POST BODY
-    PRT(_1);
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+  PRT(_1);
+  struct ArrayFix *arrf = &self->ArrayFix;
+  struct Array    *arr  = &arrf->Array;
 
-    test_assert(self2->value >= 0, "negative array capacity");
+  test_assert(self2->value >= 0, "negative array capacity");
 
-    if (self2->value > 0) {
-      vecf->_object = malloc(self2->value * sizeof *vec->object);
-      if (!vecf->_object) THROW(ExBadAlloc);
-    } else
-      vecf->_object = 0;
+  if (self2->value > 0) {
+    arrf->_object = malloc(self2->value * sizeof *arr->object);
+    if (!arrf->_object) THROW(ExBadAlloc);
+  } else
+    arrf->_object = 0;
 
-    vec->size      = 0;
-    vec->stride    = 1;
-    vec->object    = vecf->_object;
-    vecf->capacity = self2->value;
+  arr->size      = 0;
+  arr->stride    = 1;
+  arr->object    = arrf->_object;
+  arrf->capacity = self2->value;
 
-    UNPRT(_1);
-    retmethod(_1);
+  UNPRT(_1);
+  retmethod(_1);
 endmethod
 
 // ----- destructor
@@ -129,10 +128,10 @@ endmethod
 static I32
 extra_size(U32 old_capacity, U32 size)
 {
-  U32 new_capacity = old_capacity < VECTOR_MINSIZE ? VECTOR_MINSIZE : old_capacity;
+  U32 new_capacity = old_capacity < ARRAY_MINSIZE ? ARRAY_MINSIZE : old_capacity;
   
   while (new_capacity - old_capacity < size)
-    new_capacity *= VECTOR_GROWTH_RATE;
+    new_capacity *= ARRAY_GROWTH_RATE;
 
   I32 extra = new_capacity - old_capacity;
   
@@ -141,44 +140,44 @@ extra_size(U32 old_capacity, U32 size)
   return extra;
 }
 
-defmethod(void, genlarge, ArrayDyn, Float) // negative factor means enlarge front
+defmethod(OBJ, genlarge, ArrayDyn, Float) // negative factor means enlarge front
   PRE
     test_assert(self2->value < -1 ||
                 self2->value >  1, "invalid growing factor");
-  POST
   BODY
     F64 factor   = self2->value;
     U32 capacity = self->ArrayFix.capacity;
 
     if (factor > 1)
-      genlarge(_1, aInt(capacity * (factor-1)));
+      retmethod( genlarge(_1, aInt(capacity * (factor-1)) ));
     else if (factor < 1)
-      genlarge(_1, aInt(capacity * (factor+1)));
+      retmethod( genlarge(_1, aInt(capacity * (factor+1))) );
 endmethod
 
-defmethod(void, genlarge, ArrayDyn, Int) // negative size means enlarge front
+defmethod(OBJ, genlarge, ArrayDyn, Int) // negative size means enlarge front
   PRE
     test_assert(self2->value, "invalid growing size");
-  POST
   BODY
-    struct ArrayFix* vecf = &self->ArrayFix;
-    struct Array*    vec  = &vecf->Array;
-    U32     capacity = vecf->capacity;
-    ptrdiff_t offset = vec->object - vecf->_object;
+    struct ArrayFix* arrf = &self->ArrayFix;
+    struct Array*    arr  = &arrf->Array;
+    U32     capacity = arrf->capacity;
+    ptrdiff_t offset = arr->object - arrf->_object;
     BOOL       front = self2->value < 0;
     U32         size = front ? -self2->value : self2->value;
 
     capacity += size = extra_size(capacity, size);
     
-    OBJ *_object = realloc(vecf->_object, capacity*sizeof *vecf->_object);
+    OBJ *_object = realloc(arrf->_object, capacity*sizeof *arrf->_object);
     if (!_object) THROW(ExBadAlloc);
 
-    vec -> object  = _object + offset;
-    vecf->_object  = _object;
-    vecf->capacity = capacity;
+    arr -> object  = _object + offset;
+    arrf->_object  = _object;
+    arrf->capacity = capacity;
     
     if (front) // move data to book the new space front
-      vec->object = memmove(vec->object+size, vec->object, vec->size*sizeof *vec->object);
+      arr->object = memmove(arr->object+size, arr->object, arr->size*sizeof *arr->object);
+    
+    retmethod(_1);
 endmethod
 
 // ----- adjustment (capacity -> size)
@@ -190,21 +189,21 @@ defmethod(OBJ, gadjust, ArrayDyn)
   POST
     test_assert( ch_cls, "unable to change from dynamic to fixed size array" );
   BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+    struct ArrayFix *arrf = &self->ArrayFix;
+    struct Array    *arr  = &arrf->Array;
 
     // move data to base
-    if (vec->object != vecf->_object)
-      vec->object = memmove(vecf->_object, vec->object, vec->size*sizeof *vecf->_object);
+    if (arr->object != arrf->_object)
+      arr->object = memmove(arrf->_object, arr->object, arr->size*sizeof *arrf->_object);
 
     // shrink storage
-    if (vec->size != vecf->capacity) {
-      OBJ *_object = realloc(vecf->_object, vec->size*sizeof *vecf->_object);
+    if (arr->size != arrf->capacity) {
+      OBJ *_object = realloc(arrf->_object, arr->size*sizeof *arrf->_object);
       if (!_object) THROW(ExBadAlloc);
 
-      vec -> object  = _object;
-      vecf->_object  = _object;
-      vecf->capacity = vec->size;
+      arr -> object  = _object;
+      arrf->_object  = _object;
+      arrf->capacity = arr->size;
     }
 
     ch_cls = cos_object_changeClass(_1, classref(ArrayFix));
@@ -214,123 +213,135 @@ endmethod
 
 // ----- clear (size -> 0)
 
-defmethod(void, gclear, ArrayDyn)
-  struct ArrayFix *vecf = &self->ArrayFix;
-  struct Array    *vec  = &vecf->Array;
+defmethod(OBJ, gclear, ArrayDyn)
+  struct ArrayFix *arrf = &self->ArrayFix;
+  struct Array    *arr  = &arrf->Array;
 
-  U32 *val_n = &vec->size;
-  OBJ *val   = vec->object;
+  U32 *val_n = &arr->size;
+  OBJ *val   = arr->object;
   OBJ *end   = val + *val_n;
 
   while (val != end) {
     grelease(*--end), --*val_n;
   }
 
-  vec->object = vecf->_object;
+  arr->object = arrf->_object;
+  
+  retmethod(_1);
 endmethod
 
 // ----- dropFirst, dropLast, drop
 
-defmethod(void, gdropFirst, ArrayDyn)
-  struct Array *vec = &self->ArrayFix.Array;
+defmethod(OBJ, gdropFirst, ArrayDyn)
+  struct Array *arr = &self->ArrayFix.Array;
 
-  if (vec->size)
-    vec->size--, grelease(*vec->object++);
+  if (arr->size)
+    arr->size--, grelease(*arr->object++);
+      
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdropLast, ArrayDyn)
-  struct Array *vec = &self->ArrayFix.Array;
+defmethod(OBJ, gdropLast, ArrayDyn)
+  struct Array *arr = &self->ArrayFix.Array;
 
-  if (vec->size)
-    grelease(vec->object[--vec->size]);
+  if (arr->size)
+    grelease(arr->object[--arr->size]);
+      
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdrop, ArrayDyn, Int)
-  struct Array *vec = &self->ArrayFix.Array;
+defmethod(OBJ, gdrop, ArrayDyn, Int)
+  struct Array *arr = &self->ArrayFix.Array;
   BOOL front = self2->value < 0;
   U32 n = front ? -self2->value : self2->value;
 
-  if (n > vec->size)
-    n = vec->size;
+  if (n > arr->size)
+    n = arr->size;
 
   if (front)
     while (n-- > 0)
-      vec->size--, grelease(*vec->object++);
+      arr->size--, grelease(*arr->object++);
   else
     while (n-- > 0)
-      grelease(vec->object[--vec->size]);
+      grelease(arr->object[--arr->size]);
+      
+  retmethod(_1);
 endmethod
 
 // ----- prepend, append object
 
-defmethod(void, gprepend, ArrayDyn, Object)
-  PRE POST BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+defmethod(OBJ, gprepend, ArrayDyn, Object)
+  struct ArrayFix *arrf = &self->ArrayFix;
+  struct Array    *arr  = &arrf->Array;
 
-    if (vec->object == vecf->_object)
-      genlarge(_1, aInt(-1));
+  if (arr->object == arrf->_object)
+    genlarge(_1, aInt(-1));
 
-    vec->object[-1] = gretain(_2), vec->object--, vec->size++;
+  arr->object[-1] = gretain(_2), arr->object--, arr->size++;
+
+  retmethod(_1);
 endmethod
 
-defmethod(void, gappend, ArrayDyn, Object)
-  PRE POST BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+defmethod(OBJ, gappend, ArrayDyn, Object)
+  struct ArrayFix *arrf = &self->ArrayFix;
+  struct Array    *arr  = &arrf->Array;
 
-    if (vec->object + vec->size == vecf->_object + vecf->capacity)
-      genlarge(_1, aInt(1));
-      
-    vec->object[vec->size++] = gretain(_2);
+  if (arr->object + arr->size == arrf->_object + arrf->capacity)
+    genlarge(_1, aInt(1));
+    
+  arr->object[arr->size++] = gretain(_2);
+  
+  retmethod(_1);
 endmethod
 
-// ----- prepend, append vector
+// ----- prepend, append array
 
-defmethod(void, gprepend, ArrayDyn, Array)
-  PRE POST BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+defmethod(OBJ, gprepend, ArrayDyn, Array)
+  struct ArrayFix *arrf = &self->ArrayFix;
+  struct Array    *arr  = &arrf->Array;
 
-    if (vec->object < vecf->_object + self2->size)
-      genlarge(_1, aInt(-self2->size));
+  if (arr->object < arrf->_object + self2->size)
+    genlarge(_1, aInt(-self2->size));
 
-    OBJ *src   = self2->object;
-    U32  src_n = self2->size;
-    I32  src_s = self2->stride;
-    OBJ *end   = src + src_n*src_s;
+  OBJ *src   = self2->object;
+  U32  src_n = self2->size;
+  I32  src_s = self2->stride;
+  OBJ *end   = src + src_n*src_s;
 
-    while (src != end) {
-      vec->object[-1] = gretain(*src), vec->object--, vec->size++;
-      src += src_s;
-    }
+  while (src != end) {
+    arr->object[-1] = gretain(*src), arr->object--, arr->size++;
+    src += src_s;
+  }
+  
+  retmethod(_1);
 endmethod
 
-defmethod(void, gappend, ArrayDyn, Array)
-  PRE POST BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+defmethod(OBJ, gappend, ArrayDyn, Array)
+  struct ArrayFix *arrf = &self->ArrayFix;
+  struct Array    *arr  = &arrf->Array;
 
-    if (vec->object + vec->size + self2->size > vecf->_object + vecf->capacity)
-      genlarge(_1, aInt(self2->size));
+  if (arr->object + arr->size + self2->size > arrf->_object + arrf->capacity)
+    genlarge(_1, aInt(self2->size));
 
-    U32  src_n = self2->size;
-    I32  src_s = self2->stride;
-    OBJ *src   = self2->object;
-    OBJ *end   = src + src_s*src_n;
+  U32  src_n = self2->size;
+  I32  src_s = self2->stride;
+  OBJ *src   = self2->object;
+  OBJ *end   = src + src_s*src_n;
 
-    while (src != end) {
-      vec->object[vec->size++] = gretain(*src), vec->size++;
-      src += src_s;
-    }
+  while (src != end) {
+    arr->object[arr->size++] = gretain(*src), arr->size++;
+    src += src_s;
+  }
+
+  retmethod(_1);
 endmethod
 
 // --- insertAt object (index, slice, range, intvector)
 
 static BOOL
-prepareRandomInsert(struct Array *vec, struct IntVector *self2)
+prepareRandomInsert(struct Array *arr, struct IntVector *self2)
 {
-  U32  dst_n = vec->size;
+  U32  dst_n = arr->size;
   I32 *idx   = self2->value;
   U32  idx_n = self2->size;
   I32  idx_s = self2->stride;
@@ -358,13 +369,13 @@ prepareRandomInsert(struct Array *vec, struct IntVector *self2)
   }
 
   // shift post data to the end
-  OBJ *dst = lst + vec->object;
-  memmove(dst+idx_n, dst, (vec->size - (dst-vec->object))*sizeof *dst);
-  vec->size += idx_n;
+  OBJ *dst = lst + arr->object;
+  memmove(dst+idx_n, dst, (arr->size - (dst-arr->object))*sizeof *dst);
+  arr->size += idx_n;
 
   // prepare insertion slots (start from the end)
   {
-    OBJ *end = fst + vec->object;
+    OBJ *end = fst + arr->object;
     U8  *slt = lst + flg;
     U32  sht = idx_n;
 
@@ -379,7 +390,7 @@ prepareRandomInsert(struct Array *vec, struct IntVector *self2)
   return YES;
 }
 
-defmethod(void, ginsertAt, ArrayDyn, Int, Object)
+defmethod(OBJ, ginsertAt, ArrayDyn, Int, Object)
   U32 i;
 
   PRE
@@ -387,52 +398,52 @@ defmethod(void, ginsertAt, ArrayDyn, Int, Object)
     test_assert( i <= self->ArrayFix.Array.size, "index out of range" );
  
   BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+    struct ArrayFix *arrf = &self->ArrayFix;
+    struct Array    *arr  = &arrf->Array;
 
-    if (vec->size == vecf->capacity)
+    if (arr->size == arrf->capacity)
       genlarge(_1, aInt(1));
 
     if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->value, vec->size);
+      i = Range_index(self2->value, arr->size);
  
-    OBJ *dst = vec->object+i;
+    OBJ *dst = arr->object+i;
 
-    memmove(dst+1, dst, (vec->size-i)*sizeof *dst);
+    memmove(dst+1, dst, (arr->size-i)*sizeof *dst);
     *dst = gretain(_3);
-    vec->size++;
+    arr->size++;
+
+    retmethod(_1);
 endmethod
 
-defmethod(void, ginsertAt, ArrayDyn, Slice, Object)
+defmethod(OBJ, ginsertAt, ArrayDyn, Slice, Object)
   PRE
     test_assert( Slice_first(self2) <= self->ArrayFix.Array.size &&
                  Slice_last (self2) <= self->ArrayFix.Array.size, "slice out of range" );
-  POST
-    // automatically trigger ginvariant
  
   BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+    struct ArrayFix *arrf = &self->ArrayFix;
+    struct Array    *arr  = &arrf->Array;
 
     OBJ *dst;
     I32  dst_s;
     U32  dst_n = Slice_size(self2);
 
-    if (vec->size + dst_n > vecf->capacity)
+    if (arr->size + dst_n > arrf->capacity)
       genlarge(_1, aInt(dst_n));
 
     // always start from the end (reverse fill with positive stride)
     if (Slice_stride(self2) > 0) {
-      dst   =  Slice_last  (self2) + vec->object;
+      dst   =  Slice_last  (self2) + arr->object;
       dst_s =  Slice_stride(self2);
     } else {
-      dst   =  Slice_first (self2) + vec->object;
+      dst   =  Slice_first (self2) + arr->object;
       dst_s = -Slice_stride(self2);
     }
 
     // shift post data to the end
-    memmove(dst+dst_n, dst, (vec->size - (dst-vec->object))*sizeof *dst);
-    vec->size += dst_n;
+    memmove(dst+dst_n, dst, (arr->size - (dst-arr->object))*sizeof *dst);
+    arr->size += dst_n;
 
     OBJ *end = dst - dst_s*dst_n;
     OBJ *nxt = dst - dst_s;
@@ -448,28 +459,30 @@ defmethod(void, ginsertAt, ArrayDyn, Slice, Object)
       nxt -= dst_s;
       sht -= 1; 
     }
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, ginsertAt, ArrayDyn, Range, Object)
+defmethod(OBJ, ginsertAt, ArrayDyn, Range, Object)
   struct Range range = Range_normalize(self2,self->ArrayFix.Array.size);
   struct Slice slice = Slice_fromRange(&range);
   
-  ginsertAt(_1,(OBJ)&slice,_3);
+  retmethod( ginsertAt(_1,(OBJ)&slice,_3) );
 endmethod
 
-defmethod(void, ginsertAt, ArrayDyn, IntVector, Object)
-  struct ArrayFix *vecf = &self->ArrayFix;
-  struct Array    *vec  = &vecf->Array;
+defmethod(OBJ, ginsertAt, ArrayDyn, IntVector, Object)
+  struct ArrayFix *arrf = &self->ArrayFix;
+  struct Array    *arr  = &arrf->Array;
 
   // enlarge
-  if (vec->size + self2->size > vecf->capacity)
+  if (arr->size + self2->size > arrf->capacity)
     genlarge(_1, aInt(self2->size));
 
-  test_assert( prepareRandomInsert(vec,self2), "index out of range" );
+  test_assert( prepareRandomInsert(arr,self2), "index out of range" );
 
   // insert data
-  OBJ *dst   = vec->object;
-  U32  dst_n = vec->size;
+  OBJ *dst   = arr->object;
+  U32  dst_n = arr->size;
   I32 *idx   = self2->value;
   U32  idx_n = self2->size;
   I32  idx_s = self2->stride;
@@ -480,41 +493,41 @@ defmethod(void, ginsertAt, ArrayDyn, IntVector, Object)
     dst[i] = gretain(_3);
     idx += idx_s;
   }
+
+  retmethod(_1);
 endmethod
 
 // --- insertAt object (slice, range, intvector)
 
-defmethod(void, ginsertAt, ArrayDyn, Slice, Array)
+defmethod(OBJ, ginsertAt, ArrayDyn, Slice, Array)
   PRE
     test_assert( Slice_first(self2) <= self->ArrayFix.Array.size &&
                  Slice_last (self2) <= self->ArrayFix.Array.size, "slice out of range" );
     test_assert( Slice_size (self2) <= self3->size, "source array is too small" );
-  POST
-    // automatically trigger ginvariant
  
   BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+    struct ArrayFix *arrf = &self->ArrayFix;
+    struct Array    *arr  = &arrf->Array;
 
     OBJ *dst;
     I32  dst_s;
     U32  dst_n = Slice_size(self2);
 
-    if (vec->size + dst_n > vecf->capacity)
+    if (arr->size + dst_n > arrf->capacity)
       genlarge(_1, aInt(dst_n));
 
     // always start from the end (reverse fill with positive stride)
     if (Slice_stride(self2) > 0) {
-      dst   =  Slice_last  (self2) + vec->object;
+      dst   =  Slice_last  (self2) + arr->object;
       dst_s =  Slice_stride(self2);    
     } else {
-      dst   =  Slice_first (self2) + vec->object;
+      dst   =  Slice_first (self2) + arr->object;
       dst_s = -Slice_stride(self2);
     }
 
     // shift post data to the end
-    memmove(dst+dst_n, dst, (vec->size - (dst-vec->object))*sizeof *dst);
-    vec->size += dst_n;
+    memmove(dst+dst_n, dst, (arr->size - (dst-arr->object))*sizeof *dst);
+    arr->size += dst_n;
 
     OBJ *end   = dst - dst_s*dst_n;
     OBJ *nxt   = dst - dst_s;
@@ -532,27 +545,27 @@ defmethod(void, ginsertAt, ArrayDyn, Slice, Array)
       nxt -= dst_s;
       sht -= 1; 
     }
+        
+    retmethod(_1);
 endmethod
 
-defmethod(void, ginsertAt, ArrayDyn, IntVector, Array)
+defmethod(OBJ, ginsertAt, ArrayDyn, IntVector, Array)
   PRE
     test_assert( self2->size <= self3->size, "source array is too small" );
-  POST
-    // automatically trigger ginvariant
 
   BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+    struct ArrayFix *arrf = &self->ArrayFix;
+    struct Array    *arr  = &arrf->Array;
 
     // enlarge
-    if (vec->size + self2->size > vecf->capacity)
+    if (arr->size + self2->size > arrf->capacity)
       genlarge(_1, aInt(self2->size));
 
-    test_assert( prepareRandomInsert(vec,self2), "index out of range" );
+    test_assert( prepareRandomInsert(arr,self2), "index out of range" );
 
     // insert data
-    OBJ *dst   = vec->object;
-    U32  dst_n = vec->size;
+    OBJ *dst   = arr->object;
+    U32  dst_n = arr->size;
     I32 *idx   = self2->value;
     U32  idx_n = self2->size;
     I32  idx_s = self2->stride;
@@ -566,11 +579,13 @@ defmethod(void, ginsertAt, ArrayDyn, IntVector, Array)
       src += src_s;
       idx += idx_s;
     }
+        
+    retmethod(_1);
 endmethod
 
 // --- removeAt
 
-defmethod(void, gremoveAt, ArrayDyn, Int)
+defmethod(OBJ, gremoveAt, ArrayDyn, Int)
   U32 i;
 
   PRE
@@ -578,29 +593,29 @@ defmethod(void, gremoveAt, ArrayDyn, Int)
     test_assert( i <= self->ArrayFix.Array.size, "index out of range" );
  
   BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+    struct ArrayFix *arrf = &self->ArrayFix;
+    struct Array    *arr  = &arrf->Array;
 
     if (!COS_CONTRACT) // no PRE
       i = Range_index(self2->value, self->ArrayFix.Array.size);
  
-    OBJ *dst = vec->object+i;
+    OBJ *dst = arr->object+i;
 
-    vec->size--;
+    arr->size--;
     grelease(*dst);
-    memmove(dst, dst+1, (vec->size-i)*sizeof *dst);
+    memmove(dst, dst+1, (arr->size-i)*sizeof *dst);
+        
+    retmethod(_1);
 endmethod
 
-defmethod(void, gremoveAt, ArrayDyn, Slice)
+defmethod(OBJ, gremoveAt, ArrayDyn, Slice)
   PRE
     test_assert( Slice_first(self2) <= self->ArrayFix.Array.size &&
                  Slice_last (self2) <= self->ArrayFix.Array.size, "slice out of range" );
-  POST
-    // automatically trigger ginvariant
  
   BODY
-    struct ArrayFix *vecf = &self->ArrayFix;
-    struct Array    *vec  = &vecf->Array;
+    struct ArrayFix *arrf = &self->ArrayFix;
+    struct Array    *arr  = &arrf->Array;
 
     OBJ *dst;
     I32  dst_s;
@@ -608,10 +623,10 @@ defmethod(void, gremoveAt, ArrayDyn, Slice)
 
     // always start from the beginning
     if (Slice_stride(self2) > 0) {
-      dst   =  Slice_first (self2) + vec->object;
+      dst   =  Slice_first (self2) + arr->object;
       dst_s =  Slice_stride(self2);
     } else {
-      dst   =  Slice_last  (self2) + vec->object;
+      dst   =  Slice_last  (self2) + arr->object;
       dst_s = -Slice_stride(self2);
     }
 
@@ -631,23 +646,25 @@ defmethod(void, gremoveAt, ArrayDyn, Slice)
     }
 
     // shift post data to the beginning
-    memmove(dst, dst+dst_n, (vec->size - (dst-vec->object))*sizeof *dst);
-    vec->size -= dst_n;
+    memmove(dst, dst+dst_n, (arr->size - (dst-arr->object))*sizeof *dst);
+    arr->size -= dst_n;
+        
+    retmethod(_1);
 endmethod
 
-defmethod(void, gremoveAt, ArrayDyn, Range)
+defmethod(OBJ, gremoveAt, ArrayDyn, Range)
   struct Range range = Range_normalize(self2,self->ArrayFix.Array.size);
   struct Slice slice = Slice_fromRange(&range);
-  
-  gremoveAt(_1,(OBJ)&slice);
+          
+  retmethod( gremoveAt(_1,(OBJ)&slice) );
 endmethod
 
-defmethod(void, gremoveAt, ArrayDyn, IntVector)
-  struct ArrayFix *vecf = &self->ArrayFix;
-  struct Array    *vec  = &vecf->Array;
+defmethod(OBJ, gremoveAt, ArrayDyn, IntVector)
+  struct ArrayFix *arrf = &self->ArrayFix;
+  struct Array    *arr  = &arrf->Array;
 
-  OBJ *dst   = vec->object;
-  U32  dst_n = vec->size;
+  OBJ *dst   = arr->object;
+  U32  dst_n = arr->size;
   I32 *idx   = self2->value;
   U32  idx_n = self2->size;
   I32  idx_s = self2->stride;
@@ -675,7 +692,7 @@ defmethod(void, gremoveAt, ArrayDyn, IntVector)
 
   // shrink
   {
-    OBJ *end = lst + vec->object;
+    OBJ *end = lst + arr->object;
     U8  *slt = fst + flg;
     U32  sht = 0;
 
@@ -684,23 +701,25 @@ defmethod(void, gremoveAt, ArrayDyn, IntVector)
       dst[sht] = *dst;
     }
 
-    memmove(dst, dst+idx_n, (vec->size - (dst-vec->object))*sizeof *dst);
-    vec->size -= idx_n;
+    memmove(dst, dst+idx_n, (arr->size - (dst-arr->object))*sizeof *dst);
+    arr->size -= idx_n;
   }
 
   TMPARRAY_DESTROY(flg);
+        
+  retmethod(_1);
 endmethod
 
 // --- dequeue aliases
-defalias(void, (gprepend  )gpushFront, ArrayDyn, Object);
-defalias(void, (gappend   )gpushBack , ArrayDyn, Object);
-defalias(void, (gdropFirst)gpopFront , ArrayDyn);
-defalias(void, (gdropLast )gpopBack  , ArrayDyn);
-defalias(OBJ , (gfirst    )gfront    , Array );
-defalias(OBJ , (glast     )gback     , Array );
+defalias(OBJ, (gprepend  )gpushFront, ArrayDyn, Object);
+defalias(OBJ, (gappend   )gpushBack , ArrayDyn, Object);
+defalias(OBJ, (gdropFirst)gpopFront , ArrayDyn);
+defalias(OBJ, (gdropLast )gpopBack  , ArrayDyn);
+defalias(OBJ, (gfirst    )gfront    , Array );
+defalias(OBJ, (glast     )gback     , Array );
 
 // --- stack aliases
-defalias(void, (gappend  )gpush, ArrayDyn, Object);
-defalias(void, (gdropLast)gpop , ArrayDyn);
-defalias(OBJ , (glast    )gtop , Array );
+defalias(OBJ, (gappend  )gpush, ArrayDyn, Object);
+defalias(OBJ, (gdropLast)gpop , ArrayDyn);
+defalias(OBJ, (glast    )gtop , Array );
 

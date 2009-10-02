@@ -32,46 +32,49 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.17 2009/09/30 12:09:58 ldeniau Exp $
+ | $Id: container.h,v 1.18 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
 // list-like accessor
-defgeneric(void, ginsertAt , _1, at, what);
-defgeneric(void, gremoveAt , _1, at);
+defgeneric(OBJ, ginsertAt , _1, at, what);
+defgeneric(OBJ, gremoveAt , _1, at);
 
 // stack-like accessors
-defgeneric(void, gpush     , _1, what);
-defgeneric(OBJ , gtop      , _1);
-defgeneric(void, gpop      , _1);
+defgeneric(OBJ, gpush     , _1, what);
+defgeneric(OBJ, gtop      , _1);
+defgeneric(OBJ, gpop      , _1); // return _1
 
 // dequeue-like accessors
-defgeneric(void, gpushFront, _1, what);
-defgeneric(void, gpushBack , _1, what);
-defgeneric(void, gpopFront , _1);
-defgeneric(void, gpopBack  , _1);
-defgeneric(OBJ , gfront    , _1);
-defgeneric(OBJ , gback     , _1);
+defgeneric(OBJ, gpushFront, _1, what);
+defgeneric(OBJ, gpushBack , _1, what);
+defgeneric(OBJ, gpopFront , _1);
+defgeneric(OBJ, gpopBack  , _1);
+defgeneric(OBJ, gfront    , _1);
+defgeneric(OBJ, gback     , _1);
 
 // seq-like accessor
-defgeneric(void, gprepend  , _1, what);
-defgeneric(void, gappend   , _1, what);
-defgeneric(void, gchop     , _1, what);
-defgeneric(void, gdrop     , _1, num); // front if num<0
-defgeneric(void, gdropFirst, _1);
-defgeneric(void, gdropLast , _1);
-defgeneric(OBJ , gfirst    , _1);
-defgeneric(OBJ , glast     , _1);
+defgeneric(OBJ, gprepend  , _1, what);
+defgeneric(OBJ, gappend   , _1, what);
+defgeneric(OBJ, gchop     , _1, what);
+defgeneric(OBJ, gdrop     , _1, num); // front if num<0
+defgeneric(OBJ, gdropFirst, _1);
+defgeneric(OBJ, gdropLast , _1);
+defgeneric(OBJ, gfirst    , _1);
+defgeneric(OBJ, glast     , _1);
 
 // check for elements
-defgeneric(OBJ , gisEmpty  , _1);
+defgeneric(OBJ, gisEmpty  , _1);
 
-// adjust object (e.g. capacity to size)
-defgeneric(OBJ , gadjust   , _1);
+// flatten container
+defgeneric(OBJ, gflatten  , _1);
 
-// englarge object memory (e.g. front if by<0)
-defgeneric(void, genlarge  , _1, by);
+// adjust container (e.g. capacity to size)
+defgeneric(OBJ, gadjust   , _1);
+
+// englarge container memory (e.g. front if by<0)
+defgeneric(OBJ, genlarge  , _1, by);
 
 #endif // COS_GEN_CONTAINER_H

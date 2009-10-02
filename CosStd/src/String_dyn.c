@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.6 2009/09/26 09:02:07 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.7 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -82,23 +82,22 @@ defmethod(OBJ,  ginitWith         , pmString, Int) // Dynamic string with capaci
 endmethod
 
 defmethod(OBJ, ginitWith, StringDyn, Int)
-  PRE POST BODY
-    PRT(_1);
-    struct StringFix *strf = &self->StringFix;
-    struct String    *str  = &strf->String;
+  PRT(_1);
+  struct StringFix *strf = &self->StringFix;
+  struct String    *str  = &strf->String;
 
-    test_assert(self2->value >= 0, "negative string capacity");
+  test_assert(self2->value >= 0, "negative string capacity");
 
-    U32 capacity = self2->value;
-    strf->_value = malloc((capacity+1) * sizeof *str->value);
-    if (!strf->_value) THROW(ExBadAlloc);
+  U32 capacity = self2->value;
+  strf->_value = malloc((capacity+1) * sizeof *str->value);
+  if (!strf->_value) THROW(ExBadAlloc);
 
-    str->size      = 0;
-    str->value     = strf->_value;
-    strf->capacity = capacity;
+  str->size      = 0;
+  str->value     = strf->_value;
+  strf->capacity = capacity;
 
-    UNPRT(_1);
-    retmethod(_1);
+  UNPRT(_1);
+  retmethod(_1);
 endmethod
 
 // ----- destructor
@@ -136,25 +135,23 @@ extra_size(U32 old_capacity, U32 size)
   return extra;
 }
 
-defmethod(void, genlarge, StringDyn, Float) // negative factor means enlarge front
+defmethod(OBJ, genlarge, StringDyn, Float) // negative factor means enlarge front
   PRE
     test_assert(self2->value < -1 ||
                 self2->value >  1, "invalid growing factor");
-  POST
   BODY
     F64 factor   = self2->value;
     U32 capacity = self->StringFix.capacity;
 
     if (factor > 1)
-      genlarge(_1, aInt(capacity * (factor-1)));
+      retmethod( genlarge(_1, aInt(capacity * (factor-1))) );
     else if (factor < 1)
-      genlarge(_1, aInt(capacity * (factor+1)));
+      retmethod( genlarge(_1, aInt(capacity * (factor+1))) );
 endmethod
 
-defmethod(void, genlarge, StringDyn, Int) // negative size means enlarge front
+defmethod(OBJ, genlarge, StringDyn, Int) // negative size means enlarge front
   PRE
     test_assert(self2->value, "invalid growing size");
-  POST
   BODY
     struct StringFix* strf = &self->StringFix;
     struct String*    str  = &strf->String;
@@ -174,6 +171,8 @@ defmethod(void, genlarge, StringDyn, Int) // negative size means enlarge front
 
     if (front) // move data to book the new space front
       str->value = memmove(str->value+size, str->value, str->size*sizeof *str->value);
+      
+    retmethod(_1);
 endmethod
 
 // ----- adjustment (capacity -> size)
@@ -210,37 +209,45 @@ endmethod
 
 // ----- clear (size -> 0)
 
-defmethod(void, gclear, StringDyn)
+defmethod(OBJ, gclear, StringDyn)
   self->StringFix.String.size  = 0;
   self->StringFix.String.value = self->StringFix._value;
+  
+  retmethod(_1);
 endmethod
 
 // ----- dropFirst, dropLast, drop
 
-defmethod(void, gdropFirst, StringDyn)
+defmethod(OBJ, gdropFirst, StringDyn)
   struct String *str = &self->StringFix.String;
 
   if (str->size) {
-    str->size--;
-    str->value++;
+    --str->size;
+    ++str->value;
   }
+  
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdropLast, StringDyn)
+defmethod(OBJ, gdropLast, StringDyn)
   struct String *str = &self->StringFix.String;
 
   if (str->size)
-    str->size--;
+    --str->size;
+  
+  retmethod(_1);
 endmethod
 
-defmethod(void, gchop, StringDyn, Char)
+defmethod(OBJ, gchop, StringDyn, Char)
   struct String *str = &self->StringFix.String;
 
   if (str->size && str->value[str->size-1] == (U32)self2->Int.value)
     str->size--;
+  
+  retmethod(_1);
 endmethod
 
-defmethod(void, gdrop, StringDyn, Int)
+defmethod(OBJ, gdrop, StringDyn, Int)
   struct String *str = &self->StringFix.String;
   BOOL front = self2->value < 0;
   U32 n = front ? -self2->value : self2->value;
@@ -249,88 +256,95 @@ defmethod(void, gdrop, StringDyn, Int)
     n = str->size;
 
   str->size -= n;
-  if (front)
-    str->value += n;
+  if (front) str->value += n;
+  
+  retmethod(_1);
 endmethod
 
 // ----- prepend, append char
 
-defmethod(void, gprepend, StringDyn, Char)
-  PRE POST BODY
-    struct StringFix *strf = &self->StringFix;
-    struct String    *str  = &strf->String;
+defmethod(OBJ, gprepend, StringDyn, Char)
+  struct StringFix *strf = &self->StringFix;
+  struct String    *str  = &strf->String;
 
-    if (str->value == strf->_value)
-      genlarge(_1, aInt(-1));
+  if (str->value == strf->_value)
+    genlarge(_1, aInt(-1));
 
-    *--str->value = self2->Int.value, str->size++;
+  *--str->value = self2->Int.value, str->size++;
+
+  retmethod(_1);
 endmethod
 
-defmethod(void, gappend, StringDyn, Char)
-  PRE POST BODY
-    struct StringFix *strf = &self->StringFix;
-    struct String    *str  = &strf->String;
+defmethod(OBJ, gappend, StringDyn, Char)
+  struct StringFix *strf = &self->StringFix;
+  struct String    *str  = &strf->String;
 
-    if (str->value + str->size == strf->_value + strf->capacity)
-      genlarge(_1, aInt(1));
+  if (str->value + str->size == strf->_value + strf->capacity)
+    genlarge(_1, aInt(1));
 
-    str->value[str->size++] = self2->Int.value;
+  str->value[str->size++] = self2->Int.value;
+
+  retmethod(_1);
 endmethod
 
 // ----- prepend, append object
 
-defmethod(void, gprepend, StringDyn, Object)
-  PRE POST BODY
-    struct StringFix *strf = &self->StringFix;
-    struct String    *str  = &strf->String;
+defmethod(OBJ, gprepend, StringDyn, Object)
+  struct StringFix *strf = &self->StringFix;
+  struct String    *str  = &strf->String;
 
-    if (str->value == strf->_value)
-      genlarge(_1, aInt(-1));
+  if (str->value == strf->_value)
+    genlarge(_1, aInt(-1));
 
-    str->value[-1] = (U32)gchr(_2), str->value--, str->size++;
+  str->value[-1] = (U32)gchr(_2), str->value--, str->size++;
+
+  retmethod(_1);
 endmethod
 
-defmethod(void, gappend, StringDyn, Object)
-  PRE POST BODY
-    struct StringFix *strf = &self->StringFix;
-    struct String    *str  = &strf->String;
+defmethod(OBJ, gappend, StringDyn, Object)
+  struct StringFix *strf = &self->StringFix;
+  struct String    *str  = &strf->String;
 
-    if (str->value + str->size == strf->_value + strf->capacity)
-      genlarge(_1, aInt(1));
+  if (str->value + str->size == strf->_value + strf->capacity)
+    genlarge(_1, aInt(1));
 
-    str->value[str->size] = (U32)gchr(_2), str->size++;
+  str->value[str->size++] = (U32)gchr(_2);
+
+  retmethod(_1);
 endmethod
 
 // ----- prepend, append string
 
-defmethod(void, gprepend, StringDyn, String)
-  PRE POST BODY
-    struct StringFix *strf = &self->StringFix;
-    struct String    *str  = &strf->String;
+defmethod(OBJ, gprepend, StringDyn, String)
+  struct StringFix *strf = &self->StringFix;
+  struct String    *str  = &strf->String;
 
-    if (str->value < strf->_value + self2->size)
-      genlarge(_1, aInt(-self2->size));
+  if (str->value < strf->_value + self2->size)
+    genlarge(_1, aInt(-self2->size));
 
-    str->value -= self2->size;
-    str->size  += self2->size;
-    memcpy(str->value, self2->value, self2->size*sizeof *str->value);
+  str->value -= self2->size;
+  str->size  += self2->size;
+  memcpy(str->value, self2->value, self2->size*sizeof *str->value);
+
+  retmethod(_1);
 endmethod
 
-defmethod(void, gappend, StringDyn, String)
-  PRE POST BODY
-    struct StringFix *strf = &self->StringFix;
-    struct String    *str  = &strf->String;
+defmethod(OBJ, gappend, StringDyn, String)
+  struct StringFix *strf = &self->StringFix;
+  struct String    *str  = &strf->String;
 
-    if (str->value + str->size + self2->size > strf->_value + strf->capacity)
-      genlarge(_1, aInt(self2->size));
+  if (str->value + str->size + self2->size > strf->_value + strf->capacity)
+    genlarge(_1, aInt(self2->size));
 
-    memcpy(str->value+str->size, self2->value, self2->size*sizeof *str->value);
-    str->size += self2->size;
+  memcpy(str->value+str->size, self2->value, self2->size*sizeof *str->value);
+  str->size += self2->size;
+
+  retmethod(_1);
 endmethod
 
 // --- insertAt
 
-defmethod(void, ginsertAt, StringDyn, Int, Object)
+defmethod(OBJ, ginsertAt, StringDyn, Int, Object)
   U32 i;
 
   PRE
@@ -352,9 +366,11 @@ defmethod(void, ginsertAt, StringDyn, Int, Object)
     memmove(dst+1, dst, (str->size-i)*sizeof *str->value);
     *dst = (U32)gchr(_3);
     str->size++;
+  
+    retmethod(_1);
 endmethod
 
-defmethod(void, ginsertAt, StringDyn, Int, String)
+defmethod(OBJ, ginsertAt, StringDyn, Int, String)
   U32 i;
 
   PRE
@@ -376,11 +392,13 @@ defmethod(void, ginsertAt, StringDyn, Int, String)
     memmove(dst+self3->size, dst, (str->size-i)*sizeof *dst);
     memcpy(dst, self3->value, self3->size*sizeof *dst);
     str->size += self3->size;
+  
+    retmethod(_1);
 endmethod
 
 // --- removeAt
 
-defmethod(void, gremoveAt, StringDyn, Int)
+defmethod(OBJ, gremoveAt, StringDyn, Int)
   U32 i;
 
   PRE
@@ -398,9 +416,11 @@ defmethod(void, gremoveAt, StringDyn, Int)
 
     str->size--;
     memmove(dst, dst+1, (str->size-i)*sizeof *dst);
+  
+    retmethod(_1);
 endmethod
 
-defmethod(void, gremoveAt, StringDyn, Slice)
+defmethod(OBJ, gremoveAt, StringDyn, Slice)
   PRE
     test_assert( Slice_first(self2) <= self->StringFix.String.size &&
                  Slice_last (self2) <= self->StringFix.String.size, "slice out of range" );
@@ -416,28 +436,32 @@ defmethod(void, gremoveAt, StringDyn, Slice)
 
     str->size -= size;
     memmove(dst, dst+size, (str->size-i)*sizeof *dst);
+  
+    retmethod(_1);
 endmethod
 
-defmethod(void, gremoveAt, StringDyn, Range)
+defmethod(OBJ, gremoveAt, StringDyn, Range)
   struct Range range = Range_normalize(self2,self->StringFix.String.size);
   struct Slice slice = Slice_fromRange(&range);
   
   gremoveAt(_1,(OBJ)&slice);
+  
+  retmethod(_1);
 endmethod
 
 // --- dequeue aliases
-defalias(void, (gprepend  )gpushFront, StringDyn, Char);
-defalias(void, (gappend   )gpushBack , StringDyn, Char);
-defalias(void, (gprepend  )gpushFront, StringDyn, Object);
-defalias(void, (gappend   )gpushBack , StringDyn, Object);
-defalias(void, (gdropFirst)gpopFront , StringDyn);
-defalias(void, (gdropLast )gpopBack  , StringDyn);
-defalias(OBJ , (gfirst    )gfront    , String);
-defalias(OBJ , (glast     )gback     , String);
+defalias(OBJ, (gprepend  )gpushFront, StringDyn, Char);
+defalias(OBJ, (gappend   )gpushBack , StringDyn, Char);
+defalias(OBJ, (gprepend  )gpushFront, StringDyn, Object);
+defalias(OBJ, (gappend   )gpushBack , StringDyn, Object);
+defalias(OBJ, (gdropFirst)gpopFront , StringDyn);
+defalias(OBJ, (gdropLast )gpopBack  , StringDyn);
+defalias(OBJ, (gfirst    )gfront    , String);
+defalias(OBJ, (glast     )gback     , String);
 
 // --- stack aliases
-defalias(void, (gappend  )gpush, StringDyn, Char  );
-defalias(void, (gappend  )gpush, StringDyn, Object);
-defalias(void, (gdropLast)gpop , StringDyn);
-defalias(OBJ , (glast    )gtop , String);
+defalias(OBJ, (gappend  )gpush, StringDyn, Char  );
+defalias(OBJ, (gappend  )gpush, StringDyn, Object);
+defalias(OBJ, (gdropLast)gpop , StringDyn);
+defalias(OBJ, (glast    )gtop , String);
 

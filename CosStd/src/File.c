@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.9 2009/09/30 12:09:58 ldeniau Exp $
+ | $Id: File.c,v 1.10 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -269,6 +269,12 @@ defmethod(void, gremove, OpenFile)
 
   UNPRT(name);
   grelease(name);
+endmethod
+
+// ----- name
+
+defmethod(STR, gstr, OpenFile)
+  retmethod(gstr(self->name));
 endmethod
 
 // ----- primitives

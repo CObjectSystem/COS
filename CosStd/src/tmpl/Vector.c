@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.7 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: Vector.c,v 1.8 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -87,7 +87,7 @@ defmethod(U32, gsize, T)
 endmethod
 
 defmethod(VAL*, TOVALPTR, T)
-  retmethod(self->valref);
+  retmethod(self->value);
 endmethod
 
 defmethod(OBJ, gisEmpty, T)
@@ -116,24 +116,11 @@ T_alloc(U32 size)
   struct TN *vecn = STATIC_CAST(struct TN*, _vec);
   struct T  *vec  = &vecn->T;
 
-  vec->valref = vecn->_valref;
+  vec->value = vecn->_value;
   vec->size   = 0;
   vec->stride = 1;
 
   return vec;
-}
-
-// --- copy
-
-static inline VAL*
-copy(VAL *dst, U32 *dst_n, VAL *src, I32 src_s, U32 src_n)
-{
-  VAL *end = dst + src_n;
-
-  while (dst != end)
-    *dst++ = RETAIN(*src), ++*dst_n, src += src_s;
-
-  return dst;
 }
 
 // ----- allocator
@@ -145,129 +132,103 @@ endmethod
 // ----- constructors
 
 defmethod(OBJ, gclone, T) // clone
-  PRE POST BODY
-    struct T* vec = T_alloc(self->size);
-    OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  struct T* vec = T_alloc(self->size);
 
-    copy(vec->valref,&vec->size,self->valref,self->stride,self->size);
+  copy(vec->value,&vec->size,self->value,self->stride,self->size);
 
-    UNPROTECT(_vec);
-    retmethod(_vec);
+  retmethod( (OBJ)vec );
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, TP, T);
 defmethod(OBJ,  ginitWith         , TP, T) // clone
-  PRE POST BODY
-    struct T* vec = T_alloc(self2->size);
-    OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  struct T* vec = T_alloc(self2->size);
 
-    copy(vec->valref,&vec->size,self2->valref,self2->stride,self2->size);
+  copy(vec->value,&vec->size,self2->value,self2->stride,self2->size);
 
-    UNPROTECT(_vec);
-    retmethod(_vec);
+  retmethod( (OBJ)vec );
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, TP, Slice);
 defmethod(OBJ,  ginitWith         , TP, Slice) // Int sequence
-  PRE POST BODY
-    U32 size = Slice_size(self2);
-    
-    struct T* vec = T_alloc(size);
-    OBJ _vec = (OBJ)vec; PROTECT(_vec);
-  
-    for (U32 i = 0; i < size; i++) {
-      vec->valref[i] = RETAIN(VALINT(Slice_eval(self2,i)));
-      vec->size++;
-    }
+  U32 size = Slice_size(self2);
+  struct T* vec = T_alloc(size);
 
-    UNPROTECT(_vec);
-    retmethod(_vec);
+  for (U32 i = 0; i < size; i++) {
+    vec->value[i] = Slice_eval(self2,i);
+    vec->size++;
+  }
+
+  retmethod( (OBJ)vec );
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, TP, Range);
 defmethod(OBJ,  ginitWith         , TP, Range) // Int sequence
-  PRE POST BODY
-    U32 size = Range_size(self2);
-    
-    struct T* vec = T_alloc(size);
-    OBJ _vec = (OBJ)vec; PROTECT(_vec);
-  
-    for (U32 i = 0; i < size; i++) {
-      vec->valref[i] = RETAIN(VALINT(Range_eval(self2,i)));
-      vec->size++;
-    }
+  U32 size = Range_size(self2);
+  struct T* vec = T_alloc(size);
 
-    UNPROTECT(_vec);
-    retmethod(_vec);
+  for (U32 i = 0; i < size; i++) {
+    vec->value[i] = Range_eval(self2,i);
+    vec->size++;
+  }
+
+  retmethod( (OBJ)vec );
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, TP, XRange);
 defmethod(OBJ,  ginitWith         , TP, XRange) // Float sequence
-  PRE POST BODY
-    U32 size = XRange_size(self2);
+  U32 size = XRange_size(self2);
+  struct T* vec = T_alloc(size);
 
-    struct T* vec = T_alloc(size);
-    OBJ _vec = (OBJ)vec; PROTECT(_vec);
+  for (U32 i = 0; i < size; i++) {
+    vec->value[i] = XRange_eval(self2,i);
+    vec->size++;
+  }
   
-    for (U32 i = 0; i < size; i++) {
-      vec->valref[i] = RETAIN(VALFLT(XRange_eval(self2,i)));
-      vec->size++;
-    }
-    
-    UNPROTECT(_vec);
-    retmethod(_vec);
+  retmethod( (OBJ)vec );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, Int, Object);
 defmethod(OBJ,  ginitWith2          , TP, Int, Object) // element
   PRE
     test_assert(self2->value >= 0, "negative " TS " size");
-  POST
+
   BODY
     VAL val = TOVAL(_3);
     U32 size = self2->value;
     
     struct T* vec = T_alloc(size);
-    OBJ _vec = (OBJ)vec; PROTECT(_vec);
 
     U32 *dst_n = &vec->size;
-    VAL *dst   = vec->valref;
+    VAL *dst   = vec->value;
     VAL *end   = dst + size;
 
     while (dst != end)
-      *dst++ = RETAIN(val), ++*dst_n;
+      *dst++ = val, ++*dst_n;
 
-    UNPROTECT(_vec);
-    retmethod(_vec);
+    retmethod( (OBJ)vec );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, Int, Functor);
 defmethod(OBJ,  ginitWith2          , TP, Int, Functor) // generator
   PRE
     test_assert(self2->value >= 0, "negative " TS " size");
-  POST
+
   BODY
     U32 size = self2->value;
     struct T* vec = T_alloc(size);
     OBJ _vec = (OBJ)vec; PRT(_vec);
 
     U32 *dst_n = &vec->size;
-    VAL *dst   = vec->valref;
+    VAL *dst   = vec->value;
     VAL *end   = dst + size;
     int argc   = garity(_3);
-    OBJ res;
 
     if (!argc)
-      while (dst != end) {
-        res = geval(_3);
-        *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
-      }
-
+      while (dst != end)
+        *dst++ = TOVAL(geval(_3)), ++*dst_n;
     else
-      for (I32 i = 0; dst != end; i++) {
-        res = geval(_3, aInt(i));
-        *dst++ = RETAIN(TOVAL(res)), ++*dst_n;
-      }
+      for (I32 i = 0; dst != end; i++)
+        *dst++ = TOVAL(geval(_3, aInt(i))), ++*dst_n;
 
     UNPRT(_vec);
     retmethod(_vec);
@@ -284,12 +245,10 @@ defmethod(OBJ,  ginitWith2          , TP, T, Slice) // sub vector
     I32 stride = Slice_stride(self3)*self2->stride;
     U32 size   = self3->size;
     struct T* vec = T_alloc(size);
-    OBJ _vec = (OBJ)vec; PROTECT(_vec);
 
-    copy(vec->valref,&vec->size,self2->valref+start,stride,size);
+    copy(vec->value,&vec->size,self2->value+start,stride,size);
 
-    UNPROTECT(_vec);
-    retmethod(_vec);
+    retmethod( (OBJ)vec );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, T, Range);
@@ -302,65 +261,29 @@ endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, TP, T, IntVector);
 defmethod(OBJ,  ginitWith2          , TP, T, IntVector) // random sequence
-  PRE POST BODY
-    U32 size = self3->size;
-    struct T* vec = T_alloc(size);
-    OBJ _vec = (OBJ)vec; PRT(_vec);
+  U32 size = self3->size;
+  struct T* vec = T_alloc(size);
+  OBJ _vec = (OBJ)vec; PRT(_vec);
 
-    U32  val_n = self2->size;
-    I32  val_s = self2->stride;
-    VAL *val   = self2->valref;
-    I32  idx_s = self3->stride;
-    I32 *idx   = self3->value;
-    U32 *dst_n = &vec->size;
-    VAL *dst   = vec->valref;
-    VAL *end   = dst + size;
+  U32  val_n = self2->size;
+  I32  val_s = self2->stride;
+  VAL *val   = self2->value;
+  I32  idx_s = self3->stride;
+  I32 *idx   = self3->value;
+  U32 *dst_n = &vec->size;
+  VAL *dst   = vec->value;
+  VAL *end   = dst + size;
 
-    while (dst != end) {
-      U32 i = Range_index(*idx, val_n);
-      test_assert( i < val_n, "index out of range" );
-      *dst++ = RETAIN(val[i*val_s]), ++*dst_n;
-      idx += idx_s;
-    }
+  while (dst != end) {
+    U32 i = Range_index(*idx, val_n);
+    test_assert( i < val_n, "index out of range" );
+    *dst++ = val[i*val_s], ++*dst_n;
+    idx += idx_s;
+  }
 
-    UNPRT(_vec);
-    retmethod(_vec);
+  UNPRT(_vec);
+  retmethod(_vec);
 endmethod
-
-// ----- destructor
-
-#ifdef ARRAY_ONLY
-
-defmethod(OBJ, gdeinit, T)
-  U32 *val_n = &self->size;
-  VAL *val   = self->valref;
-  VAL *end   = val + *val_n;
-
-  while (val != end)
-    --end, RELEASE(*end), --*val_n;
-
-  retmethod(_1);
-endmethod
-
-#endif
-
-// ----- invariant
-
-#ifdef ARRAY_ONLY
-
-defmethod(void, ginvariant, T, (STR)func, (STR)file, (int)line)
-  U32  size  = self->size;
-  I32  val_s = self->stride;
-  VAL *val   = self->valref;
-  VAL *end   = val + val_s*size;
-
-  while (val != end && *val)
-    val += val_s;
-
-  test_assert( val == end, TS " contains null elements", func, file, line);
-endmethod
-
-#endif
 
 // ----- constructors from C array
 

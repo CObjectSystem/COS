@@ -29,17 +29,20 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.14 2009/09/30 21:52:59 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.15 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
+#include <cos/Functor.h>
 #include <cos/IntVector.h>
 #include <cos/Number.h>
 
 #include <cos/gen/algorithm.h>
+#include <cos/gen/container.h>
 #include <cos/gen/compare.h>
 #include <cos/gen/object.h>
+#include <cos/gen/value.h>
 
 #include <cos/carray.h>
 
@@ -77,9 +80,9 @@ endmethod
 
 // ----- in place
 
-defmethod(void, greverse, Array)
+defmethod(OBJ, greverse, Array)
   if (self->size < 2)
-    retmethod();
+    retmethod(_1);
 
   U32  size  = self->size;
   I32  val_s = self->stride;
@@ -98,15 +101,17 @@ defmethod(void, greverse, Array)
       val += val_s;
       end -= val_s;
     }
+    
+  retmethod(_1);
 endmethod
 
-defmethod(void, gpermute, Array, IntVector)
+defmethod(OBJ, gpermute, Array, IntVector)
   PRE
     test_assert( self->size == self2->size, "incompatible array sizes" );
 
   BODY
     if (self->size < 2)
-      retmethod();
+      retmethod(_1);
 
     U32  size  = self->size;
     I32  val_s = self->stride;
@@ -152,6 +157,8 @@ defmethod(void, gpermute, Array, IntVector)
       test_assert( iiir, "index out of range" );
       test_assert(    0, "invalid cyclic permutation" );
     }
+
+    retmethod(_1);
 endmethod
 
 // ----- repeat
@@ -164,15 +171,15 @@ endmethod
 
 defmethod(OBJ, gzip, Array, Array)
   U32 size = self->size < self2->size ? self->size : self2->size;
-  struct Array* vec = Array_alloc(2*size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(2*size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  src_s  = self->stride;
   OBJ *src    = self->object; 
   I32  src2_s = self2->stride;
   OBJ *src2   = self2->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = dst + 2*size;
 
   while (dst != end) {
@@ -180,14 +187,14 @@ defmethod(OBJ, gzip, Array, Array)
     *dst++ = gretain(*src2), ++*dst_n, src2 += src2_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gzip3, Array, Array, Array)
   U32 size = self->size < self2->size ? self->size : self2->size;
       size = self3->size < size ? self3->size : size;
-  struct Array* vec = Array_alloc(3*size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(3*size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  src_s  = self->stride;
   OBJ *src    = self->object; 
@@ -195,8 +202,8 @@ defmethod(OBJ, gzip3, Array, Array, Array)
   OBJ *src2   = self2->object;
   I32  src3_s = self3->stride;
   OBJ *src3   = self3->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = dst + 3*size;
 
   while (dst != end) {
@@ -205,15 +212,15 @@ defmethod(OBJ, gzip3, Array, Array, Array)
     *dst++ = gretain(*src3), ++*dst_n, src3 += src3_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gzip4, Array, Array, Array, Array)
   U32 size = self->size < self2->size ? self->size : self2->size;
       size = self3->size < size ? self3->size : size;
       size = self4->size < size ? self4->size : size;
-  struct Array* vec = Array_alloc(4*size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(4*size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  src_s  = self->stride;
   OBJ *src    = self->object; 
@@ -223,8 +230,8 @@ defmethod(OBJ, gzip4, Array, Array, Array, Array)
   OBJ *src3   = self3->object;
   I32  src4_s = self4->stride;
   OBJ *src4   = self4->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = dst + 4*size;
 
   while (dst != end) {
@@ -234,7 +241,7 @@ defmethod(OBJ, gzip4, Array, Array, Array, Array)
     *dst++ = gretain(*src4), ++*dst_n, src4 += src4_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gzip5, Array, Array, Array, Array, Array)
@@ -242,8 +249,8 @@ defmethod(OBJ, gzip5, Array, Array, Array, Array, Array)
       size = self3->size < size ? self3->size : size;
       size = self4->size < size ? self4->size : size;
       size = self5->size < size ? self5->size : size;
-  struct Array* vec = Array_alloc(5*size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(5*size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  src_s  = self->stride;
   OBJ *src    = self->object; 
@@ -255,8 +262,8 @@ defmethod(OBJ, gzip5, Array, Array, Array, Array, Array)
   OBJ *src4   = self4->object;
   I32  src5_s = self5->stride;
   OBJ *src5   = self5->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = dst + 5*size;
 
   while (dst != end) {
@@ -267,67 +274,82 @@ defmethod(OBJ, gzip5, Array, Array, Array, Array, Array)
     *dst++ = gretain(*src5), ++*dst_n, src5 += src5_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 // ----- cat, cat3, cat4, cat5
 
 defmethod(OBJ, gcat, Array, Array)
   U32 size = self->size + self2->size;
-  struct Array *vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array *arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
-  OBJ *dst = vec->object;
+  OBJ *dst = arr->object;
 
-  dst = copy(dst,&vec->size,self ->object,self ->stride,self ->size);
-        copy(dst,&vec->size,self2->object,self2->stride,self2->size);
+  dst = copy(dst,&arr->size,self ->object,self ->stride,self ->size);
+        copy(dst,&arr->size,self2->object,self2->stride,self2->size);
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gcat3, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size;
-  struct Array *vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array *arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
-  OBJ *dst = vec->object;
+  OBJ *dst = arr->object;
 
-  dst = copy(dst,&vec->size,self ->object,self ->stride,self ->size);
-  dst = copy(dst,&vec->size,self2->object,self2->stride,self2->size);
-        copy(dst,&vec->size,self3->object,self3->stride,self3->size);
+  dst = copy(dst,&arr->size,self ->object,self ->stride,self ->size);
+  dst = copy(dst,&arr->size,self2->object,self2->stride,self2->size);
+        copy(dst,&arr->size,self3->object,self3->stride,self3->size);
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gcat4, Array, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size + self4->size;
-  struct Array *vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array *arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
-  OBJ *dst = vec->object;
+  OBJ *dst = arr->object;
 
-  dst = copy(dst,&vec->size,self ->object,self ->stride,self ->size);
-  dst = copy(dst,&vec->size,self2->object,self2->stride,self2->size);
-  dst = copy(dst,&vec->size,self3->object,self3->stride,self3->size);
-        copy(dst,&vec->size,self4->object,self4->stride,self4->size);
+  dst = copy(dst,&arr->size,self ->object,self ->stride,self ->size);
+  dst = copy(dst,&arr->size,self2->object,self2->stride,self2->size);
+  dst = copy(dst,&arr->size,self3->object,self3->stride,self3->size);
+        copy(dst,&arr->size,self4->object,self4->stride,self4->size);
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gcat5, Array, Array, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size + self4->size + self5->size;
-  struct Array *vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array *arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
-  OBJ *dst = vec->object;
+  OBJ *dst = arr->object;
 
-  dst = copy(dst,&vec->size,self ->object,self ->stride,self ->size);
-  dst = copy(dst,&vec->size,self2->object,self2->stride,self2->size);
-  dst = copy(dst,&vec->size,self3->object,self3->stride,self3->size);
-  dst = copy(dst,&vec->size,self4->object,self4->stride,self4->size);
-        copy(dst,&vec->size,self5->object,self5->stride,self5->size);
+  dst = copy(dst,&arr->size,self ->object,self ->stride,self ->size);
+  dst = copy(dst,&arr->size,self2->object,self2->stride,self2->size);
+  dst = copy(dst,&arr->size,self3->object,self3->stride,self3->size);
+  dst = copy(dst,&arr->size,self4->object,self4->stride,self4->size);
+        copy(dst,&arr->size,self5->object,self5->stride,self5->size);
 
-  retmethod(_vec);
+  retmethod(_arr);
+endmethod
+
+// ----- flatten array content
+
+defmethod(OBJ, gflatten, Array)
+  U32 size = 0;
+
+  for (U32 i = 0; i < self->size; i += self->stride)
+    size += gsize(self->object[i]);
+
+  OBJ arr = gautoDelete( gnewWith(Array, aInt(size)) );
+
+  gapply(aFun(gappend, arr, 0), _1);
+  
+  retmethod(arr);
 endmethod
 
 // ----- search (object)
@@ -417,24 +439,33 @@ KnuthMorrisPratt(OBJ *val, U32 val_n, I32 val_s, OBJ *pat, I32 pat_n, I32 pat_s)
 static OBJ*
 findSub(OBJ *val, U32 val_n, I32 val_s, OBJ *pat, U32 pat_n, I32 pat_s)
 {
-  // subvector is too short
-  if (val_n < pat_n) return 0;
-
   // empty pattern
   if (!pat_n) return val;
 
+  // subarray is too short
+  if (val_n < pat_n) return 0;
+
   // find first
-  OBJ *p = findVal(val, val_n, val_s, *pat);
+  OBJ *p = findVal(val, val_n-pat_n+1, val_s, *pat);
   if (!p) return 0;
 
   // single object pattern
   if (pat_n == 1) return p;
 
   // linear search
-  return KnuthMorrisPratt(p, val_n-(p-val)*val_s, val_s, pat, pat_n, pat_s);
+  return KnuthMorrisPratt(p, val_n-(p-val)/val_s, val_s, pat, pat_n, pat_s);
 }
 
 // -- find methods
+
+defmethod(I32, gindexOf, Array, Array)
+  U32  val_n = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+
+  OBJ *p = findSub(val,val_n,val_s,self2->object,self2->size,self2->stride);
+  retmethod(p ? (p-val)/val_s : -1);
+endmethod
 
 defmethod(OBJ, gfind, Array, Array)
   U32  val_n = self->size;

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.15 2009/09/30 21:52:59 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.16 2009/10/02 21:56:20 ldeniau Exp $
  |
 */
 
@@ -129,37 +129,58 @@ defmethod(void, gapply4, Functor, Array, Array, Array, Array)
   }
 endmethod
 
-// ----- mapWhile, map, map2, map3, map4
+// ----- mapIf, mapWhile, map, map2, map3, map4
 
-defmethod(OBJ, gmapWhile, Functor, Array)
+defmethod(OBJ, gmapIf, Functor, Array)
   U32 size = self2->size;
-  OBJ _vec = gautoDelete(gnewWith(Array,aInt(size)));
-  struct Array* vec = STATIC_CAST(struct Array*, _vec);
-  OBJ res;
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  U32 *dst_n = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = val + val_s*size;
+  OBJ  res;
+
+  while (val != end) {
+    if ((res = geval(_1, *val)) != Nil)
+      *dst++ = gretain(res), ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_arr));
+endmethod
+
+defmethod(OBJ, gmapWhile, Functor, Array)
+  U32 size = self2->size;
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+
+  I32  val_s = self2->stride;
+  OBJ *val   = self2->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res;
 
   while (val != end && (res = geval(_1, *val)) != Nil) {
     *dst++ = gretain(res), ++*dst_n;
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(gadjust(_arr));
 endmethod
 
 defmethod(OBJ, gmap, Functor, Array)
   U32 size = self2->size;
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  U32 *dst_n = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = dst + size;
   OBJ  res;
 
@@ -169,20 +190,20 @@ defmethod(OBJ, gmap, Functor, Array)
     val += val_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmap2, Functor, Array, Array)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s  = self2->stride;
   OBJ *val    = self2->object;
   I32  val2_s = self3->stride;
   OBJ *val2   = self3->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = dst + size;
   OBJ  res;
 
@@ -193,14 +214,14 @@ defmethod(OBJ, gmap2, Functor, Array, Array)
     val2 += val2_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmap3, Functor, Array, Array, Array)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
       size = self4->size < size ? self4->size : size;
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s  = self2->stride;
   OBJ *val    = self2->object;
@@ -208,8 +229,8 @@ defmethod(OBJ, gmap3, Functor, Array, Array, Array)
   OBJ *val2   = self3->object;
   I32  val3_s = self4->stride;
   OBJ *val3   = self4->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = dst + size;
   OBJ  res;
 
@@ -221,15 +242,15 @@ defmethod(OBJ, gmap3, Functor, Array, Array, Array)
     val3 += val3_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
       size = self4->size < size ? self4->size : size;
       size = self5->size < size ? self5->size : size;
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s  = self2->stride;
   OBJ *val    = self2->object;
@@ -239,8 +260,8 @@ defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
   OBJ *val3   = self4->object;
   I32  val4_s = self5->stride;
   OBJ *val4   = self5->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = dst + size;
   OBJ  res;
 
@@ -253,7 +274,7 @@ defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
     val4 += val4_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 // ----- all, any, count
@@ -306,15 +327,55 @@ endmethod
 
 // ----- select, reject
 
-defmethod(OBJ, gselectWhile, Array, Functor)
+defmethod(OBJ, gselect, Array, Functor)
   U32 size = self->size;
-  OBJ _vec = gautoDelete(gnewWith(Array,aInt(size)));
-  struct Array* vec = STATIC_CAST(struct Array*, _vec);
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  U32 *dst_n = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr ->object;
+  OBJ *end   = val + val_s*size;
+
+  while (val != end) {
+    if (geval(_2, *val) == True)
+      *dst++ = gretain(*val), ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_arr));
+endmethod
+
+defmethod(OBJ, gselectIf, Array, Functor)
+  U32 size = self->size;
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
+  OBJ *end   = val + val_s*size;
+
+  while (val != end) {
+    if (geval(_2, *val) != Nil)
+      *dst++ = gretain(*val), ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_arr));
+endmethod
+
+defmethod(OBJ, gselectWhile, Array, Functor)
+  U32 size = self->size;
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = val + val_s*size;
   OBJ  res;
 
@@ -324,47 +385,68 @@ defmethod(OBJ, gselectWhile, Array, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
-endmethod
-
-defmethod(OBJ, gselect, Array, Functor)
-  U32 size = self->size;
-  OBJ _vec = gautoDelete(gnewWith(Array,aInt(size)));
-  struct Array* vec = STATIC_CAST(struct Array*, _vec);
-
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
-  U32 *dst_n = &vec->size;
-  OBJ *dst   = vec ->object;
-  OBJ *end   = val + val_s*size;
-
-  while (val != end) {
-    if (geval(_2, *val) == True)
-      *dst++ = gretain(*val), ++*dst_n;
-    val += val_s;
-  }
-
-  retmethod(gadjust(_vec));
+  retmethod(gadjust(_arr));
 endmethod
 
 defmethod(OBJ, greject, Array, Functor)
   U32 size = self->size;
-  OBJ _vec = gautoDelete(gnewWith(Array,aInt(size)));
-  struct Array* vec = STATIC_CAST(struct Array*, _vec);
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  U32 *dst_n = &vec->size;
-  OBJ *dst   = vec ->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr ->object;
   OBJ *end   = val + val_s*size;
 
   while (val != end) {
-    if (geval(_2, *val) != True)
+    if (geval(_2, *val) == False)
       *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(gadjust(_arr));
+endmethod
+
+defmethod(OBJ, grejectIf, Array, Functor)
+  U32 size = self->size;
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
+  OBJ *end   = val + val_s*size;
+
+  while (val != end) {
+    if (geval(_2, *val) == Nil)
+      *dst++ = gretain(*val), ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_arr));
+endmethod
+
+defmethod(OBJ, grejectWhile, Array, Functor)
+  U32 size = self->size;
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res;
+
+  while (val != end && (res = geval(_2, *val)) != Nil) {
+    if (res == False)
+      *dst++ = gretain(*val), ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_arr));
 endmethod
 
 // ----- reduce
@@ -479,13 +561,13 @@ endmethod
 
 defmethod(OBJ, gaccumulate, Array, Functor)
   U32 size = self->size;
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = dst + size;
   OBJ  res;
 
@@ -500,18 +582,18 @@ defmethod(OBJ, gaccumulate, Array, Functor)
     }
   }
   
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, graccumulate, Array, Functor)
   U32 size = self->size;
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s = self->stride;
   OBJ *val   = self->object + val_s*size;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = dst + size;
   OBJ  res;
 
@@ -526,18 +608,18 @@ defmethod(OBJ, graccumulate, Array, Functor)
     }
   }
   
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gaccumulate1, Array, Functor, Object)
   U32 size = self->size;
-  struct Array* vec = Array_alloc(size+1);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size+1);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = dst + size;
   OBJ  res;
 
@@ -549,18 +631,18 @@ defmethod(OBJ, gaccumulate1, Array, Functor, Object)
     val += val_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, graccumulate1, Array, Functor, Object)
   U32 size = self->size;
-  struct Array* vec = Array_alloc(size+1);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size+1);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s = self->stride;
   OBJ *val   = self->object + val_s*self->size;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = dst + size;
   OBJ  res;
 
@@ -572,20 +654,20 @@ defmethod(OBJ, graccumulate1, Array, Functor, Object)
     *--end = gretain(res), ++*dst_n;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gaccumulate2, Array, Array, Functor, Object)
   U32 size = self->size < self2->size ? self->size : self2->size;
-  struct Array* vec = Array_alloc(size+1);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size+1);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s  = self->stride;
   OBJ *val    = self->object;
   I32  val2_s = self2->stride;
   OBJ *val2   = self2->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = dst + size;
   OBJ  res;
 
@@ -598,20 +680,20 @@ defmethod(OBJ, gaccumulate2, Array, Array, Functor, Object)
     val2 += val2_s;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, graccumulate2, Array, Array, Functor, Object)
   U32 size = self->size < self2->size ? self->size : self2->size;
-  struct Array* vec = Array_alloc(size+1);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  struct Array* arr = Array_alloc(size+1);
+  OBJ _arr = gautoDelete( (OBJ)arr );
 
   I32  val_s  = self->stride;
   OBJ *val    = self->object + val_s*self->size;
   I32  val2_s = self2->stride;
   OBJ *val2   = self2->object + val2_s*self2->size;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = dst + size;
   OBJ  res;
 
@@ -624,20 +706,20 @@ defmethod(OBJ, graccumulate2, Array, Array, Functor, Object)
     *--end = gretain(res), ++*dst_n;
   }
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 // ----- unique (remove contiguous duplicates)
 
 defmethod(OBJ, gunique, Array, Functor)
   U32 size = self->size;
-  OBJ _vec = gautoDelete(gnewWith(Array,aInt(size)));
-  struct Array* vec = STATIC_CAST(struct Array*, _vec);
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  U32 *dst_n = &vec->size;
-  OBJ *dst   = vec ->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr ->object;
   OBJ *end   = val + val_s*size;
 
   if (val != end) {
@@ -651,20 +733,20 @@ defmethod(OBJ, gunique, Array, Functor)
     }
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(gadjust(_arr));
 endmethod
 
 // ----- diff (asymetric diff, self1 - self2)
 
-defmethod(OBJ, gdiff, Array, Array, Functor)
+defmethod(OBJ, gdiff, Array, Container, Functor)
   U32 size = self->size;
-  OBJ _vec = gautoDelete(gnewWith(Array,aInt(size)));
-  struct Array* vec = STATIC_CAST(struct Array*, _vec);
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   I32  val_s  = self->stride;
   OBJ *val    = self->object;
-  U32 *dst_n  = &vec->size;
-  OBJ *dst    = vec->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
 
   while (val != end) {
@@ -673,7 +755,7 @@ defmethod(OBJ, gdiff, Array, Array, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(gadjust(_arr));
 endmethod
 
 // ----- finding
@@ -983,36 +1065,37 @@ iqsortSFun(I32 a[], I32 r, OBJ o[], I32 s, OBJ fun)
 
 // ----- sorting methods
 
-defmethod(void, gsort, Array, Functor)
+defmethod(OBJ, gsort, Array, Functor)
   qsortFun(self->object, self->size-1, _2);
+  retmethod(_1);
 endmethod
 
-defmethod(void, gsort, ArrayView, Functor)
-  struct Array *vec = &self->Array;
+defmethod(OBJ, gsort, ArrayView, Functor)
+  struct Array *arr = &self->Array;
 
-  if (vec->stride == 1) {
-    qsortFun(vec->object, vec->size-1, _2);
-    return;
+  if (arr->stride == 1) {
+    qsortFun(arr->object, arr->size-1, _2);
+    retmethod(_1);
   }
 
-  if (vec->stride == -1) { // should be faster than strided sort
-    qsortFun(vec->object-vec->size+1, vec->size-1, _2);
-    greverse(_1);
-    return;
+  if (arr->stride == -1) { // should be faster than strided sort
+    qsortFun(arr->object-arr->size+1, arr->size-1, _2);
+    retmethod(greverse(_1));
   }
 
-  qsortSFun(vec->object, vec->size-1, vec->stride, _2);
+  qsortSFun(arr->object, arr->size-1, arr->stride, _2);
+  retmethod(_1);
 endmethod
 
 defmethod(OBJ, gisort, Array, Functor)
   useclass(IntVector);
 
-  OBJ _vec = gautoDelete(gnewWith(IntVector, aSlice(0,self->size,1)));
-  struct IntVector *vec = STATIC_CAST(struct IntVector*, _vec);
+  OBJ _arr = gautoDelete(gnewWith(IntVector, aSlice(0,self->size,1)));
+  struct IntVector *arr = STATIC_CAST(struct IntVector*, _arr);
 
-  iqsortSFun(vec->value, vec->size-1, self->object, self->stride, _2);
+  iqsortSFun(arr->value, arr->size-1, self->object, self->stride, _2);
 
-  retmethod(_vec);
+  retmethod(_arr);
 endmethod
 
 // ----- is sorted predicate
