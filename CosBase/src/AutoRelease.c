@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.46 2009/09/10 21:38:24 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.47 2009/10/02 21:52:40 ldeniau Exp $
  |
 */
 
@@ -267,6 +267,7 @@ endmethod
 
 defalias (void, (grelease)gdelete, AutoRelease);
 defmethod(void,  grelease        , AutoRelease)
+  cos_trace("destroying pool at %p [%u objects]", (void*)_1, gsize(_1));
   gdealloc(gdeinit(_1)); // cannot be auto, static or retained
 endmethod
 

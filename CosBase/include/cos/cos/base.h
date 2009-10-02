@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.20 2009/09/21 09:36:57 ldeniau Exp $
+ | $Id: base.h,v 1.21 2009/10/02 21:52:34 ldeniau Exp $
  |
 */
 
@@ -72,6 +72,7 @@
 #define COS_YES 1
 
 // logger message levels
+#define COS_LOGMSG_TRALL 0
 #define COS_LOGMSG_TRACE 1
 #define COS_LOGMSG_DEBUG 2
 #define COS_LOGMSG_INFO  3

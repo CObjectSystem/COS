@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.14 2009/09/28 14:04:06 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.15 2009/10/02 21:52:40 ldeniau Exp $
  |
 */
 
@@ -45,8 +45,8 @@
 #include <pthread.h>
 #endif
 
-STATIC_ASSERT(COS_LOGMSG_value_must_be_within_trace_and_abort,
-              COS_LOGMSG >= COS_LOGMSG_TRACE && COS_LOGMSG <= COS_LOGMSG_ABORT);
+STATIC_ASSERT(COS_LOGMSG_value_must_be_within_trace_all_and_abort,
+              COS_LOGMSG >= COS_LOGMSG_TRALL && COS_LOGMSG <= COS_LOGMSG_ABORT);
 
 FILE *cos_logmsg_out    = 0;
 int   cos_logmsg_level_ = COS_LOGMSG; // not thread safe
@@ -56,7 +56,7 @@ cos_logmsg_setLevel(int lvl)
 {
   int old = cos_logmsg_level_;
   
-  if (lvl >= COS_LOGMSG_TRACE && lvl <= COS_LOGMSG_ABORT)
+  if (lvl >= COS_LOGMSG_TRALL && lvl <= COS_LOGMSG_ABORT)
     cos_logmsg_level_ = lvl;
 
   return old;
@@ -65,14 +65,14 @@ cos_logmsg_setLevel(int lvl)
 void
 cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
 {
-  if (lvl < COS_LOGMSG_TRACE || lvl > COS_LOGMSG_ABORT) {
+  if (lvl < COS_LOGMSG_TRALL || lvl > COS_LOGMSG_ABORT) {
     cos_logmsg_(COS_LOGMSG_WARN, func, file, line,
                 "cos_logmsg discarding level %d out of range", lvl);
     return;
   }
 
   if (lvl >= cos_logmsg_level_) {
-    static STR tag[] = { "Invalid", "Trace", "Debug", "Info ", "Warn ", "Error", "Abort" };
+    static STR tag[] = { "Trace", "Trace", "Debug", "Info ", "Warn ", "Error", "Abort" };
     va_list va;
 
     if (cos_logmsg_out == 0     ) cos_logmsg_out = stderr;

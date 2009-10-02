@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.29 2009/09/18 16:17:46 ldeniau Exp $
+ | $Id: object.h,v 1.30 2009/10/02 21:52:40 ldeniau Exp $
  |
 */
 
@@ -60,7 +60,7 @@ defgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
 
 // destructor, clearing
 defgeneric(OBJ , gdeinit       , _1);
-defgeneric(void, gclear        , _1);
+defgeneric(OBJ , gclear        , _1);
 
 // ownership
 defgeneric(OBJ , gretain       , _1);

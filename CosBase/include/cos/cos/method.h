@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.33 2009/09/10 21:38:23 ldeniau Exp $
+ | $Id: method.h,v 1.34 2009/10/02 21:52:34 ldeniau Exp $
  |
 */
 
@@ -254,6 +254,8 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 (SEL const restrict _sel, COS_PP_SEQ(COS_SEL_DECL(C)), \
    void* const restrict _arg, void* const restrict _ret) \
 { \
+  /* return value not void */ \
+  enum { _cos_mth_ret_void = !R };\
   /* return and arguments type */ \
   typedef COS_RET_TYPE(NAME) _cos_mth_ret_t; \
   typedef COS_RET_TYPE(NAME)* const restrict _ret_t; \
@@ -293,7 +295,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   return; \
   /* avoid compiler warning for unused identifiers */ \
   COS_PP_IF(R)(/* use ret */,COS_UNUSED(_ret);) \
-  COS_UNUSED(_sel,_arg,self,next_method, \
+  COS_UNUSED(_sel,_arg,self,next_method,_cos_mth_ret_void, \
     _cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_rnd,\
     _cos_mth_nxt_cls,_cos_mth_nxt_p,_cos_mth_nxt_g); \
   /* method user code */ \
@@ -345,7 +347,9 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 // retmethod
 #define COS_MTH_RET(...) \
   do { \
-    COS_PP_IF(COS_PP_NOARG(__VA_ARGS__))(,COS_MTH_RETVAL = (__VA_ARGS__);) \
+    COS_PP_IF(COS_PP_NOARG(__VA_ARGS__))( \
+    COS_STATIC_ASSERT(method_return_value_is_not_void, _cos_mth_ret_void);, \
+    COS_MTH_RETVAL = (__VA_ARGS__);) \
     COS_PP_IFNDEF(COS_METHOD_TRACE)(_cos_mth_line = __LINE__;,/* no trace */) \
     goto _cos_ctr_end; \
   } while (0)
@@ -395,7 +399,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 #endif
 
 #define COS_MTH_TRC(E,C) \
-  if (cos_logmsg_level_ == COS_LOGMSG_TRACE) { \
+  if (cos_logmsg_level_ == COS_LOGMSG_TRALL) { \
     COS_PP_IF(E)(COS_MTH_OBJ_INI(C);,) \
     cos_method_trace(__FILE__, COS_PP_IF(E)(__LINE__,_cos_mth_line), \
                      E, _mth, _cos_mth_objs); \

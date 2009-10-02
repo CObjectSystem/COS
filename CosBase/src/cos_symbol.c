@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.42 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.43 2009/10/02 21:52:40 ldeniau Exp $
  |
 */
 
@@ -1376,9 +1376,9 @@ mth_trace(STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)
   char buf[256];
 
   if (enter)
-    cos_logmsg(COS_LOGMSG_TRACE,0,file,line,"-> %s",cos_method_callName(mth,obj,buf,sizeof buf));
+    cos_logmsg(COS_LOGMSG_TRALL,0,file,line,"-> %s",cos_method_callName(mth,obj,buf,sizeof buf));
   else
-    cos_logmsg(COS_LOGMSG_TRACE,0,file,line,"<- %s",cos_method_name    (mth,    buf,sizeof buf));
+    cos_logmsg(COS_LOGMSG_TRALL,0,file,line,"<- %s",cos_method_name    (mth,    buf,sizeof buf));
 }
 
 void (*cos_method_trace)(STR,int,BOOL,const struct Method*,OBJ*) = mth_trace;
