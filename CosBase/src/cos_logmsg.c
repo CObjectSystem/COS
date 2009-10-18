@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.15 2009/10/02 21:52:40 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.16 2009/10/18 07:18:08 ldeniau Exp $
  |
 */
 
@@ -67,7 +67,7 @@ cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
 {
   if (lvl < COS_LOGMSG_TRALL || lvl > COS_LOGMSG_ABORT) {
     cos_logmsg_(COS_LOGMSG_WARN, func, file, line,
-                "cos_logmsg discarding level %d out of range", lvl);
+                "cos_logmsg discards out-of-range message level %d", lvl);
     return;
   }
 
@@ -75,17 +75,18 @@ cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
     static STR tag[] = { "Trace", "Trace", "Debug", "Info ", "Warn ", "Error", "Abort" };
     va_list va;
 
-    if (cos_logmsg_out == 0     ) cos_logmsg_out = stderr;
+    if (cos_logmsg_out == 0) cos_logmsg_out = stderr;
     if (cos_logmsg_out == stderr) fflush(stdout);
 
     va_start(va,fmt);
 #if COS_HAVE_POSIX
-    fprintf(cos_logmsg_out,"COS-%s[%u]:(%s,%d,%s): ",
-            tag[lvl], (U32)getpid(), file ? file : "", line, func ? func : "");
+    fprintf(cos_logmsg_out, "COS-%s[%u]: ", tag[lvl], (U32)getpid());
 #else
-    fprintf(cos_logmsg_out,"COS-%s:(%s,%d,%s): ",
-            tag[lvl], file ? file : "", line, func ? func : "");
+    fprintf(cos_logmsg_out, "COS-%s: "    , tag[lvl]);
 #endif
+    if (lvl < COS_LOGMSG_INFO)
+      fprintf(cos_logmsg_out, "(%s,%d,%s): ", file ? file : "", line, func ? func : "");
+
     vfprintf(cos_logmsg_out,fmt,va);
     putc('\n',cos_logmsg_out);
     va_end(va);
