@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: accessor.h,v 1.5 2009/08/15 22:30:22 ldeniau Exp $
+ | $Id: accessor.h,v 1.6 2009/10/19 19:14:57 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #endif 
 
 // getters, setters, properties, keys
-defgeneric(OBJ , (GenAccessor) ggetAt, _1, at);
-defgeneric(void, (GenAccessor) gputAt, _1, at, what);
+defgeneric(OBJ, (GenAccessor) ggetAt, _1, at);
+defgeneric(OBJ, (GenAccessor) gputAt, _1, at, what);
 
 #endif // COS_GEN_ACCESSOR_H
