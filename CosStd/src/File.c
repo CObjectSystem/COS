@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.10 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: File.c,v 1.11 2009/10/19 19:38:09 ldeniau Exp $
  |
 */
 
@@ -110,15 +110,13 @@ endmethod
 
 defalias (OBJ, (ginit)gnew, pmFile);
 defmethod(OBJ,  ginit     , pmFile)
-  PRE POST BODY
-    retmethod( ginitWith(gallocWithSize(ClosedFile, FILE_BUFSIZ), aInt(FILE_BUFSIZ)) );
+  retmethod( ginitWith(gallocWithSize(ClosedFile, FILE_BUFSIZ), aInt(FILE_BUFSIZ)) );
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmFile, Int);
 defmethod(OBJ,  ginitWith         , pmFile, Int)
   PRE
     test_assert(self2->value >= 0, "negative file buffer size");
-  POST
   BODY
     retmethod( ginitWith(gallocWithSize(ClosedFile, self2->value), _2) );
 endmethod
@@ -195,61 +193,53 @@ mode2class(STR str)
 }
 
 defmethod(OBJ, gopen, ClosedFile, String, String)
-  BOOL ch_cls;
-  BOOL ch_buf;
+  STR mode = gstr(_3);
+  self->fd = fopen(gstr(_2), mode);
+  if (!self->fd)
+    THROW( gnewWith(ExBadStream, gcat(aStr("unable to open file "), _2)) );
 
-  PRE
-  POST
-    test_assert(ch_buf, "unable to set file buffer");
-    test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
+  self->own = YES;
+  self->name = gretain(_2);
+  BOOL ch_buf = !setvbuf(self->fd, self->file_buf, _IOFBF, self->buf_size);
+  test_assert(ch_buf, "unable to set file buffer");
+  
+  struct Class *cls = mode2class(mode);
+  BOOL ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
+  test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
 
-  BODY
-    STR mode = gstr(_3);
-    self->fd = fopen(gstr(_2), mode);
-    if (!self->fd)
-      THROW( gnewWith(ExBadStream, gcat(aStr("unable to open file "), _2)) );
-
-    self->own = YES;
-    self->name = gretain(_2);
-    ch_buf = !setvbuf(self->fd, self->file_buf, _IOFBF, self->buf_size);
-    
-    struct Class *cls = mode2class(mode);
-    ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
-
-    retmethod(_1);
+  retmethod(_1);
 endmethod
 
-defmethod(void, gclose, OpenFile)
-  BOOL ch_cls;
+defmethod(OBJ, gclose, OpenFile)
+  BOOL ch_cls = cos_object_unsafeChangeClass(_1, classref(ClosedFile), classref(File));
+  test_assert(ch_cls, "unable to change from OpenFile to ClosedFile");
 
-  PRE
-  POST
-    test_assert(ch_cls, "unable to change from OpenFile to ClosedFile");
+  if (fclose(self->fd))
+    THROW( gnewWith(ExBadStream, gcat(aStr("unable to close file "), self->name)) );
 
-  BODY
-    ch_cls = cos_object_unsafeChangeClass(_1, classref(ClosedFile), classref(File));
+  grelease(self->name);
 
-    if (fclose(self->fd))
-      THROW( gnewWith(ExBadStream, gcat(aStr("unable to close file "), self->name)) );
-
-    grelease(self->name);
-
-    self->fd = 0;
-    self->own = NO;
-    self->name = 0;
+  self->fd = 0;
+  self->own = NO;
+  self->name = 0;
+  
+  retmethod(_1);
 endmethod
 
 // ----- flush
 
-defmethod(void, gflush, InFile)
+defmethod(OBJ, gflush, InFile)
   // no flush on input file
+    retmethod(_1);
 endmethod
 
-defmethod(void, gflush, OutFile)
+defmethod(OBJ, gflush, OutFile)
   struct OpenFile *file = &self->OpenFile;
 
   if (fflush(file->fd))
     THROW( gnewWith(ExBadStream, gcat(aStr("unable to flush file "), file->name)) );
+
+  retmethod(_1);
 endmethod
 
 // ----- empty
@@ -260,7 +250,7 @@ endmethod
 
 // ----- remove
 
-defmethod(void, gremove, OpenFile)
+defmethod(OBJ, gremove, OpenFile)
   OBJ name = gretain(self->name); PRT(name);
   gclose(_1);
 
@@ -269,6 +259,7 @@ defmethod(void, gremove, OpenFile)
 
   UNPRT(name);
   grelease(name);
+  retmethod(_1);
 endmethod
 
 // ----- name
@@ -336,16 +327,11 @@ defmethod(FILE*, ggetFILE, OpenFile)
   retmethod(self->fd);
 endmethod
 
-defmethod(void, gsetFILE, ClosedFile, (FILE*)fd, (STR)mode, (STR)name)
-  BOOL ch_cls = ch_cls; // NOTE-INFO: remove (justified) warning
-
+defmethod(OBJ, gsetFILE, ClosedFile, (FILE*)fd, (STR)mode, (STR)name)
   PRE
     test_assert(fd  , "null file descriptor");
     test_assert(name, "null file name");
     test_assert(mode, "null file mode");
-
-  POST
-    test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
 
   BODY
     self->fd   = fd;
@@ -353,7 +339,10 @@ defmethod(void, gsetFILE, ClosedFile, (FILE*)fd, (STR)mode, (STR)name)
     self->name = gretain(gautoDelete(gnewWithStr(String, name)));
 
     struct Class *cls = mode2class(mode);
-    ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
+    BOOL ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
+    test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
+
+    retmethod(_1);
 endmethod
 
 // ----- StdIn, StdOut, StdErr

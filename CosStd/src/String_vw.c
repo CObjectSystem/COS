@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.7 2009/09/26 09:02:07 ldeniau Exp $
+ | $Id: String_vw.c,v 1.8 2009/10/19 19:38:09 ldeniau Exp $
  |
 */
 
@@ -51,10 +51,12 @@ useclass(String, StringView);
 
 // ----- getters
 
+/*
 defmethod(STR, gstr, StringView)
   gstr((OBJ)self->ref);
   retmethod((STR)self->String.value);
 endmethod
+*/
 
 // ----- initializer
 

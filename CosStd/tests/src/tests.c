@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.14 2009/09/30 21:53:01 ldeniau Exp $
+ | $Id: tests.c,v 1.15 2009/10/19 19:38:10 ldeniau Exp $
  |
 */
 
@@ -110,8 +110,9 @@ int main(int argc, char *argv[])
   ut_slice();
   ut_range();
   ut_xrange();
-  ut_array();
   ut_string();
+  ut_array_basics();
+  ut_array_functor();
 
   cos_utest_stat();
 

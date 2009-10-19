@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.13 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.14 2009/10/19 19:38:10 ldeniau Exp $
  |
 */
 
@@ -75,19 +75,17 @@ defmethod(OBJ, ginitWith, TD, Int)
   PRT(_1);
   struct TF *vecf = &self->TF;
   struct T  *vec  = &vecf->T;
+  U32    capacity = self2->value;
 
   test_assert(self2->value >= 0, "negative " TS " capacity");
 
-  if (self2->value > 0) {
-    vecf->_value = malloc(self2->value * sizeof *vec->value);
-    if (!vecf->_value) THROW(ExBadAlloc);
-  } else
-    vecf->_value = 0;
+  vecf->_value = malloc(capacity*sizeof *vec->value);
+  if (!vecf->_value && capacity) THROW(ExBadAlloc);
 
   vec->size      = 0;
   vec->stride    = 1;
   vec->value     = vecf->_value;
-  vecf->capacity = self2->value;
+  vecf->capacity = capacity;
 
   UNPRT(_1);
   retmethod(_1);
@@ -159,10 +157,10 @@ defmethod(OBJ, genlarge, TD, Int) // negative size means enlarge front
     capacity += size = extra_size(capacity, size);
     
     VAL *_value = realloc(vecf->_value, capacity*sizeof *vecf->_value);
-    if (!_value) THROW(ExBadAlloc);
+    if (!_value && capacity) THROW(ExBadAlloc);
 
-    vec -> value  = _value + offset;
-    vecf->_value  = _value;
+    vec -> value   = _value + offset;
+    vecf->_value   = _value;
     vecf->capacity = capacity;
     
     if (front) // move data to book the new space front
@@ -174,32 +172,28 @@ endmethod
 // ----- adjustment (capacity -> size)
 
 defmethod(OBJ, gadjust, TD)
-  BOOL ch_cls;
+  struct TF *vecf = &self->TF;
+  struct T  *vec  = &vecf->T;
+  U32        size = vec->size;
+
+  // move data to base
+  if (vec->value != vecf->_value)
+    vec->value = memmove(vecf->_value, vec->value, size*sizeof *vecf->_value);
+
+  // shrink storage
+  if (size != vecf->capacity) {
+    VAL *_value = realloc(vecf->_value, size*sizeof *vecf->_value);
+    if (!_value && size) THROW(ExBadAlloc);
+
+    vec -> value  = _value;
+    vecf->_value  = _value;
+    vecf->capacity = size;
+  }
+
+  BOOL ch_cls = cos_object_changeClass(_1, classref(TF));
+  test_assert( ch_cls, "unable to change from dynamic to fixed size " TS );
   
-  PRE
-  POST
-    test_assert( ch_cls, "unable to change from dynamic to fixed size " TS );
-  BODY
-    struct TF *vecf = &self->TF;
-    struct T  *vec  = &vecf->T;
-
-    // move data to base
-    if (vec->value != vecf->_value)
-      vec->value = memmove(vecf->_value, vec->value, vec->size*sizeof *vecf->_value);
-
-    // shrink storage
-    if (vec->size != vecf->capacity) {
-      VAL *_value = realloc(vecf->_value, vec->size*sizeof *vecf->_value);
-      if (!_value) THROW(ExBadAlloc);
-
-      vec -> value  = _value;
-      vecf->_value  = _value;
-      vecf->capacity = vec->size;
-    }
-
-    ch_cls = cos_object_changeClass(_1, classref(TF));
-    
-    retmethod(_1);
+  retmethod(_1);
 endmethod
 
 // ----- clear (size -> 0)

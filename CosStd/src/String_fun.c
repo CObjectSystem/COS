@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.8 2009/09/21 10:15:14 ldeniau Exp $
+ | $Id: String_fun.c,v 1.9 2009/10/19 19:38:09 ldeniau Exp $
  |
 */
 
@@ -111,15 +111,37 @@ defmethod(OBJ, gmapWhile, Functor, String)
   U32 size = self2->size;
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
-  OBJ res;
   
   U8*  val   = self2->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
   U8*  end   = val + size;
+  OBJ  res;
 
-  while (val != end && (res = geval(_1, aChar(*val++))) != Nil)
+  while (val != end && (res = geval(_1, aChar(*val))) != Nil) {
     *dst++ = (U32)gchr(res), ++*dst_n;
+    val++;
+  }
+
+  retmethod(gadjust(_str));
+endmethod
+
+defmethod(OBJ, gmapIf, Functor, String)
+  U32 size = self2->size;
+  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  struct String* str = STATIC_CAST(struct String*, _str);
+  
+  U8*  val   = self2->value;
+  U32 *dst_n = &str->size;
+  U8*  dst   = str->value;
+  U8*  end   = val + size;
+  OBJ  res;
+
+  while (val != end) {
+   if ((res = geval(_1, aChar(*val))) != Nil)
+     *dst++ = (U32)gchr(res), ++*dst_n;
+   val++;
+  }
 
   retmethod(gadjust(_str));
 endmethod
@@ -194,6 +216,216 @@ defmethod(OBJ, gmap4, Functor, String, String, String, String)
   retmethod(_str);
 endmethod
 
+// ----- select, reject
+
+defmethod(OBJ, gselect, Functor, String)
+  U32 size = self2->size;
+  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  struct String* str = STATIC_CAST(struct String*, _str);
+
+  U8*  val   = self2->value;
+  U32 *dst_n = &str->size;
+  U8*  dst   = str ->value;
+  U8*  end   = val + size;
+
+  while (val != end) {
+    if (geval(_1, aChar(*val)) == True)
+      *dst++ = *val, ++*dst_n;
+    val++;
+  }
+
+  retmethod(gadjust(_str));
+endmethod
+
+defmethod(OBJ, greject, Functor, String)
+  U32 size = self2->size;
+  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  struct String* str = STATIC_CAST(struct String*, _str);
+
+  U8*  val   = self2->value;
+  U32 *dst_n = &str->size;
+  U8*  dst   = str ->value;
+  U8*  end   = val + size;
+
+  while (val != end) {
+    if (geval(_1, aChar(*val)) != True)
+      *dst++ = *val, ++*dst_n;
+    val++;
+  }
+
+  retmethod(gadjust(_str));
+endmethod
+
+defmethod(OBJ, gselectWhile, Functor, String)
+  U32 size = self2->size;
+  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  struct String* str = STATIC_CAST(struct String*, _str);
+
+  U8*  val   = self2->value;
+  U32 *dst_n = &str->size;
+  U8*  dst   = str->value;
+  U8*  end   = val + size;
+
+  // select
+  while (val != end && geval(_1, aChar(*val)) == True) {
+    *dst++ = *val, ++*dst_n;
+    val++;
+  }
+  // reject the rest
+
+  retmethod(gadjust(_str));
+endmethod
+
+defmethod(OBJ, grejectWhile, Functor, String)
+  U32 size = self2->size;
+  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  struct String* str = STATIC_CAST(struct String*, _str);
+
+  U8*  val   = self2->value;
+  U32 *dst_n = &str->size;
+  U8*  dst   = str->value;
+  U8*  end   = val + size;
+
+  // reject
+  while (val != end && geval(_1, aChar(*val)) == True)
+    val++;
+
+  // select
+  while (val != end) {
+    *dst++ = *val, ++*dst_n;
+    val++;
+  }
+
+  retmethod(gadjust(_str));
+endmethod
+
+// ----- reduce
+
+defmethod(OBJ, greduce, Functor, String)
+  U32 size = self2->size;
+  U8* val  = self2->value;
+  U8* end  = val + size;
+  OBJ res  = Nil;
+  
+  if (val != end) {
+    res = gautoDelete(gclone(aChar(*val++)));
+    
+    while (val != end)
+      res = geval(_1, res, aChar(*val++));
+  }
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, grreduce, Functor, String)
+  U32 size = self2->size;
+  U8* val  = self2->value;
+  U8* end  = val + size;
+  OBJ res  = Nil;
+  
+  if (val != end) {
+    res = gautoDelete(gclone(aChar(*--end)));
+    
+    while (val != end)
+      res = geval(_1, aChar(*--end), res);
+  }
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, greduce1, Functor, Object, String)
+  U32 size = self3->size;
+  U8* val  = self3->value;
+  U8* end  = val + size;
+  OBJ res  = _2;
+  
+  while (val != end)
+    res = geval(_1, res, aChar(*val++));
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, grreduce1, Functor, Object, String)
+  U32 size = self3->size;
+  U8* val  = self3->value;
+  U8* end  = val + size;
+  OBJ res  = _2;
+  
+  while (val != end)
+    res = geval(_1, aChar(*--end), res);
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, greduce2, Functor, Object, String, String)
+  U32 size = self3->size < self4->size ? self3->size : self4->size;
+  U8* val  = self3->value;
+  U8* val2 = self4->value;
+  U8* end  = val + size;
+  OBJ res  = _2;
+  
+  while (val != end)
+    res = geval(_1, res, aChar(*val++), aChar(*val2++));
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, grreduce2, Functor, Object, String, String)
+  U32 size = self3->size < self4->size ? self3->size : self4->size;
+  U8* end  = self3->value + self3->size;
+  U8* end2 = self4->value + self4->size;
+  U8* val  = end - size;
+  OBJ res  = _2;
+  
+  while (val != end)
+    res = geval(_1, aChar(*--end), aChar(*--end2), res);
+
+  retmethod(res);
+endmethod
+
+// ----- mapReduce
+
+defmethod(OBJ, gmapReduce, Functor, Functor, String)
+  U32 size = self3->size;
+  U8* val  = self3->value;
+  U8* end  = val + size;
+  OBJ res  = Nil;
+  
+  if (val != end) {
+    res = geval(_1, aChar(*val++));
+    
+    while (val != end)
+      res = geval(_2, res, geval(_1, aChar(*val++)));
+  }
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, gmapReduce1, Functor, Functor, Object, String)
+  U32 size = self4->size;
+  U8* val  = self4->value;
+  U8* end  = val + size;
+  OBJ res  = _3;
+  
+  while (val != end)
+    res = geval(_2, res, geval(_1, aChar(*val++)));
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, gmapReduce2, Functor, Functor, Object, String, String)
+  U32 size = self4->size < self5->size ? self4->size : self5->size;
+  U8* val  = self4->value;
+  U8* val2 = self5->value;
+  U8* end  = val + size;
+  OBJ res  = _3;
+  
+  while (val != end)
+    res = geval(_2, res, geval(_1, aChar(*val++), aChar(*val2++)));
+
+  retmethod(res);
+endmethod
+
 // ----- all, any
 
 defmethod(OBJ, gall, String, Functor)
@@ -231,90 +463,6 @@ defmethod(U32, gcount, String, Functor)
       ++cnt;
 
   retmethod(cnt);
-endmethod
-
-// ----- reduce
-
-defmethod(OBJ, greduce, String, Functor)
-  U32 size = self->size;
-  U8* val  = self->value;
-  U8* end  = val + size;
-  OBJ res  = Nil;
-  
-  if (val != end) {
-    res = gautoDelete(gclone(aChar(*val++)));
-    
-    while (val != end)
-      res = geval(_2, res, aChar(*val++));
-  }
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, grreduce, String, Functor)
-  U32 size = self->size;
-  U8* val  = self->value;
-  U8* end  = val + size;
-  OBJ res  = Nil;
-  
-  if (val != end) {
-    res = gautoDelete(gclone(aChar(*--end)));
-    
-    while (val != end)
-      res = geval(_2, aChar(*--end), res);
-  }
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, greduce1, String, Functor, Object)
-  U32 size = self->size;
-  U8* val  = self->value;
-  U8* end  = val + size;
-  OBJ res  = _3;
-  
-  while (val != end)
-    res = geval(_2, res, aChar(*val++));
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, grreduce1, String, Functor, Object)
-  U32 size = self->size;
-  U8* val  = self->value;
-  U8* end  = val + size;
-  OBJ res  = _3;
-  
-  while (val != end)
-    res = geval(_2, aChar(*--end), res);
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, greduce2, String, String, Functor, Object)
-  U32 size = self->size < self2->size ? self->size : self2->size;
-  U8* val  = self->value;
-  U8* val2 = self2->value;
-  U8* end  = val + size;
-  OBJ res  = _4;
-  
-  while (val != end)
-    res = geval(_3, res, aChar(*val++), aChar(*val2++));
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, grreduce2, String, String, Functor, Object)
-  U32 size = self->size < self2->size ? self->size : self2->size;
-  U8* end  = self->value + self->size;
-  U8* end2 = self2->value + self2->size;
-  U8* val  = end - size;
-  OBJ res  = _4;
-  
-  while (val != end)
-    res = geval(_2, aChar(*--end), aChar(*--end2), res);
-
-  retmethod(res);
 endmethod
 
 // ----- unique (remove contiguous duplicates)

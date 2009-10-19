@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.8 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.9 2009/10/19 19:38:10 ldeniau Exp $
  |
 */
 
@@ -79,7 +79,7 @@ endmethod
 
 // ----- object setters (index, slice, range, intvector)
 
-defmethod(void, gputAt, T, Int, Object)
+defmethod(OBJ, gputAt, T, Int, Object)
   U32 i;
   
   PRE
@@ -94,9 +94,11 @@ defmethod(void, gputAt, T, Int, Object)
     VAL *dst = self->value + i*self->stride;
     
     *dst = val;
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, gputAt, T, Slice, Object)
+defmethod(OBJ, gputAt, T, Slice, Object)
   PRE
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
@@ -112,16 +114,18 @@ defmethod(void, gputAt, T, Slice, Object)
       *dst = val;
       dst += dst_s;
     }
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, gputAt, T, Range, Object)
+defmethod(OBJ, gputAt, T, Range, Object)
   struct Range range = Range_normalize(self2,self->size);
   struct Slice slice = Slice_fromRange(&range);
   
-  gputAt(_1,(OBJ)&slice,_3);
+  retmethod( gputAt(_1,(OBJ)&slice,_3) );
 endmethod
 
-defmethod(void, gputAt, T, IntVector, Object)
+defmethod(OBJ, gputAt, T, IntVector, Object)
   U32  dst_n = self->size;
   I32  dst_s = self->stride;
   VAL *dst   = self->value;
@@ -137,11 +141,13 @@ defmethod(void, gputAt, T, IntVector, Object)
     dst[i*dst_s] = val;
     idx += idx_s;
   }
+
+  retmethod(_1);
 endmethod
 
 // ----- array setters (slice, range, intvector)
 
-defmethod(void, gputAt, T, Slice, T)
+defmethod(OBJ, gputAt, T, Slice, T)
   PRE
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
@@ -160,9 +166,11 @@ defmethod(void, gputAt, T, Slice, T)
       src += src_s;
       dst += dst_s;
     }
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, gputAt, T, IntVector, T)
+defmethod(OBJ, gputAt, T, IntVector, T)
   PRE
     test_assert( self2->size <= self3->size, "source " TS " is too small" );
 
@@ -184,6 +192,8 @@ defmethod(void, gputAt, T, IntVector, T)
       src += src_s;
       idx += idx_s;
     }
+    
+    retmethod(_1);
 endmethod
 
 // ----- value getters
@@ -281,7 +291,7 @@ endmethod
     defined(INTVECTOR_ONLY) || defined(LNGVECTOR_ONLY) || \
     defined(FLTVECTOR_ONLY) || defined(CPXVECTOR_ONLY)
 
-defmethod(void, gputAt, T, Int, Char)
+defmethod(OBJ, gputAt, T, Int, Char)
   U32 i;
   
   PRE
@@ -293,6 +303,8 @@ defmethod(void, gputAt, T, Int, Char)
       i = Range_index(self2->value, self->size);
       
     self->value[i*self->stride] = self3->Int.value;
+        
+    retmethod(_1);
 endmethod
 
 #endif
@@ -301,7 +313,7 @@ endmethod
     defined(LNGVECTOR_ONLY) || defined(FLTVECTOR_ONLY) || \
     defined(CPXVECTOR_ONLY)
 
-defmethod(void, gputAt, T, Int, Short)
+defmethod(OBJ, gputAt, T, Int, Short)
   U32 i;
   
   PRE
@@ -313,6 +325,8 @@ defmethod(void, gputAt, T, Int, Short)
       i = Range_index(self2->value, self->size);
       
     self->value[i*self->stride] = self3->Int.value;
+    
+    retmethod(_1);
 endmethod
 
 #endif
@@ -320,7 +334,7 @@ endmethod
 #if defined(INTVECTOR_ONLY) || defined(LNGVECTOR_ONLY) || \
     defined(FLTVECTOR_ONLY) || defined(CPXVECTOR_ONLY)
 
-defmethod(void, gputAt, T, Int, Int)
+defmethod(OBJ, gputAt, T, Int, Int)
   U32 i;
   
   PRE
@@ -332,6 +346,8 @@ defmethod(void, gputAt, T, Int, Int)
       i = Range_index(self2->value, self->size);
       
     self->value[i*self->stride] = self3->value;
+    
+    retmethod(_1);
 endmethod
 
 #endif
@@ -339,7 +355,7 @@ endmethod
 #if defined(LNGVECTOR_ONLY) || defined(FLTVECTOR_ONLY) || \
     defined(CPXVECTOR_ONLY)
 
-defmethod(void, gputAt, T, Int, Long)
+defmethod(OBJ, gputAt, T, Int, Long)
   U32 i;
   
   PRE
@@ -351,13 +367,15 @@ defmethod(void, gputAt, T, Int, Long)
       i = Range_index(self2->value, self->size);
       
     self->value[i*self->stride] = self3->value;
+    
+    retmethod(_1);
 endmethod
 
 #endif
 
 #if defined(FLTVECTOR_ONLY) || defined(CPXVECTOR_ONLY)
 
-defmethod(void, gputAt, T, Int, Float)
+defmethod(OBJ, gputAt, T, Int, Float)
   U32 i;
   
   PRE
@@ -369,13 +387,15 @@ defmethod(void, gputAt, T, Int, Float)
       i = Range_index(self2->value, self->size);
       
     self->value[i*self->stride] = self3->value;
+    
+    retmethod(_1);
 endmethod
 
 #endif
 
 #if defined(CPXVECTOR_ONLY)
 
-defmethod(void, gputAt, T, Int, Complex)
+defmethod(OBJ, gputAt, T, Int, Complex)
   U32 i;
   
   PRE
@@ -387,6 +407,8 @@ defmethod(void, gputAt, T, Int, Complex)
       i = Range_index(self2->value, self->size);
       
     self->value[i*self->stride] = self3->value;
+    
+    retmethod(_1);
 endmethod
 
 #endif

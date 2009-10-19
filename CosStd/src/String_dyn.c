@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.7 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.8 2009/10/19 19:38:09 ldeniau Exp $
  |
 */
 
@@ -85,11 +85,11 @@ defmethod(OBJ, ginitWith, StringDyn, Int)
   PRT(_1);
   struct StringFix *strf = &self->StringFix;
   struct String    *str  = &strf->String;
+  U32           capacity = self2->value;
 
   test_assert(self2->value >= 0, "negative string capacity");
 
-  U32 capacity = self2->value;
-  strf->_value = malloc((capacity+1) * sizeof *str->value);
+  strf->_value = malloc((capacity+1)*sizeof *str->value);
   if (!strf->_value) THROW(ExBadAlloc);
 
   str->size      = 0;
@@ -178,33 +178,28 @@ endmethod
 // ----- adjustment (capacity -> size)
 
 defmethod(OBJ, gadjust, StringDyn)
-  BOOL ch_cls;
+  struct StringFix *strf = &self->StringFix;
+  struct String    *str  = &strf->String;
+  U32               size = str->size;
 
-  PRE
-  POST
-    test_assert( ch_cls, "unable to change StringDyn to StringFix" );
-  BODY
-    struct StringFix *strf = &self->StringFix;
-    struct String    *str  = &strf->String;
+  // move data to storage base
+  if (str->value != strf->_value)
+    str->value = memmove(strf->_value, str->value, size*sizeof *strf->_value);
 
-    // move data to storage base
-    if (str->value != strf->_value)
-      str->value = memmove(strf->_value, str->value, str->size*sizeof *strf->_value);
+  // shrink storage
+  if (size != strf->capacity) {
+    U8* _value = realloc(strf->_value, (size+1)*sizeof *strf->_value);
+    if (!_value) THROW(ExBadAlloc);
 
-    // shrink storage
-    if (str->size != strf->capacity) {
-      U32 capacity = str->size;
-      U8* _value = realloc(strf->_value, (capacity+1)*sizeof *strf->_value);
-      if (!_value) THROW(ExBadAlloc);
+    str -> value   = _value;
+    strf->_value   = _value;
+    strf->capacity = size;
+  }
 
-      str -> value   = _value;
-      strf->_value   = _value;
-      strf->capacity = capacity;
-    }
+  BOOL ch_cls = cos_object_changeClass(_1, classref(StringFix));
+  test_assert( ch_cls, "unable to change StringDyn to StringFix" );
 
-    ch_cls = cos_object_changeClass(_1, classref(StringFix));
-
-    retmethod(_1);
+  retmethod(_1);
 endmethod
 
 // ----- clear (size -> 0)

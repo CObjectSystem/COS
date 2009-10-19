@@ -1,10 +1,10 @@
-#ifndef COS_TESTS_TESTS_H
-#define COS_TESTS_TESTS_H
+#ifndef COS_VECTOR_UTL_H
+#define COS_VECTOR_UTL_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS testsuites - tests suite
+ | COS Vector - utilities
  |
  o---------------------------------------------------------------------o
  |
@@ -32,15 +32,27 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.h,v 1.6 2009/10/19 19:38:10 ldeniau Exp $
+ | $Id: Vector_utl.h,v 1.1 2009/10/19 19:38:10 ldeniau Exp $
  |
 */
 
-void ut_slice(void);
-void ut_range(void);
-void ut_xrange(void);
-void ut_string(void);
-void ut_array_basics(void);
-void ut_array_functor(void);
+static inline void
+swap(VAL *val1, VAL *val2)
+{
+  VAL tmp = *val1;
+  *val1 = *val2;
+  *val2 = tmp;
+}
 
-#endif // COS_TESTS_TESTS_H
+static inline VAL*
+copy(VAL *dst, U32 *dst_n, VAL *src, I32 src_s, U32 src_n)
+{
+  VAL *end = dst + src_n;
+
+  while (dst != end)
+    *dst++ = *src, ++*dst_n, src += src_s;
+
+  return dst;
+}
+
+#endif // COS_VECTOR_UTL_H

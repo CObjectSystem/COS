@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.15 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: Range.h,v 1.16 2009/10/19 19:38:09 ldeniau Exp $
  |
 */
 
@@ -77,6 +77,14 @@ endclass
 
 #define aRange(...)  ( (OBJ)atRange(__VA_ARGS__) )
 #define atRange(...) COS_PP_CAT_NARG(atRange_,__VA_ARGS__)(__VA_ARGS__)
+
+// --- shortcuts
+
+#ifndef COS_NOSHORTCUT
+
+#define aRng(...)  aRange(__VA_ARGS__)
+
+#endif
 
 /* NOTE-USER: Range and Sequence indexing policy
    - starts at zero

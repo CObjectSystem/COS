@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.23 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: algorithm.h,v 1.24 2009/10/19 19:38:09 ldeniau Exp $
  |
 */
 
@@ -61,43 +61,46 @@ defgeneric(OBJ, gmap     , fun, _1);
 defgeneric(OBJ, gmap2    , fun, _1, _2);
 defgeneric(OBJ, gmap3    , fun, _1, _2, _3);
 defgeneric(OBJ, gmap4    , fun, _1, _2, _3, _4);
-defgeneric(OBJ, gmapIf   , fun, _1); // discard if fun return Nil
-defgeneric(OBJ, gmapWhile, fun, _1); // stops when fun return Nil
+defgeneric(OBJ, gmapIf   , fun, _1); // reject if fun returns Nil
+defgeneric(OBJ, gmapWhile, fun, _1); // stop when fun returns Nil
 
 // apply (in-place map with returned value discarded)
 defgeneric(void, gapply     , fun, _1);
 defgeneric(void, gapply2    , fun, _1, _2);
 defgeneric(void, gapply3    , fun, _1, _2, _3);
 defgeneric(void, gapply4    , fun, _1, _2, _3, _4);
-defgeneric(void, gapplyWhile, fun, _1); // stops when fun return Nil
+defgeneric(void, gapplyWhile, fun, _1); // stop when fun returns Nil
 
 // filter
-defgeneric(OBJ, gselect     , _1, fun); // keep it if fun return True
-defgeneric(OBJ, gselectIf   , _1, fun); // discard if fun return Nil
-defgeneric(OBJ, gselectWhile, _1, fun); // keep it if fun return True, stops when fun return Nil
+defgeneric(OBJ, gselect     , fun, _1); // select if    fun returns True
+defgeneric(OBJ, gselectWhile, fun, _1); // select while fun returns True
 
 // filter-out
-defgeneric(OBJ, greject     , _1, fun); // keep it if fun return False
-defgeneric(OBJ, grejectIf   , _1, fun); // keep it if fun return Nil
-defgeneric(OBJ, grejectWhile, _1, fun); // keep it if fun return False, stops when fun return Nil
+defgeneric(OBJ, greject     , fun, _1); // reject if    fun returns True
+defgeneric(OBJ, grejectWhile, fun, _1); // reject while fun returns True
 
 // reduce, rreduce
-defgeneric(OBJ, greduce  , _1, fun);              // foldl1
-defgeneric(OBJ, greduce1 , _1, fun, ini);         // foldl
-defgeneric(OBJ, greduce2 , _1, _2, fun, ini);
+defgeneric(OBJ, greduce  , fun, _1);              // foldl1
+defgeneric(OBJ, greduce1 , fun, ini, _1);         // foldl
+defgeneric(OBJ, greduce2 , fun, ini, _1, _2);
 
-defgeneric(OBJ, grreduce , _1, fun);              // foldr1
-defgeneric(OBJ, grreduce1, _1, fun, ini);         // foldr
-defgeneric(OBJ, grreduce2, _1, _2, fun, ini);
+defgeneric(OBJ, grreduce , fun, _1);              // foldr1
+defgeneric(OBJ, grreduce1, fun, ini, _1);         // foldr
+defgeneric(OBJ, grreduce2, fun, ini, _1, _2);
+
+// mapReduce
+defgeneric(OBJ, gmapReduce , mfun, rfun, _1);
+defgeneric(OBJ, gmapReduce1, mfun, rfun, ini, _1);
+defgeneric(OBJ, gmapReduce2, mfun, rfun, ini, _1, _2);
 
 // accumulate, raccumulate
-defgeneric(OBJ, gaccumulate  , _1, fun);          // scanl1
-defgeneric(OBJ, gaccumulate1 , _1, fun, ini);     // scanl
-defgeneric(OBJ, gaccumulate2 , _1, _2, fun, ini);
+defgeneric(OBJ, gaccumulate  , fun, _1);          // scanl1
+defgeneric(OBJ, gaccumulate1 , fun, ini, _1);     // scanl
+defgeneric(OBJ, gaccumulate2 , fun, ini, _1, _2);
 
-defgeneric(OBJ, graccumulate , _1, fun);          // scanr1
-defgeneric(OBJ, graccumulate1, _1, fun, ini);     // scanr
-defgeneric(OBJ, graccumulate2, _1, _2, fun, ini);
+defgeneric(OBJ, graccumulate , fun, _1);          // scanr1
+defgeneric(OBJ, graccumulate1, fun, ini, _1);     // scanr
+defgeneric(OBJ, graccumulate2, fun, ini, _1, _2);
 
 // generate
 defgeneric(OBJ, ggenerate , fun);      // stops when fun return Nil
@@ -127,17 +130,18 @@ defgeneric(OBJ, gisSorted, _1, fun); // return True or False
 // return Nil if not found
 defgeneric(OBJ, gfind   , _1, _2); // return object
 defgeneric(OBJ, gifind  , _1, _2); // return res such that ggetAt(_1,res) get object
-defgeneric(I32, gindexOf, _1, _2); // return index or -1
+defgeneric(I32, gindexOf, _1, _2); // return index or -1 if not found
 
-// seq-like algorithms (fun must return TrueFalse)
+// seq-like algorithms
 defgeneric(OBJ, gunique     , _1, fun); // remove contiguous equal elements
-defgeneric(OBJ, ggroup      , _1, fun); // split when false
+defgeneric(OBJ, ggroup      , _1, fun); // group true then false
 defgeneric(OBJ, gsplit      , _1, fun); // split when true
-defgeneric(OBJ, gintersperse, _1, obj);
-defgeneric(OBJ, gdiff     , _1, _2, fun);
-defgeneric(OBJ, gunion    , _1, _2, fun);
-defgeneric(OBJ, gmerge    , _1, _2, fun);
-defgeneric(OBJ, gintersect, _1, _2, fun);
+defgeneric(OBJ, gintersperse, _1, fun); // intersperse value when not Nil
+
+// set-like algorithms
+defgeneric(OBJ, gdiff       , _1, _2, fun); // _1 - _2 [asymmetric]
+defgeneric(OBJ, gunion      , _1, _2, fun); // _1 + _2
+defgeneric(OBJ, gintersect  , _1, _2, fun); // _1 - (_1 - _2) [asymmetric]
 
 #endif // COS_GEN_ALGORITHM_H
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.17 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.18 2009/10/19 19:38:09 ldeniau Exp $
  |
 */
 
@@ -84,19 +84,17 @@ defmethod(OBJ, ginitWith, ArrayDyn, Int)
   PRT(_1);
   struct ArrayFix *arrf = &self->ArrayFix;
   struct Array    *arr  = &arrf->Array;
+  U32          capacity = self2->value;
 
   test_assert(self2->value >= 0, "negative array capacity");
 
-  if (self2->value > 0) {
-    arrf->_object = malloc(self2->value * sizeof *arr->object);
-    if (!arrf->_object) THROW(ExBadAlloc);
-  } else
-    arrf->_object = 0;
+  arrf->_object = malloc(capacity*sizeof *arr->object);
+  if (!arrf->_object && capacity) THROW(ExBadAlloc);
 
   arr->size      = 0;
   arr->stride    = 1;
   arr->object    = arrf->_object;
-  arrf->capacity = self2->value;
+  arrf->capacity = capacity;
 
   UNPRT(_1);
   retmethod(_1);
@@ -168,7 +166,7 @@ defmethod(OBJ, genlarge, ArrayDyn, Int) // negative size means enlarge front
     capacity += size = extra_size(capacity, size);
     
     OBJ *_object = realloc(arrf->_object, capacity*sizeof *arrf->_object);
-    if (!_object) THROW(ExBadAlloc);
+    if (!_object && capacity) THROW(ExBadAlloc);
 
     arr -> object  = _object + offset;
     arrf->_object  = _object;
@@ -183,32 +181,29 @@ endmethod
 // ----- adjustment (capacity -> size)
 
 defmethod(OBJ, gadjust, ArrayDyn)
-  BOOL ch_cls;
+  struct ArrayFix *arrf = &self->ArrayFix;
+  struct Array    *arr  = &arrf->Array;
+  U32              size = arr->size;
+
+  // move data to base
+  if (arr->object != arrf->_object)
+    arr->object = memmove(arrf->_object, arr->object, size*sizeof *arr->object);
+
+  // shrink storage
+  if (arr->size != arrf->capacity) {
+    OBJ *_object = realloc(arrf->_object, size*sizeof *arrf->_object);
+    if (!_object && size) THROW(ExBadAlloc);
+
+    arr -> object  = _object;
+    arrf->_object  = _object;
+    arrf->capacity = size;
+  }
+
+  // change array type
+  BOOL ch_cls = cos_object_changeClass(_1, classref(ArrayFix));
+  test_assert( ch_cls, "unable to change from dynamic to fixed size array" );
   
-  PRE
-  POST
-    test_assert( ch_cls, "unable to change from dynamic to fixed size array" );
-  BODY
-    struct ArrayFix *arrf = &self->ArrayFix;
-    struct Array    *arr  = &arrf->Array;
-
-    // move data to base
-    if (arr->object != arrf->_object)
-      arr->object = memmove(arrf->_object, arr->object, arr->size*sizeof *arrf->_object);
-
-    // shrink storage
-    if (arr->size != arrf->capacity) {
-      OBJ *_object = realloc(arrf->_object, arr->size*sizeof *arrf->_object);
-      if (!_object) THROW(ExBadAlloc);
-
-      arr -> object  = _object;
-      arrf->_object  = _object;
-      arrf->capacity = arr->size;
-    }
-
-    ch_cls = cos_object_changeClass(_1, classref(ArrayFix));
-    
-    retmethod(_1);
+  retmethod(_1);
 endmethod
 
 // ----- clear (size -> 0)

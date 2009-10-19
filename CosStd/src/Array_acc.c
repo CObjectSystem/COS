@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.11 2009/09/30 21:52:59 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.12 2009/10/19 19:38:09 ldeniau Exp $
  |
 */
 
@@ -87,7 +87,7 @@ endmethod
 
 // ----- object setters (index, slice, range, intvector)
 
-defmethod(void, gputAt, Array, Int, Object)
+defmethod(OBJ, gputAt, Array, Int, Object)
   U32 i;
   
   PRE
@@ -100,9 +100,11 @@ defmethod(void, gputAt, Array, Int, Object)
  
     OBJ *dst = self->object + i*self->stride;
     assign(dst, _3);
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, gputAt, Array, Slice, Object)
+defmethod(OBJ, gputAt, Array, Slice, Object)
   PRE
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
@@ -117,16 +119,18 @@ defmethod(void, gputAt, Array, Slice, Object)
       assign(dst, _3);
       dst += dst_s;
     }
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, gputAt, Array, Range, Object)
+defmethod(OBJ, gputAt, Array, Range, Object)
   struct Range range = Range_normalize(self2,self->size);
   struct Slice slice = Slice_fromRange(&range);
   
-  gputAt(_1,(OBJ)&slice,_3);
+  retmethod( gputAt(_1,(OBJ)&slice,_3) );
 endmethod
 
-defmethod(void, gputAt, Array, IntVector, Object)
+defmethod(OBJ, gputAt, Array, IntVector, Object)
   PRE POST BODY
     U32  dst_n = self->size;
     I32  dst_s = self->stride;
@@ -142,11 +146,13 @@ defmethod(void, gputAt, Array, IntVector, Object)
       assign(dst + i*dst_s, _3);
       idx += idx_s;
     }
+    
+    retmethod(_1);
 endmethod
 
 // ----- array setters (slice, range, intvector)
 
-defmethod(void, gputAt, Array, Slice, Array)
+defmethod(OBJ, gputAt, Array, Slice, Array)
   PRE
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
@@ -165,9 +171,11 @@ defmethod(void, gputAt, Array, Slice, Array)
       src += src_s;
       dst += dst_s;
     }
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, gputAt, Array, IntVector, Array)
+defmethod(OBJ, gputAt, Array, IntVector, Array)
   PRE
     test_assert( self2->size <= self3->size, "source array is too small" );
   POST
@@ -189,5 +197,7 @@ defmethod(void, gputAt, Array, IntVector, Array)
       src += src_s;
       idx += idx_s;
     }
+    
+    retmethod(_1);
 endmethod
 

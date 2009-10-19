@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_acc.c,v 1.6 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: String_acc.c,v 1.7 2009/10/19 19:38:09 ldeniau Exp $
  |
 */
 
@@ -89,7 +89,7 @@ endmethod
 
 // ----- object setters (index, slice, range, intvector)
 
-defmethod(void, gputAt, String, Int, Object)
+defmethod(OBJ, gputAt, String, Int, Object)
   U32 i;
   
   PRE
@@ -101,13 +101,15 @@ defmethod(void, gputAt, String, Int, Object)
       i = Range_index(self2->value, self->size);
       
     self->value[i] = (U32)gchr(_3);
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, gputAt, String, Slice, Object)
+defmethod(OBJ, gputAt, String, Slice, Object)
   PRE
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
-  POST
+
   BODY
     U32 dst_n = Slice_size  (self2);
     I32 dst_s = Slice_stride(self2);
@@ -119,41 +121,44 @@ defmethod(void, gputAt, String, Slice, Object)
       *dst = val;
       dst += dst_s;
     }
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, gputAt, String, Range, Object)
+defmethod(OBJ, gputAt, String, Range, Object)
   struct Range range = Range_normalize(self2,self->size);
   struct Slice slice = Slice_fromRange(&range);
 
-  gputAt(_1,(OBJ)&slice,_3);
+  retmethod( gputAt(_1,(OBJ)&slice,_3) );
 endmethod
 
-defmethod(void, gputAt, String, IntVector, Object)
-  PRE POST BODY
-    U32  dst_n = self->size;
-    U8*  dst   = self->value;
-    U32  idx_n = self2->size;
-    I32  idx_s = self2->stride;
-    I32 *idx   = self2->value;
-    I32 *end   = idx + idx_s*idx_n;
-    U8   val   = (U32)gchr(_3);
+defmethod(OBJ, gputAt, String, IntVector, Object)
+  U32  dst_n = self->size;
+  U8*  dst   = self->value;
+  U32  idx_n = self2->size;
+  I32  idx_s = self2->stride;
+  I32 *idx   = self2->value;
+  I32 *end   = idx + idx_s*idx_n;
+  U8   val   = (U32)gchr(_3);
 
-    while (idx != end) {
-      U32 i = Range_index(*idx, dst_n);
-      test_assert( i < dst_n, "index out of range" );
-      dst[i] = val;
-      idx += idx_s;
-    }
+  while (idx != end) {
+    U32 i = Range_index(*idx, dst_n);
+    test_assert( i < dst_n, "index out of range" );
+    dst[i] = val;
+    idx += idx_s;
+  }
+  
+  retmethod(_1);
 endmethod
 
 // ----- string setters (slice, range, intvector)
 
-defmethod(void, gputAt, String, Slice, String)
+defmethod(OBJ, gputAt, String, Slice, String)
   PRE
     test_assert( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
     test_assert( Slice_size (self2) <= self3->size, "source string is too small" );
-  POST
+
   BODY
     U32 dst_n = Slice_size  (self2);
     I32 dst_s = Slice_stride(self2);
@@ -165,12 +170,14 @@ defmethod(void, gputAt, String, Slice, String)
       *dst = *src++;
       dst += dst_s;
     }
+    
+    retmethod(_1);
 endmethod
 
-defmethod(void, gputAt, String, IntVector, String)
+defmethod(OBJ, gputAt, String, IntVector, String)
   PRE
     test_assert( self2->size <= self3->size, "source string is too small" );
-  POST
+
   BODY
     U32  dst_n = self->size;
     U8*  dst   = self->value;
@@ -186,6 +193,8 @@ defmethod(void, gputAt, String, IntVector, String)
       dst[i] = *src++;
       idx += idx_s;
     }
+    
+    retmethod(_1);
 endmethod
 
 // ----- value getter
@@ -206,7 +215,7 @@ endmethod
 
 // ----- value setter
 
-defmethod(void, gputAt, String, Int, Char)
+defmethod(OBJ, gputAt, String, Int, Char)
   U32 i;
   
   PRE
@@ -218,5 +227,7 @@ defmethod(void, gputAt, String, Int, Char)
       i = Range_index(self2->value, self->size);
       
     self->value[i] = self3->Int.value;
+    
+    retmethod(_1);
 endmethod
 
