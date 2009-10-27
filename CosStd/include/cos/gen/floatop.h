@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: floatop.h,v 1.1 2009/08/15 14:56:10 ldeniau Exp $
+ | $Id: floatop.h,v 1.2 2009/10/27 14:50:29 ldeniau Exp $
  |
 */
 
@@ -63,6 +63,7 @@ defgeneric(OBJ, (GenOperator) gacosh, _1);  // return acosh(_1)
 defgeneric(OBJ, (GenOperator) gasinh, _1);  // return asinh(_1)
 defgeneric(OBJ, (GenOperator) gatanh, _1);  // return atanh(_1)
 
+defgeneric(OBJ, (GenOperator) ghypot , _1, _2);     // return hypot(_1,_2)
 defgeneric(OBJ, (GenOperator) gsubSqr, _1, _2);     // return (_1-_2)^2
 defgeneric(OBJ, (GenOperator) gmulAdd, _1, _2, _3); // return _1*_2+_3
 
@@ -90,5 +91,7 @@ defgeneric(OBJ, (GenOperator) gtangenth   , _1);  // return _1 = tanh(_1)
 defgeneric(OBJ, (GenOperator) gacosineh   , _1);  // return _1 = acosh(_1)
 defgeneric(OBJ, (GenOperator) gasineh     , _1);  // return _1 = asinh(_1)
 defgeneric(OBJ, (GenOperator) gatangenth  , _1);  // return _1 = atanh(_1)
+
+defgeneric(OBJ, (GenOperator) ghypotenuse , _1, _2); // return _1 = hypot(_1,_2)
 
 #endif // COS_GEN_FLOATOP_H

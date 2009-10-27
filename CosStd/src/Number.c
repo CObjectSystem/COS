@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.17 2009/09/08 00:49:44 ldeniau Exp $
+ | $Id: Number.c,v 1.18 2009/10/27 14:50:34 ldeniau Exp $
  |
 */
 
@@ -108,7 +108,8 @@ DEFMETHOD(Complex,     )
 #undef  DEFMETHOD
 #define DEFMETHOD(T) \
 \
-defmethod(OBJ, ginit, T) \
+defalias (OBJ, (ginit)gclear, T); \
+defmethod(OBJ,  ginit       , T)  \
   self->value = 0; \
   retmethod(_1); \
 endmethod
@@ -125,7 +126,8 @@ DEFMETHOD(Complex)
 #undef  DEFMETHOD
 #define DEFMETHOD(T1,T2) \
 \
-defmethod(OBJ, ginitWith, T1, T2) \
+defalias (OBJ, (ginitWith)gcopy, T1, T2); \
+defmethod(OBJ,  ginitWith      , T1, T2) \
   self->value = self2->value; \
   retmethod(_1); \
 endmethod
