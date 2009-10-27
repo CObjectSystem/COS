@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.30 2009/10/02 21:52:40 ldeniau Exp $
+ | $Id: object.h,v 1.31 2009/10/27 14:02:11 ldeniau Exp $
  |
 */
 
@@ -51,12 +51,13 @@ defgeneric(OBJ , gnewWith3     , _1, _2, _3, _4);
 defgeneric(OBJ , gnewWith4     , _1, _2, _3, _4, _5);
 defgeneric(OBJ , gclone        , _1);
 
-// constructors
+// constructors, copy
 defgeneric(OBJ , ginit         , _1);
 defgeneric(OBJ , ginitWith     , _1, _2); // includes copy ctor: ginitWith(T,T)
 defgeneric(OBJ , ginitWith2    , _1, _2, _3);
 defgeneric(OBJ , ginitWith3    , _1, _2, _3, _4);
 defgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
+defgeneric(OBJ , gcopy         , _1, _2);
 
 // destructor, clearing
 defgeneric(OBJ , gdeinit       , _1);
