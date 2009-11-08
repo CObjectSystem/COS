@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.17 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.18 2009/11/08 14:55:09 ldeniau Exp $
  |
 */
 
@@ -48,9 +48,9 @@
 useclass(Array);
 useclass(Lesser,Equal,Greater);
 
-// ----- applyWhile, apply (in-place map with returned value discarded)
+// ----- foreachWhile, foreach (returned value is discarded)
 
-defmethod(void, gapplyWhile, Functor, Array)
+defmethod(void, gforeachWhile, Functor, Array)
   U32 size   = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
@@ -60,7 +60,7 @@ defmethod(void, gapplyWhile, Functor, Array)
     val += val_s;
 endmethod
 
-defmethod(void, gapply, Functor, Array)
+defmethod(void, gforeach, Functor, Array)
   U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
@@ -72,7 +72,7 @@ defmethod(void, gapply, Functor, Array)
   }
 endmethod
 
-defmethod(void, gapply2, Functor, Array, Array)
+defmethod(void, gforeach2, Functor, Array, Array)
   U32  size   = self2->size < self3->size ? self2->size : self3->size;
   I32  val_s  = self2->stride;
   OBJ *val    = self2->object;
@@ -87,7 +87,7 @@ defmethod(void, gapply2, Functor, Array, Array)
   }
 endmethod
 
-defmethod(void, gapply3, Functor, Array, Array, Array)
+defmethod(void, gforeach3, Functor, Array, Array, Array)
   U32  size   = self2->size < self3->size ? self2->size : self3->size;
        size   = self4->size < size ? self4->size : size;
   I32  val_s  = self2->stride;
@@ -106,7 +106,7 @@ defmethod(void, gapply3, Functor, Array, Array, Array)
   }
 endmethod
 
-defmethod(void, gapply4, Functor, Array, Array, Array, Array)
+defmethod(void, gforeach4, Functor, Array, Array, Array, Array)
   U32  size   = self2->size < self3->size ? self2->size : self3->size;
        size   = self4->size < size ? self4->size : size;
        size   = self5->size < size ? self5->size : size;
@@ -127,6 +127,124 @@ defmethod(void, gapply4, Functor, Array, Array, Array, Array)
     val3 += val3_s;
     val4 += val4_s;
   }
+endmethod
+
+// ----- applyWhile, applyIf, apply (in-place map)
+
+defmethod(OBJ, gapplyWhile, Functor, Array)
+  U32  size  = self2->size;
+  I32  val_s = self2->stride;
+  OBJ *val   = self2->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res, old;
+
+  while (val != end && (res = geval(_1, *val)) != Nil) {
+    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+    val += val_s;
+  }
+  
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gapplyIf, Functor, Array)
+  U32  size  = self2->size;
+  I32  val_s = self2->stride;
+  OBJ *val   = self2->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res, old;
+
+  while (val != end) {
+    if ((res = geval(_1, *val)) != Nil && res != *val)
+      old = *val, *val = gretain(res), grelease(old);
+    val += val_s;
+  }
+
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gapply, Functor, Array)
+  U32  size  = self2->size;
+  I32  val_s = self2->stride;
+  OBJ *val   = self2->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res, old;
+
+  while (val != end) {
+    res = geval(_1, *val);
+    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+    val += val_s;
+  }
+
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gapply2, Functor, Array, Array)
+  U32  size   = self2->size < self3->size ? self2->size : self3->size;
+  I32  val_s  = self2->stride;
+  OBJ *val    = self2->object;
+  I32  val2_s = self3->stride;
+  OBJ *val2   = self3->object;
+  OBJ *end    = val + val_s*size;
+  OBJ  res, old;
+
+  while (val != end) {
+    res = geval(_1, *val, *val2);
+    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+    val  += val_s;
+    val2 += val2_s;
+  }
+
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gapply3, Functor, Array, Array, Array)
+  U32  size   = self2->size < self3->size ? self2->size : self3->size;
+       size   = self4->size < size ? self4->size : size;
+  I32  val_s  = self2->stride;
+  OBJ *val    = self2->object;
+  I32  val2_s = self3->stride;
+  OBJ *val2   = self3->object;
+  I32  val3_s = self4->stride;
+  OBJ *val3   = self4->object;
+  OBJ *end    = val + val_s*size;
+  OBJ  res, old;
+
+  while (val != end) {
+    res = geval(_1, *val, *val2, *val3);
+    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+    val  += val_s;
+    val2 += val2_s;
+    val3 += val3_s;
+  }
+
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gapply4, Functor, Array, Array, Array, Array)
+  U32  size   = self2->size < self3->size ? self2->size : self3->size;
+       size   = self4->size < size ? self4->size : size;
+       size   = self5->size < size ? self5->size : size;
+  I32  val_s  = self2->stride;
+  OBJ *val    = self2->object;
+  I32  val2_s = self3->stride;
+  OBJ *val2   = self3->object;
+  I32  val3_s = self4->stride;
+  OBJ *val3   = self4->object;
+  I32  val4_s = self5->stride;
+  OBJ *val4   = self5->object;
+  OBJ *end    = val + val_s*size;
+  OBJ  res, old;
+
+  while (val != end) {
+    res = geval(_1, *val, *val2, *val3, *val4);
+    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+    val  += val_s;
+    val2 += val2_s;
+    val3 += val3_s;
+    val4 += val4_s;
+  }
+
+  retmethod(_2);
 endmethod
 
 // ----- mapIf, mapWhile, map, map2, map3, map4

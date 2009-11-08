@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.11 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: File.c,v 1.12 2009/11/08 14:55:09 ldeniau Exp $
  |
 */
 
@@ -307,7 +307,7 @@ endmethod
 
 // ----- generic mapWhile
 
-defmethod(void, gapplyWhile, Functor, OpenFile)
+defmethod(void, gforeachWhile, Functor, OpenFile)
   while (!feof(self2->fd) && geval(_1,_2) != Nil) ;
 endmethod
 

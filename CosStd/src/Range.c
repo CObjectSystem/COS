@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.13 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Range.c,v 1.14 2009/11/08 14:55:09 ldeniau Exp $
  |
 */
 
@@ -92,14 +92,14 @@ endmethod
 
 // ----- foreach
 
-defmethod(void, gapply, Functor, Range)
+defmethod(void, gforeach, Functor, Range)
   U32 size = Range_size(self2);
   
   for (U32 i = 0; i < size; i++)
     geval1(_1, aInt(Range_eval(self2,i)));
 endmethod
 
-defmethod(void, gapply, IntFunction1, Range)
+defmethod(void, gforeach, IntFunction1, Range)
   U32 size = Range_size(self2);
   I32FCT1 fct = self->fct;
 

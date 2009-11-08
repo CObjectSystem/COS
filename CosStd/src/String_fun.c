@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.9 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: String_fun.c,v 1.10 2009/11/08 14:55:09 ldeniau Exp $
  |
 */
 
@@ -49,9 +49,9 @@
 useclass(String);
 useclass(Lesser,Equal,Greater);
 
-// ----- apply (in-place map with returned value discarded)
+// ----- foreachWhile, foreach (returned value is discarded)
 
-defmethod(void, gapplyWhile, Functor, String)
+defmethod(void, gforeachWhile, Functor, String)
   U32 size = self2->size;
   U8* val  = self2->value;
   U8* end  = val + size;
@@ -60,7 +60,7 @@ defmethod(void, gapplyWhile, Functor, String)
     ;
 endmethod
 
-defmethod(void, gapply, Functor, String)
+defmethod(void, gforeach, Functor, String)
   U32 size = self2->size;
   U8* val  = self2->value;
   U8* end  = val + size;
@@ -69,7 +69,7 @@ defmethod(void, gapply, Functor, String)
     geval(_1, aChar(*val++));
 endmethod
 
-defmethod(void, gapply2, Functor, String, String)
+defmethod(void, gforeach2, Functor, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
   U8* val  = self2->value;
   U8* val2 = self3->value;
@@ -79,7 +79,7 @@ defmethod(void, gapply2, Functor, String, String)
     geval(_1, aChr(*val++, *val2++));
 endmethod
 
-defmethod(void, gapply3, Functor, String, String, String)
+defmethod(void, gforeach3, Functor, String, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
       size = self4->size < size ? self4->size : size;
   U8* val  = self2->value;
@@ -91,7 +91,7 @@ defmethod(void, gapply3, Functor, String, String, String)
     geval(_1, aChr(*val++, *val2++, *val3++));
 endmethod
 
-defmethod(void, gapply4, Functor, String, String, String, String)
+defmethod(void, gforeach4, Functor, String, String, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
       size = self4->size < size ? self4->size : size;
       size = self5->size < size ? self5->size : size;
@@ -103,6 +103,90 @@ defmethod(void, gapply4, Functor, String, String, String, String)
 
   while (val != end)
     geval(_1, aChr(*val++, *val2++, *val3++, *val4++));
+endmethod
+
+// ----- applyWhile, applyIf, apply (in-place map)
+
+defmethod(OBJ, gapplyWhile, Functor, String)
+  U32 size = self2->size;
+  U8* val  = self2->value;
+  U8* end  = val + size;
+  OBJ  res, old;
+
+  while (val != end && (res = geval(_1, old = aChar(*val))) != Nil) {
+    if (res != old) *val = (U32)gchr(res);
+    val++;
+  }
+
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gapply, Functor, String)
+  U32 size = self2->size;
+  U8* val  = self2->value;
+  U8* end  = val + size;
+  OBJ  res, old;
+
+  while (val != end) {
+    res = geval(_1, old = aChar(*val));
+    if (res != old) *val = (U32)gchr(res);
+    val++;
+  }
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gapply2, Functor, String, String)
+  U32 size = self2->size < self3->size ? self2->size : self3->size;
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
+  U8* end  = val + size;
+  OBJ  res, old;
+
+  while (val != end) {
+    res = geval(_1, old = aChr(*val, *val2++));
+    if (res != old) *val = (U32)gchr(res);
+    val++;
+  }
+
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gapply3, Functor, String, String, String)
+  U32 size = self2->size < self3->size ? self2->size : self3->size;
+      size = self4->size < size ? self4->size : size;
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
+  U8* val3 = self4->value;
+  U8* end  = val + size;
+  OBJ  res, old;
+
+  while (val != end) {
+    res = geval(_1, old = aChr(*val, *val2++, *val3++));
+    if (res != old) *val = (U32)gchr(res);
+    val++;
+  }
+
+  retmethod(_2);
+endmethod
+
+defmethod(OBJ, gapply4, Functor, String, String, String, String)
+  U32 size = self2->size < self3->size ? self2->size : self3->size;
+      size = self4->size < size ? self4->size : size;
+      size = self5->size < size ? self5->size : size;
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
+  U8* val3 = self4->value;
+  U8* val4 = self5->value;
+  U8* end  = val + size;
+  OBJ  res, old;
+
+  while (val != end) {
+    res = geval(_1, old = aChr(*val, *val2++, *val3++, *val4++));
+    if (res != old) *val = (U32)gchr(res);
+    val++;
+  }
+
+  retmethod(_2);
 endmethod
 
 // ----- map, map2, map3, map4

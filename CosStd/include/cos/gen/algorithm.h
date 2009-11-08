@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.24 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: algorithm.h,v 1.25 2009/11/08 14:55:07 ldeniau Exp $
  |
 */
 
@@ -56,6 +56,21 @@ defgeneric(OBJ, gzip3, _1, _2, _3);
 defgeneric(OBJ, gzip4, _1, _2, _3, _4);
 defgeneric(OBJ, gzip5, _1, _2, _3, _4, _5);
 
+// foreach (discard returned value)
+defgeneric(void, gforeach     , fun, _1);
+defgeneric(void, gforeach2    , fun, _1, _2);
+defgeneric(void, gforeach3    , fun, _1, _2, _3);
+defgeneric(void, gforeach4    , fun, _1, _2, _3, _4);
+defgeneric(void, gforeachWhile, fun, _1); // stop when fun returns Nil
+
+// apply (in-place map on _1, return _1)
+defgeneric(OBJ, gapply     , fun, _1);
+defgeneric(OBJ, gapply2    , fun, _1, _2);
+defgeneric(OBJ, gapply3    , fun, _1, _2, _3);
+defgeneric(OBJ, gapply4    , fun, _1, _2, _3, _4);
+defgeneric(OBJ, gapplyIf   , fun, _1); // reject if fun returns Nil
+defgeneric(OBJ, gapplyWhile, fun, _1); // stop when fun returns Nil
+
 // map
 defgeneric(OBJ, gmap     , fun, _1);
 defgeneric(OBJ, gmap2    , fun, _1, _2);
@@ -63,13 +78,6 @@ defgeneric(OBJ, gmap3    , fun, _1, _2, _3);
 defgeneric(OBJ, gmap4    , fun, _1, _2, _3, _4);
 defgeneric(OBJ, gmapIf   , fun, _1); // reject if fun returns Nil
 defgeneric(OBJ, gmapWhile, fun, _1); // stop when fun returns Nil
-
-// apply (in-place map with returned value discarded)
-defgeneric(void, gapply     , fun, _1);
-defgeneric(void, gapply2    , fun, _1, _2);
-defgeneric(void, gapply3    , fun, _1, _2, _3);
-defgeneric(void, gapply4    , fun, _1, _2, _3, _4);
-defgeneric(void, gapplyWhile, fun, _1); // stop when fun returns Nil
 
 // filter
 defgeneric(OBJ, gselect     , fun, _1); // select if    fun returns True
