@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.25 2009/11/08 14:55:07 ldeniau Exp $
+ | $Id: algorithm.h,v 1.26 2009/11/24 18:14:57 ldeniau Exp $
  |
 */
 
@@ -88,31 +88,22 @@ defgeneric(OBJ, greject     , fun, _1); // reject if    fun returns True
 defgeneric(OBJ, grejectWhile, fun, _1); // reject while fun returns True
 
 // reduce, rreduce
-defgeneric(OBJ, greduce  , fun, _1);              // foldl1
-defgeneric(OBJ, greduce1 , fun, ini, _1);         // foldl
-defgeneric(OBJ, greduce2 , fun, ini, _1, _2);
+defgeneric(OBJ, greduce , _1, fun, ini0);          // foldl
+defgeneric(OBJ, greduce2, _1, fun, ini0, ini1);
 
-defgeneric(OBJ, grreduce , fun, _1);              // foldr1
-defgeneric(OBJ, grreduce1, fun, ini, _1);         // foldr
-defgeneric(OBJ, grreduce2, fun, ini, _1, _2);
-
-// mapReduce
-defgeneric(OBJ, gmapReduce , mfun, rfun, _1);
-defgeneric(OBJ, gmapReduce1, mfun, rfun, ini, _1);
-defgeneric(OBJ, gmapReduce2, mfun, rfun, ini, _1, _2);
+defgeneric(OBJ, grreduce , _1, fun, ini0);         // foldr
+defgeneric(OBJ, grreduce2, _1, fun, ini0, ini1);
 
 // accumulate, raccumulate
-defgeneric(OBJ, gaccumulate  , fun, _1);          // scanl1
-defgeneric(OBJ, gaccumulate1 , fun, ini, _1);     // scanl
-defgeneric(OBJ, gaccumulate2 , fun, ini, _1, _2);
+defgeneric(OBJ, gaccumulate , _1, fun, ini0);      // scanl
+defgeneric(OBJ, gaccumulate2, _1, fun, ini0, ini1);
 
-defgeneric(OBJ, graccumulate , fun, _1);          // scanr1
-defgeneric(OBJ, graccumulate1, fun, ini, _1);     // scanr
-defgeneric(OBJ, graccumulate2, fun, ini, _1, _2);
+defgeneric(OBJ, graccumulate , _1, fun, ini0);     // scanr
+defgeneric(OBJ, graccumulate2, _1, fun, ini0, ini1);
 
 // generate
-defgeneric(OBJ, ggenerate , fun);      // stops when fun return Nil
-defgeneric(OBJ, ggenerate1, fun, ini); // stops when fun return Nil
+defgeneric(OBJ, ggenerate , fun, ini);        // stops when fun return Nil
+defgeneric(OBJ, ggenerate2, fun, ini0, ini1); // stops when fun return Nil
 
 // repeat, iterate, generate
 defgeneric(OBJ, grepeat , obj, num);

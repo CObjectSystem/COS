@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.45 2009/09/30 21:52:59 ldeniau Exp $
+ | $Id: Array.c,v 1.46 2009/11/24 18:14:58 ldeniau Exp $
  |
 */
 
@@ -121,27 +121,27 @@ endmethod
 
 // ----- constructors
 
+static inline OBJ
+clone(const struct Array *arr)
+{
+  struct Array* cpy = Array_alloc(arr->size);
+  OBJ _cpy = (OBJ)cpy; PRT(_cpy);
+
+  copy(cpy->object,&cpy->size,arr->object,arr->stride,arr->size);
+
+  UNPRT(_cpy);
+  return _cpy;
+}
+
 defmethod(OBJ, gclone, Array) // clone
   PRE POST BODY
-    struct Array* vec = Array_alloc(self->size);
-    OBJ _vec = (OBJ)vec; PRT(_vec);
-
-    copy(vec->object,&vec->size,self->object,self->stride,self->size);
-
-    UNPRT(_vec);
-    retmethod(_vec);
+    retmethod(clone(self));
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Array);
 defmethod(OBJ,  ginitWith         , pmArray, Array) // clone
   PRE POST BODY
-    struct Array* vec = Array_alloc(self2->size);
-    OBJ _vec = (OBJ)vec; PRT(_vec);
-
-    copy(vec->object,&vec->size,self2->object,self2->stride,self2->size);
-
-    UNPRT(_vec);
-    retmethod(_vec);
+    retmethod(clone(self2));
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Slice);

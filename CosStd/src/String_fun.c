@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.10 2009/11/08 14:55:09 ldeniau Exp $
+ | $Id: String_fun.c,v 1.11 2009/11/24 18:14:58 ldeniau Exp $
  |
 */
 
@@ -385,128 +385,63 @@ endmethod
 
 // ----- reduce
 
-defmethod(OBJ, greduce, Functor, String)
-  U32 size = self2->size;
-  U8* val  = self2->value;
+defmethod(OBJ, greduce, String, Functor, Object)
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+  OBJ res  = size ? _3 : Nil;
+  
+  while (val != end)
+    res = geval(_2, res, aChar(*val++));
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, grreduce, String, Functor, Object)
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+  OBJ res  = size ? _3 : Nil;
+  
+  while (val != end)
+    res = geval(_2, aChar(*--end), res);
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, greduce2, String, Functor, Object, Object)
+  U32 size = self->size;
+  U8* val  = self->value;
   U8* end  = val + size;
   OBJ res  = Nil;
   
   if (val != end) {
-    res = gautoDelete(gclone(aChar(*val++)));
-    
-    while (val != end)
-      res = geval(_1, res, aChar(*val++));
+    res = geval(_2, _3, _4, aChar(*val++));
+  
+    while (val != end) {
+      res = geval(_2, res, aChar(*(val-1)), aChar(*val));
+      ++val;
+    }
   }
 
   retmethod(res);
 endmethod
 
-defmethod(OBJ, grreduce, Functor, String)
-  U32 size = self2->size;
-  U8* val  = self2->value;
+defmethod(OBJ, grreduce2, String, Functor, Object, Object)
+  U32 size = self->size;
+  U8* val  = self->value;
   U8* end  = val + size;
   OBJ res  = Nil;
   
   if (val != end) {
-    res = gautoDelete(gclone(aChar(*--end)));
-    
-    while (val != end)
-      res = geval(_1, aChar(*--end), res);
+    res = geval(_2, aChar(*--end), _4, _3);
+  
+    while (val != end) {
+      --end;
+      res = geval(_2, aChar(*end), aChar(*(end+1)), res);
+    }
   }
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, greduce1, Functor, Object, String)
-  U32 size = self3->size;
-  U8* val  = self3->value;
-  U8* end  = val + size;
-  OBJ res  = _2;
   
-  while (val != end)
-    res = geval(_1, res, aChar(*val++));
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, grreduce1, Functor, Object, String)
-  U32 size = self3->size;
-  U8* val  = self3->value;
-  U8* end  = val + size;
-  OBJ res  = _2;
-  
-  while (val != end)
-    res = geval(_1, aChar(*--end), res);
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, greduce2, Functor, Object, String, String)
-  U32 size = self3->size < self4->size ? self3->size : self4->size;
-  U8* val  = self3->value;
-  U8* val2 = self4->value;
-  U8* end  = val + size;
-  OBJ res  = _2;
-  
-  while (val != end)
-    res = geval(_1, res, aChar(*val++), aChar(*val2++));
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, grreduce2, Functor, Object, String, String)
-  U32 size = self3->size < self4->size ? self3->size : self4->size;
-  U8* end  = self3->value + self3->size;
-  U8* end2 = self4->value + self4->size;
-  U8* val  = end - size;
-  OBJ res  = _2;
-  
-  while (val != end)
-    res = geval(_1, aChar(*--end), aChar(*--end2), res);
-
-  retmethod(res);
-endmethod
-
-// ----- mapReduce
-
-defmethod(OBJ, gmapReduce, Functor, Functor, String)
-  U32 size = self3->size;
-  U8* val  = self3->value;
-  U8* end  = val + size;
-  OBJ res  = Nil;
-  
-  if (val != end) {
-    res = geval(_1, aChar(*val++));
-    
-    while (val != end)
-      res = geval(_2, res, geval(_1, aChar(*val++)));
-  }
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, gmapReduce1, Functor, Functor, Object, String)
-  U32 size = self4->size;
-  U8* val  = self4->value;
-  U8* end  = val + size;
-  OBJ res  = _3;
-  
-  while (val != end)
-    res = geval(_2, res, geval(_1, aChar(*val++)));
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, gmapReduce2, Functor, Functor, Object, String, String)
-  U32 size = self4->size < self5->size ? self4->size : self5->size;
-  U8* val  = self4->value;
-  U8* val2 = self5->value;
-  U8* end  = val + size;
-  OBJ res  = _3;
-  
-  while (val != end)
-    res = geval(_2, res, geval(_1, aChar(*val++), aChar(*val2++)));
-
   retmethod(res);
 endmethod
 
