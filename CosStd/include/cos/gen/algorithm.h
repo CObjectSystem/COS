@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.26 2009/11/24 18:14:57 ldeniau Exp $
+ | $Id: algorithm.h,v 1.27 2009/11/25 15:21:26 ldeniau Exp $
  |
 */
 
@@ -80,12 +80,12 @@ defgeneric(OBJ, gmapIf   , fun, _1); // reject if fun returns Nil
 defgeneric(OBJ, gmapWhile, fun, _1); // stop when fun returns Nil
 
 // filter
-defgeneric(OBJ, gselect     , fun, _1); // select if    fun returns True
-defgeneric(OBJ, gselectWhile, fun, _1); // select while fun returns True
+defgeneric(OBJ, gselect     , _1, fun); // select if    fun returns True
+defgeneric(OBJ, gselectWhile, _1, fun); // select while fun returns True
 
 // filter-out
-defgeneric(OBJ, greject     , fun, _1); // reject if    fun returns True
-defgeneric(OBJ, grejectWhile, fun, _1); // reject while fun returns True
+defgeneric(OBJ, greject     , _1, fun); // reject if    fun returns True
+defgeneric(OBJ, grejectWhile, _1, fun); // reject while fun returns True
 
 // reduce, rreduce
 defgeneric(OBJ, greduce , _1, fun, ini0);          // foldl

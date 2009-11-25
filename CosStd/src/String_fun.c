@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.11 2009/11/24 18:14:58 ldeniau Exp $
+ | $Id: String_fun.c,v 1.12 2009/11/25 15:21:35 ldeniau Exp $
  |
 */
 
@@ -302,18 +302,18 @@ endmethod
 
 // ----- select, reject
 
-defmethod(OBJ, gselect, Functor, String)
-  U32 size = self2->size;
+defmethod(OBJ, gselect, String, Functor)
+  U32 size = self->size;
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  U8*  val   = self2->value;
+  U8*  val   = self->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str ->value;
   U8*  end   = val + size;
 
   while (val != end) {
-    if (geval(_1, aChar(*val)) == True)
+    if (geval(_2, aChar(*val)) == True)
       *dst++ = *val, ++*dst_n;
     val++;
   }
@@ -321,18 +321,18 @@ defmethod(OBJ, gselect, Functor, String)
   retmethod(gadjust(_str));
 endmethod
 
-defmethod(OBJ, greject, Functor, String)
-  U32 size = self2->size;
+defmethod(OBJ, greject, String, Functor)
+  U32 size = self->size;
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  U8*  val   = self2->value;
+  U8*  val   = self->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str ->value;
   U8*  end   = val + size;
 
   while (val != end) {
-    if (geval(_1, aChar(*val)) != True)
+    if (geval(_2, aChar(*val)) != True)
       *dst++ = *val, ++*dst_n;
     val++;
   }
@@ -340,18 +340,18 @@ defmethod(OBJ, greject, Functor, String)
   retmethod(gadjust(_str));
 endmethod
 
-defmethod(OBJ, gselectWhile, Functor, String)
-  U32 size = self2->size;
+defmethod(OBJ, gselectWhile, String, Functor)
+  U32 size = self->size;
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  U8*  val   = self2->value;
+  U8*  val   = self->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
   U8*  end   = val + size;
 
   // select
-  while (val != end && geval(_1, aChar(*val)) == True) {
+  while (val != end && geval(_2, aChar(*val)) == True) {
     *dst++ = *val, ++*dst_n;
     val++;
   }
@@ -360,18 +360,18 @@ defmethod(OBJ, gselectWhile, Functor, String)
   retmethod(gadjust(_str));
 endmethod
 
-defmethod(OBJ, grejectWhile, Functor, String)
-  U32 size = self2->size;
+defmethod(OBJ, grejectWhile, String, Functor)
+  U32 size = self->size;
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  U8*  val   = self2->value;
+  U8*  val   = self->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
   U8*  end   = val + size;
 
   // reject
-  while (val != end && geval(_1, aChar(*val)) == True)
+  while (val != end && geval(_2, aChar(*val)) == True)
     val++;
 
   // select

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.19 2009/11/24 18:14:58 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.20 2009/11/25 15:21:35 ldeniau Exp $
  |
 */
 
@@ -397,19 +397,19 @@ endmethod
 
 // ----- select, reject
 
-defmethod(OBJ, gselect, Functor, Array)
-  U32 size = self2->size;
+defmethod(OBJ, gselect, Array, Functor)
+  U32 size = self->size;
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
-  I32  val_s = self2->stride;
-  OBJ *val   = self2->object;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr ->object;
   OBJ *end   = val + val_s*size;
 
   while (val != end) {
-    if (geval(_1, *val) == True)
+    if (geval(_2, *val) == True)
       *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }
@@ -417,19 +417,19 @@ defmethod(OBJ, gselect, Functor, Array)
   retmethod(gadjust(_arr));
 endmethod
 
-defmethod(OBJ, greject, Functor, Array)
-  U32 size = self2->size;
+defmethod(OBJ, greject, Array, Functor)
+  U32 size = self->size;
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
-  I32  val_s = self2->stride;
-  OBJ *val   = self2->object;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr ->object;
   OBJ *end   = val + val_s*size;
 
   while (val != end) {
-    if (geval(_1, *val) != True)
+    if (geval(_2, *val) != True)
       *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }
@@ -437,19 +437,19 @@ defmethod(OBJ, greject, Functor, Array)
   retmethod(gadjust(_arr));
 endmethod
 
-defmethod(OBJ, gselectWhile, Functor, Array)
-  U32 size = self2->size;
+defmethod(OBJ, gselectWhile, Array, Functor)
+  U32 size = self->size;
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
-  I32  val_s = self2->stride;
-  OBJ *val   = self2->object;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
   OBJ *end   = val + val_s*size;
 
   // select
-  while (val != end && geval(_1, *val) == True) {
+  while (val != end && geval(_2, *val) == True) {
     *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }
@@ -458,19 +458,19 @@ defmethod(OBJ, gselectWhile, Functor, Array)
   retmethod(gadjust(_arr));
 endmethod
 
-defmethod(OBJ, grejectWhile, Functor, Array)
-  U32 size = self2->size;
+defmethod(OBJ, grejectWhile, Array, Functor)
+  U32 size = self->size;
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
-  I32  val_s = self2->stride;
-  OBJ *val   = self2->object;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
   OBJ *end   = val + val_s*size;
 
   // reject
-  while (val != end && geval(_1, *val) == True)
+  while (val != end && geval(_2, *val) == True)
     val += val_s;
 
   // select
