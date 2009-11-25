@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.27 2009/11/25 15:21:26 ldeniau Exp $
+ | $Id: algorithm.h,v 1.28 2009/11/25 17:49:20 ldeniau Exp $
  |
 */
 
@@ -88,26 +88,23 @@ defgeneric(OBJ, greject     , _1, fun); // reject if    fun returns True
 defgeneric(OBJ, grejectWhile, _1, fun); // reject while fun returns True
 
 // reduce, rreduce
-defgeneric(OBJ, greduce , _1, fun, ini0);          // foldl
-defgeneric(OBJ, greduce2, _1, fun, ini0, ini1);
+defgeneric(OBJ, greduce , _1, fun, ini);           // foldl
+defgeneric(OBJ, greduce2, _1, fun, ini, fin);      // foldl with lookahead
 
-defgeneric(OBJ, grreduce , _1, fun, ini0);         // foldr
-defgeneric(OBJ, grreduce2, _1, fun, ini0, ini1);
+defgeneric(OBJ, grreduce , _1, fun, ini);          // foldr
+defgeneric(OBJ, grreduce2, _1, fun, ini, fin);     // foldr with lookahead
 
 // accumulate, raccumulate
-defgeneric(OBJ, gaccumulate , _1, fun, ini0);      // scanl
-defgeneric(OBJ, gaccumulate2, _1, fun, ini0, ini1);
+defgeneric(OBJ, gaccumulate , _1, fun, ini);       // scanl
+defgeneric(OBJ, gaccumulate2, _1, fun, ini, fin);  // scanl with lookahead
 
-defgeneric(OBJ, graccumulate , _1, fun, ini0);     // scanr
-defgeneric(OBJ, graccumulate2, _1, fun, ini0, ini1);
-
-// generate
-defgeneric(OBJ, ggenerate , fun, ini);        // stops when fun return Nil
-defgeneric(OBJ, ggenerate2, fun, ini0, ini1); // stops when fun return Nil
+defgeneric(OBJ, graccumulate , _1, fun, ini);      // scanr
+defgeneric(OBJ, graccumulate2, _1, fun, ini, fin); // scanr with lookahead
 
 // repeat, iterate, generate
-defgeneric(OBJ, grepeat , obj, num);
-defgeneric(OBJ, giterate, fun, num);
+defgeneric(OBJ, grepeat  , obj, num);
+defgeneric(OBJ, giterate , fun, num);
+defgeneric(OBJ, ggenerate, fun, ini); // stops when fun return Nil
 
 // all, any, count
 defgeneric(OBJ, gall  , _1, fun); // fun should return TrueFalse

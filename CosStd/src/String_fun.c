@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.12 2009/11/25 15:21:35 ldeniau Exp $
+ | $Id: String_fun.c,v 1.13 2009/11/25 17:49:21 ldeniau Exp $
  |
 */
 
@@ -49,69 +49,13 @@
 useclass(String);
 useclass(Lesser,Equal,Greater);
 
-// ----- foreachWhile, foreach (returned value is discarded)
-
-defmethod(void, gforeachWhile, Functor, String)
-  U32 size = self2->size;
-  U8* val  = self2->value;
-  U8* end  = val + size;
-
-  while (val != end && geval(_1, aChar(*val++)) != Nil)
-    ;
-endmethod
-
-defmethod(void, gforeach, Functor, String)
-  U32 size = self2->size;
-  U8* val  = self2->value;
-  U8* end  = val + size;
-
-  while (val != end)
-    geval(_1, aChar(*val++));
-endmethod
-
-defmethod(void, gforeach2, Functor, String, String)
-  U32 size = self2->size < self3->size ? self2->size : self3->size;
-  U8* val  = self2->value;
-  U8* val2 = self3->value;
-  U8* end  = val + size;
-
-  while (val != end)
-    geval(_1, aChr(*val++, *val2++));
-endmethod
-
-defmethod(void, gforeach3, Functor, String, String, String)
-  U32 size = self2->size < self3->size ? self2->size : self3->size;
-      size = self4->size < size ? self4->size : size;
-  U8* val  = self2->value;
-  U8* val2 = self3->value;
-  U8* val3 = self4->value;
-  U8* end  = val + size;
-
-  while (val != end)
-    geval(_1, aChr(*val++, *val2++, *val3++));
-endmethod
-
-defmethod(void, gforeach4, Functor, String, String, String, String)
-  U32 size = self2->size < self3->size ? self2->size : self3->size;
-      size = self4->size < size ? self4->size : size;
-      size = self5->size < size ? self5->size : size;
-  U8* val  = self2->value;
-  U8* val2 = self3->value;
-  U8* val3 = self4->value;
-  U8* val4 = self5->value;
-  U8* end  = val + size;
-
-  while (val != end)
-    geval(_1, aChr(*val++, *val2++, *val3++, *val4++));
-endmethod
-
 // ----- applyWhile, applyIf, apply (in-place map)
 
 defmethod(OBJ, gapplyWhile, Functor, String)
   U32 size = self2->size;
   U8* val  = self2->value;
   U8* end  = val + size;
-  OBJ  res, old;
+  OBJ res, old;
 
   while (val != end && (res = geval(_1, old = aChar(*val))) != Nil) {
     if (res != old) *val = (U32)gchr(res);
@@ -125,7 +69,7 @@ defmethod(OBJ, gapply, Functor, String)
   U32 size = self2->size;
   U8* val  = self2->value;
   U8* end  = val + size;
-  OBJ  res, old;
+  OBJ res, old;
 
   while (val != end) {
     res = geval(_1, old = aChar(*val));
@@ -140,7 +84,7 @@ defmethod(OBJ, gapply2, Functor, String, String)
   U8* val  = self2->value;
   U8* val2 = self3->value;
   U8* end  = val + size;
-  OBJ  res, old;
+  OBJ res, old;
 
   while (val != end) {
     res = geval(_1, old = aChr(*val, *val2++));
@@ -158,7 +102,7 @@ defmethod(OBJ, gapply3, Functor, String, String, String)
   U8* val2 = self3->value;
   U8* val3 = self4->value;
   U8* end  = val + size;
-  OBJ  res, old;
+  OBJ res, old;
 
   while (val != end) {
     res = geval(_1, old = aChr(*val, *val2++, *val3++));
@@ -178,7 +122,7 @@ defmethod(OBJ, gapply4, Functor, String, String, String, String)
   U8* val3 = self4->value;
   U8* val4 = self5->value;
   U8* end  = val + size;
-  OBJ  res, old;
+  OBJ res, old;
 
   while (val != end) {
     res = geval(_1, old = aChr(*val, *val2++, *val3++, *val4++));
@@ -193,14 +137,15 @@ endmethod
 
 defmethod(OBJ, gmapWhile, Functor, String)
   U32 size = self2->size;
+  U8* val  = self2->value;
+  U8* end  = val + size;
+  OBJ res;
+
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
   
-  U8*  val   = self2->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
-  U8*  end   = val + size;
-  OBJ  res;
 
   while (val != end && (res = geval(_1, aChar(*val))) != Nil) {
     *dst++ = (U32)gchr(res), ++*dst_n;
@@ -212,14 +157,15 @@ endmethod
 
 defmethod(OBJ, gmapIf, Functor, String)
   U32 size = self2->size;
+  U8* val  = self2->value;
+  U8* end  = val + size;
+  OBJ res;
+
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
   
-  U8*  val   = self2->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
-  U8*  end   = val + size;
-  OBJ  res;
 
   while (val != end) {
    if ((res = geval(_1, aChar(*val))) != Nil)
@@ -232,14 +178,15 @@ endmethod
 
 defmethod(OBJ, gmap, Functor, String)
   U32 size = self2->size;
+  U8* val  = self2->value;
+  U8* end  = val + size;
+
   struct String* str = String_alloc(size);
   OBJ _str = gautoDelete( (OBJ)str );
 
-  U8* val = self2->value;
   U8* dst = str->value;
-  U8* end = dst + size;
-  
-  while (dst != end)
+
+  while (val != end)
     *dst++ = (U32)gchr(geval(_1,aChar(*val++)));
 
   retmethod(_str);
@@ -247,15 +194,16 @@ endmethod
 
 defmethod(OBJ, gmap2, Functor, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
+  U8* val  = self2->value;
+  U8* val2 = self3->value;
+  U8* end  = val + size;
+
   struct String* str = String_alloc(size);
   OBJ _str = gautoDelete( (OBJ)str );
 
-  U8* val  = self2->value;
-  U8* val2 = self3->value;
-  U8* dst  = str->value;
-  U8* end  = dst + size;
+  U8* dst = str->value;
 
-  while (dst != end)
+  while (val != end)
     *dst++ = (U32)gchr(geval(_1,aChar(*val++),aChar(*val2++)));
 
   retmethod(_str);
@@ -264,14 +212,15 @@ endmethod
 defmethod(OBJ, gmap3, Functor, String, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
       size = self4->size < size ? self4->size : size;
-  struct String* str = String_alloc(size);
-  OBJ _str = gautoDelete( (OBJ)str );
-
   U8* val  = self2->value;
   U8* val2 = self3->value;
   U8* val3 = self4->value;
-  U8* dst  = str->value;
-  U8* end  = dst + size;
+  U8* end  = val + size;
+
+  struct String* str = String_alloc(size);
+  OBJ _str = gautoDelete( (OBJ)str );
+
+  U8* dst = str->value;
 
   while (dst != end)
     *dst++ = (U32)gchr(geval(_1,aChr(*val++),aChr(*val2++),aChr(*val3++)));
@@ -283,17 +232,18 @@ defmethod(OBJ, gmap4, Functor, String, String, String, String)
   U32 size = self2->size < self3->size ? self2->size : self3->size;
       size = self4->size < size ? self4->size : size;
       size = self5->size < size ? self5->size : size;
-  struct String* str = String_alloc(size);
-  OBJ _str = gautoDelete( (OBJ)str );
-
   U8* val  = self2->value;
   U8* val2 = self3->value;
   U8* val3 = self4->value;
   U8* val4 = self5->value;
-  U8* dst  = str->value;
-  U8* end  = dst + size;
+  U8* end  = val + size;
 
-  while (dst != end)
+  struct String* str = String_alloc(size);
+  OBJ _str = gautoDelete( (OBJ)str );
+
+  U8* dst = str->value;
+
+  while (val != end)
     *dst++ = (U32)gchr(geval(_1,aChr(*val ++),aChr(*val2++),
                                 aChr(*val3++),aChr(*val4++)));
 
@@ -304,13 +254,14 @@ endmethod
 
 defmethod(OBJ, gselect, String, Functor)
   U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  U8*  val   = self->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str ->value;
-  U8*  end   = val + size;
 
   while (val != end) {
     if (geval(_2, aChar(*val)) == True)
@@ -323,13 +274,14 @@ endmethod
 
 defmethod(OBJ, greject, String, Functor)
   U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  U8*  val   = self->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str ->value;
-  U8*  end   = val + size;
 
   while (val != end) {
     if (geval(_2, aChar(*val)) != True)
@@ -342,13 +294,14 @@ endmethod
 
 defmethod(OBJ, gselectWhile, String, Functor)
   U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  U8*  val   = self->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
-  U8*  end   = val + size;
 
   // select
   while (val != end && geval(_2, aChar(*val)) == True) {
@@ -362,13 +315,14 @@ endmethod
 
 defmethod(OBJ, grejectWhile, String, Functor)
   U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+
   OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
-  U8*  val   = self->value;
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
-  U8*  end   = val + size;
 
   // reject
   while (val != end && geval(_2, aChar(*val)) == True)
@@ -389,7 +343,7 @@ defmethod(OBJ, greduce, String, Functor, Object)
   U32 size = self->size;
   U8* val  = self->value;
   U8* end  = val + size;
-  OBJ res  = size ? _3 : Nil;
+  OBJ res  = _3;
   
   while (val != end)
     res = geval(_2, res, aChar(*val++));
@@ -401,47 +355,11 @@ defmethod(OBJ, grreduce, String, Functor, Object)
   U32 size = self->size;
   U8* val  = self->value;
   U8* end  = val + size;
-  OBJ res  = size ? _3 : Nil;
+  OBJ res  = _3;
   
   while (val != end)
     res = geval(_2, aChar(*--end), res);
 
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, greduce2, String, Functor, Object, Object)
-  U32 size = self->size;
-  U8* val  = self->value;
-  U8* end  = val + size;
-  OBJ res  = Nil;
-  
-  if (val != end) {
-    res = geval(_2, _3, _4, aChar(*val++));
-  
-    while (val != end) {
-      res = geval(_2, res, aChar(*(val-1)), aChar(*val));
-      ++val;
-    }
-  }
-
-  retmethod(res);
-endmethod
-
-defmethod(OBJ, grreduce2, String, Functor, Object, Object)
-  U32 size = self->size;
-  U8* val  = self->value;
-  U8* end  = val + size;
-  OBJ res  = Nil;
-  
-  if (val != end) {
-    res = geval(_2, aChar(*--end), _4, _3);
-  
-    while (val != end) {
-      --end;
-      res = geval(_2, aChar(*end), aChar(*(end+1)), res);
-    }
-  }
-  
   retmethod(res);
 endmethod
 

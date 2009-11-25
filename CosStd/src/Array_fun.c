@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.20 2009/11/25 15:21:35 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.21 2009/11/25 17:49:21 ldeniau Exp $
  |
 */
 
@@ -51,7 +51,7 @@ useclass(Lesser,Equal,Greater);
 // ----- foreachWhile, foreach (returned value is discarded)
 
 defmethod(void, gforeachWhile, Functor, Array)
-  U32 size   = self2->size;
+  U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
   OBJ *end   = val + val_s*size;
@@ -138,8 +138,11 @@ defmethod(OBJ, gapplyWhile, Functor, Array)
   OBJ *end   = val + val_s*size;
   OBJ  res, old;
 
-  while (val != end && (res = geval(_1, *val)) != Nil) {
-    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+  while (val != end) {
+    res = geval(_1, *val);
+    if (res == Nil) break;
+    if (res != *val)
+      old = *val, *val = gretain(res), grelease(old);
     val += val_s;
   }
   
@@ -154,7 +157,8 @@ defmethod(OBJ, gapplyIf, Functor, Array)
   OBJ  res, old;
 
   while (val != end) {
-    if ((res = geval(_1, *val)) != Nil && res != *val)
+    res = geval(_1, *val);
+    if (res != Nil && res != *val)
       old = *val, *val = gretain(res), grelease(old);
     val += val_s;
   }
@@ -171,7 +175,8 @@ defmethod(OBJ, gapply, Functor, Array)
 
   while (val != end) {
     res = geval(_1, *val);
-    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+    if (res != *val)
+      old = *val, *val = gretain(res), grelease(old);
     val += val_s;
   }
 
@@ -189,7 +194,8 @@ defmethod(OBJ, gapply2, Functor, Array, Array)
 
   while (val != end) {
     res = geval(_1, *val, *val2);
-    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+    if (res != *val)
+      old = *val, *val = gretain(res), grelease(old);
     val  += val_s;
     val2 += val2_s;
   }
@@ -211,7 +217,8 @@ defmethod(OBJ, gapply3, Functor, Array, Array, Array)
 
   while (val != end) {
     res = geval(_1, *val, *val2, *val3);
-    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+    if (res != *val)
+      old = *val, *val = gretain(res), grelease(old);
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
@@ -237,7 +244,8 @@ defmethod(OBJ, gapply4, Functor, Array, Array, Array, Array)
 
   while (val != end) {
     res = geval(_1, *val, *val2, *val3, *val4);
-    if (res != *val) old = *val, *val = gretain(res), grelease(old);
+    if (res != *val)
+      old = *val, *val = gretain(res), grelease(old);
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
@@ -250,126 +258,131 @@ endmethod
 // ----- mapIf, mapWhile, map, map2, map3, map4
 
 defmethod(OBJ, gmapWhile, Functor, Array)
-  U32 size = self2->size;
-  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
-
+  U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  U32 *dst_n = &arr->size;
-  OBJ *dst   = arr->object;
   OBJ *end   = val + val_s*size;
   OBJ  res;
 
-  while (val != end && (res = geval(_1, *val)) != Nil) {
-    *dst++ = gretain(res), ++*dst_n;
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
+
+  while (val != end) {
+    res = geval(_1, *val);
+    if (res == Nil) break;
     val += val_s;
+    *dst++ = gretain(res), ++*dst_n;
   }
 
   retmethod(gadjust(_arr));
 endmethod
 
 defmethod(OBJ, gmapIf, Functor, Array)
-  U32 size = self2->size;
-  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
-
+  U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  U32 *dst_n = &arr->size;
-  OBJ *dst   = arr->object;
   OBJ *end   = val + val_s*size;
   OBJ  res;
 
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
+
   while (val != end) {
-    if ((res = geval(_1, *val)) != Nil)
-      *dst++ = gretain(res), ++*dst_n;
+    res = geval(_1, *val);
     val += val_s;
+    if (res != Nil)
+      *dst++ = gretain(res), ++*dst_n;
   }
 
   retmethod(gadjust(_arr));
 endmethod
 
 defmethod(OBJ, gmap, Functor, Array)
-  U32 size = self2->size;
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
-
+  U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  U32 *dst_n = &arr->size;
-  OBJ *dst   = arr->object;
   OBJ *end   = val + val_s*size;
   OBJ  res;
 
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
+
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
+
   while (val != end) {
     res = geval(_1, *val);
-    *dst++ = gretain(res), ++*dst_n;
     val += val_s;
+    *dst++ = gretain(res), ++*dst_n;
   }
 
   retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmap2, Functor, Array, Array)
-  U32 size = self2->size < self3->size ? self2->size : self3->size;
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
-
+  U32  size   = self2->size < self3->size ? self2->size : self3->size;
   I32  val_s  = self2->stride;
   OBJ *val    = self2->object;
   I32  val2_s = self3->stride;
   OBJ *val2   = self3->object;
-  U32 *dst_n  = &arr->size;
-  OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
   OBJ  res;
 
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
+
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
+
   while (val != end) {
     res = geval(_1, *val, *val2);
-    *dst++ = gretain(res), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
+    *dst++ = gretain(res), ++*dst_n;
   }
 
   retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmap3, Functor, Array, Array, Array)
-  U32 size = self2->size < self3->size ? self2->size : self3->size;
-      size = self4->size < size ? self4->size : size;
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
-
+  U32  size   = self2->size < self3->size ? self2->size : self3->size;
+       size   = self4->size < size ? self4->size : size;
   I32  val_s  = self2->stride;
   OBJ *val    = self2->object;
   I32  val2_s = self3->stride;
   OBJ *val2   = self3->object;
   I32  val3_s = self4->stride;
   OBJ *val3   = self4->object;
-  U32 *dst_n  = &arr->size;
-  OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
   OBJ  res;
 
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
+
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
+
   while (val != end) {
     res = geval(_1, *val, *val2, *val3);
-    *dst++ = gretain(res), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
+    *dst++ = gretain(res), ++*dst_n;
   }
 
   retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
-  U32 size = self2->size < self3->size ? self2->size : self3->size;
-      size = self4->size < size ? self4->size : size;
-      size = self5->size < size ? self5->size : size;
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
-
+  U32  size   = self2->size < self3->size ? self2->size : self3->size;
+       size   = self4->size < size ? self4->size : size;
+       size   = self5->size < size ? self5->size : size;
   I32  val_s  = self2->stride;
   OBJ *val    = self2->object;
   I32  val2_s = self3->stride;
@@ -378,18 +391,22 @@ defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
   OBJ *val3   = self4->object;
   I32  val4_s = self5->stride;
   OBJ *val4   = self5->object;
-  U32 *dst_n  = &arr->size;
-  OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
   OBJ  res;
 
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
+
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
+
   while (val != end) {
     res = geval(_1, *val, *val2, *val3, *val4);
-    *dst++ = gretain(res), ++*dst_n;
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
     val4 += val4_s;
+    *dst++ = gretain(res), ++*dst_n;
   }
 
   retmethod(_arr);
@@ -398,15 +415,16 @@ endmethod
 // ----- select, reject
 
 defmethod(OBJ, gselect, Array, Functor)
-  U32 size = self->size;
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr ->object;
-  OBJ *end   = val + val_s*size;
 
   while (val != end) {
     if (geval(_2, *val) == True)
@@ -418,15 +436,16 @@ defmethod(OBJ, gselect, Array, Functor)
 endmethod
 
 defmethod(OBJ, greject, Array, Functor)
-  U32 size = self->size;
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr ->object;
-  OBJ *end   = val + val_s*size;
 
   while (val != end) {
     if (geval(_2, *val) != True)
@@ -438,15 +457,16 @@ defmethod(OBJ, greject, Array, Functor)
 endmethod
 
 defmethod(OBJ, gselectWhile, Array, Functor)
-  U32 size = self->size;
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+  
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
-  OBJ *end   = val + val_s*size;
 
   // select
   while (val != end && geval(_2, *val) == True) {
@@ -459,15 +479,16 @@ defmethod(OBJ, gselectWhile, Array, Functor)
 endmethod
 
 defmethod(OBJ, grejectWhile, Array, Functor)
-  U32 size = self->size;
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
-  OBJ *end   = val + val_s*size;
 
   // reject
   while (val != end && geval(_2, *val) == True)
@@ -497,7 +518,7 @@ defmethod(OBJ, greduce, Array, Functor, Object)
   I32  val_s = self->stride;
   OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
-  OBJ  res   = size ? _3 : Nil;
+  OBJ  res   = _3;
   
   while (val != end) {
     res = geval(_2, res, *val);
@@ -520,7 +541,7 @@ defmethod(OBJ, grreduce, Array, Functor, Object)
   I32  val_s = self->stride;
   OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
-  OBJ  res   = size ? _3 : Nil;
+  OBJ  res   = _3;
   
   while (val != end) {
     end -= val_s;
@@ -532,10 +553,11 @@ endmethod
 
 /*
   reduce2:
-  res = f(ini0, ini1   , in[0])
-  res = f(res , in[0]  , in[1])
+  res = f(ini, in[0], in[1])
+  res = f(res, in[1], in[2])
   ...
-  res = f(res , in[N-2], in[N-1])
+  res = f(res, in[N-2], in[N-1])
+  res = f(res, in[N-1], fin)
 */
 
 defmethod(OBJ, greduce2, Array, Functor, Object, Object)
@@ -543,27 +565,29 @@ defmethod(OBJ, greduce2, Array, Functor, Object, Object)
   I32  val_s = self->stride;
   OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
-  OBJ  res   = Nil;
+  OBJ  res   = _3;
 
-  if (val != end) {
-    res = geval(_2, _3, _4, *val);
+  if (size > 1) {
     val += val_s;
-    
+
     while (val != end) {
       res = geval(_2, res, *(val-val_s), *val);
       val += val_s;
     }
-  }
 
+    res = geval(_2, res, *(val-val_s), _4);
+  }
+  
   retmethod(res);
 endmethod
 
 /*
   rreduce2:
-  res = f(in[N-1], ini1   , ini0)
-  res = f(in[N-2], in[N-1], res)
+  res = f(in[N-2], in[N-1], ini)
+  res = f(in[N-3], in[N-2], res)
   ...
   res = f(in[0]  , in[1]  , res)
+  res = f(fin    , in[0]  , res)
 */
 
 defmethod(OBJ, grreduce2, Array, Functor, Object, Object)
@@ -571,18 +595,19 @@ defmethod(OBJ, grreduce2, Array, Functor, Object, Object)
   I32  val_s = self->stride;
   OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
-  OBJ  res   = Nil;
+  OBJ  res   = _3;
 
-  if (val != end) {
+  if (size > 1) {
     end -= val_s;
-    res = geval(_2, *end, _4, _3);
     
     while (val != end) {
       end -= val_s;
       res = geval(_2, *end, *(end+val_s), res);
     }
+
+    res = geval(_2, _4, *end, res);
   }
-      
+
   retmethod(res);
 endmethod
 
@@ -597,21 +622,22 @@ endmethod
 */
 
 defmethod(OBJ, gaccumulate, Array, Functor, Object)
-  U32 size = self->size;
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
-
+  U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  U32 *dst_n = &arr->size;
-  OBJ *dst   = arr->object;
   OBJ *end   = val + val_s*size;
   OBJ  res   = _3;
 
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
+
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
+
   while (val != end) {
     res = geval(_2, res, *val);
-    *dst++ = gretain(res), ++*dst_n;
     val += val_s;
+    *dst++ = gretain(res), ++*dst_n;
   }
   
   retmethod(_arr);
@@ -626,16 +652,17 @@ endmethod
 */
 
 defmethod(OBJ, graccumulate, Array, Functor, Object)
-  U32 size = self->size;
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res   = _3;
+
   struct Array* arr = Array_alloc(size);
   OBJ _arr = gautoDelete( (OBJ)arr );
 
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object + size;
-  OBJ *end   = val + val_s*size;
-  OBJ  res   = _3;
 
   while (val != end) {
     end -= val_s,
@@ -648,34 +675,37 @@ endmethod
 
 /*
   accumulate2:
-  res = f(ini0, ini1  , in[0])   -> out[0]
-  res = f(res, in[0]  , in[1])   -> out[1]
+  res = f(ini, in[0], in[1])     -> out[0]
+  res = f(res, in[1], in[2])     -> out[1]
   ...
-  res = f(res, in[N-2], in[N-1]) -> out[N-1]
+  res = f(res, in[N-2], in[N-1]) -> out[N-2]
+  res = f(res, in[N-1], fin)     -> out[N-1]
 */
 
 defmethod(OBJ, gaccumulate2, Array, Functor, Object, Object)
-  U32 size = self->size;
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res   = _3;
+
   struct Array* arr = Array_alloc(size);
   OBJ _arr = gautoDelete( (OBJ)arr );
 
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
-  OBJ *end   = val + val_s*size;
-  OBJ  res;
 
-  if (val != end) {
-    res = geval(_2, _3, _4, *val);
-    *dst++ = gretain(res), ++*dst_n;
+  if (size > 1) {
     val += val_s;
     
     while (val != end) {
       res = geval(_2, res, *(val-val_s), *val);
-      *dst++ = gretain(res), ++*dst_n;
       val += val_s;
+      *dst++ = gretain(res), ++*dst_n;
     }
+
+    res = geval(_2, res, *(val-val_s), _4);
+    *dst++ = gretain(res), ++*dst_n;
   }
   
   retmethod(_arr);
@@ -683,34 +713,37 @@ endmethod
 
 /*
   raccumulate2:
-  res = f(in[N-1], ini1   , ini0) -> out[N-1]
-  res = f(in[N-2], in[N-1], res)  -> out[N-2]
+  res = f(in[N-2], in[N-1], ini)  -> out[N-1]
+  res = f(in[N-3], in[N-2], res)  -> out[N-2]
   ...
-  res = f(in[0]  , in[1]  , res)  -> out[0]
+  res = f(in[0]  , in[1]  , res)  -> out[1]
+  res = f(fin    , in[0]  , res)  -> out[0]
 */
 
 defmethod(OBJ, graccumulate2, Array, Functor, Object, Object)
-  U32 size = self->size;
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res   = _3;
+
   struct Array* arr = Array_alloc(size);
   OBJ _arr = gautoDelete( (OBJ)arr );
 
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object + size;
-  OBJ *end   = val + val_s*size;
-  OBJ  res;
 
-  if (val != end) {
+  if (size > 1) {
     end -= val_s;
-    res = geval(_2, *end, _4, _3);
-    *--dst = gretain(res), ++*dst_n;
       
     while (val != end) {
       end -= val_s,
       res = geval(_2, *end, *(end+val_s), res);
       *--dst = gretain(res), ++*dst_n;
     }
+
+    res = geval(_2, _4, *end, res);
+    *--dst = gretain(res), ++*dst_n;
   }
   
   retmethod(_arr);
