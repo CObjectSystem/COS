@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.15 2009/11/25 17:49:21 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.16 2009/11/26 16:58:12 ldeniau Exp $
  |
 */
 
@@ -520,7 +520,7 @@ defmethod(OBJ, greduce2, T, Functor, Object, Object)
   VAL *end   = val + val_s*size;
   OBJ  res   = _3;
 
-  if (size > 1) {
+  if (size) {
     val += val_s;
  
     while (val != end) {
@@ -541,7 +541,7 @@ defmethod(OBJ, grreduce2, T, Functor, Object, Object)
   VAL *end   = val + val_s*size;
   OBJ  res   = _3;
 
-  if (val != end) {
+  if (size) {
     end -= val_s;
     
     while (val != end) {
@@ -614,7 +614,7 @@ defmethod(OBJ, gaccumulate2, T, Functor, Object, Object)
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
 
-  if (size > 1) {
+  if (size) {
     val += val_s;
     
     while (val != end) {
@@ -643,7 +643,7 @@ defmethod(OBJ, graccumulate2, T, Functor, Object, Object)
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value + size;
 
-  if (size > 1) {
+  if (size) {
     end -= val_s;
       
     while (val != end) {

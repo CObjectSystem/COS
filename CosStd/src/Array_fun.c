@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.21 2009/11/25 17:49:21 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.22 2009/11/26 16:58:12 ldeniau Exp $
  |
 */
 
@@ -567,7 +567,7 @@ defmethod(OBJ, greduce2, Array, Functor, Object, Object)
   OBJ *end   = val + val_s*size;
   OBJ  res   = _3;
 
-  if (size > 1) {
+  if (size) {
     val += val_s;
 
     while (val != end) {
@@ -597,7 +597,7 @@ defmethod(OBJ, grreduce2, Array, Functor, Object, Object)
   OBJ *end   = val + val_s*size;
   OBJ  res   = _3;
 
-  if (size > 1) {
+  if (size) {
     end -= val_s;
     
     while (val != end) {
@@ -695,7 +695,7 @@ defmethod(OBJ, gaccumulate2, Array, Functor, Object, Object)
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
 
-  if (size > 1) {
+  if (size) {
     val += val_s;
     
     while (val != end) {
@@ -733,7 +733,7 @@ defmethod(OBJ, graccumulate2, Array, Functor, Object, Object)
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object + size;
 
-  if (size > 1) {
+  if (size) {
     end -= val_s;
       
     while (val != end) {
