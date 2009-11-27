@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Container.c,v 1.2 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: Container.c,v 1.3 2009/11/27 09:40:10 ldeniau Exp $
  |
 */
 
@@ -49,5 +49,15 @@ makclass(Container);
 
 defmethod(OBJ, ggetAt, Object, mP_size)
   retmethod( gautoDelete(aInt(gsize(_1))) );
+endmethod
+
+// ----- indexes
+
+defmethod(OBJ, ggetAtIdx, Object, (I32)idx)
+  retmethod(ggetAt(_1, aInt(idx)));
+endmethod
+
+defmethod(OBJ, gputAtIdx, Object, (I32)idx, Object)
+  retmethod(gputAt(_1, aInt(idx), _2));
 endmethod
 

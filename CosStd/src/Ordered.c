@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Ordered.c,v 1.6 2009/08/10 21:02:15 ldeniau Exp $
+ | $Id: Ordered.c,v 1.7 2009/11/27 09:40:10 ldeniau Exp $
  |
 */
 
@@ -48,6 +48,20 @@ makclass(Greater, Ordered);
 // -----
 
 useclass(Lesser, Equal, Greater);
+
+// -----
+
+defmethod(OBJ, greverse, pmLesser)
+  retmethod(Greater);
+endmethod
+
+defmethod(OBJ, greverse, pmOrdered)
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, greverse, pmGreater)
+  retmethod(Lesser);
+endmethod
 
 // -----
 
