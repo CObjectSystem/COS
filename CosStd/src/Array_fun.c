@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.22 2009/11/26 16:58:12 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.23 2009/12/09 16:17:19 ldeniau Exp $
  |
 */
 
@@ -424,7 +424,7 @@ defmethod(OBJ, gselect, Array, Functor)
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   U32 *dst_n = &arr->size;
-  OBJ *dst   = arr ->object;
+  OBJ *dst   = arr->object;
 
   while (val != end) {
     if (geval(_2, *val) == True)
@@ -445,7 +445,7 @@ defmethod(OBJ, greject, Array, Functor)
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
 
   U32 *dst_n = &arr->size;
-  OBJ *dst   = arr ->object;
+  OBJ *dst   = arr->object;
 
   while (val != end) {
     if (geval(_2, *val) != True)
@@ -807,7 +807,7 @@ defmethod(OBJ, gunique, Array, Functor)
   I32  val_s = self->stride;
   OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
-  OBJ *dst   = arr ->object;
+  OBJ *dst   = arr->object;
   OBJ *end   = val + val_s*size;
 
   if (val != end) {

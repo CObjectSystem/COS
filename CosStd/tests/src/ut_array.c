@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.6 2009/10/19 19:38:10 ldeniau Exp $
+ | $Id: ut_array.c,v 1.7 2009/12/09 16:17:23 ldeniau Exp $
  |
 */
 
@@ -190,110 +190,102 @@ ut_array_functor(void)
   UTEST( gisEqual(arr, aArray(aInt(0,1,2,3))) == False );
 
   // select
-  arr = gselect(gt, aArrayRef(buf,0));
+  arr = gselect(aArrayRef(buf,0), gt);
   UTEST( gisEqual(arr, aArrayRef(buf,0)) == True );
 
-  arr = gselect(gt, aArray(aInt(4)));
+  arr = gselect(aArray(aInt(4)), gt);
   UTEST( gisEqual(arr, aArray(aInt(4))) == True );
   
-  arr = gselect(gt, aArray(aInt(0,1,2,3)));
+  arr = gselect(aArray(aInt(0,1,2,3)), gt);
   UTEST( gisEqual(arr, aArrayRef(buf,0)) == True );
 
-  arr = gselect(gt, aArray(aInt(0,1,2,3,4)));
+  arr = gselect(aArray(aInt(0,1,2,3,4)), gt);
   UTEST( gisEqual(arr, aArray(aInt(4))) == True );
 
-  arr = gselect(gt, aArray(aInt(0,1,2,3,4,5,6,7,8)));
+  arr = gselect(aArray(aInt(0,1,2,3,4,5,6,7,8)), gt);
   UTEST( gisEqual(arr, aArray(aInt(4,5,6,7,8))) == True );
 
-  arr = gselect(gt, aArray(aInt(0,1,2,3,4,5,6,7,8)));
+  arr = gselect(aArray(aInt(0,1,2,3,4,5,6,7,8)), gt);
   UTEST( gisEqual(arr, aArray(aInt(3,4,5,6,7,8))) == False );
 
   // reject
-  arr = greject(gt, aArrayRef(buf,0));
+  arr = greject(aArrayRef(buf,0), gt);
   UTEST( gisEqual(arr, aArrayRef(buf,0)) == True );
 
-  arr = greject(gt, aArray(aInt(3)));
+  arr = greject(aArray(aInt(3)), gt);
   UTEST( gisEqual(arr, aArray(aInt(3))) == True );
   
-  arr = greject(gt, aArray(aInt(4,5,6,7)));
+  arr = greject(aArray(aInt(4,5,6,7)), gt);
   UTEST( gisEqual(arr, aArrayRef(buf,0)) == True );
 
-  arr = greject(gt, aArray(aInt(0,1,2,3,4)));
+  arr = greject(aArray(aInt(0,1,2,3,4)), gt);
   UTEST( gisEqual(arr, aArray(aInt(0,1,2,3))) == True );
 
-  arr = greject(gt, aArray(aInt(0,1,2,3,4,5,6,7,8)));
+  arr = greject(aArray(aInt(0,1,2,3,4,5,6,7,8)), gt);
   UTEST( gisEqual(arr, aArray(aInt(0,1,2,3))) == True );
 
-  arr = greject(gt, aArray(aInt(0,1,2,3,4,5,6,7,8)));
+  arr = greject(aArray(aInt(0,1,2,3,4,5,6,7,8)), gt);
   UTEST( gisEqual(arr, aArray(aInt(4,5,6,7,8))) == False );
 
   // reduce
-  obj = greduce(addTo, aArrayRef(buf,0));
-  UTEST( obj == Nil );
-  UTEST( gisEqual(obj, Nil) == True );
+  obj = greduce(aArrayRef(buf,0), addTo, aInt(0));
+  UTEST( gisEqual(obj, aInt(0)) == True );
 
-  obj = greduce(addTo, aArray(aInt(3)));
+  obj = greduce(aArray(aInt(3)), addTo, aInt(0));
   UTEST( gisEqual(obj, aInt(3)) == True );
   
-  obj = greduce(addTo, aArray(aInt(1,2,3)));
+  obj = greduce(aArray(aInt(1,2,3)), addTo, aInt(0));
   UTEST( gisEqual(obj, aInt(6)) == True );
 
-  obj = greduce(addTo, aArray(aInt(1,2,3,4)));
+  obj = greduce(aArray(aInt(1,2,3,4)), addTo, aInt(0));
   UTEST( gisEqual(obj, aInt(6)) == False );
 
   // rreduce
-  obj = grreduce(addTo, aArrayRef(buf,0));
-  UTEST( obj == Nil );
-  UTEST( gisEqual(obj, Nil) == True );
+  obj = grreduce(aArrayRef(buf,0), addTo, aInt(0));
+  UTEST( gisEqual(obj, aInt(0)) == True );
 
-  obj = grreduce(addTo, aArray(aInt(3)));
+  obj = grreduce(aArray(aInt(3)), addTo, aInt(0));
   UTEST( gisEqual(obj, aInt(3)) == True );
   
-  obj = grreduce(addTo, aArray(aInt(1,2,3)));
+  obj = grreduce(aArray(aInt(1,2,3)), addTo, aInt(0));
   UTEST( gisEqual(obj, aInt(6)) == True );
 
-  obj = grreduce(addTo, aArray(aInt(1,2,3,4)));
+  obj = grreduce(aArray(aInt(1,2,3,4)), addTo, aInt(0));
   UTEST( gisEqual(obj, aInt(6)) == False );
 
   // accumulate
-  arr = gaccumulate(addTo, aArrayRef(buf,0));
+  arr = gaccumulate(aArrayRef(buf,0), addTo, aInt(0));
   UTEST( gisEqual(arr, aArrayRef(buf,0)) == True );
 
-  arr = gaccumulate(addTo, aArray(aInt(3)));
+  arr = gaccumulate(aArray(aInt(3)), addTo, aInt(0));
   UTEST( gisEqual(arr, aArray(aInt(3))) == True );
   
-  arr = gaccumulate(addTo, aArray(aInt(1,2,3))); // bad because it shares the result
-  UTEST( gisEqual(arr, aArray(aInt(6,6,6))) == True );
-
-  arr = gaccumulate(add, aArray(aInt(1,2,3))); // ok
+  arr = gaccumulate(aArray(aInt(1,2,3)), add, aInt(0));
   UTEST( gisEqual(arr, aArray(aInt(1,3,6))) == True );
 
-  arr = gaccumulate(add, aArray(aInt(1,2,3,4)));
+  arr = gaccumulate(aArray(aInt(1,2,3,4)), add, aInt(0));
   UTEST( gisEqual(arr, aArray(aInt(1,3,6))) == False );
 
-  arr = gaccumulate(div, aArray(aInt(64,4,2,8))); // ok
+  arr = gaccumulate(aArray(aInt(64,4,2,8)), div, aInt(64*64));
   UTEST( gisEqual(arr, aArray(aInt(64,16,8,1))) == True );
 
   // raccumulate
-  arr = graccumulate(addTo, aArrayRef(buf,0));
+  arr = graccumulate(aArrayRef(buf,0), addTo, aInt(0));
   UTEST( gisEqual(arr, aArrayRef(buf,0)) == True );
 
-  arr = graccumulate(addTo, aArray(aInt(3)));
+  arr = graccumulate(aArray(aInt(3)), addTo, aInt(0));
   UTEST( gisEqual(arr, aArray(aInt(3))) == True );
   
-  arr = graccumulate(addTo, aArray(aInt(1,2,3))); // bad because it...
+  graccumulate(arr = aArray(aInt(1,2,3)), addTo, aInt(0));
   UTEST( gisEqual(arr, aArray(aInt(6,5,3))) == True );
 
-  graccumulate(addTo, arr = aArray(aInt(1,2,3))); // ...modifies the original
+  arr = graccumulate(aArray(aInt(1,2,3)), add, aInt(0));
   UTEST( gisEqual(arr, aArray(aInt(6,5,3))) == True );
 
-  arr = graccumulate(add, aArray(aInt(1,2,3))); // ok
-  UTEST( gisEqual(arr, aArray(aInt(6,5,3))) == True );
-
-  arr = graccumulate(add, aArray(aInt(1,2,3,4)));
+  arr = graccumulate(aArray(aInt(1,2,3,4)), add, aInt(0));
   UTEST( gisEqual(arr, aArray(aInt(4,7,9))) == False );
 
-  arr = graccumulate(div, aArray(aInt(8,12,24,2))); // ok
+  arr = graccumulate(aArray(aInt(8,12,24,2)), div, aInt(1));
   UTEST( gisEqual(arr, aArray(aInt(8,1,12,2))) == True );
 
   // all
@@ -487,8 +479,4 @@ ut_array_functor(void)
 
   gdelete(pool);
 }
-
-//  cos_logmsg_setLevel(COS_LOGMSG_TRALL);
-//  if (cos_logmsg_setLevel(COS_LOGMSG_INFO) == COS_LOGMSG_TRALL)
-//    exit(EXIT_FAILURE);
 
