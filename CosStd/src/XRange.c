@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.6 2009/11/08 14:55:09 ldeniau Exp $
+ | $Id: XRange.c,v 1.7 2009/12/10 09:12:49 ldeniau Exp $
  |
 */
 
@@ -94,19 +94,19 @@ endmethod
 
 // ----- foreach
 
-defmethod(void, gforeach, Functor, XRange)
-  U32 size = XRange_size(self2);
+defmethod(void, gforeach, XRange, Functor)
+  U32 size = XRange_size(self);
   
   for (U32 i = 0; i < size; i++)
-    geval1(_1, aFloat(XRange_eval(self2,i)));
+    geval(_2, aFloat(XRange_eval(self,i)));
 endmethod
 
-defmethod(void, gforeach, FltFunction1, XRange)
-  U32 size = XRange_size(self2);
-  F64FCT1 fct = self->fct;
+defmethod(void, gforeach, XRange, FltFunction1)
+  U32 size = XRange_size(self);
+  F64FCT1 fct = self2->fct;
 
   for (U32 i = 0; i < size; i++)
-    fct(XRange_eval(self2,i));
+    fct(XRange_eval(self,i));
 endmethod
 
 // ----- map

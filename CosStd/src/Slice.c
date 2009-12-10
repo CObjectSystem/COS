@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.14 2009/11/08 14:55:09 ldeniau Exp $
+ | $Id: Slice.c,v 1.15 2009/12/10 09:12:49 ldeniau Exp $
  |
 */
 
@@ -96,19 +96,19 @@ endmethod
 
 // ----- foreach
 
-defmethod(void, gforeach, Functor, Slice)
-  U32 size = Slice_size(self2);
+defmethod(void, gforeach, Slice, Functor)
+  U32 size = Slice_size(self);
   
   for (U32 i = 0; i < size; i++)
-    geval1(_1, aInt(Slice_eval(self2,i)));
+    geval(_2, aInt(Slice_eval(self,i)));
 endmethod
 
-defmethod(void, gforeach, IntFunction1, Slice)
-  U32 size = Slice_size(self2);
-  I32FCT1 fct = self->fct;
+defmethod(void, gforeach, Slice, IntFunction1)
+  U32 size = Slice_size(self);
+  I32FCT1 fct = self2->fct;
 
   for (U32 i = 0; i < size; i++)
-    fct(Slice_eval(self2,i));
+    fct(Slice_eval(self,i));
 endmethod
 
 // ----- map

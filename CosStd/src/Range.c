@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.14 2009/11/08 14:55:09 ldeniau Exp $
+ | $Id: Range.c,v 1.15 2009/12/10 09:12:49 ldeniau Exp $
  |
 */
 
@@ -92,19 +92,19 @@ endmethod
 
 // ----- foreach
 
-defmethod(void, gforeach, Functor, Range)
-  U32 size = Range_size(self2);
+defmethod(void, gforeach, Range, Functor)
+  U32 size = Range_size(self);
   
   for (U32 i = 0; i < size; i++)
-    geval1(_1, aInt(Range_eval(self2,i)));
+    geval(_2, aInt(Range_eval(self,i)));
 endmethod
 
-defmethod(void, gforeach, IntFunction1, Range)
-  U32 size = Range_size(self2);
-  I32FCT1 fct = self->fct;
+defmethod(void, gforeach, Range, IntFunction1)
+  U32 size = Range_size(self);
+  I32FCT1 fct = self2->fct;
 
   for (U32 i = 0; i < size; i++)
-    fct(Range_eval(self2,i));
+    fct(Range_eval(self,i));
 endmethod
 
 // ----- map
