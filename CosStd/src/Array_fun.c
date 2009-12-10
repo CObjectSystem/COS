@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.23 2009/12/09 16:17:19 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.24 2009/12/10 09:05:49 ldeniau Exp $
  |
 */
 
@@ -50,78 +50,78 @@ useclass(Lesser,Equal,Greater);
 
 // ----- foreachWhile, foreach (returned value is discarded)
 
-defmethod(void, gforeachWhile, Functor, Array)
-  U32  size  = self2->size;
-  I32  val_s = self2->stride;
-  OBJ *val   = self2->object;
+defmethod(void, gforeachWhile, Array, Functor)
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
 
-  while (val != end && geval(_1, *val) != Nil)
+  while (val != end && geval(_2, *val) != Nil)
     val += val_s;
 endmethod
 
-defmethod(void, gforeach, Functor, Array)
-  U32  size  = self2->size;
-  I32  val_s = self2->stride;
-  OBJ *val   = self2->object;
+defmethod(void, gforeach, Array, Functor)
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
 
   while (val != end) {
-    geval(_1, *val);
+    geval(_2, *val);
     val += val_s;
   }
 endmethod
 
-defmethod(void, gforeach2, Functor, Array, Array)
-  U32  size   = self2->size < self3->size ? self2->size : self3->size;
-  I32  val_s  = self2->stride;
-  OBJ *val    = self2->object;
-  I32  val2_s = self3->stride;
-  OBJ *val2   = self3->object;
+defmethod(void, gforeach2, Array, Array, Functor)
+  U32  size   = self->size < self2->size ? self->size : self2->size;
+  I32  val_s  = self->stride;
+  OBJ *val    = self->object;
+  I32  val2_s = self2->stride;
+  OBJ *val2   = self2->object;
   OBJ *end    = val + val_s*size;
 
   while (val != end) {
-    geval(_1, *val, *val2);
+    geval(_3, *val, *val2);
     val  += val_s;
     val2 += val2_s;
   }
 endmethod
 
-defmethod(void, gforeach3, Functor, Array, Array, Array)
-  U32  size   = self2->size < self3->size ? self2->size : self3->size;
-       size   = self4->size < size ? self4->size : size;
-  I32  val_s  = self2->stride;
-  OBJ *val    = self2->object;
-  I32  val2_s = self3->stride;
-  OBJ *val2   = self3->object;
-  I32  val3_s = self4->stride;
-  OBJ *val3   = self4->object;
+defmethod(void, gforeach3, Array, Array, Array, Functor)
+  U32  size   = self->size < self2->size ? self->size : self2->size;
+       size   = self3->size < size ? self3->size : size;
+  I32  val_s  = self->stride;
+  OBJ *val    = self->object;
+  I32  val2_s = self2->stride;
+  OBJ *val2   = self2->object;
+  I32  val3_s = self3->stride;
+  OBJ *val3   = self3->object;
   OBJ *end    = val + val_s*size;
 
   while (val != end) {
-    geval(_1, *val, *val2, *val3);
+    geval(_4, *val, *val2, *val3);
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
   }
 endmethod
 
-defmethod(void, gforeach4, Functor, Array, Array, Array, Array)
-  U32  size   = self2->size < self3->size ? self2->size : self3->size;
+defmethod(void, gforeach4, Array, Array, Array, Array, Functor)
+  U32  size   = self->size < self2->size ? self->size : self2->size;
+       size   = self3->size < size ? self3->size : size;
        size   = self4->size < size ? self4->size : size;
-       size   = self5->size < size ? self5->size : size;
-  I32  val_s  = self2->stride;
-  OBJ *val    = self2->object;
-  I32  val2_s = self3->stride;
-  OBJ *val2   = self3->object;
-  I32  val3_s = self4->stride;
-  OBJ *val3   = self4->object;
-  I32  val4_s = self5->stride;
-  OBJ *val4   = self5->object;
+  I32  val_s  = self->stride;
+  OBJ *val    = self->object;
+  I32  val2_s = self2->stride;
+  OBJ *val2   = self2->object;
+  I32  val3_s = self3->stride;
+  OBJ *val3   = self3->object;
+  I32  val4_s = self4->stride;
+  OBJ *val4   = self4->object;
   OBJ *end    = val + val_s*size;
 
   while (val != end) {
-    geval(_1, *val, *val2, *val3, *val4);
+    geval(_5, *val, *val2, *val3, *val4);
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;

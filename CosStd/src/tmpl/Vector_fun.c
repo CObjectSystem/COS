@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.16 2009/11/26 16:58:12 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.17 2009/12/10 09:05:49 ldeniau Exp $
  |
 */
 
@@ -39,78 +39,78 @@
 
 // ----- foreachWhile, foreach (returned value is discarded)
 
-defmethod(void, gforeachWhile, Functor, T)
-  U32  size  = self2->size;
-  I32  val_s = self2->stride;
-  VAL *val   = self2->value;
+defmethod(void, gforeachWhile, T, Functor)
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*size;
 
-  while (val != end && geval(_1, VALOBJ(*val)) != Nil)
+  while (val != end && geval(_2, VALOBJ(*val)) != Nil)
     val += val_s;
 endmethod
 
-defmethod(void, gforeach, Functor, T)
-  U32  size  = self2->size;
-  I32  val_s = self2->stride;
-  VAL *val   = self2->value;
+defmethod(void, gforeach, T, Functor)
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
   VAL *end   = val + val_s*size;
 
   while (val != end) {
-    geval(_1, VALOBJ(*val));
+    geval(_2, VALOBJ(*val));
     val += val_s;
   }
 endmethod
 
-defmethod(void, gforeach2, Functor, T, T)
-  U32  size   = self2->size < self3->size ? self2->size : self3->size;
-  I32  val_s  = self2->stride;
-  VAL *val    = self2->value;
-  I32  val2_s = self3->stride;
-  VAL *val2   = self3->value;
+defmethod(void, gforeach2, T, T, Functor)
+  U32  size   = self->size < self2->size ? self->size : self2->size;
+  I32  val_s  = self->stride;
+  VAL *val    = self->value;
+  I32  val2_s = self2->stride;
+  VAL *val2   = self2->value;
   VAL *end    = val + val_s*size;
 
   while (val != end) {
-    geval(_1, VALOBJ(*val), VALOBJ(*val2));
+    geval(_3, VALOBJ(*val), VALOBJ(*val2));
     val  += val_s;
     val2 += val2_s;
   }
 endmethod
 
-defmethod(void, gforeach3, Functor, T, T, T)
-  U32  size   = self2->size < self3->size ? self2->size : self3->size;
-       size   = self4->size < size ? self4->size : size;
-  I32  val_s  = self2->stride;
-  VAL *val    = self2->value;
-  I32  val2_s = self3->stride;
-  VAL *val2   = self3->value;
-  I32  val3_s = self4->stride;
-  VAL *val3   = self4->value;
+defmethod(void, gforeach3, T, T, T, Functor)
+  U32  size   = self->size < self2->size ? self->size : self2->size;
+       size   = self3->size < size ? self3->size : size;
+  I32  val_s  = self->stride;
+  VAL *val    = self->value;
+  I32  val2_s = self2->stride;
+  VAL *val2   = self2->value;
+  I32  val3_s = self3->stride;
+  VAL *val3   = self3->value;
   VAL *end    = val + val_s*size;
 
   while (val != end) {
-    geval(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3));
+    geval(_4, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3));
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;
   }
 endmethod
 
-defmethod(void, gforeach4, Functor, T, T, T, T)
-  U32  size   = self2->size < self3->size ? self2->size : self3->size;
+defmethod(void, gforeach4, T, T, T, T, Functor)
+  U32  size   = self->size < self2->size ? self->size : self2->size;
+       size   = self3->size < size ? self3->size : size;
        size   = self4->size < size ? self4->size : size;
-       size   = self5->size < size ? self5->size : size;
-  I32  val_s  = self2->stride;
-  VAL *val    = self2->value;
-  I32  val2_s = self3->stride;
-  VAL *val2   = self3->value;
-  I32  val3_s = self4->stride;
-  VAL *val3   = self4->value;
-  I32  val4_s = self5->stride;
-  VAL *val4   = self5->value;
+  I32  val_s  = self->stride;
+  VAL *val    = self->value;
+  I32  val2_s = self2->stride;
+  VAL *val2   = self2->value;
+  I32  val3_s = self3->stride;
+  VAL *val3   = self3->value;
+  I32  val4_s = self4->stride;
+  VAL *val4   = self4->value;
   VAL *end    = val + val_s*size;
 
   while (val != end) {
-    geval(_1, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3), VALOBJ(*val4));
+    geval(_5, VALOBJ(*val), VALOBJ(*val2), VALOBJ(*val3), VALOBJ(*val4));
     val  += val_s;
     val2 += val2_s;
     val3 += val3_s;

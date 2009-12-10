@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.28 2009/11/25 17:49:20 ldeniau Exp $
+ | $Id: algorithm.h,v 1.29 2009/12/10 09:05:48 ldeniau Exp $
  |
 */
 
@@ -57,11 +57,11 @@ defgeneric(OBJ, gzip4, _1, _2, _3, _4);
 defgeneric(OBJ, gzip5, _1, _2, _3, _4, _5);
 
 // foreach (discard returned value)
-defgeneric(void, gforeach     , fun, _1);
-defgeneric(void, gforeach2    , fun, _1, _2);
-defgeneric(void, gforeach3    , fun, _1, _2, _3);
-defgeneric(void, gforeach4    , fun, _1, _2, _3, _4);
-defgeneric(void, gforeachWhile, fun, _1); // stop when fun returns Nil
+defgeneric(void, gforeach     , _1, fun);
+defgeneric(void, gforeach2    , _1, _2, fun);
+defgeneric(void, gforeach3    , _1, _2, _3, fun);
+defgeneric(void, gforeach4    , _1, _2, _3, _4, fun);
+defgeneric(void, gforeachWhile, _1, fun); // stop when fun returns Nil
 
 // apply (in-place map on _1, return _1)
 defgeneric(OBJ, gapply     , fun, _1);
