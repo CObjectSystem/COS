@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.7 2009/12/10 09:12:49 ldeniau Exp $
+ | $Id: XRange.c,v 1.8 2009/12/10 13:04:58 ldeniau Exp $
  |
 */
 
@@ -55,6 +55,29 @@ makclass(XRange, ValueSequence);
 // -----
 
 useclass(XRange);
+
+// ----- low-level functions
+
+U32
+XRange_size(const struct XRange *r) {
+  I32 size  = (r->end - r->start + r->stride) / r->stride;
+  
+  if (size > 0) {
+    if (r->stride > 0)
+      return XRange_eval(r, size-1) > r->end ? size-1 : size;
+    else
+      return XRange_eval(r, size-1) < r->end ? size-1 : size;
+  }
+
+  return 0;
+}
+
+BOOL
+XRange_isEqual(const struct XRange *r1, const struct XRange *r2) {
+  return float_equal(r1->start , r2->start)
+      && float_equal(r1->end   , r2->end)
+      && float_equal(r1->stride, r2->stride);
+}
 
 // ----- new
 

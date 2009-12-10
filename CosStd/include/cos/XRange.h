@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.h,v 1.2 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: XRange.h,v 1.3 2009/12/10 13:04:57 ldeniau Exp $
  |
 */
 
@@ -138,19 +138,10 @@ XRange_eval(const struct XRange *r, F64 x) {
   return r->start + x * r->stride;
 }
 
-static inline U32
-XRange_size(const struct XRange *r) {
-  U32 size  = (r->end - r->start) / r->stride + 1;
-  return size > 0 ? size : 0;
-}
+U32 XRange_size(const struct XRange *r);
 
 // predicates
-static inline BOOL
-XRange_isEqual(const struct XRange *r1, const struct XRange *r2) {
-  return float_equal(r1->start , r2->start)
-      && float_equal(r1->end   , r2->end)
-      && float_equal(r1->stride, r2->stride);
-}
+BOOL XRange_isEqual(const struct XRange *r1, const struct XRange *r2);
 
 // closed vs open interval
 static inline BOOL
