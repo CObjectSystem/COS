@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.24 2009/12/10 09:05:49 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.25 2009/12/11 16:52:46 ldeniau Exp $
  |
 */
 
@@ -822,6 +822,66 @@ defmethod(OBJ, gunique, Array, Functor)
   }
 
   retmethod(gadjust(_arr));
+endmethod
+
+// ----- split (return an array of arrays)
+
+defmethod(OBJ, gsplit, Array, Functor)
+  OBJ _arr = gautoDelete(gnew(Array));
+
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+  I32  beg   = 0;
+
+  while (val != end) {
+    U32 len = 1;
+    val += val_s;
+
+    while (val != end) {
+      if (geval(_2, *(val-val_s), *val) == True)
+        break;
+        
+      val += val_s;
+      len ++;
+    }
+
+    gpush(_arr, aArrayView(self, atSlice(beg, len, val_s)));
+    beg += len;
+  }
+
+  retmethod(gadjust(_arr));
+endmethod
+
+// ----- split (return an Array2 of arrays)
+
+defmethod(OBJ, ggroup, Array, Functor)
+  OBJ arr_f = gnew(Array); PRT(arr_f);
+  OBJ arr_t = gnew(Array); PRT(arr_t);
+  OBJ arr   = gautoDelete(gnewWith(Array, aArray(arr_t,arr_f)));
+
+  gdelete(arr_f), gdelete(arr_t);
+  UNPRT(arr_f);
+
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+
+  while (val != end) {
+    if (geval(_2, *val) == True)
+      gpush(arr_t, *val);
+    else
+      gpush(arr_f, *val);
+
+    val += val_s;
+  }
+
+  gadjust(arr_f);
+  gadjust(arr_t);
+
+  retmethod(arr);
 endmethod
 
 // ----- diff (asymmetric diff, self1 - self2)
