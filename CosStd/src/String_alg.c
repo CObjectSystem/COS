@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.14 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: String_alg.c,v 1.15 2009/12/11 13:15:42 ldeniau Exp $
  |
 */
 
@@ -200,7 +200,7 @@ defmethod(OBJ, gsplit, String, Object)
   while(size) {
     U8* end = memchr(src, val, size);
     U32 beg = src-self->value;
-    U32 len = end ? end-src : size;
+    U32 len = end ? (U32)(end-src) : size;
     
     str = gnewWith2(View, _1, aSlice(beg,len));
     gpush(strs, str);

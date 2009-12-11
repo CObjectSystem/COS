@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.h,v 1.3 2009/12/10 13:04:57 ldeniau Exp $
+ | $Id: XRange.h,v 1.4 2009/12/11 13:15:42 ldeniau Exp $
  |
 */
 
@@ -138,7 +138,12 @@ XRange_eval(const struct XRange *r, F64 x) {
   return r->start + x * r->stride;
 }
 
-U32 XRange_size(const struct XRange *r);
+static inline U32
+XRange_size(const struct XRange *r)
+{
+  I32 size = (r->end - r->start) / r->stride + 1 + DBL_EPSILON;
+  return size > 0 ? size : 0;
+}
 
 // predicates
 BOOL XRange_isEqual(const struct XRange *r1, const struct XRange *r2);

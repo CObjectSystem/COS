@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.22 2009/10/01 14:09:40 ldeniau Exp $
+ | $Id: cosdef.h,v 1.23 2009/12/11 13:15:42 ldeniau Exp $
  |
 */
 
@@ -106,6 +106,21 @@ typedef void (*IMP4)(SEL,OBJ,OBJ,OBJ,OBJ,    void*,void*);
 typedef void (*IMP5)(SEL,OBJ,OBJ,OBJ,OBJ,OBJ,void*,void*);
 
 typedef void (*cos_exception_handler)(OBJ,STR,STR,int);
+
+// limits
+
+#define I8_MAX (U8_MAX/2)
+#define U8_MAX ((U8)-1U)
+
+#define I16_MAX (U16_MAX/2)
+#define U16_MAX ((U16)-1U)
+
+#define I32_MAX (U32_MAX/2)
+#define U32_MAX ((U32)-1UL)
+
+#define I64_MAX (U64_MAX/2)
+#define U64_MAX ((U64)-1ULL)
+
 
 /***********************************************************
  * Implementation
