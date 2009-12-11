@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.46 2009/11/24 18:14:58 ldeniau Exp $
+ | $Id: Array.c,v 1.47 2009/12/11 15:55:56 ldeniau Exp $
  |
 */
 
@@ -189,6 +189,14 @@ defmethod(OBJ,  ginitWith         , pmArray, XRange) // Float sequence
     for (U32 i = 0; i < size; i++) {
       vec->object[i] = gretain(aFloat(XRange_eval(self2,i)));
       vec->size++;
+    }
+    
+    if (size) { // avoid overshoot
+      F64 end = XRange_eval(self2, size-1);
+
+      if ((XRange_stride(self2) > 0 && end > XRange_end(self2)) ||
+          (XRange_stride(self2) < 0 && end < XRange_end(self2)))
+        gcopy(vec->object[size-1], aFloat(XRange_end(self2)));     
     }
     
     UNPRT(_vec);
