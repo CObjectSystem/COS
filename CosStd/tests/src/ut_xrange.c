@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_xrange.c,v 1.4 2009/12/11 13:15:42 ldeniau Exp $
+ | $Id: ut_xrange.c,v 1.5 2009/12/11 13:55:54 ldeniau Exp $
  |
 */
 
@@ -98,7 +98,18 @@ ut_xrange(void)
     UTEST( float_equal(XRange_eval(atXRange(10,1,-2),1),8) );
     UTEST( float_equal(XRange_eval(atXRange(10,1,-2),10),-10) );
 
-    // size
+    // closed
+    UTEST( XRange_isClosed(atXRange(0,10,1)) );
+    UTEST(!XRange_isClosed(atXRange(0,10,-1)) );
+    UTEST(!XRange_isClosed(atXRange(10,0,1)) );
+    UTEST( XRange_isClosed(atXRange(10,0,-1)) );
+
+    UTEST(!XRange_isClosed(atXRange(-1,1,-1)) );
+    UTEST( XRange_isClosed(atXRange(1,-1,-1)) );
+    UTEST( XRange_isClosed(atXRange(-1,1,1)) );
+    UTEST(!XRange_isClosed(atXRange(1,-1,1)) );
+
+    // size (integer)
     UTEST( XRange_size(atXRange(0,9,1)) == 10 );
     UTEST( XRange_size(atXRange(1,10,1)) == 10 );
     UTEST( XRange_size(atXRange(1,10,2)) == 5 );
@@ -143,17 +154,6 @@ ut_xrange(void)
     UTEST( XRange_size(atXRange(-1,0,3)) == 1 );
     UTEST( XRange_size(atXRange(-1,1,3)) == 1 );
     UTEST( XRange_size(atXRange(-1,9,3)) == 4 );
-
-    // closed
-    UTEST( XRange_isClosed(atXRange(0,10,1)) );
-    UTEST(!XRange_isClosed(atXRange(0,10,-1)) );
-    UTEST(!XRange_isClosed(atXRange(10,0,1)) );
-    UTEST( XRange_isClosed(atXRange(10,0,-1)) );
-
-    UTEST(!XRange_isClosed(atXRange(-1,1,-1)) );
-    UTEST( XRange_isClosed(atXRange(1,-1,-1)) );
-    UTEST( XRange_isClosed(atXRange(-1,1,1)) );
-    UTEST(!XRange_isClosed(atXRange(1,-1,1)) );
 
     // size (floating)
     UTEST( XRange_size(atXRange(0,9,0.1)) == 91 );
