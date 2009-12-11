@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.29 2009/12/10 09:05:48 ldeniau Exp $
+ | $Id: algorithm.h,v 1.30 2009/12/11 16:52:46 ldeniau Exp $
  |
 */
 
@@ -130,8 +130,8 @@ defgeneric(I32, gindexOf, _1, _2); // return index or -1 if not found
 
 // seq-like algorithms
 defgeneric(OBJ, gunique     , _1, fun); // remove contiguous equal elements
-defgeneric(OBJ, ggroup      , _1, fun); // group true then false
-defgeneric(OBJ, gsplit      , _1, fun); // split when true
+defgeneric(OBJ, ggroup      , _1, fun); // group while true
+defgeneric(OBJ, gsplit      , _1, fun); // split when  true
 defgeneric(OBJ, gintersperse, _1, fun); // intersperse value when not Nil
 
 // set-like algorithms
