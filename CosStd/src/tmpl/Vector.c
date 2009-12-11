@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.8 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: Vector.c,v 1.9 2009/12/11 15:04:59 ldeniau Exp $
  |
 */
 
@@ -183,6 +183,14 @@ defmethod(OBJ,  ginitWith         , TP, XRange) // Float sequence
     vec->value[i] = XRange_eval(self2,i);
     vec->size++;
   }
+
+#ifdef FLTVECTOR_ONLY
+  // correct overshoot
+  if (size && (
+      (XRange_stride(self2) > 0 && vec->value[size-1] > XRange_end(self2)) ||
+      (XRange_stride(self2) < 0 && vec->value[size-1] < XRange_end(self2))))
+     vec->value[size-1] = XRange_end(self2);
+#endif
   
   retmethod( (OBJ)vec );
 endmethod
