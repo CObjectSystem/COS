@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.7 2009/10/27 14:50:34 ldeniau Exp $
+ | $Id: Number_flt.c,v 1.8 2009/12/17 14:08:57 ldeniau Exp $
  |
 */
 
@@ -188,26 +188,33 @@ defmethod(OBJ, gpower, Complex, Complex)
   retmethod(_1);
 endmethod
 
+// ----- hypotenuse
+
+defmethod(OBJ, ghypotenuse, Float, Float)
+  self->value = hypot(self->value, self2->value);
+  retmethod(_1);
+endmethod
+
 // ----- conj
 
 defmethod(OBJ, gconj, Complex)
-  retmethod(gautoDelete( gconjugate(gclone(_1)) ));
+  retmethod(gconjugate(gautoDelete(gclone(_1))));
 endmethod
 
 // ----- abs
 
 defmethod(OBJ, gabs, Complex)
-  struct Float *flt = STATIC_CAST(struct Float*, galloc(Float));
+  struct Float *flt = STATIC_CAST(struct Float*, gautoDelete(galloc(Float)));
   flt->value = cabs(self->value);
-  retmethod(gautoDelete( (OBJ)flt ));
+  retmethod( (OBJ)flt );
 endmethod
 
 // ----- arg
 
 defmethod(OBJ, garg, Complex)
-  struct Float *flt = STATIC_CAST(struct Float*, galloc(Float));
+  struct Float *flt = STATIC_CAST(struct Float*, gautoDelete(galloc(Float)));
   flt->value = carg(self->value);
-  retmethod(gautoDelete( (OBJ)flt ));
+  retmethod( (OBJ)flt );
 endmethod
 
 // ----- math methods
@@ -216,7 +223,7 @@ endmethod
 #define DEFMETHOD(mth,gen) \
 \
 defmethod(OBJ, mth, Floating) \
-  retmethod(gautoDelete( gen(gclone(_1)) )); \
+  retmethod(gen( gautoDelete(gclone(_1)) )); \
 endmethod
 
 DEFMETHOD(gexp  , gexponential)
@@ -242,52 +249,43 @@ DEFMETHOD(gatanh, gatangenth  )
 // ----- hypot
 
 defmethod(OBJ, ghypot, Float, Float)
-  struct Float *flt = STATIC_CAST(struct Float*, galloc(Float));
-  flt->value = hypot(self->value, self2->value);
-  retmethod(gautoDelete( (OBJ)flt ));
-endmethod
-
-defmethod(OBJ, ghypotenuse, Float, Float)
-  self->value = hypot(self->value, self2->value);
-  retmethod(_1);
+  retmethod( ghypotenuse(gautoDelete(gclone(_1)),_2) );
 endmethod
 
 // ----- subSqr
 
-// avoid subTo(Float,Complex)
-defmethod(OBJ, gsubSqr, Float, Complex)
-  struct Complex *cpx = STATIC_CAST(struct Complex*, galloc(Complex));
-  cpx->value  = (self->value - self2->value) * (self->value - self2->value);
-  retmethod(gautoDelete( (OBJ)cpx ));
+defmethod(OBJ, gsubSqr, Number, Number)
+  OBJ flt = gsub(_1,_2);
+  retmethod( gmulBy(flt,flt) );
 endmethod
 
-defmethod(OBJ, gsubSqr, Floating, Floating)
-  OBJ flt = gsubTo(gclone(_1),_2);
-  retmethod(gautoDelete( gmulBy(flt,flt) ));
+defmethod(OBJ, gsubSqr, Integral, Number)
+  OBJ flt = gsubTo(gautoDelete(gnewWith(Float,_1)),_2);
+  retmethod( gmulBy(flt,flt) );
 endmethod
 
 // ----- mulAdd
 
 defmethod(OBJ, gmulAdd, Floating, Floating, Floating)
-  retmethod(gautoDelete( gaddTo(gmulBy(gclone(_1),_2),_3) ));
+  retmethod(gaddTo(gmulBy(gautoDelete(gclone(_1)),_2),_3));
 endmethod
 
 // avoid mulBy(Float,Complex)
 defmethod(OBJ, gmulAdd, Float, Complex, Floating)
-  retmethod(gautoDelete( gaddTo(gmulBy(gclone(_2),_1),_3) ));
+  retmethod(gaddTo(gmulBy(gautoDelete(gclone(_2)),_1),_3));
 endmethod
 
 // avoid addTo(Float,Complex)
 defmethod(OBJ, gmulAdd, Float, Float, Complex)
-  retmethod(gautoDelete( gaddTo(gmulBy(gnewWithCpx(Complex,self->value),_2),_3) ));
+  retmethod(gaddTo(gmulBy(gautoDelete(gnewWithCpx(Complex,self->value)),_2),_3));
 endmethod
 
 // use C99 fma
 #ifdef FP_FAST_FMA
 defmethod(OBJ, gmulAdd, Float, Float, Float)
-  struct Float *flt = STATIC_CAST(struct Float*, galloc(Float));
+  struct Float *flt = STATIC_CAST(struct Float*, gautoDelete(galloc(Float)));
   flt->value = fma(self->value,self2->value,self3->value);
-  retmethod(gautoDelete( (OBJ)flt ));
+  retmethod( (OBJ)flt );
 endmethod
 #endif
 

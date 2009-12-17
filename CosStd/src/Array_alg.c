@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.15 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.16 2009/12/17 14:08:57 ldeniau Exp $
  |
 */
 
@@ -167,7 +167,7 @@ defmethod(OBJ, grepeat, Object, Int)
   retmethod(gautoDelete( gnewWith2(Array,_2,_1) ));
 endmethod
 
-// ----- zip, zip3, zip4
+// ----- zip, zip3, zip4, zip5, zipn
 
 defmethod(OBJ, gzip, Array, Array)
   U32 size = self->size < self2->size ? self->size : self2->size;
@@ -277,7 +277,40 @@ defmethod(OBJ, gzip5, Array, Array, Array, Array, Array)
   retmethod(_arr);
 endmethod
 
-// ----- cat, cat3, cat4, cat5
+defmethod(OBJ, gzipn, Array)
+  U32  size  = self->size;
+  I32  src_s = self->stride;
+  OBJ *src   = self->object;
+  OBJ *end   = src + size*src_s;
+  U32  msize = 0;
+
+  // compute max of sizes
+  while (src != end) {
+    test_assert( cos_object_isKindOf(*src, classref(Array)),
+                 "invalid array element (should be an Array)" );
+    U32 sz = gsize(*src);
+    if (sz < msize) msize = sz;
+    src += src_s;
+  }
+
+  // intersperse arrays
+  struct Array* arr = Array_alloc(msize * size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
+
+  OBJ *dst = arr->object;
+       src = self->object;
+       
+  while (src != end) {
+    struct Array* self2 = STATIC_CAST(struct Array*, *src);
+    copy(dst,size,&arr->size,self2->object,self2->stride,self2->size);
+    src += src_s;
+    dst += 1;
+  }
+
+  retmethod(_arr);
+endmethod
+
+// ----- cat, cat3, cat4, cat5, catn
 
 defmethod(OBJ, gcat, Array, Array)
   U32 size = self->size + self2->size;
@@ -286,8 +319,8 @@ defmethod(OBJ, gcat, Array, Array)
 
   OBJ *dst = arr->object;
 
-  dst = copy(dst,&arr->size,self ->object,self ->stride,self ->size);
-        copy(dst,&arr->size,self2->object,self2->stride,self2->size);
+  dst = copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
+        copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
 
   retmethod(_arr);
 endmethod
@@ -299,9 +332,9 @@ defmethod(OBJ, gcat3, Array, Array, Array)
 
   OBJ *dst = arr->object;
 
-  dst = copy(dst,&arr->size,self ->object,self ->stride,self ->size);
-  dst = copy(dst,&arr->size,self2->object,self2->stride,self2->size);
-        copy(dst,&arr->size,self3->object,self3->stride,self3->size);
+  dst = copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
+  dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+        copy(dst,1,&arr->size,self3->object,self3->stride,self3->size);
 
   retmethod(_arr);
 endmethod
@@ -313,10 +346,10 @@ defmethod(OBJ, gcat4, Array, Array, Array, Array)
 
   OBJ *dst = arr->object;
 
-  dst = copy(dst,&arr->size,self ->object,self ->stride,self ->size);
-  dst = copy(dst,&arr->size,self2->object,self2->stride,self2->size);
-  dst = copy(dst,&arr->size,self3->object,self3->stride,self3->size);
-        copy(dst,&arr->size,self4->object,self4->stride,self4->size);
+  dst = copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
+  dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+  dst = copy(dst,1,&arr->size,self3->object,self3->stride,self3->size);
+        copy(dst,1,&arr->size,self4->object,self4->stride,self4->size);
 
   retmethod(_arr);
 endmethod
@@ -328,11 +361,42 @@ defmethod(OBJ, gcat5, Array, Array, Array, Array, Array)
 
   OBJ *dst = arr->object;
 
-  dst = copy(dst,&arr->size,self ->object,self ->stride,self ->size);
-  dst = copy(dst,&arr->size,self2->object,self2->stride,self2->size);
-  dst = copy(dst,&arr->size,self3->object,self3->stride,self3->size);
-  dst = copy(dst,&arr->size,self4->object,self4->stride,self4->size);
-        copy(dst,&arr->size,self5->object,self5->stride,self5->size);
+  dst = copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
+  dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+  dst = copy(dst,1,&arr->size,self3->object,self3->stride,self3->size);
+  dst = copy(dst,1,&arr->size,self4->object,self4->stride,self4->size);
+        copy(dst,1,&arr->size,self5->object,self5->stride,self5->size);
+
+  retmethod(_arr);
+endmethod
+
+defmethod(OBJ, gcatn, Array)
+  U32  size  = self->size;
+  I32  src_s = self->stride;
+  OBJ *src   = self->object;
+  OBJ *end   = src + size*src_s;
+  U32  ssize = 0;
+
+  // compute sum of sizes
+  while (src != end) {
+    test_assert( cos_object_isKindOf(*src, classref(Array)),
+                 "invalid array element (should be an Array)" );
+    ssize += gsize(*src);
+    src += src_s;
+  }
+
+  // concatenate arrays
+  struct Array* arr = Array_alloc(ssize);
+  OBJ _arr = gautoDelete( (OBJ)arr );
+  
+  OBJ *dst = arr->object;
+       src = self->object;
+  
+  while(src != end) {
+    struct Array* self2 = STATIC_CAST(struct Array*, *src);
+    dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+    src += src_s;
+  }
 
   retmethod(_arr);
 endmethod

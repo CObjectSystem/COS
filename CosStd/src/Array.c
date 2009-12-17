@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.47 2009/12/11 15:55:56 ldeniau Exp $
+ | $Id: Array.c,v 1.48 2009/12/17 14:08:57 ldeniau Exp $
  |
 */
 
@@ -127,7 +127,7 @@ clone(const struct Array *arr)
   struct Array* cpy = Array_alloc(arr->size);
   OBJ _cpy = (OBJ)cpy; PRT(_cpy);
 
-  copy(cpy->object,&cpy->size,arr->object,arr->stride,arr->size);
+  copy(cpy->object,1,&cpy->size,arr->object,arr->stride,arr->size);
 
   UNPRT(_cpy);
   return _cpy;
@@ -271,7 +271,7 @@ defmethod(OBJ,  ginitWith2          , pmArray, Array, Slice) // sub vector
     struct Array* vec = Array_alloc(size);
     OBJ _vec = (OBJ)vec; PRT(_vec);
 
-    copy(vec->object,&vec->size,self2->object+start,stride,size);
+    copy(vec->object,1,&vec->size,self2->object+start,stride,size);
 
     UNPRT(_vec);
     retmethod(_vec);

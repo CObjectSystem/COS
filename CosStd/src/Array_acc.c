@@ -29,15 +29,17 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.12 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.13 2009/12/17 14:08:57 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
+#include <cos/Functor.h>
 #include <cos/IntVector.h>
 #include <cos/Number.h>
 
 #include <cos/gen/accessor.h>
+#include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
 #include <cos/gen/object.h>
 
@@ -83,6 +85,10 @@ endmethod
 
 defmethod(OBJ, ggetAt, Array, IntVector)
   retmethod( gautoDelete(gnewWith2(Array,_1,_2)) );
+endmethod
+
+defmethod(OBJ, ggetAt, Array, Array)
+  retmethod( gmap(aFun(ggetAt, _1, 0), _2) );
 endmethod
 
 // ----- object setters (index, slice, range, intvector)
@@ -199,5 +205,13 @@ defmethod(OBJ, gputAt, Array, IntVector, Array)
     }
     
     retmethod(_1);
+endmethod
+
+defmethod(OBJ, gputAt, Array, Array, Array)
+  PRE
+    test_assert( self2->size <= self3->size, "source array is too small" );
+  POST
+  BODY
+    retmethod( gmap2(aFun(gputAt, _1, 0, 0), _2, _3) );
 endmethod
 

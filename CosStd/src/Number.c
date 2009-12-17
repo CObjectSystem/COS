@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.18 2009/10/27 14:50:34 ldeniau Exp $
+ | $Id: Number.c,v 1.19 2009/12/17 14:08:57 ldeniau Exp $
  |
 */
 
@@ -345,113 +345,113 @@ endmethod
 // ----- abs
 
 defmethod(OBJ, gabs, Number)
-  retmethod(gautoDelete( gabsolute(gclone(_1)) ));
+  retmethod(gabsolute(gautoDelete(gclone(_1))));
 endmethod
 
 // ----- neg
 
 defmethod(OBJ, gneg, Number)
-  retmethod(gautoDelete( gnegate(gclone(_1)) ));
+  retmethod(gnegate(gautoDelete(gclone(_1))));
 endmethod
 
 // ----- sqr
 
 defmethod(OBJ, gsqr, Number)
-  retmethod(gautoDelete( gmulBy(gclone(_1),_1) ));
+  retmethod(gmulBy(gautoDelete(gclone(_1)),_1));
 endmethod
 
 // ----- inv
 
 defmethod(OBJ, ginv, Floating)
-  retmethod(gautoDelete( ginvert(gclone(_1)) ));
+  retmethod(ginvert(gautoDelete(gclone(_1))));
 endmethod
 
 // ----- add
 
 defmethod(OBJ, gadd, Number, Number)
-  retmethod(gautoDelete( gaddTo(gclone(_1),_2) ));
+  retmethod(gaddTo(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gadd, Integral, Long)
-  retmethod(gautoDelete( gaddTo(gclone(_2),_1) ));
+  retmethod(gaddTo(gautoDelete(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gadd, Integral, Floating)
-  retmethod(gautoDelete( gaddTo(gclone(_2),_1) ));
+  retmethod(gaddTo(gautoDelete(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gadd, Floating, Complex)
-  retmethod(gautoDelete( gaddTo(gclone(_2),_1) ));
+  retmethod(gaddTo(gautoDelete(gclone(_2)),_1));
 endmethod
 
 // ----- sub
 
 defmethod(OBJ, gsub, Number, Number)
-  retmethod(gautoDelete( gsubTo(gclone(_1),_2) ));
+  retmethod(gsubTo(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gsub, Integral, Long)
-  retmethod(gautoDelete( gnegate(gsubTo(gclone(_2),_1)) ));
+  retmethod(gnegate(gsubTo(gautoDelete(gclone(_2)),_1)));
 endmethod
 
 defmethod(OBJ, gsub, Integral, Floating)
-  retmethod(gautoDelete( gnegate(gsubTo(gclone(_2),_1)) ));
+  retmethod(gnegate(gsubTo(gautoDelete(gclone(_2)),_1)));
 endmethod
 
 defmethod(OBJ, gsub, Floating, Complex)
-  retmethod(gautoDelete( gnegate(gsubTo(gclone(_2),_1)) ));
+  retmethod(gnegate(gsubTo(gautoDelete(gclone(_2)),_1)));
 endmethod
 
 // ----- mul
 
 defmethod(OBJ, gmul, Number, Number)
-  retmethod(gautoDelete( gmulBy(gclone(_1),_2) ));
+  retmethod(gmulBy(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gmul, Integral, Long)
-  retmethod(gautoDelete( gmulBy(gclone(_2),_1) ));
+  retmethod(gmulBy(gautoDelete(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gmul, Integral, Floating)
-  retmethod(gautoDelete( gmulBy(gclone(_2),_1) ));
+  retmethod(gmulBy(gautoDelete(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gmul, Floating, Complex)
-  retmethod(gautoDelete( gmulBy(gclone(_2),_1) ));
+  retmethod(gmulBy(gautoDelete(gclone(_2)),_1));
 endmethod
 
 // ----- div
 
 defmethod(OBJ, gdiv, Number, Number)
-  retmethod(gautoDelete( gdivBy(gclone(_1),_2) ));
+  retmethod(gdivBy(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gdiv, Integral, Long)
-  retmethod(gautoDelete( gmulBy(ginvert(gclone(_2)),_1) ));
+  retmethod(gmulBy(ginvert(gautoDelete(gclone(_2))),_1));
 endmethod
 
 defmethod(OBJ, gdiv, Integral, Floating)
-  retmethod(gautoDelete( gmulBy(ginvert(gclone(_2)),_1) ));
+  retmethod(gmulBy(ginvert(gautoDelete(gclone(_2))),_1));
 endmethod
 
 defmethod(OBJ, gdiv, Floating, Complex)
-  retmethod(gautoDelete( gmulBy(ginvert(gclone(_2)),_1) ));
+  retmethod(gmulBy(ginvert(gautoDelete(gclone(_2))),_1));
 endmethod
 
 // ----- pow
 
 defmethod(OBJ, gpow, Floating, Int)
-  retmethod(gautoDelete( gpower(gclone(_1),_2) ));
+  retmethod(gpower(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gpow, Floating, Floating)
-  retmethod(gautoDelete( gpower(gclone(_1),_2) ));
+  retmethod(gpower(gautoDelete(gclone(_1)),_2));
 endmethod
 
 // ----- mod
 
 defmethod(OBJ, gmod, Integral, Integral)
-  retmethod(gautoDelete( gmodulo(gclone(_1),_2) ));
+  retmethod(gmodulo(gautoDelete(gclone(_1)),_2));
 endmethod
 
 // ----- compare

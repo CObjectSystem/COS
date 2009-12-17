@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.16 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: Vector.h,v 1.17 2009/12/17 14:08:54 ldeniau Exp $
  |
 */
 
@@ -106,8 +106,8 @@ endclass
             COS_PP_CAT(P,Vector),E,__VA_ARGS__)
 
 #define atVectorN(TN,T,E,...) ( (struct T*) \
-  ( &(struct TN) { {{{{{ cos_object_auto(TN) }}}}}, \
-    (E[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 } ))
+  ( &(struct TN) {{ {{{{{ cos_object_auto(TN) }}}}}, \
+    (E[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 }} ))
 
 // --- VectorView
 

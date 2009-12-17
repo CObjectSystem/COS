@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.31 2009/12/11 16:53:37 ldeniau Exp $
+ | $Id: algorithm.h,v 1.32 2009/12/17 14:08:57 ldeniau Exp $
  |
 */
 
@@ -49,12 +49,14 @@ defgeneric(OBJ, gcat , _1, _2);
 defgeneric(OBJ, gcat3, _1, _2, _3);
 defgeneric(OBJ, gcat4, _1, _2, _3, _4);
 defgeneric(OBJ, gcat5, _1, _2, _3, _4, _5);
+defgeneric(OBJ, gcatn, _1);
 
 // zip
 defgeneric(OBJ, gzip , _1, _2);
 defgeneric(OBJ, gzip3, _1, _2, _3);
 defgeneric(OBJ, gzip4, _1, _2, _3, _4);
 defgeneric(OBJ, gzip5, _1, _2, _3, _4, _5);
+defgeneric(OBJ, gzipn, _1);
 
 // foreach (discard returned value)
 defgeneric(void, gforeach     , _1, fun);

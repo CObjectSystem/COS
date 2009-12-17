@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_utl.h,v 1.1 2009/09/30 21:53:40 ldeniau Exp $
+ | $Id: Array_utl.h,v 1.2 2009/12/17 14:08:57 ldeniau Exp $
  |
 */
 
@@ -53,12 +53,15 @@ assign(OBJ *dst, OBJ val)
 }
 
 static inline OBJ*
-copy(OBJ *dst, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
+copy(OBJ *dst, I32 dst_s, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
 {
-  OBJ *end = dst + src_n;
+  OBJ *end = src + src_s*src_n;
 
-  while (dst != end)
-    *dst++ = gretain(*src), ++*dst_n, src += src_s;
+  while (src != end) {
+    *dst = gretain(*src), ++*dst_n;
+     dst += dst_s;
+     src += src_s;
+  }
 
   return dst;
 }
