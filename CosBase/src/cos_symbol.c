@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.43 2009/10/02 21:52:40 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.44 2009/12/18 13:40:42 ldeniau Exp $
  |
 */
 
@@ -842,7 +842,8 @@ cos_class_get(U32 id)
   struct Class *cls = STATIC_CAST(struct Class*, sym.bhv[id & sym.msk]);
 
   if (!COS_ID_TAG(id))
-    cos_abort("automatic or static objects used *before* initialization");
+    cos_abort("invalid class id %d - dynamic object already destroyed or "
+              "automatic object used *before* COS initialization", id);
 
   if (!cls || cos_class_id(cls) != id)
     cos_abort("invalid class id %d", id);
