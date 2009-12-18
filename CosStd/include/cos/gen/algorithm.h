@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.32 2009/12/17 14:08:57 ldeniau Exp $
+ | $Id: algorithm.h,v 1.33 2009/12/18 15:40:54 ldeniau Exp $
  |
 */
 
@@ -126,9 +126,9 @@ defgeneric(OBJ, gisSorted, _1, fun); // return True or False
 // linear search if fun _2 returns TrueFalse
 // binary search if fun _2 returns Ordered (and it is sorted)
 // return Nil if not found
-defgeneric(OBJ, gfind   , _1, _2); // return object
-defgeneric(OBJ, gifind  , _1, _2); // return res such that ggetAt(_1,res) get object
-defgeneric(I32, gindexOf, _1, _2); // return index or -1 if not found
+defgeneric(OBJ, gfind   , _1, fun); // return object
+defgeneric(OBJ, gifind  , _1, fun); // return res such that ggetAt(_1,res) get object
+defgeneric(I32, gindexOf, _1, fun); // return index or -1 if not found
 
 // seq-like algorithms
 defgeneric(OBJ, gintersperse, _1, fun); // intersperse value when not Nil

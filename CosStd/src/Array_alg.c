@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.16 2009/12/17 14:08:57 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.17 2009/12/18 15:40:55 ldeniau Exp $
  |
 */
 
@@ -76,6 +76,32 @@ defmethod(OBJ, gisEqual, Array, Array)
   }
 
   retmethod(True);
+endmethod
+
+// ----- comparison
+
+defmethod(OBJ, gcompare, Array, Array)
+  useclass(Equal);
+  
+  if (self == self2)
+    retmethod(Equal);
+
+  U32  size   = self->size;
+  I32  val_s  = self->stride;
+  OBJ *val    = self->object;
+  I32  val2_s = self2->stride;
+  OBJ *val2   = self2->object;
+  OBJ *end    = val + val_s*size;
+  OBJ  res;
+
+  while (val != end) {
+    if ((res = gcompare(*val,*val2)) != Equal)
+      retmethod(res);
+    val  += val_s;
+    val2 += val2_s;
+  }
+
+  retmethod(Equal);
 endmethod
 
 // ----- in place
