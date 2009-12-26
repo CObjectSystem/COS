@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.34 2009/10/02 21:52:34 ldeniau Exp $
+ | $Id: method.h,v 1.35 2009/12/26 15:02:44 ldeniau Exp $
  |
 */
 
@@ -373,7 +373,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 #define COS_MTH_NXT_INIT \
   /* next_method initialization */ \
   (_cos_mth_nxt_p != (_cos_mth_nxt_t)COS_YES ? (void)0 : \
-   cos_method_nextInit((FUNC*)(void*)&_cos_mth_nxt_p, \
+   cos_method_nextInit((FCT*)(void*)&_cos_mth_nxt_p, \
       _cos_mth_nxt_sel,_cos_mth_nxt_rnk,_cos_mth_nxt_rnd,_cos_mth_nxt_cls))
 
 // forward_message

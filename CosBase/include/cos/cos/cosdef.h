@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.23 2009/12/11 13:15:42 ldeniau Exp $
+ | $Id: cosdef.h,v 1.24 2009/12/26 15:02:44 ldeniau Exp $
  |
 */
 
@@ -89,16 +89,34 @@ typedef struct OBJ*           OBJ;  // object ADT
 typedef const struct Generic* SEL;  // message selector
 typedef struct { OBJ _1,_2; } PAIR; // return by value
 
-typedef void (*FUNC)(void);
-typedef void (*FUNCV)(void*);
-typedef void (*FUNCO)(OBJ);
-typedef OBJ  (*OBJFCT0)(void);
-typedef OBJ  (*OBJFCT1)(OBJ);
-typedef OBJ  (*OBJFCT2)(OBJ,OBJ);
-typedef OBJ  (*OBJFCT3)(OBJ,OBJ,OBJ);
-typedef OBJ  (*OBJFCT4)(OBJ,OBJ,OBJ,OBJ);
-typedef OBJ  (*OBJFCT5)(OBJ,OBJ,OBJ,OBJ,OBJ);
+// function signatures
+typedef void (*FCT )(void);
+typedef void (*FCTV)(void*);
+typedef void (*FCT1)(OBJ);
+typedef void (*FCT2)(OBJ,OBJ);
+typedef void (*FCT3)(OBJ,OBJ,OBJ);
+typedef void (*FCT4)(OBJ,OBJ,OBJ,OBJ);
+typedef void (*FCT5)(OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef void (*FCT6)(OBJ,OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef void (*FCT7)(OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef void (*FCT8)(OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef void (*FCT9)(OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef void (*FCTN)(OBJ*,U32);
 
+// functor signatures
+typedef OBJ  (*FUN0)(void);
+typedef OBJ  (*FUN1)(OBJ);
+typedef OBJ  (*FUN2)(OBJ,OBJ);
+typedef OBJ  (*FUN3)(OBJ,OBJ,OBJ);
+typedef OBJ  (*FUN4)(OBJ,OBJ,OBJ,OBJ);
+typedef OBJ  (*FUN5)(OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef OBJ  (*FUN6)(OBJ,OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef OBJ  (*FUN7)(OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef OBJ  (*FUN8)(OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef OBJ  (*FUN9)(OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ,OBJ);
+typedef OBJ  (*FUNN)(OBJ*,U32);
+
+// method signatures
 typedef void (*IMP1)(SEL,OBJ,                void*,void*);
 typedef void (*IMP2)(SEL,OBJ,OBJ,            void*,void*);
 typedef void (*IMP3)(SEL,OBJ,OBJ,OBJ,        void*,void*);
@@ -188,7 +206,7 @@ struct cos_exception_extendedProtect {
   struct cos_exception_protect *prv;
   OBJ   const *obj;
   void *const *alt;
-  FUNCV        fct;
+  FCTV         fct;
 };
 
 // dispatch caches

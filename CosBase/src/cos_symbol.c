@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.44 2009/12/18 13:40:42 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.45 2009/12/26 15:02:45 ldeniau Exp $
  |
 */
 
@@ -61,7 +61,7 @@ static struct {
   struct Class    **prp; // sorted  by name
   struct Generic  **gen; // sorted  by name
   struct Method   **mth; // sorted  by gen-name,mth-rank,rnd-rank,cls-name
-  FUNC            **nxt; // not sorted
+  FCT            **nxt; // not sorted
   U32 msk, n_cls, n_prp, n_gen, n_mth, n_nxt, m_nxt;
 } sym;
 
@@ -449,7 +449,7 @@ static inline void
 nxt_enlarge(void)
 {
   U32 m = sym.m_nxt < 128 ? 128 : sym.m_nxt*2;
-  FUNC **nxt = realloc(sym.nxt, m * sizeof *sym.nxt);
+  FCT **nxt = realloc(sym.nxt, m * sizeof *sym.nxt);
 
   if (!nxt)
     cos_abort("out of memory while storing next methods");
@@ -459,7 +459,7 @@ nxt_enlarge(void)
 }
 
 static inline void
-nxt_add(FUNC *fct)
+nxt_add(FCT *fct)
 {
   if (sym.n_nxt == sym.m_nxt)
     nxt_enlarge();
@@ -471,7 +471,7 @@ static inline void
 nxt_clear(void)
 {
   while (sym.n_nxt)
-    *sym.nxt[--sym.n_nxt] = (FUNC)YES;
+    *sym.nxt[--sym.n_nxt] = (FCT)YES;
 }
 
 static inline BOOL
@@ -482,7 +482,7 @@ mth_isSubOf(struct Class* const*cls, struct Class* const* ref, U32 n)
   return  !n && cls_isSubOf(cls[0],ref[0]);
 }
 
-static inline FUNC
+static inline FCT
 nxt_init(SEL gen, U32 info, U32 arnd, struct Class *const *cls)
 {
   struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
@@ -518,7 +518,7 @@ nxt_init(SEL gen, U32 info, U32 arnd, struct Class *const *cls)
 
   for (; i < n_mth; i++)
     if (mth_isSubOf(cls, mth[i]->cls, n_cls))
-      return (FUNC)mth[i]->fct;
+      return (FCT)mth[i]->fct;
 
   return 0;
 }
@@ -1133,10 +1133,10 @@ cos_method_get5(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 static pthread_mutex_t nxt_lock = PTHREAD_MUTEX_INITIALIZER;
 
 void
-cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, U32 rnd, struct Class* const* cls)
+cos_method_nextInit(FCT *fct, SEL gen, U32 rnk, U32 rnd, struct Class* const* cls)
 {
   pthread_mutex_lock(&nxt_lock);
-  if (*fct == (FUNC)YES) {
+  if (*fct == (FCT)YES) {
     *fct = nxt_init(gen,rnk,rnd,cls);
     nxt_add(fct);
   }
@@ -1154,7 +1154,7 @@ cos_method_nextClear(void)
 #else
 
 void
-cos_method_nextInit(FUNC *fct, SEL gen, U32 rnk, U32 rnd, struct Class* const* cls)
+cos_method_nextInit(FCT *fct, SEL gen, U32 rnk, U32 rnd, struct Class* const* cls)
 {
   *fct = nxt_init(gen,rnk,rnd,cls);
   nxt_add(fct);

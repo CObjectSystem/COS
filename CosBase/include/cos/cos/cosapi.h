@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.35 2009/10/01 14:09:40 ldeniau Exp $
+ | $Id: cosapi.h,v 1.36 2009/12/26 15:02:44 ldeniau Exp $
  |
 */
 
@@ -189,7 +189,7 @@ void cos_symbol_register(struct Object**);
 
 // next-method
 void cos_method_nextClear(void);
-void cos_method_nextInit(FUNC*,SEL,U32,U32,struct Class* const*);
+void cos_method_nextInit(FCT*,SEL,U32,U32,struct Class* const*);
 
 // 2nd and 3rd levels dispatch
 IMP1 cos_method_fastLookup1_(struct cos_method_slot1*restrict*restrict,SEL,U32);
@@ -398,14 +398,14 @@ cos_exception_protect(struct cos_exception_protect *ptr, OBJ const *obj)
 
 static COS_ALWAYS_INLINE struct cos_exception_extendedProtect
 cos_exception_objectProtect(struct cos_exception_extendedProtect *ptr,
-                            OBJ const *alt, FUNCO fct)
+                            OBJ const *alt, FCT1 fct)
 {
   struct cos_exception_context *cxt = cos_exception_context();
 
   ptr->prv = cxt->stk;
   ptr->obj = (OBJ*)COS_YES;
   ptr->alt = (void *const*)alt;
-  ptr->fct = (FUNCV)fct;
+  ptr->fct = (FCTV)fct;
   cxt->stk = (void*)ptr;
 
   return *ptr;
@@ -414,7 +414,7 @@ cos_exception_objectProtect(struct cos_exception_extendedProtect *ptr,
 
 static COS_ALWAYS_INLINE struct cos_exception_extendedProtect
 cos_exception_extendedProtect(struct cos_exception_extendedProtect *ptr,
-                              void * const*alt, FUNCV fct)
+                              void * const*alt, FCTV fct)
 {
   struct cos_exception_context *cxt = cos_exception_context();
 
