@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.23 2009/08/19 10:14:22 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.24 2009/12/26 18:45:28 ldeniau Exp $
  |
 */
 
@@ -124,7 +124,7 @@ terminate_default(OBJ ex, STR func, STR file, int line)
 
 static cos_exception_handler handler = terminate_default;
 
-static void
+static void __attribute__((__noreturn__))
 terminate(void)
 {
   if (handler) {

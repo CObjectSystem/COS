@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.36 2009/12/26 15:02:44 ldeniau Exp $
+ | $Id: cosapi.h,v 1.37 2009/12/26 18:45:28 ldeniau Exp $
  |
 */
 
@@ -101,10 +101,10 @@ void   cos_contract_invariant4(OBJ,OBJ,OBJ,OBJ,STR,STR,int);
 void   cos_contract_invariant5(OBJ,OBJ,OBJ,OBJ,OBJ,STR,STR,int);
 int    cos_contract_setLevel  (int lvl); // return previous level
 
-void   cos_exception_assert(STR,STR,STR,int);
-void   cos_exception_errno(int,STR,STR,int);
-void   cos_exception_throw(OBJ,STR,STR,int);
-BOOL   cos_exception_catch(OBJ,OBJ);
+void   cos_exception_assert(STR,STR,STR,int) __attribute__((__noreturn__));
+void   cos_exception_errno (int,STR,STR,int) __attribute__((__noreturn__));
+void   cos_exception_throw (OBJ,STR,STR,int) __attribute__((__noreturn__));
+BOOL   cos_exception_catch (OBJ,OBJ);
 BOOL   cos_exception_uncaught(void);
 void   cos_exception_initContext(struct cos_exception_context*);
 void   cos_exception_deinitContext(struct cos_exception_context*);
