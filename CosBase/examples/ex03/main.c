@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: main.c,v 1.2 2009/04/17 21:13:55 ldeniau Exp $
+ | $Id: main.c,v 1.3 2009/12/27 23:57:44 ldeniau Exp $
  |
 */
 
@@ -94,7 +94,7 @@ endmethod
 
 int main(void)
 {
-  // cos_logmsg_set(COS_LOGMSG_TRACE); // trace ALL messages
+  // cos_logmsg_setLevel(COS_LOGMSG_TRACE); // trace ALL messages
 
   OBJ pool = gnew(AutoRelease);
   OBJ obj;
