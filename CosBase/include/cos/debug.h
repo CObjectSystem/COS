@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: debug.h,v 1.6 2009/09/04 12:51:50 ldeniau Exp $
+ | $Id: debug.h,v 1.7 2009/12/27 14:43:28 ldeniau Exp $
  |
 */
 
@@ -41,6 +41,7 @@
 #include <stdio.h>
 
 extern FILE *cos_logmsg_out;
+extern int   cos_exception_showStack;
 
 // in cos/cos_debug.c
 void cos_showCallStack(FILE*);
@@ -66,7 +67,7 @@ void cos_method_showCache4(FILE*);
 void cos_method_showCache5(FILE*);
 
 // in cos/cos_exception.c
-void cos_exception_showStack(FILE*);
+void cos_exception_showProtectionStack(FILE*);
 
 // in cos/AutoRelease.c
 void cos_autorelease_showStack(FILE*);

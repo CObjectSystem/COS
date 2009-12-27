@@ -29,12 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.24 2009/12/26 18:45:28 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.25 2009/12/27 14:43:30 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Exception.h>
+#include <cos/debug.h>
+
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 #include <cos/gen/message.h>
@@ -120,6 +122,11 @@ terminate_default(OBJ ex, STR func, STR file, int line)
   else
     cos_info ("exiting with uncaught exception %s (%s) thrown at (%s:%d:%s)",
               cos_object_className(ex), reason, file, line, func);
+
+#ifdef __GLIBC__
+  if (cos_exception_showStack)
+    cos_showCallStack(0);    
+#endif
 }
 
 static cos_exception_handler handler = terminate_default;
@@ -231,10 +238,10 @@ endmethod
  * ----------------------------------------------------------------------------
  */
 
-#include <cos/debug.h>
+int cos_exception_showStack = 0;
 
 void
-cos_exception_showStack(FILE *fp)
+cos_exception_showProtectionStack(FILE *fp)
 {
   struct cos_exception_protect *p = cos_exception_context()->stk;
   U32 i = 0;
