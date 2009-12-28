@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.46 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.47 2009/12/28 11:11:30 ldeniau Exp $
  |
 */
 
@@ -613,7 +613,7 @@ sym_init(void)
         struct Class *cls = STATIC_CAST(struct Class*, tbl_sym[t][s]);
         const struct Class *pcl = STATIC_CAST(const struct Class*, cls->str);
         sym.cls[sym.n_cls++] = cls; // hack: meta-link
-        cls->str = pcl->str+2;    // hack: name is shared
+        cls->str = pcl->str+2;      // hack: name is shared
         cls->Behavior.Object.id = cos_class_id(pcl);
         cls->Behavior.Object.rc = COS_RC_STATIC;
       } break;

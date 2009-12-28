@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.12 2009/04/02 07:45:35 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.13 2009/12/28 11:08:45 ldeniau Exp $
  |
 */
 
@@ -236,7 +236,7 @@ chkret(SEL sel, OBJ* ret)
 
 defmethod(void, gunrecognizedMessage1, A)
   snprintf(self->str, MAX_LEN, "%s does not understand %s",
-           gclassName(_1), _sel->name);
+           gclassName(_1), _sel->str);
   chkret(_sel,_ret);
 endmethod
 
