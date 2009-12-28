@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.4 2009/08/03 10:07:00 ldeniau Exp $
+ | $Id: Generic.c,v 1.5 2009/12/28 11:08:45 ldeniau Exp $
  |
 */
 
@@ -46,5 +46,5 @@ makclass(GenOperator  , Generic);
 // -----
 
 defmethod(STR, gstr, Generic)
-  retmethod( self->name );
+  retmethod( self->str );
 endmethod

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.20 2009/09/21 09:36:58 ldeniau Exp $
+ | $Id: Object.c,v 1.21 2009/12/28 11:08:45 ldeniau Exp $
  |
 */
 
@@ -128,24 +128,24 @@ defmethod(OBJ, gnewWithStr, mObject, (STR)str)
   retmethod( ginitWithStr(galloc(_1),str) );
 endmethod
 
-defmethod(OBJ, gnewWithObj, mObject, (OBJ)obj1)
-  retmethod( ginitWithObj(galloc(_1),obj1) );
+defmethod(OBJ, gnewWithObj, mObject, (OBJ)obj)
+  retmethod( ginitWithObj(galloc(_1),obj) );
 endmethod
 
-defmethod(OBJ, gnewWithObj2, mObject, (OBJ)obj1, (OBJ)obj2)
-  retmethod( ginitWithObj2(galloc(_1),obj1,obj2) );
+defmethod(OBJ, gnewWithObj2, mObject, (OBJ)obj, (OBJ)obj2)
+  retmethod( ginitWithObj2(galloc(_1),obj,obj2) );
 endmethod
 
-defmethod(OBJ, gnewWithObj3, mObject, (OBJ)obj1, (OBJ)obj2, (OBJ)obj3)
-  retmethod( ginitWithObj3(galloc(_1),obj1,obj2,obj3) );
+defmethod(OBJ, gnewWithObj3, mObject, (OBJ)obj, (OBJ)obj2, (OBJ)obj3)
+  retmethod( ginitWithObj3(galloc(_1),obj,obj2,obj3) );
 endmethod
 
-defmethod(OBJ, gnewWithObj4, mObject, (OBJ)obj1, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4)
-  retmethod( ginitWithObj4(galloc(_1),obj1,obj2,obj3,obj4) );
+defmethod(OBJ, gnewWithObj4, mObject, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4)
+  retmethod( ginitWithObj4(galloc(_1),obj,obj2,obj3,obj4) );
 endmethod
 
-defmethod(OBJ, gnewWithObj5, mObject, (OBJ)obj1, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5)
-  retmethod( ginitWithObj5(galloc(_1),obj1,obj2,obj3,obj4,obj5) );
+defmethod(OBJ, gnewWithObj5, mObject, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5)
+  retmethod( ginitWithObj5(galloc(_1),obj,obj2,obj3,obj4,obj5) );
 endmethod
 
 defmethod(OBJ, gnewWithChr, mObject, (I32)val)
@@ -226,7 +226,7 @@ defmethod(OBJ, gclass, Object)
 endmethod
 
 defmethod(STR, gclassName, Object)
-  retmethod( cos_class_get(self->id)->name );
+  retmethod( cos_class_get(self->id)->str );
 endmethod
 
 // ----- understanding
@@ -272,34 +272,34 @@ defmethod(void, gunrecognizedMessage1, Object)
   OBJ obj[1]; obj[0]=_1;
   trace(_sel,obj);
 
-  THROW( gnewWithStr(ExBadMessage, _sel->name) );
+  THROW( gnewWithStr(ExBadMessage, _sel->str) );
 endmethod
 
 defmethod(void, gunrecognizedMessage2, Object, Object)
   OBJ obj[2]; obj[0]=_1, obj[1]=_2;
   trace(_sel,obj);
 
-  THROW( gnewWithStr(ExBadMessage, _sel->name) );
+  THROW( gnewWithStr(ExBadMessage, _sel->str) );
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Object, Object, Object)
   OBJ obj[3]; obj[0]=_1, obj[1]=_2, obj[2]=_3;
   trace(_sel,obj);
 
-  THROW( gnewWithStr(ExBadMessage, _sel->name) );
+  THROW( gnewWithStr(ExBadMessage, _sel->str) );
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Object, Object, Object, Object)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4;
   trace(_sel,obj);
 
-  THROW( gnewWithStr(ExBadMessage, _sel->name) );
+  THROW( gnewWithStr(ExBadMessage, _sel->str) );
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Object)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
   trace(_sel,obj);
 
-  THROW( gnewWithStr(ExBadMessage, _sel->name) );
+  THROW( gnewWithStr(ExBadMessage, _sel->str) );
 endmethod
 

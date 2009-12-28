@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.10 2009/06/09 22:30:29 ldeniau Exp $
+ | $Id: coscls.h,v 1.11 2009/12/28 11:08:45 ldeniau Exp $
  |
 */
 
@@ -130,7 +130,7 @@ COS_CLS_END
 
 COS_CLS_DEF(Generic,Behavior)
   U32 mth;
-  STR name;
+  STR str;
   STR sig;
   struct cos_generic_arginfo *arginfo;
   U16 argsize;
@@ -140,7 +140,7 @@ COS_CLS_END
 
 COS_CLS_DEF(Class,Behavior)
   U32 isz;
-  STR name;
+  STR str;
   struct Class* spr;
   struct Class* cls;
   U32 prp[2];

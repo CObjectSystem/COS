@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch4.c,v 1.8 2009/05/08 17:03:20 ldeniau Exp $
+ | $Id: cos_dispatch4.c,v 1.9 2009/12/28 11:08:45 ldeniau Exp $
  |
 */
 
@@ -173,8 +173,8 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, BOOL load)
     if (!fct)
       cos_abort("method4_lookup: %s not found for classes (%s,%s,%s,%s)",
                 "gunrecognizedMessage4",
-                cos_class_get(id1)->name, cos_class_get(id2)->name,
-                cos_class_get(id3)->name, cos_class_get(id4)->name);
+                cos_class_get(id1)->str, cos_class_get(id2)->str,
+                cos_class_get(id3)->str, cos_class_get(id4)->str);
   }
 
   // get slot

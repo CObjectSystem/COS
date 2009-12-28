@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch.c,v 1.4 2009/09/04 12:51:52 ldeniau Exp $
+ | $Id: cos_dispatch.c,v 1.5 2009/12/28 11:08:45 ldeniau Exp $
  |
 */
 
@@ -200,8 +200,8 @@ cos_method_showCache1(FILE *fp)
       do {
         ++j;
         fprintf(fp, " %s(%s)",
-                cos_generic_get(slot->idg)->name,
-                cos_class_get  (slot->id1)->name);
+                cos_generic_get(slot->idg)->str,
+                cos_class_get  (slot->id1)->str);
         slot = slot->nxt;
       } while (slot->idg);
 
@@ -234,9 +234,9 @@ cos_method_showCache2(FILE *fp)
       do {
         ++j;
         fprintf(fp, " %s(%s,%s)",
-                cos_generic_get(slot->idg)->name,
-                cos_class_get  (slot->id1)->name,
-                cos_class_get  (slot->id2)->name);
+                cos_generic_get(slot->idg)->str,
+                cos_class_get  (slot->id1)->str,
+                cos_class_get  (slot->id2)->str);
         slot = slot->nxt;
       } while (slot->idg);
 
@@ -269,10 +269,10 @@ cos_method_showCache3(FILE *fp)
       do {
         ++j;
         fprintf(fp, " %s(%s,%s,%s)",
-                cos_generic_get(slot->idg)->name,
-                cos_class_get  (slot->id1)->name,
-                cos_class_get  (slot->id2)->name,
-                cos_class_get  (slot->id3)->name);
+                cos_generic_get(slot->idg)->str,
+                cos_class_get  (slot->id1)->str,
+                cos_class_get  (slot->id2)->str,
+                cos_class_get  (slot->id3)->str);
         slot = slot->nxt;
       } while (slot->idg);
 
@@ -305,11 +305,11 @@ cos_method_showCache4(FILE *fp)
       do {
         ++j;
         fprintf(fp, " %s(%s,%s,%s,%s)",
-                cos_generic_get(slot->idg)->name,
-                cos_class_get  (slot->id1)->name,
-                cos_class_get  (slot->id2)->name,
-                cos_class_get  (slot->id3)->name,
-                cos_class_get  (slot->id4)->name);
+                cos_generic_get(slot->idg)->str,
+                cos_class_get  (slot->id1)->str,
+                cos_class_get  (slot->id2)->str,
+                cos_class_get  (slot->id3)->str,
+                cos_class_get  (slot->id4)->str);
         slot = slot->nxt;
       } while (slot->idg);
 
@@ -342,12 +342,12 @@ cos_method_showCache5(FILE *fp)
       do {
         ++j;
         fprintf(fp, " %s(%s,%s,%s,%s,%s)",
-                cos_generic_get(slot->idg)->name,
-                cos_class_get  (slot->id1)->name,
-                cos_class_get  (slot->id2)->name,
-                cos_class_get  (slot->id3)->name,
-                cos_class_get  (slot->id4)->name,
-                cos_class_get  (slot->id5)->name);
+                cos_generic_get(slot->idg)->str,
+                cos_class_get  (slot->id1)->str,
+                cos_class_get  (slot->id2)->str,
+                cos_class_get  (slot->id3)->str,
+                cos_class_get  (slot->id4)->str,
+                cos_class_get  (slot->id5)->str);
         slot = slot->nxt;
       } while (slot->idg);
 

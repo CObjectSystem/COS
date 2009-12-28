@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.5 2009/06/16 21:43:45 ldeniau Exp $
+ | $Id: Class.c,v 1.6 2009/12/28 11:08:45 ldeniau Exp $
  |
 */
 
@@ -51,7 +51,7 @@ defproperty(Class, (spr)superClass, (OBJ));
 // ----- direct getters
 
 defmethod(STR, gstr, Class)
-  retmethod( self->name );
+  retmethod( self->str );
 endmethod
 
 defmethod(U32, gsize, Class)

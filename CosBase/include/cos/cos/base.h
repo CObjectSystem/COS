@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.21 2009/10/02 21:52:34 ldeniau Exp $
+ | $Id: base.h,v 1.22 2009/12/28 11:08:44 ldeniau Exp $
  |
 */
 
@@ -43,8 +43,12 @@
 #ifdef  COS_DISABLE_ALL
 #define COS_DISABLE_NO
 #define COS_DISABLE_YES
-#define COS_DISABLE_STATIC_CAST
 #define COS_DISABLE_STATIC_ASSERT
+#define COS_DISABLE_STATIC_CAST
+#define COS_DISABLE_OBJECT_CAST
+#define COS_DISABLE_OBJECT_ECAST
+#define COS_DISABLE_OBJECT_DYNCAST
+#define COS_DISABLE_OBJECT_EDYNCAST
 #endif
 
 #ifndef COS_DISABLE_NO
@@ -55,12 +59,28 @@
 #define YES COS_YES
 #endif
 
+#ifndef COS_DISABLE_STATIC_ASSERT
+#define STATIC_ASSERT(tag,cond) COS_STATIC_ASSERT(tag,cond)
+#endif
+
 #ifndef COS_DISABLE_STATIC_CAST
 #define STATIC_CAST(typename,value) COS_STATIC_CAST(typename,value)
 #endif
 
-#ifndef COS_DISABLE_STATIC_ASSERT
-#define STATIC_ASSERT(tag,cond) COS_STATIC_ASSERT(tag,cond)
+#ifndef COS_DISABLE_OBJECT_CAST
+#define OBJECT_CAST(class,object) COS_OBJECT_CAST(class,object)
+#endif
+
+#ifndef COS_DISABLE_OBJECT_ECAST
+#define OBJECT_ECAST(class,object) COS_OBJECT_ECAST(class,object)
+#endif
+
+#ifndef COS_DISABLE_OBJECT_DYNCAST
+#define OBJECT_DYNCAST(class,object) COS_OBJECT_DYNCAST(class,object)
+#endif
+
+#ifndef COS_DISABLE_OBJECT_EDYNCAST
+#define OBJECT_EDYNCAST(class,object) COS_OBJECT_EDYNCAST(class,object)
 #endif
 
 /***********************************************************
@@ -83,6 +103,20 @@
 // convert value (C cast)
 #define COS_STATIC_CAST(typename,value) \
         ((typename)(value))
+
+// convert object (COS cast)
+#define COS_OBJECT_CAST(cls,obj) \
+((struct cls*)cos_object_cast    (obj,classref(cls)))
+
+#define COS_OBJECT_ECAST(cls,obj) \
+((struct cls*)cos_object_ecast   (obj,classref(cls),__FUNC__,__FILE__,__LINE__))
+
+// convert object (COS downcast)
+#define COS_OBJECT_DYNCAST(cls,obj) \
+ ((struct cls*)cos_object_dyncast(obj,classref(cls)))
+
+#define COS_OBJECT_EDYNCAST(cls,obj) \
+((struct cls*)cos_object_edyncast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
 
 // compile time assert
 #define COS_STATIC_ASSERT(tag,cond) \

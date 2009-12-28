@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.15 2009/09/16 14:51:41 ldeniau Exp $
+ | $Id: Exception.c,v 1.16 2009/12/28 11:08:45 ldeniau Exp $
  |
 */
 
@@ -81,15 +81,21 @@ defmethod(OBJ, ginit, Exception)
   retmethod(_1);
 endmethod
  
-defmethod(OBJ, ginitWith, Exception, Object)
+defmethod(OBJ, ginitWithObj, Exception, (OBJ)obj)
   self->str = 0;
-  self->obj = gretain(_2);
+  self->obj = gretain(obj);
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWithStr, Exception, (STR)str)
   self->str = str;
   self->obj = Nil;
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWithObjStr, Exception, (OBJ)obj, (STR)str)
+  self->str = str;
+  self->obj = gretain(obj);
   retmethod(_1);
 endmethod
 
@@ -123,6 +129,19 @@ void cos_exception_assert(STR reason, STR func, STR file, int line)
     cos_logmsg(COS_LOGMSG_ABORT,func,file,line,"%s",reason);
 
   THROW(gnewWithStr(ExBadAssert,reason),func,file,line);
+}
+
+// ----- badcast
+
+void cos_exception_badcast(OBJ obj, const struct Class *cls,
+                           STR func, STR file, int line)
+{
+  useclass(ExBadCast);
+  
+  if (cos_object_id(ExBadCast) == 0)
+    cos_logmsg(COS_LOGMSG_ABORT,func,file,line,"invalid cast %s", cls->str);
+
+  THROW(gnewWithObjStr(ExBadCast,obj,cls->str),func,file,line);
 }
 
 // ----- errno
@@ -201,7 +220,7 @@ ex_signal(int sig)
     cos_abort("[%d] %s", sig, strsignal(sig));
   }
 
-  THROW(gnewWithInt(ExSignal, sig));
+  THROW(gnewWithInt(ExSignal,sig));
 }
 
 void (*cos_signal(int sig))(int)

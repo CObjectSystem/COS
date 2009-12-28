@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.45 2009/12/26 15:02:45 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.46 2009/12/28 11:08:45 ldeniau Exp $
  |
 */
 
@@ -105,10 +105,10 @@ bhv_setTag(struct Behavior *bhv)
     struct Generic *gen = STATIC_CAST(struct Generic*, bhv);
 
     if (bhv->id)
-      cos_abort("generic '%s' has already an id", gen->name);
+      cos_abort("generic '%s' has already an id", gen->str);
 
     if ( (bhv->Object.id & COS_ID_TAGMSK) )
-      cos_abort("generic '%s' has invalid initialization", gen->name);
+      cos_abort("generic '%s' has invalid initialization", gen->str);
 
     bhv->id = bhv->Object.id | bhv_tag();
     bhv->Object.id = 0;
@@ -117,11 +117,11 @@ bhv_setTag(struct Behavior *bhv)
     struct Class *cls = STATIC_CAST(struct Class*, bhv);
 
     if (bhv->Object.id)
-      cos_abort("class '%s' has already an id", cls->name ? cls->name : "?");
+      cos_abort("class '%s' has already an id", cls->str ? cls->str : "?");
 
     if ( (bhv->id & COS_ID_TAGMSK) )
       cos_abort("class '%s' has invalid initialization (multiple generics?)",
-        cls->name ? cls->name : "?");
+        cls->str ? cls->str : "?");
 
     bhv->id |= bhv_tag();
   }
@@ -133,7 +133,7 @@ cls_cmp(const void *_cls1, const void *_cls2)
   struct Class *cls1 = *(struct Class* const*)_cls1;
   struct Class *cls2 = *(struct Class* const*)_cls2;
 
-  return strcmp(cls1->name, cls2->name);
+  return strcmp(cls1->str, cls2->str);
 }
 
 static int // qsort
@@ -142,7 +142,7 @@ gen_cmp(const void *_gen1, const void *_gen2)
   struct Generic *gen1 = *(struct Generic* const*)_gen1;
   struct Generic *gen2 = *(struct Generic* const*)_gen2;
 
-  return strcmp(gen1->name, gen2->name);
+  return strcmp(gen1->str, gen2->str);
 }
 
 static int // qsort
@@ -154,7 +154,7 @@ mth_cmp(const void *_mth1, const void *_mth2)
 
   // ascending generic name
   if (mth1->Method.gen != mth2->Method.gen)
-    return strcmp(mth1->Method.gen->name, mth2->Method.gen->name);
+    return strcmp(mth1->Method.gen->str, mth2->Method.gen->str);
 
   // descending method rank order
   if ((res = (mth1->Method.info < mth2->Method.info) -
@@ -166,7 +166,7 @@ mth_cmp(const void *_mth1, const void *_mth2)
   
   for (i = 0; i < n; i++)
     if (mth1->cls[i] != mth2->cls[i])
-      return strcmp(mth1->cls[i]->name, mth2->cls[i]->name);
+      return strcmp(mth1->cls[i]->str, mth2->cls[i]->str);
 
   // descending around rank order
   return (mth1->Method.arnd < mth2->Method.arnd) -
@@ -178,7 +178,7 @@ cls_strcmp(const void *str, const void *_cls)
 {
   struct Class *cls = *(struct Class* const*)_cls;
 
-  return strcmp(str,cls->name);
+  return strcmp(str,cls->str);
 }
 
 static int // qsort
@@ -186,7 +186,7 @@ prp_strcmp(const void *str, const void *_prp)
 {
   struct Class *prp = *(struct Class* const*)_prp;
 
-  return strcmp(str,prp->name+2); // skip P_
+  return strcmp(str,prp->str+2); // skip P_
 }
 
 static int // qsort
@@ -194,7 +194,7 @@ gen_strcmp(const void *str, const void *_gen)
 {
   struct Generic *gen = *(struct Generic* const*)_gen;
 
-  return strcmp(str,gen->name);
+  return strcmp(str,gen->str);
 }
 
 static inline BOOL
@@ -253,7 +253,7 @@ static inline void
 gen_incMth(struct Generic *gen)
 {
   if (COS_GEN_NMTH(gen) == COS_GEN_MTHMSK)
-    cos_abort("too many specializations for generic %s", gen->name);
+    cos_abort("too many specializations for generic %s", gen->str);
 
   ++gen->info;
 }
@@ -357,7 +357,7 @@ cls_classPropCnt(const struct Generic *gen, const struct Class *cls, I32 rnk)
 
        if (gen == genericref(ggetAt)) p = get;
   else if (gen == genericref(gputAt)) p = put;
-  else cos_abort("invalid generic '%s' for properties", gen->name);
+  else cos_abort("invalid generic '%s' for properties", gen->str);
 
   if ((U32)rnk > (U32)r) rnk = r;
 
@@ -385,7 +385,7 @@ cls_classPropLst(const struct Generic *gen,
 
        if (gen == genericref(ggetAt)) p = get;
   else if (gen == genericref(gputAt)) p = put;
-  else cos_abort("invalid generic '%s' for properties", gen->name);
+  else cos_abort("invalid generic '%s' for properties", gen->str);
 
   if ((U32)rnk > (U32)r) rnk = r;
 
@@ -426,7 +426,7 @@ cls_setClassProp(const struct Generic *gen)
 
        if (gen == genericref(ggetAt)) p = get;
   else if (gen == genericref(gputAt)) p = put;
-  else cos_abort("invalid generic '%s' for properties", gen->name);
+  else cos_abort("invalid generic '%s' for properties", gen->str);
 
   for (i = 0; i < n_mth;) {
 
@@ -596,11 +596,11 @@ sym_init(void)
           case cos_tag_mclass:
           case cos_tag_pclass: {
             struct Class *cls = STATIC_CAST(struct Class*, bhv);
-            cos_abort("class '%s' slot %u already assigned", cls->name ? cls->name : "?", i);
+            cos_abort("class '%s' slot %u already assigned", cls->str ? cls->str : "?", i);
           }
           case cos_tag_generic: {
             struct Generic *gen = STATIC_CAST(struct Generic*, bhv);
-            cos_abort("generic '%s' slot %u already assigned", gen->name, i);
+            cos_abort("generic '%s' slot %u already assigned", gen->str, i);
           }}
         }
 
@@ -611,16 +611,16 @@ sym_init(void)
       switch (tbl_sym[t][s]->rc) {
       case cos_tag_class: {
         struct Class *cls = STATIC_CAST(struct Class*, tbl_sym[t][s]);
-        const struct Class *pcl = STATIC_CAST(const struct Class*, cls->name);
+        const struct Class *pcl = STATIC_CAST(const struct Class*, cls->str);
         sym.cls[sym.n_cls++] = cls; // hack: meta-link
-        cls->name = pcl->name+2;    // hack: name is shared
+        cls->str = pcl->str+2;    // hack: name is shared
         cls->Behavior.Object.id = cos_class_id(pcl);
         cls->Behavior.Object.rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_pclass: {
         struct Class *pcl = STATIC_CAST(struct Class*, tbl_sym[t][s]);
-        pcl->spr->name = pcl->name+1; // hack: name is shared
+        pcl->spr->str = pcl->str+1; // hack: name is shared
         pcl->Behavior.Object.id = cos_class_id(classref(PropMetaClass));
         pcl->Behavior.Object.rc = COS_RC_STATIC;
       } break;
@@ -635,7 +635,7 @@ sym_init(void)
         struct Generic *gen = STATIC_CAST(struct Generic*, tbl_sym[t][s]);
         const struct Class *cls = STATIC_CAST(const struct Class*, gen->sig);
         sym.gen[sym.n_gen++] = gen;
-        gen->sig = gen->name + strlen(gen->name) + 1;
+        gen->sig = gen->str + strlen(gen->str) + 1;
         gen->Behavior.Object.id = cos_class_id(cls);
         gen->Behavior.Object.rc = COS_RC_STATIC;
       } break;
@@ -1286,7 +1286,7 @@ cpyGenName(char *dst, char *end, const struct Method *mth)
 {
   if (dst < end && mth->arnd) *dst++ = '(';
 
-  dst = cpyStr(dst, end, mth->gen->name);
+  dst = cpyStr(dst, end, mth->gen->str);
   
   if (dst < end && mth->arnd) *dst++ = ')';
   if (dst < end             ) *dst   =  0 ;
@@ -1302,7 +1302,7 @@ cpyClsName(char *dst, char *end, struct Class *const *cls, U32 ncls)
   if (dst < end) *dst++ = '<';
 
   for (i = 0; i < ncls && dst < end; i++) {
-    dst = cpyStr(dst, end, cls[i]->name);
+    dst = cpyStr(dst, end, cls[i]->str);
     if (i < ncls-1 && dst < end) *dst++ = ',';
   }
   
@@ -1350,7 +1350,7 @@ cos_method_call(SEL gen, OBJ obj[], char *str, U32 sz)
   U32  ncls = COS_GEN_RNK(gen);
   char *end = str+sz;
 
-  cpyObjClsName(cpyStr(str,end,gen->name), end,obj,ncls);
+  cpyObjClsName(cpyStr(str,end,gen->str), end,obj,ncls);
 
   if (sz > 0) str[sz-1] = 0;
 
@@ -1410,8 +1410,8 @@ cos_symbol_showClasses(FILE *fp)
 
     fprintf(fp, "cls[%3u] = %-40s : %-40s [%2u,%9u->%3u]%c\n",
             i,
-            sym.cls[i]->name,
-            sym.cls[i]->spr ? sym.cls[i]->spr->name : "-",
+            sym.cls[i]->str,
+            sym.cls[i]->spr ? sym.cls[i]->spr->str : "-",
             COS_CLS_RNK(sym.cls[i]),
             COS_CLS_TAG(sym.cls[i]),
             j,
@@ -1433,8 +1433,8 @@ cos_symbol_showProperties(FILE *fp)
 
     fprintf(fp, "prp[%3u] = %-40s : %-40s [%2u,%9u->%3u]%c\n",
             i,
-            sym.prp[i]->name+2,
-            sym.prp[i]->spr ? sym.prp[i]->spr->name : "NIL",
+            sym.prp[i]->str+2,
+            sym.prp[i]->spr ? sym.prp[i]->spr->str : "NIL",
             COS_CLS_RNK(sym.prp[i]),
             COS_CLS_TAG(sym.prp[i]),
             j,
@@ -1463,15 +1463,15 @@ cos_symbol_showClassProperties(FILE *fp, int spr)
 
     fprintf(fp, "cls[%3u] = %-25s (%5u,%3u) / (%5u,%3u)\n",
             i,
-            sym.cls[i]->name,
+            sym.cls[i]->str,
             cls_decodePropIdx(sym.cls[i]->prp[get]), r,
             cls_decodePropIdx(sym.cls[i]->prp[put]), w);
 
     for (j = 0; j < r || j < w; j++)
       fprintf(fp, "           prp[%3u] : %-26s / %-26s\n",
               j,
-              j >= r ? "-" : r_prp[j]->name+2,
-              j >= w ? "-" : w_prp[j]->name+2);
+              j >= r ? "-" : r_prp[j]->str+2,
+              j >= w ? "-" : w_prp[j]->str+2);
   }
 }
 
@@ -1490,7 +1490,7 @@ cos_symbol_showGenerics(FILE *fp)
     fprintf(fp, "gen[%3u] = %-40s (%5u,%5u,%2u,%c%c%c)"
             "                       [%2u,%9u->%3u]%c\n",
             i,
-            sym.gen[i]->name,
+            sym.gen[i]->str,
             sym.gen[i]->mth,
             COS_GEN_NMTH(sym.gen[i]),
             COS_GEN_NARG(sym.gen[i]),

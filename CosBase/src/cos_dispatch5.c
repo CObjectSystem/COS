@@ -175,9 +175,9 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5, BOOL load)
     if (!fct)
       cos_abort("method5_lookup: %s not found for classes (%s,%s,%s,%s,%s)",
                 "gunrecognizedMessage5",
-                cos_class_get(id1)->name, cos_class_get(id2)->name,
-                cos_class_get(id3)->name, cos_class_get(id4)->name,
-                cos_class_get(id5)->name);
+                cos_class_get(id1)->str, cos_class_get(id2)->str,
+                cos_class_get(id3)->str, cos_class_get(id4)->str,
+                cos_class_get(id5)->str);
   }
 
   // get slot

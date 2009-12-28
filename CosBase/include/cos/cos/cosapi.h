@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.37 2009/12/26 18:45:28 ldeniau Exp $
+ | $Id: cosapi.h,v 1.38 2009/12/28 11:08:44 ldeniau Exp $
  |
 */
 
@@ -101,10 +101,12 @@ void   cos_contract_invariant4(OBJ,OBJ,OBJ,OBJ,STR,STR,int);
 void   cos_contract_invariant5(OBJ,OBJ,OBJ,OBJ,OBJ,STR,STR,int);
 int    cos_contract_setLevel  (int lvl); // return previous level
 
-void   cos_exception_assert(STR,STR,STR,int) __attribute__((__noreturn__));
-void   cos_exception_errno (int,STR,STR,int) __attribute__((__noreturn__));
-void   cos_exception_throw (OBJ,STR,STR,int) __attribute__((__noreturn__));
-BOOL   cos_exception_catch (OBJ,OBJ);
+void   cos_exception_assert (STR,STR,STR,int)  __attribute__((__noreturn__));
+void   cos_exception_errno  (int,STR,STR,int)  __attribute__((__noreturn__));
+void   cos_exception_badcast(OBJ,const struct Class*,STR,STR,int)
+                                               __attribute__((__noreturn__));
+void   cos_exception_throw  (OBJ,STR,STR,int)  __attribute__((__noreturn__));
+BOOL   cos_exception_catch  (OBJ,OBJ);
 BOOL   cos_exception_uncaught(void);
 void   cos_exception_initContext(struct cos_exception_context*);
 void   cos_exception_deinitContext(struct cos_exception_context*);
@@ -358,7 +360,7 @@ cos_object_superClass(OBJ obj)
 static COS_ALWAYS_INLINE STR
 cos_object_className(OBJ obj)
 {
-  return cos_object_class(obj)->name;
+  return cos_object_class(obj)->str;
   COS_UNUSED(cos_object_className);
 }
 
@@ -381,6 +383,40 @@ cos_object_isa(OBJ obj, const struct Class *cls)
 {
   return cos_object_id(obj) == cos_class_id(cls);
   COS_UNUSED(cos_object_isa);
+}
+
+static COS_ALWAYS_INLINE void*
+cos_object_cast(OBJ obj, const struct Class *cls)
+{
+  return cos_object_isa(obj, cls) ? obj : 0;
+  COS_UNUSED(cos_object_cast);
+}
+
+static COS_ALWAYS_INLINE void*
+cos_object_ecast(OBJ obj, const struct Class *cls,STR func,STR file,int line)
+{
+  if (cos_object_isa(obj, cls))
+    return obj;
+
+  cos_exception_badcast(obj, cls, func, file, line);
+  COS_UNUSED(cos_object_ecast);
+}
+
+static COS_ALWAYS_INLINE void*
+cos_object_dyncast(OBJ obj, const struct Class *cls)
+{
+  return cos_object_isKindOf(obj, cls) ? obj : 0;
+  COS_UNUSED(cos_object_dyncast);
+}
+
+static COS_ALWAYS_INLINE void*
+cos_object_edyncast(OBJ obj, const struct Class *cls,STR func,STR file,int line)
+{
+  if (cos_object_isKindOf(obj, cls))
+    return obj;
+
+  cos_exception_badcast(obj, cls, func, file, line);
+  COS_UNUSED(cos_object_edyncast);
 }
 
 static COS_ALWAYS_INLINE struct cos_exception_protect
