@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Function.c,v 1.3 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: Function.c,v 1.4 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
@@ -46,6 +46,10 @@ makclass(IntFunction2,IntFunction);
 makclass(IntFunction3,IntFunction);
 makclass(IntFunction4,IntFunction);
 makclass(IntFunction5,IntFunction);
+makclass(IntFunction6,IntFunction);
+makclass(IntFunction7,IntFunction);
+makclass(IntFunction8,IntFunction);
+makclass(IntFunction9,IntFunction);
 
 makclass(LngFunction ,Functor    );
 makclass(LngFunction1,LngFunction);
@@ -53,6 +57,10 @@ makclass(LngFunction2,LngFunction);
 makclass(LngFunction3,LngFunction);
 makclass(LngFunction4,LngFunction);
 makclass(LngFunction5,LngFunction);
+makclass(LngFunction6,LngFunction);
+makclass(LngFunction7,LngFunction);
+makclass(LngFunction8,LngFunction);
+makclass(LngFunction9,LngFunction);
 
 makclass(FltFunction ,Functor    );
 makclass(FltFunction1,FltFunction);
@@ -60,6 +68,10 @@ makclass(FltFunction2,FltFunction);
 makclass(FltFunction3,FltFunction);
 makclass(FltFunction4,FltFunction);
 makclass(FltFunction5,FltFunction);
+makclass(FltFunction6,FltFunction);
+makclass(FltFunction7,FltFunction);
+makclass(FltFunction8,FltFunction);
+makclass(FltFunction9,FltFunction);
 
 makclass(CpxFunction ,Functor    );
 makclass(CpxFunction1,CpxFunction);
@@ -67,4 +79,8 @@ makclass(CpxFunction2,CpxFunction);
 makclass(CpxFunction3,CpxFunction);
 makclass(CpxFunction4,CpxFunction);
 makclass(CpxFunction5,CpxFunction);
+makclass(CpxFunction6,CpxFunction);
+makclass(CpxFunction7,CpxFunction);
+makclass(CpxFunction8,CpxFunction);
+makclass(CpxFunction9,CpxFunction);
 

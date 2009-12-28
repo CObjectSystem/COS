@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.18 2009/09/30 12:09:54 ldeniau Exp $
+ | $Id: Functor.h,v 1.19 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
@@ -40,129 +40,233 @@
 
 // ----- Functor class cluster
 
-defclass(Functor)
+defclass(Functor) endclass
+
+defclass(VarExpr, Functor)          endclass  // variables
+defclass(FunExpr, Functor) STR str; endclass  // functors
+defclass(MthExpr, Functor) STR str; endclass  // methods
+
+// ----- Functor variable
+
+defclass(Argument, VarExpr) U32 idx; endclass  // placeholder
+defclass(Variable, VarExpr) OBJ var; endclass  // variable
+
+// ----- Functor function
+
+defclass(Function0, FunExpr) FUN0 fct; endclass
+defclass(Function1, FunExpr) FUN1 fct; endclass
+defclass(Function2, FunExpr) FUN2 fct; endclass
+defclass(Function3, FunExpr) FUN3 fct; endclass
+defclass(Function4, FunExpr) FUN4 fct; endclass
+defclass(Function5, FunExpr) FUN5 fct; endclass
+defclass(Function6, FunExpr) FUN6 fct; endclass
+defclass(Function7, FunExpr) FUN7 fct; endclass
+defclass(Function8, FunExpr) FUN8 fct; endclass
+defclass(Function9, FunExpr) FUN9 fct; endclass
+
+// ----- Functor expression
+
+defclass(FunExpr1, FunExpr)
+  FUN1 fct;
+  U32  msk;
+  I32  ary;
+  OBJ  arg[1];
 endclass
 
-// ----- Functor with non-zero arity
-
-defclass(Functor0,Functor)
-  OBJFCT0 fct;
-  I32     arity;
+defclass(FunExpr2, FunExpr)
+  FUN2 fct;
+  U32  msk;
+  I32  ary;
+  OBJ  arg[2];
 endclass
 
-defclass(Functor1,Functor)
-  OBJFCT1 fct;
-  I32     arity;
-  OBJ     arg;
+defclass(FunExpr3, FunExpr)
+  FUN3 fct;
+  U32  msk;
+  I32  ary;
+  OBJ  arg[3];
 endclass
 
-defclass(Functor2,Functor)
-  OBJFCT2 fct;
-  I32     arity;
-  OBJ     arg[2];
+defclass(FunExpr4, FunExpr)
+  FUN4 fct;
+  U32  msk;
+  I32  ary;
+  OBJ  arg[4];
 endclass
 
-defclass(Functor3,Functor)
-  OBJFCT3 fct;
-  I32     arity;
-  OBJ     arg[3];
+defclass(FunExpr5, FunExpr)
+  FUN5 fct;
+  U32  msk;
+  I32  ary;
+  OBJ  arg[5];
 endclass
 
-defclass(Functor4,Functor)
-  OBJFCT4 fct;
-  I32     arity;
-  OBJ     arg[4];
+defclass(FunExpr6, FunExpr)
+  FUN6 fct;
+  U32  msk;
+  I32  ary;
+  OBJ  arg[6];
 endclass
 
-defclass(Functor5,Functor)
-  OBJFCT5 fct;
-  I32     arity;
-  OBJ     arg[5];
+defclass(FunExpr7, FunExpr)
+  FUN7 fct;
+  U32  msk;
+  I32  ary;
+  OBJ  arg[7];
 endclass
 
-// ----- Functor with zero arity
-
-defclass(Function, Functor)
+defclass(FunExpr8, FunExpr)
+  FUN8 fct;
+  U32  msk;
+  I32  ary;
+  OBJ  arg[8];
 endclass
 
-defclass(Function0, Function)
-  OBJFCT0 fct;
+defclass(FunExpr9, FunExpr)
+  FUN9 fct;
+  U32  msk;
+  I32  ary;
+  OBJ  arg[9];
 endclass
 
-defclass(Function1, Function)
-  OBJFCT1 fct;
+// ----- Functor method
+
+defclass(MthExpr1, MthExpr)
+  SEL   sel;
+  U32   msk;
+  I32   ary;
+  OBJ   arg[1];
+  void *args;
 endclass
 
-defclass(Function2, Function)
-  OBJFCT2 fct;
+defclass(MthExpr2, MthExpr)
+  SEL   sel;
+  U32   msk;
+  I32   ary;
+  OBJ   arg[2];
+  void *args;
 endclass
 
-defclass(Function3, Function)
-  OBJFCT3 fct;
+defclass(MthExpr3, MthExpr)
+  SEL   sel;
+  U32   msk;
+  I32   ary;
+  OBJ   arg[3];
+  void *args;
 endclass
 
-defclass(Function4, Function)
-  OBJFCT4 fct;
+defclass(MthExpr4, MthExpr)
+  SEL   sel;
+  U32   msk;
+  I32   ary;
+  OBJ   arg[4];
+  void *args;
 endclass
 
-defclass(Function5, Function)
-  OBJFCT5 fct;
+defclass(MthExpr5, MthExpr)
+  SEL   sel;
+  U32   msk;
+  I32   ary;
+  OBJ   arg[5];
+  void *args;
+endclass
+
+// ----- Delayed functor
+
+defclass(LazyFun, Functor)
+  OBJ fun;
 endclass
 
 // ----- Composition of functors
 
 defclass(ComposeFun, Functor)
   U32 size;
-  OBJ functor[];
+  OBJ fun[];
 endclass
 
 // ----- Iteration of functor
 
 defclass(IterateFun, Functor)
-  U32     num;
-  OBJ     fun;
-  OBJFCT1 fct;
+  U32  num;
+  OBJ  fun;
+  FUN1 fct;
 endclass
 
 // ----- automatic constructor
 
-#define aFunctor(...) ( (OBJ)atFunctor(__VA_ARGS__) )
+#define aFunctor(...)  ( (OBJ)atFunctor (__VA_ARGS__) )
+#define aLazyFun(...)  ( (OBJ)atLazyFun (__VA_ARGS__) )
+#define aArgument(...) ( (OBJ)atArgument(__VA_ARGS__) )
+#define aVariable(...) ( (OBJ)atVariable(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
+#define aFun(...)  aFunctor (__VA_ARGS__)
+#define aLzy(...)  aLazyFun (__VA_ARGS__)
+#define aArg(...)  aArgument(__VA_ARGS__)
+#define aVar(...)  aVariable(__VA_ARGS__)
+#endif
 
-#define aFun(...)  aFunctor(__VA_ARGS__)
+// --- placeholders
 
+#ifndef COS_NOPLACEHOLDER
+#define __1  aArgument(0)
+#define __2  aArgument(1)
+#define __3  aArgument(2)
+#define __4  aArgument(3)
+#define __5  aArgument(4)
+#define __6  aArgument(5)
+#define __7  aArgument(6)
+#define __8  aArgument(7)
+#define __9  aArgument(8)
 #endif
 
 /***********************************************************
  * Implementation (private)
  */
 
+// ----- Functors
+
 #define atFunctor(...) \
   COS_PP_IF(COS_PP_2ARGS(__VA_ARGS__)) \
     (atFunctorF(__VA_ARGS__),atFunctor0(__VA_ARGS__))
 
-#define atFunctor0(F,...) \
-  Functor0_init( &(struct Functor0) { \
-    { cos_object_auto(Functor0) }, F, 0 })
+#define atFunctor0(F) \
+  ( (struct Functor*)&(struct Function0) { \
+    {{ cos_object_auto(Function0) }, COS_PP_STR(F) }, F })
 
 #define atFunctorF(F,...) \
-  atFunctorN(COS_PP_NARG(__VA_ARGS__),F,__VA_ARGS__)
+  atFunctorN(COS_PP_NARG(__VA_ARGS__), F, __VA_ARGS__)
 
 #define atFunctorN(N,F,...) \
-  COS_PP_CAT3(Functor,N,_init)( &(struct COS_PP_CAT(Functor,N)) { \
-    { cos_object_auto(COS_PP_CAT(Functor,N)) }, F, -1, \
-      COS_PP_IF(COS_PP_ISONE(N))((__VA_ARGS__), { __VA_ARGS__ }) })
+  COS_PP_CAT(Functor_init,N)( &(struct COS_PP_CAT(FunExpr,N)) { \
+    {{ cos_object_auto(COS_PP_CAT(FunExpr,N)) }, COS_PP_STR(F) }, \
+    F, 0, -1, {__VA_ARGS__} }, __FILE__, __LINE__)
+
+// ----- Lazy modifier
+
+#define atLazyFun(FUN) \
+  ( &(struct LazyFun){ { cos_object_auto(LazyFun) }, (FUN) } )
+
+// ----- Variables
+
+#define atArgument(IDX) \
+  ( &(struct Argument){ {{ cos_object_auto(Argument) }}, (IDX) } )
+
+#define atVariable(VAR) \
+  ( &(struct Variable){ {{ cos_object_auto(Variable) }}, (VAR) } )
 
 // ----- initializers
 
-struct Functor* Functor0_init(struct Functor0*);
-struct Functor* Functor1_init(struct Functor1*);
-struct Functor* Functor2_init(struct Functor2*);
-struct Functor* Functor3_init(struct Functor3*);
-struct Functor* Functor4_init(struct Functor4*);
-struct Functor* Functor5_init(struct Functor5*);
+struct Functor* Functor_init1(struct FunExpr1*, STR file, int line);
+struct Functor* Functor_init2(struct FunExpr2*, STR file, int line);
+struct Functor* Functor_init3(struct FunExpr3*, STR file, int line);
+struct Functor* Functor_init4(struct FunExpr4*, STR file, int line);
+struct Functor* Functor_init5(struct FunExpr5*, STR file, int line);
+struct Functor* Functor_init6(struct FunExpr6*, STR file, int line);
+struct Functor* Functor_init7(struct FunExpr7*, STR file, int line);
+struct Functor* Functor_init8(struct FunExpr8*, STR file, int line);
+struct Functor* Functor_init9(struct FunExpr9*, STR file, int line);
 
 #endif // COS_FUNCTOR_H

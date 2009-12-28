@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.4 2009/09/04 10:22:33 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.5 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
@@ -71,9 +71,9 @@ defmethod(OBJ, ginitWith, ComposeFun, ComposeFun) // copy
   PRT(_1);
   test_assert(self->size == self2->size, "incompatible composition size");
   
-  OBJ *src = self2->functor;
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor + self->size;
+  OBJ *src = self2->fun;
+  OBJ *fun = self->fun;
+  OBJ *end = self->fun + self->size;
 
   while (fun < end)
     *fun++ = gretain(*src++);
@@ -88,8 +88,8 @@ defmethod(OBJ, ginitWith, ComposeFun, Array) // from array
 
   OBJ *obj   = self2->object;
   I32  obj_s = self2->stride;
-  OBJ *fun   = self->functor + self->size;
-  OBJ *end   = self->functor;
+  OBJ *fun   = self->fun + self->size;
+  OBJ *end   = self->fun;
 
   while (fun-- > end) { // reverse references
     *fun = gretain(*obj);
@@ -104,7 +104,7 @@ endmethod
 
 defmethod(OBJ, gdeinit, ComposeFun)
   for (U32 i = 0; i < self->size; i++)
-    grelease(self->functor[i]);
+    grelease(self->fun[i]);
 
   retmethod(_1);
 endmethod
@@ -112,7 +112,7 @@ endmethod
 // ----- arity
 
 defmethod(I32, garity, ComposeFun)
-  retmethod( garity(self->functor[0]) );
+  retmethod( garity(self->fun[0]) );
 endmethod
 
 // ----- compose
@@ -127,58 +127,18 @@ endmethod
 
 // ----- eval
 
-defmethod(OBJ, geval1, ComposeFun, (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor + self->size;
-
-  forward_message(*fun++);
-
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
-
-endmethod
-
-defmethod(OBJ, geval2, ComposeFun, (OBJ), (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor + self->size;
+defmethod(OBJ, gevalEnv, ComposeFun, Container)
+  OBJ *fun = self->fun;
+  OBJ *end = self->fun + self->size;
+  struct Array *env = atArray(0);
+  OBJ *arg = env->object;
   
-  forward_message(*fun++);
+  forward_message(*fun++, _2);
 
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
-
-endmethod
-
-defmethod(OBJ, geval3, ComposeFun, (OBJ), (OBJ), (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor + self->size;
-  
-  forward_message(*fun++);
-
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
-
-endmethod
-
-defmethod(OBJ, geval4, ComposeFun, (OBJ), (OBJ), (OBJ), (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor + self->size;
-  
-  forward_message(*fun++);
-
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
-
-endmethod
-
-defmethod(OBJ, geval5, ComposeFun, (OBJ), (OBJ), (OBJ), (OBJ), (OBJ))
-  OBJ *fun = self->functor;
-  OBJ *end = self->functor+self->size;
-  
-  forward_message(*fun++);
-
-  while (fun != end)
-    RETVAL = geval1(*fun++, RETVAL);
+  while (fun != end) {
+    *arg = RETVAL;
+    RETVAL = gevalEnv(*fun++, (OBJ)env);
+  }
 
 endmethod
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_string.c,v 1.1 2009/09/30 21:53:40 ldeniau Exp $
+ | $Id: ut_string.c,v 1.2 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
@@ -101,38 +101,38 @@ ut_string(void)
     UTEST(gfind(arr, aStr("tutus")) == Nil);
     UTEST(gfind(arr, aStr("")) != Nil);
     
-    UTEST(gfind(arr, aFun(gisEqual, aStr("titi"), 0)) != Nil);
-    UTEST(gfind(arr, aFun(gisEqual, aStr("toto"), 0)) != Nil);
-    UTEST(gfind(arr, aFun(gisEqual, aStr("tutu"), 0)) != Nil);
-    UTEST(gfind(arr, aFun(gisEqual, aStr("tata"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gisEqual, aStr("titis"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gisEqual, aStr("totos"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gisEqual, aStr("tutus"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gisEqual, aStr(""), 0)) != Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr("titi"), __1)) != Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr("toto"), __1)) != Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr("tutu"), __1)) != Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr("tata"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr("titis"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr("totos"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr("tutus"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr(""), __1)) != Nil);
 
-    gsort(arr, aFun(gcompare,0,0));
+    gsort(arr, aFun(gcompare,__1,__2));
 
     UTEST(gisEqual(arr, aArrayRef(srt, COS_ARRLEN(srt))) == True);
 
-    UTEST(gfind(arr, aFun(gcompare, aStr("titi"), 0)) != Nil);
-    UTEST(gfind(arr, aFun(gcompare, aStr("toto"), 0)) != Nil);
-    UTEST(gfind(arr, aFun(gcompare, aStr("tutu"), 0)) != Nil);
-    UTEST(gfind(arr, aFun(gcompare, aStr("tata"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gcompare, aStr("titis"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gcompare, aStr("totos"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gcompare, aStr("tutus"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gcompare, aStr(""), 0)) != Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr("titi"), __1)) != Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr("toto"), __1)) != Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr("tutu"), __1)) != Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr("tata"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr("titis"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr("totos"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr("tutus"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr(""), __1)) != Nil);
 
     arr = aArrayRef(0, 0);
 
     UTEST(gfind(arr, aStr("tata")) == Nil);
     UTEST(gfind(arr, aStr("")) == Nil);
 
-    UTEST(gfind(arr, aFun(gisEqual, aStr("tata"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gisEqual, aStr(""), 0)) == Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr("tata"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gisEqual, aStr(""), __1)) == Nil);
 
-    UTEST(gfind(arr, aFun(gcompare, aStr("tata"), 0)) == Nil);
-    UTEST(gfind(arr, aFun(gcompare, aStr(""), 0)) == Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr("tata"), __1)) == Nil);
+    UTEST(gfind(arr, aFun(gcompare, aStr(""), __1)) == Nil);
 
   UTEST_END
 

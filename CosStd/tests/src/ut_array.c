@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.7 2009/12/09 16:17:23 ldeniau Exp $
+ | $Id: ut_array.c,v 1.8 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
@@ -150,14 +150,14 @@ ut_array_functor(void)
 
   OBJ buf[] = { aInt(0,1,2,3,4,5,6,7,8,9) };
   OBJ pool  = gnew(AutoRelease);
-  OBJ id    = aFun(cos_id    , 0);
-  OBJ div   = aFun(gdiv      , 0, 0);
-  OBJ add   = aFun(gadd      , 0, 0);
-  OBJ addTo = aFun(gaddTo    , 0, 0);
-  OBJ incr  = aFun(gaddTo    , 0, aInt(1));
-  OBJ cmp   = aFun(gcompare  , 0, 0);
-  OBJ eq    = aFun(gisEqual  , 0, 0);
-  OBJ gt    = aFun(gisGreater, 0, aInt(3));
+  OBJ id    = aFun(cos_id    , __1);
+  OBJ div   = aFun(gdiv      , __1, __2);
+  OBJ add   = aFun(gadd      , __1, __2);
+  OBJ addTo = aFun(gaddTo    , __1, __2);
+  OBJ incr  = aFun(gaddTo    , __1, aInt(1));
+  OBJ cmp   = aFun(gcompare  , __1, __2);
+  OBJ eq    = aFun(gisEqual  , __1, __2);
+  OBJ gt    = aFun(gisGreater, __1, aInt(3));
   OBJ arr   = Nil;
   OBJ obj   = Nil;
 
@@ -339,40 +339,40 @@ ut_array_functor(void)
   obj = gfind(aArray(aInt(1,2,3,4,5)), aInt(7));
   UTEST( gisEqual(obj, Nil) == True );
 
-  obj = gfind(aArrayRef(buf,0), aFun(gisEqual, aInt(1), 0));
+  obj = gfind(aArrayRef(buf,0), aFun(gisEqual, aInt(1), __1));
   UTEST( gisEqual(obj, Nil) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(1), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(1), __1));
   UTEST( gisEqual(obj, aInt(1)) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(2), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(2), __1));
   UTEST( gisEqual(obj, aInt(2)) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(4), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(4), __1));
   UTEST( gisEqual(obj, aInt(4)) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(5), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(5), __1));
   UTEST( gisEqual(obj, aInt(5)) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(7), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gisEqual, aInt(7), __1));
   UTEST( gisEqual(obj, Nil) == True );
 
-  obj = gfind(aArrayRef(buf,0), aFun(gcompare, aInt(1), 0));
+  obj = gfind(aArrayRef(buf,0), aFun(gcompare, aInt(1), __1));
   UTEST( gisEqual(obj, Nil) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(1), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(1), __1));
   UTEST( gisEqual(obj, aInt(1)) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(2), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(2), __1));
   UTEST( gisEqual(obj, aInt(2)) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(4), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(4), __1));
   UTEST( gisEqual(obj, aInt(4)) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(5), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(5), __1));
   UTEST( gisEqual(obj, aInt(5)) == True );
 
-  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(7), 0));
+  obj = gfind(aArray(aInt(1,2,3,4,5)), aFun(gcompare, aInt(7), __1));
   UTEST( gisEqual(obj, Nil) == True );
 
   // diff

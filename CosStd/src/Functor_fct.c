@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Functor as Function
+ | COS Functor (Function)
  |
  o---------------------------------------------------------------------o
  |
@@ -29,124 +29,259 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.3 2009/09/30 12:09:58 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.4 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
+#include <cos/Array.h>
 #include <cos/Functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
 
-makclass(Function , Functor);
-makclass(Function0, Function);
-makclass(Function1, Function);
-makclass(Function2, Function);
-makclass(Function3, Function);
-makclass(Function4, Function);
-makclass(Function5, Function);
+makclass(Function0, FunExpr);
+makclass(Function1, FunExpr);
+makclass(Function2, FunExpr);
+makclass(Function3, FunExpr);
+makclass(Function4, FunExpr);
+makclass(Function5, FunExpr);
+makclass(Function6, FunExpr);
+makclass(Function7, FunExpr);
+makclass(Function8, FunExpr);
+makclass(Function9, FunExpr);
 
 // ----- type compatibility within the class cluster
 
-STATIC_ASSERT(functor0_to_function0_compatibility,
-              COS_FIELD_COMPATIBILITY(Function0,Functor0,fct));
-
 STATIC_ASSERT(functor1_to_function1_compatibility,
-              COS_FIELD_COMPATIBILITY(Function1,Functor1,fct));
+              COS_FIELD_COMPATIBILITY(Function1,FunExpr1,fct));
 
 STATIC_ASSERT(functor2_to_function2_compatibility,
-              COS_FIELD_COMPATIBILITY(Function2,Functor2,fct));
+              COS_FIELD_COMPATIBILITY(Function2,FunExpr2,fct));
 
 STATIC_ASSERT(functor3_to_function3_compatibility,
-              COS_FIELD_COMPATIBILITY(Function3,Functor3,fct));
+              COS_FIELD_COMPATIBILITY(Function3,FunExpr3,fct));
 
 STATIC_ASSERT(functor4_to_function4_compatibility,
-              COS_FIELD_COMPATIBILITY(Function4,Functor4,fct));
+              COS_FIELD_COMPATIBILITY(Function4,FunExpr4,fct));
 
 STATIC_ASSERT(functor5_to_function5_compatibility,
-              COS_FIELD_COMPATIBILITY(Function5,Functor5,fct));
+              COS_FIELD_COMPATIBILITY(Function5,FunExpr5,fct));
+
+STATIC_ASSERT(functor6_to_function6_compatibility,
+              COS_FIELD_COMPATIBILITY(Function6,FunExpr6,fct));
+
+STATIC_ASSERT(functor7_to_function7_compatibility,
+              COS_FIELD_COMPATIBILITY(Function7,FunExpr7,fct));
+
+STATIC_ASSERT(functor8_to_function8_compatibility,
+              COS_FIELD_COMPATIBILITY(Function8,FunExpr8,fct));
+
+STATIC_ASSERT(functor9_to_function9_compatibility,
+              COS_FIELD_COMPATIBILITY(Function9,FunExpr9,fct));
 
 // ----- ctors
 
-defmethod(OBJ, ginitWith, Function0, Function0)
-  self->fct = self2->fct;
-  retmethod(_1);
+#undef  DEFMETHOD
+#define DEFMETHOD(N) \
+\
+defmethod(OBJ, ginitWith, COS_PP_CAT(Function,N), COS_PP_CAT(Function,N)) \
+  self->FunExpr.str = self2->FunExpr.str; \
+  self->fct = self2->fct; \
+  retmethod(_1); \
 endmethod
 
-defmethod(OBJ, ginitWith, Function1, Function1)
-  self->fct = self2->fct;
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Function2, Function2)
-  self->fct = self2->fct;
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Function3, Function3)
-  self->fct = self2->fct;
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Function4, Function4)
-  self->fct = self2->fct;
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Function5, Function5)
-  self->fct = self2->fct;
-  retmethod(_1);
-endmethod
+DEFMETHOD(1)
+DEFMETHOD(2)
+DEFMETHOD(3)
+DEFMETHOD(4)
+DEFMETHOD(5)
+DEFMETHOD(6)
+DEFMETHOD(7)
+DEFMETHOD(8)
+DEFMETHOD(9)
 
 // ----- arity
 
-defmethod(I32, garity, Function0)
-  retmethod(0);
+#undef  DEFMETHOD
+#define DEFMETHOD(N) \
+\
+defmethod(I32, garity, COS_PP_CAT(Function,N)) \
+  retmethod(N); \
 endmethod
 
-defmethod(I32, garity, Function1)
-  retmethod(1);
+DEFMETHOD(1)
+DEFMETHOD(2)
+DEFMETHOD(3)
+DEFMETHOD(4)
+DEFMETHOD(5)
+DEFMETHOD(6)
+DEFMETHOD(7)
+DEFMETHOD(8)
+DEFMETHOD(9)
+
+// ---- eval
+
+defmethod(OBJ, gevalEnv, Function0, Container)
+  retmethod( self->fct() );
 endmethod
 
-defmethod(I32, garity, Function2)
-  retmethod(2);
+// ----- 1
+
+defmethod(OBJ, gevalEnv, Function1, Array1)
+  OBJ *var = self2->Array.object;
+
+  retmethod( self->fct(var[0]) );
 endmethod
 
-defmethod(I32, garity, Function3)
-  retmethod(3);
+defmethod(OBJ, gevalEnv, Function1, Array)
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  test_assert( size >= 1, "invalid placeholder index" );
+
+  retmethod( self->fct(var[0]) );
 endmethod
 
-defmethod(I32, garity, Function4)
-  retmethod(4);
+// ----- 2
+
+#include <cos/gen/value.h>
+
+defmethod(OBJ, gevalEnv, Function2, Array2)
+  OBJ *var = self2->Array.object;
+
+  retmethod( self->fct(var[0], var[1]) );
 endmethod
 
-defmethod(I32, garity, Function5)
-  retmethod(5);
+defmethod(OBJ, gevalEnv, Function2, Array)
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+  
+  test_assert( size >= 2, "invalid placeholder index" );
+
+  retmethod( self->fct(var[0], var[1]) );
 endmethod
 
-// ----- eval
+// ----- 3
 
-defmethod(OBJ, geval0, Function0)
-  retmethod(self->fct());
+defmethod(OBJ, gevalEnv, Function3, Array3)
+  OBJ *var = self2->Array.object;
+
+  retmethod( self->fct(var[0], var[1], var[2]) );
 endmethod
 
-defmethod(OBJ, geval1, Function1, (OBJ)arg1)
-  retmethod(self->fct(arg1));
+defmethod(OBJ, gevalEnv, Function3, Array)
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  test_assert( size >= 3, "invalid placeholder index" );
+
+  retmethod( self->fct(var[0], var[1], var[2]) );
 endmethod
 
-defmethod(OBJ, geval2, Function2, (OBJ)arg1, (OBJ)arg2)
-  retmethod(self->fct(arg1,arg2));
+// ----- 4
+
+defmethod(OBJ, gevalEnv, Function4, Array4)
+  OBJ *var = self2->Array.object;
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3]) );
 endmethod
 
-defmethod(OBJ, geval3, Function3, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3)
-  retmethod(self->fct(arg1,arg2,arg3));
+defmethod(OBJ, gevalEnv, Function4, Array)
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  test_assert( size >= 4, "invalid placeholder index" );
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3]) );
 endmethod
 
-defmethod(OBJ, geval4, Function4, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3, (OBJ)arg4)
-  retmethod(self->fct(arg1,arg2,arg3,arg4));
+// ----- 5
+
+defmethod(OBJ, gevalEnv, Function5, Array5)
+  OBJ *var = self2->Array.object;
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4]) );
 endmethod
 
-defmethod(OBJ, geval5, Function5, (OBJ)arg1, (OBJ)arg2, (OBJ)arg3, (OBJ)arg4, (OBJ)arg5)
-  retmethod(self->fct(arg1,arg2,arg3,arg4,arg5));
+defmethod(OBJ, gevalEnv, Function5, Array)
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  test_assert( size >= 5, "invalid placeholder index" );
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4]) );
 endmethod
 
+// ----- 6
+
+defmethod(OBJ, gevalEnv, Function6, Array6)
+  OBJ *var = self2->Array.object;
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4], var[5]) );
+endmethod
+
+defmethod(OBJ, gevalEnv, Function6, Array)
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  test_assert( size >= 6, "invalid placeholder index" );
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4], var[5]) );
+endmethod
+
+// ----- 7
+
+defmethod(OBJ, gevalEnv, Function7, Array7)
+  OBJ *var = self2->Array.object;
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
+                       var[5], var[6]) );
+endmethod
+
+defmethod(OBJ, gevalEnv, Function7, Array)
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  test_assert( size >= 7, "invalid placeholder index" );
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
+                       var[5], var[6]) );
+endmethod
+
+// ----- 8
+
+defmethod(OBJ, gevalEnv, Function8, Array8)
+  OBJ *var = self2->Array.object;
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
+                       var[5], var[6], var[7]) );
+endmethod
+
+defmethod(OBJ, gevalEnv, Function8, Array)
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  test_assert( size >= 8, "invalid placeholder index" );
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
+                       var[5], var[6], var[7]) );
+endmethod
+
+// ----- 9
+
+defmethod(OBJ, gevalEnv, Function9, Array9)
+  OBJ *var = self2->Array.object;
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
+                       var[5], var[6], var[7], var[8]) );
+endmethod
+
+defmethod(OBJ, gevalEnv, Function9, Array)
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  test_assert( size >= 9, "invalid placeholder index" );
+
+  retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
+                       var[5], var[6], var[7], var[8]) );
+endmethod
 

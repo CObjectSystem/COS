@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_itr.c,v 1.4 2009/09/04 10:22:33 ldeniau Exp $
+ | $Id: Functor_itr.c,v 1.5 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
@@ -98,18 +98,23 @@ endmethod
 
 // ----- eval
 
-defmethod(OBJ, geval1, IterateFun, (OBJ))
-  forward_message(self->fun);
+defmethod(OBJ, gevalEnv, IterateFun, Container)
+  forward_message(self->fun, _2);
 
   if (self->fct) {
-    OBJFCT1 fct = self->fct;
+    FUN1 fct = self->fct;
     for (U32 i = self->num-1; i; i--)
       RETVAL = fct(RETVAL);
   }
   else {
     OBJ fun = self->fun;
-    for (U32 i = self->num-1; i; i--)
-      RETVAL = geval1(fun, RETVAL);
+    struct Array *env = atArray(0);
+    OBJ *arg = env->object;
+
+    for (U32 i = self->num-1; i; i--) {
+      *arg = RETVAL;
+      RETVAL = gevalEnv(fun, (OBJ)env);
+    }
   }
 endmethod
 

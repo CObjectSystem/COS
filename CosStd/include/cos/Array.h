@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.29 2009/09/16 22:30:05 ldeniau Exp $
+ | $Id: Array.h,v 1.30 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
@@ -85,6 +85,7 @@ endclass
 #define aArrayRef(...)     ( (OBJ)atArrayRef    (__VA_ARGS__) )
 #define aArrayView(...)    ( (OBJ)atArrayView   (__VA_ARGS__) )
 #define aArraySubView(...) ( (OBJ)atArraySubView(__VA_ARGS__) )
+#define aArray0()          ( (OBJ)atArray0      (           ) )
 
 /***********************************************************
  * Implementation (private)
@@ -142,6 +143,9 @@ struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*, BO
 #define atArrayN(TN,...) \
   ( (struct Array*)&(struct TN) {{ {{ cos_object_auto(TN) }}, \
     (OBJ[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 }} )
+
+#define atArray0() \
+  ( (struct Array*)&(struct Array0) {{ {{ cos_object_auto(Array0) }}, 0, 0, 1 }} )
 
 // --- ArrayView
 

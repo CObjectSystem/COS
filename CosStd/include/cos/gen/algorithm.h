@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.33 2009/12/18 15:40:54 ldeniau Exp $
+ | $Id: algorithm.h,v 1.34 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
@@ -103,9 +103,8 @@ defgeneric(OBJ, gaccumulate2, _1, fun, ini, fin);  // scanl with lookahead
 defgeneric(OBJ, graccumulate , _1, fun, ini);      // scanr
 defgeneric(OBJ, graccumulate2, _1, fun, ini, fin); // scanr with lookahead
 
-// repeat, iterate, generate
+// repeat, generate
 defgeneric(OBJ, grepeat  , obj, num);
-defgeneric(OBJ, giterate , fun, num);
 defgeneric(OBJ, ggenerate, fun, ini); // stops when fun return Nil
 
 // all, any, count

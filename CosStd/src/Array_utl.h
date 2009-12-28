@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_utl.h,v 1.2 2009/12/17 14:08:57 ldeniau Exp $
+ | $Id: Array_utl.h,v 1.3 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
-static inline void
+static COS_ALWAYS_INLINE void
 swap(OBJ *val1, OBJ *val2)
 {
   OBJ tmp = *val1;
@@ -44,7 +44,7 @@ swap(OBJ *val1, OBJ *val2)
   *val2 = tmp;
 }
 
-static inline void
+static COS_ALWAYS_INLINE void
 assign(OBJ *dst, OBJ val)
 {
   OBJ tmp = *dst;
@@ -52,7 +52,7 @@ assign(OBJ *dst, OBJ val)
   grelease(tmp);
 }
 
-static inline OBJ*
+static COS_ALWAYS_INLINE OBJ*
 copy(OBJ *dst, I32 dst_s, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
 {
   OBJ *end = src + src_s*src_n;

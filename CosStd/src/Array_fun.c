@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.25 2009/12/11 16:52:46 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.26 2009/12/28 00:18:54 ldeniau Exp $
  |
 */
 
@@ -844,7 +844,7 @@ defmethod(OBJ, gsplit, Array, Functor)
         break;
         
       val += val_s;
-      len ++;
+      len += 1;
     }
 
     gpush(_arr, aArrayView(self, atSlice(beg, len, val_s)));
@@ -854,7 +854,7 @@ defmethod(OBJ, gsplit, Array, Functor)
   retmethod(gadjust(_arr));
 endmethod
 
-// ----- split (return an Array2 of arrays)
+// ----- group (return an array of arrays)
 
 defmethod(OBJ, ggroup, Array, Functor)
   OBJ arr_f = gnew(Array); PRT(arr_f);
@@ -896,9 +896,10 @@ defmethod(OBJ, gdiff, Array, Container, Functor)
   U32 *dst_n  = &arr->size;
   OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
+  OBJ  fun    = aLzy(_3);
 
   while (val != end) {
-    if (gfind(_2, aFun(geval2, _3, *val, 0)) == Nil)
+    if (gfind(_2, aFun(geval2, fun, *val, __1)) == Nil)
       *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }
@@ -918,9 +919,10 @@ defmethod(OBJ, gintersect, Array, Container, Functor)
   U32 *dst_n  = &arr->size;
   OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
+  OBJ  fun    = aLzy(_3);
 
   while (val != end) {
-    if (gfind(_2, aFun(geval2, _3, *val, 0)) != Nil)
+    if (gfind(_2, aFun(geval2, fun, *val, __1)) != Nil)
       *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }
