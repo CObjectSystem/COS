@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.13 2009/12/17 14:08:57 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.14 2009/12/28 00:43:18 ldeniau Exp $
  |
 */
 
@@ -88,7 +88,7 @@ defmethod(OBJ, ggetAt, Array, IntVector)
 endmethod
 
 defmethod(OBJ, ggetAt, Array, Array)
-  retmethod( gmap(aFun(ggetAt, _1, 0), _2) );
+  retmethod( gmap(aFun(ggetAt, _1, __1), _2) );
 endmethod
 
 // ----- object setters (index, slice, range, intvector)
@@ -212,6 +212,6 @@ defmethod(OBJ, gputAt, Array, Array, Array)
     test_assert( self2->size <= self3->size, "source array is too small" );
   POST
   BODY
-    retmethod( gmap2(aFun(gputAt, _1, 0, 0), _2, _3) );
+    retmethod( gmap2(aFun(gputAt, _1, __1, __2), _2, _3) );
 endmethod
 

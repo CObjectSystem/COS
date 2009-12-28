@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.17 2009/12/10 09:05:49 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.18 2009/12/28 00:43:18 ldeniau Exp $
  |
 */
 
@@ -746,9 +746,10 @@ defmethod(OBJ, gdiff, T, T, Functor)
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
   VAL *end   = val + val_s*size;
+  OBJ  fun   = aLzy(_3);
 
   while (val != end) {
-    if (gfind(_2, aFun(geval2, _3, VALOBJ(*val), 0)) == Nil)
+    if (gfind(_2, aFun(geval2, fun, VALOBJ(*val), __1)) == Nil)
       *dst++ = *val, ++*dst_n;
     val += val_s;
   }
@@ -768,9 +769,10 @@ defmethod(OBJ, gintersect, T, Container, Functor)
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
   VAL *end   = val + val_s*size;
+  OBJ  fun   = aLzy(_3);
 
   while (val != end) {
-    if (gfind(_2, aFun(geval2, _3, VALOBJ(*val), 0)) != Nil)
+    if (gfind(_2, aFun(geval2, fun, VALOBJ(*val), __1)) != Nil)
       *dst++ = *val, ++*dst_n;
     val += val_s;
   }

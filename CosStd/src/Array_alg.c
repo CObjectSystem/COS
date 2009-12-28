@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.17 2009/12/18 15:40:55 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.18 2009/12/28 00:43:18 ldeniau Exp $
  |
 */
 
@@ -437,7 +437,7 @@ defmethod(OBJ, gflatten, Array)
 
   OBJ arr = gautoDelete( gnewWith(Array, aInt(size)) );
 
-  gapply(aFun(gappend, arr, 0), _1);
+  gapply(aFun(gappend, arr, __1), _1);
   
   retmethod(arr);
 endmethod

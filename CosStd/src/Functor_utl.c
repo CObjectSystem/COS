@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.1 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.2 2009/12/28 00:43:18 ldeniau Exp $
  |
 */
 
@@ -80,7 +80,7 @@ Functor_getArity(OBJ arg[], U32 n, U32 msk)
 {
   U32 arity = 0;
   
-  for (U32 idx = 0; idx < n; idx++)
+  for (U32 idx = 0; idx < n; idx++) {
     if (isVar(msk, idx)) {
       U32 i = (size_t)arg[idx];
       if (arity < i && i < 32)
@@ -93,6 +93,7 @@ Functor_getArity(OBJ arg[], U32 n, U32 msk)
       if (arity < i && i < 32)
         arity = i;
     }
+  }
 
   return arity;
 }

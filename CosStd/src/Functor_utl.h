@@ -32,13 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.1 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.2 2009/12/28 00:43:18 ldeniau Exp $
  |
 */
 
 // mask convention
-// 01 -> argument
-// 10 -> placeholder
+// 01 -> argument (free variable)
+// 10 -> variable (placeholder)
 // 00 -> expression
 
 // ----- helper
