@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.2 2009/12/28 00:43:18 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.3 2009/12/29 19:52:24 ldeniau Exp $
  |
 */
 
@@ -63,7 +63,8 @@ Functor_getMask(OBJ arg[], U32 n, STR file, int line)
     else  // lazy functor
     if (cos_object_isa(arg[idx], classref(LazyFun))) {
       msk |= 1 << (2*idx);
-      arg[idx] = STATIC_CAST(struct LazyFun*, arg[idx])->fun;
+      do arg[idx] = STATIC_CAST(struct LazyFun*, arg[idx])->fun;
+      while(cos_object_isa(arg[idx], classref(LazyFun)));
     }
     
     else  // simple argument (not a functor)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.19 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Functor.h,v 1.20 2009/12/29 19:52:24 ldeniau Exp $
  |
 */
 
@@ -44,7 +44,7 @@ defclass(Functor) endclass
 
 defclass(VarExpr, Functor)          endclass  // variables
 defclass(FunExpr, Functor) STR str; endclass  // functors
-defclass(MthExpr, Functor) STR str; endclass  // methods
+defclass(MthExpr, Functor) STR str; endclass  // methods (private)
 
 // ----- Functor variable
 
@@ -53,16 +53,45 @@ defclass(Variable, VarExpr) OBJ var; endclass  // variable
 
 // ----- Functor function
 
-defclass(Function0, FunExpr) FUN0 fct; endclass
-defclass(Function1, FunExpr) FUN1 fct; endclass
-defclass(Function2, FunExpr) FUN2 fct; endclass
-defclass(Function3, FunExpr) FUN3 fct; endclass
-defclass(Function4, FunExpr) FUN4 fct; endclass
-defclass(Function5, FunExpr) FUN5 fct; endclass
-defclass(Function6, FunExpr) FUN6 fct; endclass
-defclass(Function7, FunExpr) FUN7 fct; endclass
-defclass(Function8, FunExpr) FUN8 fct; endclass
-defclass(Function9, FunExpr) FUN9 fct; endclass
+defclass(Function0, FunExpr)
+  FUN0 fct;
+endclass
+
+defclass(Function1, FunExpr)
+  FUN1 fct;
+endclass
+
+defclass(Function2, FunExpr)
+  FUN2 fct;
+endclass
+
+defclass(Function3, FunExpr)
+  FUN3 fct;
+endclass
+
+defclass(Function4, FunExpr)
+  FUN4 fct;
+endclass
+
+defclass(Function5, FunExpr)
+  FUN5 fct;
+endclass
+
+defclass(Function6, FunExpr)
+  FUN6 fct;
+endclass
+
+defclass(Function7, FunExpr)
+  FUN7 fct;
+endclass
+
+defclass(Function8, FunExpr)
+  FUN8 fct;
+endclass
+
+defclass(Function9, FunExpr)
+  FUN9 fct;
+endclass
 
 // ----- Functor expression
 
@@ -127,48 +156,6 @@ defclass(FunExpr9, FunExpr)
   U32  msk;
   I32  ary;
   OBJ  arg[9];
-endclass
-
-// ----- Functor method
-
-defclass(MthExpr1, MthExpr)
-  SEL   sel;
-  U32   msk;
-  I32   ary;
-  OBJ   arg[1];
-  void *args;
-endclass
-
-defclass(MthExpr2, MthExpr)
-  SEL   sel;
-  U32   msk;
-  I32   ary;
-  OBJ   arg[2];
-  void *args;
-endclass
-
-defclass(MthExpr3, MthExpr)
-  SEL   sel;
-  U32   msk;
-  I32   ary;
-  OBJ   arg[3];
-  void *args;
-endclass
-
-defclass(MthExpr4, MthExpr)
-  SEL   sel;
-  U32   msk;
-  I32   ary;
-  OBJ   arg[4];
-  void *args;
-endclass
-
-defclass(MthExpr5, MthExpr)
-  SEL   sel;
-  U32   msk;
-  I32   ary;
-  OBJ   arg[5];
-  void *args;
 endclass
 
 // ----- Delayed functor
@@ -240,7 +227,7 @@ endclass
   atFunctorN(COS_PP_NARG(__VA_ARGS__), F, __VA_ARGS__)
 
 #define atFunctorN(N,F,...) \
-  COS_PP_CAT(Functor_init,N)( &(struct COS_PP_CAT(FunExpr,N)) { \
+  COS_PP_CAT(FunExpr_init,N)( &(struct COS_PP_CAT(FunExpr,N)) { \
     {{ cos_object_auto(COS_PP_CAT(FunExpr,N)) }, COS_PP_STR(F) }, \
     F, 0, -1, {__VA_ARGS__} }, __FILE__, __LINE__)
 
@@ -259,14 +246,14 @@ endclass
 
 // ----- initializers
 
-struct Functor* Functor_init1(struct FunExpr1*, STR file, int line);
-struct Functor* Functor_init2(struct FunExpr2*, STR file, int line);
-struct Functor* Functor_init3(struct FunExpr3*, STR file, int line);
-struct Functor* Functor_init4(struct FunExpr4*, STR file, int line);
-struct Functor* Functor_init5(struct FunExpr5*, STR file, int line);
-struct Functor* Functor_init6(struct FunExpr6*, STR file, int line);
-struct Functor* Functor_init7(struct FunExpr7*, STR file, int line);
-struct Functor* Functor_init8(struct FunExpr8*, STR file, int line);
-struct Functor* Functor_init9(struct FunExpr9*, STR file, int line);
+struct Functor* FunExpr_init1(struct FunExpr1*, STR file, int line);
+struct Functor* FunExpr_init2(struct FunExpr2*, STR file, int line);
+struct Functor* FunExpr_init3(struct FunExpr3*, STR file, int line);
+struct Functor* FunExpr_init4(struct FunExpr4*, STR file, int line);
+struct Functor* FunExpr_init5(struct FunExpr5*, STR file, int line);
+struct Functor* FunExpr_init6(struct FunExpr6*, STR file, int line);
+struct Functor* FunExpr_init7(struct FunExpr7*, STR file, int line);
+struct Functor* FunExpr_init8(struct FunExpr8*, STR file, int line);
+struct Functor* FunExpr_init9(struct FunExpr9*, STR file, int line);
 
 #endif // COS_FUNCTOR_H

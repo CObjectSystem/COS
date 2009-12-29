@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.1 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.2 2009/12/29 19:52:24 ldeniau Exp $
  |
 */
 
@@ -56,7 +56,7 @@ makclass(FunExpr9, FunExpr);
 #undef  DEFFUNC
 #define DEFFUNC(N) \
 \
-struct Functor* COS_PP_CAT(Functor_init,N) \
+struct Functor* COS_PP_CAT(FunExpr_init,N) \
 (struct COS_PP_CAT(FunExpr,N) *fun, STR file, int line) \
 { \
   fun->msk = Functor_getMask(fun->arg, N, file, line); \
