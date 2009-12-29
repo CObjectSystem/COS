@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.14 2009/08/07 10:51:03 ldeniau Exp $
+ | $Id: class.h,v 1.15 2009/12/29 17:56:18 ldeniau Exp $
  |
 */
 
@@ -46,7 +46,14 @@
      classref( class-name-list )
 
    class-declaration:
+     dclclass( class-name-list );
+
+   class-use:
      useclass( class-decl-list );
+
+   class-name-list:
+     class-name
+     class-name-list , class-name
 
    class-decl-list:
      class-decl
@@ -85,6 +92,7 @@
  */
 #ifdef  COS_DISABLE_ALL
 #define COS_DISABLE_classref
+#define COS_DISABLE_dclclass
 #define COS_DISABLE_useclass
 #define COS_DISABLE_defclass
 #define COS_DISABLE_endclass
@@ -94,6 +102,10 @@
 
 #ifndef COS_DISABLE_classref
 #define classref(...) COS_CLS_REF(__VA_ARGS__)
+#endif
+
+#ifndef COS_DISABLE_dclclass
+#define dclclass(...) COS_CLS_DCL(__VA_ARGS__)
 #endif
 
 #ifndef COS_DISABLE_useclass
@@ -129,6 +141,14 @@
         (&COS_CLS_NAME(NAME))
 
 /* class declaration
+ */
+#define COS_CLS_DCL(...) \
+        COS_PP_SEP(COS_PP_MAP((__VA_ARGS__),COS_CLS_DCL_1))
+
+#define COS_CLS_DCL_1(NAME) \
+        extern struct Class COS_CLS_NAME(NAME);
+
+/* class use
  */
 #define COS_CLS_USE(...) \
         COS_PP_SEPWITH(COS_PP_MAP((__VA_ARGS__),COS_CLS_USE_0),;)
