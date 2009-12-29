@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.22 2009/08/19 10:14:22 ldeniau Exp $
+ | $Id: generic.h,v 1.23 2009/12/29 15:20:59 ldeniau Exp $
  |
 */
 
@@ -156,8 +156,9 @@
    AS = arg-parameters (non-selectors)
    IS = class-indexes
    C  = number of class-parameters
-   A  = number of arguments > 0 (bool)
-   R  = return-type is not void (bool)
+   A  = number of arguments > 0   (bool)
+   O  = all arguments are objects (bool)
+   R  = return-type is not void   (bool)
 */
 
 /* generic reference
@@ -211,16 +212,17 @@ COS_SCP_END
 
 #define COS_GEN_MAK_0(RET,NAME,CLS,PS,CS,AS) \
         COS_GEN_MAK_1(RET,NAME,CLS,PS,AS,COS_PP_LEN(CS), \
-                      COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
-                      COS_PP_NOT(COS_TOK_ISVOID(RET)))
+          COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
+          COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_OBJ),COS_YES,COS_PP_AND), \
+          COS_PP_NOT(COS_TOK_ISVOID(RET)))
 
-#define COS_GEN_MAK_1(RET,NAME,CLS,PS,AS,C,A,R) \
-COS_GEN_TYPECHK(RET,NAME,    PS                ) \
-COS_GEN_GCLSCHK(    NAME,CLS                   ) \
-COS_GEN_RANKCHK(    NAME,          C           ) \
-COS_GEN_NAMECHK(    NAME                       ) \
-COS_GEN_SIZECHK(    NAME,            A,R       ) \
-COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,C,A,R,COS_NO)
+#define COS_GEN_MAK_1(RET,NAME,CLS,PS,AS,C,A,O,R) \
+COS_GEN_TYPECHK(RET,NAME,    PS                  ) \
+COS_GEN_GCLSCHK(    NAME,CLS                     ) \
+COS_GEN_RANKCHK(    NAME,          C             ) \
+COS_GEN_NAMECHK(    NAME                         ) \
+COS_GEN_SIZECHK(    NAME,            A,  R       ) \
+COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,C,A,O,R,COS_NO)
 
 /* variadic generic definition
  */
@@ -264,17 +266,18 @@ COS_SCP_END
           COS_PP_DROP(1,COS_PP_SCANL(PS,0,COS_PRM_IDX)), \
           COS_PP_LEN(CS), \
           COS_PP_GE(COS_PP_LEN(AS),2), \
+          COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_OBJ),COS_YES,COS_PP_AND), \
           COS_PP_NOT(COS_TOK_ISVOID(RET)) )
 
-#define COS_GEN_MAKV_2(RET,NAME,CLS,VPS,PS,AS,IS,C,A,R) \
-COS_GEN_TYPECHK(RET,NAME,    PS                    ) \
-COS_GEN_GCLSCHK(    NAME,CLS                       ) \
-COS_GEN_RANKCHK(    NAME,             C            ) \
-COS_GEN_NAMECHK(    NAME                           ) \
-COS_GEN_SIZECHK(    NAME,               A,R        ) \
-COS_GEN_VFUNDEF(RET,NAME,   VPS,AS,IS,C,A,R        ) \
-COS_GEN_NEXTDEF(RET,NAME,    PS,AS,IS,C,A,R,COS_YES) \
-COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,   C,A,R,COS_YES)
+#define COS_GEN_MAKV_2(RET,NAME,CLS,VPS,PS,AS,IS,C,A,O,R) \
+COS_GEN_TYPECHK(RET,NAME,    PS                      ) \
+COS_GEN_GCLSCHK(    NAME,CLS                         ) \
+COS_GEN_RANKCHK(    NAME,             C              ) \
+COS_GEN_NAMECHK(    NAME                             ) \
+COS_GEN_SIZECHK(    NAME,               A,  R        ) \
+COS_GEN_VFUNDEF(RET,NAME,   VPS,AS,IS,C,A,  R        ) \
+COS_GEN_NEXTDEF(RET,NAME,    PS,AS,IS,C,A,  R,COS_YES) \
+COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,   C,A,O,R,COS_YES)
 
 /*
  * Low-level implementation
@@ -400,12 +403,12 @@ void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
 }
 
 // component instantiation (see cos/cos/coscls.h)
-#define COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,C,A,R,V) \
+#define COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,C,A,O,R,V) \
 \
-COS_PP_IF(A)( \
+COS_PP_IF(COS_PP_AND(A,COS_PP_NOT(O)))( \
 static struct cos_generic_arginfo COS_ARG_INFO(NAME)[] = { \
   COS_GEN_ARG(AS,(COS_PP_DUPSEQ(COS_PP_LEN(AS),COS_ARG_TYPE(NAME)))) \
-};,/* no args */) \
+};,/* no args or all OBJ */) \
 \
 struct Generic COS_GEN_NAME(NAME) = { \
   /* encode rank into id (temporally) and tag into rc */ \
@@ -420,16 +423,14 @@ struct Generic COS_GEN_NAME(NAME) = { \
   COS_PP_SEPWITH(COS_PP_MAP(((RET),COS_PP_SEQ(PS)),COS_GEN_STR),"\0"), \
   /* link to generic class */ \
   (void*)&COS_CLS_NAME(CLS), \
-  /* argument info, sizeof OBJ = 0 */ \
-  COS_PP_IF(A)(COS_ARG_INFO(NAME),0), \
+  /* argument info, 0 if all objects, sizeof OBJ = 0 */ \
+  COS_PP_IF(COS_PP_AND(A,COS_PP_NOT(O)))(COS_ARG_INFO(NAME),0), \
   /* size of monomorphic arguments struct */ \
   COS_PP_IF(A)(sizeof(COS_ARG_TYPE(NAME)),0), \
   /* size of returned value, sizeof OBJ = 0, void = -1 */ \
   COS_PP_IF(R)(COS_PP_IF(COS_TOK_ISOBJ(RET))(0,sizeof(COS_RET_TYPE(NAME))),-1), \
   /* cryptic information */ \
-  COS_GEN_INFO(0,COS_PP_LEN(PS), \
-     COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_OBJ),COS_YES,COS_PP_AND), \
-     COS_GEN_RET(RET),V) \
+  COS_GEN_INFO(0,COS_PP_LEN(PS),O,COS_GEN_RET(RET),V) \
 }
 
 // argument initialization

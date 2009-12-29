@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.4 2009/08/11 20:33:38 ldeniau Exp $
+ | $Id: logic.h,v 1.5 2009/12/29 15:20:59 ldeniau Exp $
  |
  o
 */
@@ -163,18 +163,18 @@
 #define COS_PP_IF_0(t, ...) __VA_ARGS__
 #define COS_PP_IF_1(t, ...) t
 
-#define COS_PP_NOT_0() 1
-#define COS_PP_NOT_1() 0
+#define COS_PP_NOT_0()  1
+#define COS_PP_NOT_1()  0
 
 #define COS_PP_AND_00() 0
 #define COS_PP_AND_01() 0
 #define COS_PP_AND_10() 0
 #define COS_PP_AND_11() 1
 
-#define COS_PP_OR_00() 0
-#define COS_PP_OR_01() 1
-#define COS_PP_OR_10() 1
-#define COS_PP_OR_11() 1
+#define COS_PP_OR_00()  0
+#define COS_PP_OR_01()  1
+#define COS_PP_OR_10()  1
+#define COS_PP_OR_11()  1
 
 #define COS_PP_XOR_00() 0
 #define COS_PP_XOR_01() 1
