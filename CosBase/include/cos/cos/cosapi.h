@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.38 2009/12/28 11:08:44 ldeniau Exp $
+ | $Id: cosapi.h,v 1.39 2009/12/30 00:59:59 ldeniau Exp $
  |
 */
 
@@ -323,10 +323,10 @@ cos_method_cache5(void)
 #endif // ------------------------------------------------
 
 static COS_ALWAYS_INLINE OBJ
-cos_id(OBJ obj)
+cos_ident(OBJ obj)
 {
   return obj;
-  COS_UNUSED(cos_id);
+  COS_UNUSED(cos_ident);
 }
 
 static COS_ALWAYS_INLINE U32
