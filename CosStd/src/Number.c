@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.19 2009/12/17 14:08:57 ldeniau Exp $
+ | $Id: Number.c,v 1.20 2009/12/30 01:00:45 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #include <cos/Number.h>
 #include <cos/TrueFalse.h>
 
+#include <cos/gen/algorithm.h>
 #include <cos/gen/compare.h>
 #include <cos/gen/init.h>
 #include <cos/gen/new.h>
@@ -503,4 +504,38 @@ DEFMETHOD(complex_equal, Complex, Int    )
 DEFMETHOD(complex_equal, Complex, Long   )
 DEFMETHOD(complex_equal, Complex, Float  )
 DEFMETHOD(complex_equal, Complex, Complex)
+
+// ----- isNotEqual
+
+defmethod(OBJ, gisNotEqual, Number, Number)
+  retmethod( gisEqual(_1,_2) == False ? True : False );
+endmethod
+
+// ----- Other comparison
+
+defmethod(OBJ, gisLesser, Number, Number)
+  retmethod( gcompare(_1,_2) == Lesser  ? True : False );
+endmethod
+
+defmethod(OBJ, gisGreater, Number, Number)
+  retmethod( gcompare(_1,_2) == Greater ? True : False );
+endmethod
+
+defmethod(OBJ, gisLesserOrEqual, Number, Number)
+  retmethod( gcompare(_1,_2) == Greater ? False : True );
+endmethod
+
+defmethod(OBJ, gisGreaterOrEqual, Number, Number)
+  retmethod( gcompare(_1,_2) == Lesser  ? False : True );
+endmethod
+
+// ----- min, max
+
+defmethod(OBJ, gmin, Number, Number)
+  retmethod( gcompare(_1,_2) == Lesser  ? _1 : _2 );
+endmethod
+
+defmethod(OBJ, gmax, Number, Number)
+  retmethod( gcompare(_1,_2) == Greater ? _1 : _2 );
+endmethod
 

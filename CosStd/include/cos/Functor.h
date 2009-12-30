@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.20 2009/12/29 19:52:24 ldeniau Exp $
+ | $Id: Functor.h,v 1.21 2009/12/30 01:00:45 ldeniau Exp $
  |
 */
 
@@ -40,16 +40,29 @@
 
 // ----- Functor class cluster
 
-defclass(Functor) endclass
+defclass(Functor)
+endclass
 
-defclass(VarExpr, Functor)          endclass  // variables
-defclass(FunExpr, Functor) STR str; endclass  // functors
-defclass(MthExpr, Functor) STR str; endclass  // methods (private)
+// variables
+defclass(VarExpr, Functor)
+endclass
+
+// functors
+defclass(FunExpr, Functor)
+  STR str;
+endclass
 
 // ----- Functor variable
 
-defclass(Argument, VarExpr) U32 idx; endclass  // placeholder
-defclass(Variable, VarExpr) OBJ var; endclass  // variable
+// placeholder
+defclass(Argument, VarExpr)
+  U32 idx;
+endclass
+
+// variable
+defclass(Variable, VarExpr)
+  OBJ var;
+endclass
 
 // ----- Functor function
 

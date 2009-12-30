@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.14 2009/12/28 00:43:18 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.15 2009/12/30 01:00:45 ldeniau Exp $
  |
 */
 
@@ -60,6 +60,20 @@ defmethod(OBJ, glast, Array)
 endmethod
 
 // ----- getters (index, slice, range, intvector)
+
+defmethod(OBJ, ggetAtIdx, Array, (I32)idx)
+  U32 i;
+  
+  PRE
+    i = Range_index(idx, self->size);
+    test_assert( i < self->size, "index out of range" );
+
+  BODY
+    if (!COS_CONTRACT) // no PRE
+      i = Range_index(idx, self->size);
+
+    retmethod( self->object[i*self->stride] );
+endmethod
 
 defmethod(OBJ, ggetAt, Array, Int)
   U32 i;
@@ -92,6 +106,23 @@ defmethod(OBJ, ggetAt, Array, Array)
 endmethod
 
 // ----- object setters (index, slice, range, intvector)
+
+defmethod(OBJ, gputAtIdx, Array, (I32)idx, Object)
+  U32 i;
+  
+  PRE
+    i = Range_index(idx, self->size);
+    test_assert( i < self->size, "index out of range" );
+
+  BODY
+    if (!COS_CONTRACT) // no PRE
+      i = Range_index(idx, self->size);
+ 
+    OBJ *dst = self->object + i*self->stride;
+    assign(dst, _2);
+    
+    retmethod(_1);
+endmethod
 
 defmethod(OBJ, gputAt, Array, Int, Object)
   U32 i;

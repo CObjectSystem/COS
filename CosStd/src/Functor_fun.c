@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.2 2009/12/29 19:52:24 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.3 2009/12/30 01:00:45 ldeniau Exp $
  |
 */
 
@@ -41,6 +41,7 @@
 
 #include "Functor_utl.h"
 
+makclass(FunExpr , Functor);
 makclass(FunExpr1, FunExpr);
 makclass(FunExpr2, FunExpr);
 makclass(FunExpr3, FunExpr);
@@ -92,8 +93,10 @@ defmethod(OBJ, ginitWith, COS_PP_CAT(FunExpr,N), COS_PP_CAT(FunExpr,N)) \
   self->fct = self2->fct; \
   self->msk = self2->msk; \
   self->ary = self2->ary; \
+\
   for (int i = 0; i < N; i++) \
-    self->arg[i] = gretain(self2->arg[i]); \
+    self->arg[i] = isIdx(self->msk, i) ? self2->arg[i] : gretain(self2->arg[i]); \
+\
   retmethod(_1); \
 endmethod
 
@@ -114,7 +117,8 @@ DEFMETHOD(9)
 \
 defmethod(OBJ, gdeinit, COS_PP_CAT(FunExpr,N)) \
   for (int i = 0; i < N; i++) \
-    grelease(self->arg[i]); \
+    if (!isIdx(self->msk, i)) grelease(self->arg[i]); \
+\
   retmethod(_1); \
 endmethod
 

@@ -29,13 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Ordered.c,v 1.7 2009/11/27 09:40:10 ldeniau Exp $
+ | $Id: Ordered.c,v 1.8 2009/12/30 01:00:45 ldeniau Exp $
  |
 */
 
 #include <cos/Ordered.h>
-#include <cos/gen/compare.h>
 #include <cos/gen/algorithm.h>
+#include <cos/gen/operator.h>
 
 // -----
 
@@ -47,21 +47,31 @@ makclass(Greater, Ordered);
 
 // -----
 
-useclass(Lesser, Equal, Greater);
+useclass(Lesser, Greater);
 
 // -----
 
-defmethod(OBJ, greverse, pmLesser)
+defalias (OBJ, (gneg)greverse, pmLesser);
+defalias (OBJ, (gneg)gnegate , pmLesser);
+defmethod(OBJ,  gneg         , pmLesser)
   retmethod(Greater);
 endmethod
 
-defmethod(OBJ, greverse, pmOrdered)
+defalias (OBJ, (gneg)greverse, pmOrdered);
+defalias (OBJ, (gneg)gnegate , pmOrdered);
+defmethod(OBJ,  gneg         , pmOrdered)
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, greverse, pmGreater)
+defalias (OBJ, (gneg)greverse, pmGreater);
+defalias (OBJ, (gneg)gnegate , pmGreater);
+defmethod(OBJ,  gneg         , pmGreater)
   retmethod(Lesser);
 endmethod
+
+#if 0
+
+IMPORTANT NOTE: these methods are too generic and prevent ANY specialization
 
 // -----
 
@@ -101,4 +111,4 @@ defmethod(OBJ, gmax, Object, Object)
   retmethod( gcompare(_1,_2) == Greater ? _1 : _2 );
 endmethod
 
-
+#endif

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.17 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Functor.c,v 1.18 2009/12/30 01:00:45 ldeniau Exp $
  |
 */
 
@@ -40,8 +40,6 @@
 makclass(Functor);
 
 makclass(VarExpr, Functor);
-makclass(FunExpr, Functor);
-makclass(MthExpr, Functor);
 makclass(LazyFun, Functor);
 
 makclass(Argument, VarExpr);

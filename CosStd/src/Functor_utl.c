@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.3 2009/12/29 19:52:24 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.4 2009/12/30 01:00:45 ldeniau Exp $
  |
 */
 
@@ -48,29 +48,32 @@ Functor_getMask(OBJ arg[], U32 n, STR file, int line)
 
     test_assert( arg[idx], "invalid (null) argument", file, line );
 
-          // environment index (eval argument)
+          // environment index (placeholder)
     if (cos_object_isa(arg[idx], classref(Argument))) {
-      msk |= 1 << (2*idx+1);
+      setIdx(&msk, idx);
       arg[idx] = (OBJ)(size_t)STATIC_CAST(struct Argument*, arg[idx])->idx;
     }
     
-    else  // environment key (eval argument)
+    else  // environment key (placeholder)
     if (cos_object_isa(arg[idx], classref(Variable))) {
-      msk |= 1 << (2*idx+1);
+      setVar(&msk, idx);
       arg[idx] = STATIC_CAST(struct Variable*, arg[idx])->var;
     }
 
-    else  // lazy functor
+    else  // lazy functor (treat it as argument)
     if (cos_object_isa(arg[idx], classref(LazyFun))) {
-      msk |= 1 << (2*idx);
+      setArg(&msk, idx);
       do arg[idx] = STATIC_CAST(struct LazyFun*, arg[idx])->fun;
       while(cos_object_isa(arg[idx], classref(LazyFun)));
     }
     
-    else  // simple argument (not a functor)
+    else  // argument (free variable)
     if (!cos_object_isKindOf(arg[idx], classref(Functor))) {
-      msk |= 1 << (2*idx);
+      setArg(&msk, idx);
     }
+      
+    else  // expression
+    {}
   }
 
   return msk;
@@ -82,7 +85,7 @@ Functor_getArity(OBJ arg[], U32 n, U32 msk)
   U32 arity = 0;
   
   for (U32 idx = 0; idx < n; idx++) {
-    if (isVar(msk, idx)) {
+    if (isIdx(msk, idx)) {
       U32 i = (size_t)arg[idx];
       if (arity < i && i < 32)
         arity = i;

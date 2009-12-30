@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.8 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: ut_array.c,v 1.9 2009/12/30 01:00:46 ldeniau Exp $
  |
 */
 
@@ -150,7 +150,8 @@ ut_array_functor(void)
 
   OBJ buf[] = { aInt(0,1,2,3,4,5,6,7,8,9) };
   OBJ pool  = gnew(AutoRelease);
-  OBJ id    = aFun(cos_id    , __1);
+  OBJ id    = aFun(cos_ident, __1);
+/* these definitions are equivalent and faster
   OBJ div   = aFun(gdiv      , __1, __2);
   OBJ add   = aFun(gadd      , __1, __2);
   OBJ addTo = aFun(gaddTo    , __1, __2);
@@ -158,6 +159,14 @@ ut_array_functor(void)
   OBJ cmp   = aFun(gcompare  , __1, __2);
   OBJ eq    = aFun(gisEqual  , __1, __2);
   OBJ gt    = aFun(gisGreater, __1, aInt(3));
+*/
+  OBJ div   = gdiv      (__1, __2);
+  OBJ add   = gadd      (__1, __2);
+  OBJ addTo = gaddTo    (__1, __2);
+  OBJ incr  = gaddTo    (__1, aInt(1));
+  OBJ cmp   = gcompare  (__1, __2);
+  OBJ eq    = gisEqual  (__1, __2);
+  OBJ gt    = gisGreater(__1, aInt(3));
   OBJ arr   = Nil;
   OBJ obj   = Nil;
 

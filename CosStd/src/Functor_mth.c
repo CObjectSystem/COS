@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.2 2009/12/29 19:52:24 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.3 2009/12/30 01:00:45 ldeniau Exp $
  |
 */
 
@@ -37,8 +37,9 @@
 #include <cos/Functor.h>
 #include <cos/gen/accessor.h>
 #include <cos/gen/functor.h>
-#include <cos/gen/object.h>
 #include <cos/gen/message.h>
+#include <cos/gen/object.h>
+#include <cos/gen/value.h>
 
 #include <assert.h>
 #include <string.h>
@@ -46,6 +47,9 @@
 #include "Functor_utl.h"
 
 // ----- Functor method
+
+defclass(MthExpr, Functor)
+endclass
 
 defclass(MthExpr1, MthExpr)
   SEL   sel;
@@ -87,6 +91,7 @@ defclass(MthExpr5, MthExpr)
   void *args;
 endclass
 
+makclass(MthExpr , Functor);
 makclass(MthExpr1, MthExpr);
 makclass(MthExpr2, MthExpr);
 makclass(MthExpr3, MthExpr);
@@ -104,7 +109,7 @@ useclass(ExBadAlloc);
 
 #define atMthExprN(N,S,A,...) \
   COS_PP_CAT(MthExpr_init,N)( &(struct COS_PP_CAT(MthExpr,N)) { \
-    {{ cos_object_auto(COS_PP_CAT(MthExpr,N)) }, S->str }, \
+    {{ cos_object_auto(COS_PP_CAT(MthExpr,N)) }}, \
     S, 0, -1, {__VA_ARGS__}, A }, __FILE__, __LINE__)
 
 // ----- utils
@@ -185,7 +190,7 @@ deleteArgs(SEL sel, char *args)
         ++obj;
       }
     }
-    
+
     // some/all arguments aren't OBJect
     else {
       // sanity check
@@ -212,10 +217,11 @@ static struct Functor* COS_PP_CAT(MthExpr_init,N) \
 { \
   test_assert(COS_GEN_ORET(fun->sel), "invalid method expression, " \
                                       "returned value must be an object"); \
-  test_assert(COS_GEN_VARG(fun->sel), "invalid method expression, " \
+  test_assert(!COS_GEN_VARG(fun->sel),"invalid method expression, " \
                                       "variadic generic not supported"); \
 \
   fun->msk = Functor_getMask(fun->arg, N, file, line); \
+\
   return &fun->MthExpr.Functor; \
 }
 
@@ -235,14 +241,13 @@ DEFFUNC(5)
 #define DEFMETHOD(N) \
 \
 defmethod(OBJ, ginitWith, COS_PP_CAT(MthExpr,N), COS_PP_CAT(MthExpr,N)) \
-  self->MthExpr.str = self2->MthExpr.str; \
   self->sel  = self2->sel; \
   self->msk  = self2->msk; \
   self->ary  = self2->ary; \
   self->args = 0; \
 \
   for (int i = 0; i < N; i++) \
-    self->arg[i] = gretain(self2->arg[i]); \
+    self->arg[i] = isIdx(self->msk, i) ? self2->arg[i] : gretain(self2->arg[i]); \
 \
   self->args = cloneArgs(self2->sel, self2->args); \
 \
@@ -262,10 +267,9 @@ DEFMETHOD(5)
 \
 defmethod(OBJ, gdeinit, COS_PP_CAT(MthExpr,N)) \
   for (int i = 0; i < N; i++) \
-    grelease(self->arg[i]); \
+    if (!isIdx(self->msk, i)) grelease(self->arg[i]); \
 \
   deleteArgs(self->sel, self->args); \
-  self->args = 0; \
 \
   retmethod(_1); \
 endmethod
@@ -286,6 +290,21 @@ defmethod(I32, garity, COS_PP_CAT(MthExpr,N)) \
     self->ary = Functor_getArity(self->arg, N, self->msk); \
 \
   retmethod(self->ary); \
+endmethod
+
+DEFMETHOD(1)
+DEFMETHOD(2)
+DEFMETHOD(3)
+DEFMETHOD(4)
+DEFMETHOD(5)
+
+// ----- name
+
+#undef  DEFMETHOD
+#define DEFMETHOD(N) \
+\
+defmethod(STR, gstr, COS_PP_CAT(MthExpr,N)) \
+  retmethod(self->sel->str); \
 endmethod
 
 DEFMETHOD(1)

@@ -32,27 +32,58 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.2 2009/12/28 00:43:18 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.3 2009/12/30 01:00:45 ldeniau Exp $
  |
 */
 
 // mask convention
-// 01 -> argument (free variable)
-// 10 -> variable (placeholder)
-// 00 -> expression
+// 001 -> argument       (free variable)
+// 010 -> variable index (placeholder)
+// 100 -> variable key   (placeholder)
+// 000 -> expression
 
 // ----- helper
+
+static COS_ALWAYS_INLINE void
+setArg(U32 *msk, U32 idx)
+{
+  *msk |= 1 << 3*idx;
+}
+
+static COS_ALWAYS_INLINE void
+setIdx(U32 *msk, U32 idx)
+{
+  *msk |= 2 << 3*idx;
+}
+
+static COS_ALWAYS_INLINE void
+setVar(U32 *msk, U32 idx)
+{
+  *msk |= 4 << 3*idx;
+}
 
 static COS_ALWAYS_INLINE BOOL
 isArg(U32 msk, U32 idx)
 {
-  return msk & (1 << 2*idx);
+  return msk & (1 << 3*idx);
+}
+
+static COS_ALWAYS_INLINE BOOL
+isIdx(U32 msk, U32 idx)
+{
+  return msk & (2 << 3*idx);
 }
 
 static COS_ALWAYS_INLINE BOOL
 isVar(U32 msk, U32 idx)
 {
-  return msk & (1 << (2*idx+1));
+  return msk & (4 << 3*idx);
+}
+
+static COS_ALWAYS_INLINE BOOL
+isExpr(U32 msk, U32 idx)
+{
+  return !(msk & (7 << 3*idx));
 }
 
 static COS_ALWAYS_INLINE BOOL
@@ -61,7 +92,7 @@ isFunc(U32 msk, OBJ arg[], U32 n)
   U32 idx;
   
   for (idx = 0; idx < n; idx++)
-    if (!(isVar(msk, idx) && idx == (size_t)arg[idx]))
+    if (!(isIdx(msk, idx) && idx == (size_t)arg[idx]))
       break;
       
   return idx == n;
@@ -72,10 +103,10 @@ isFunc(U32 msk, OBJ arg[], U32 n)
 static COS_ALWAYS_INLINE OBJ
 getArg(U32 idx, U32 msk, OBJ *arg, OBJ *var, U32 size, OBJ env)
 {
-  if (isArg(msk, idx))            // simple argument (free variable)
+  if (isArg(msk, idx))            // argument (free variable)
     return arg[idx];
 
-  if (isVar(msk, idx)) {          // environment index (eval argument)
+  if (isIdx(msk, idx)) {          // environment index (placeholder)
     size_t i = (size_t)arg[idx];
     test_assert( i < size, "invalid placeholder index" );
     return  var[ i ];
@@ -92,7 +123,7 @@ getVar(U32 idx, U32 msk, OBJ *arg, OBJ env)
   if (isArg(msk, idx))            // simple argument (free variable)
     return arg[idx];
 
-  if (isVar(msk, idx)) {          // environment key (eval argument)
+  if (isVar(msk, idx)) {          // environment key (placeholder)
     size_t i = (size_t)arg[idx];
     test_assert( i >= 32, "invalid placeholder key" );
     return ggetAt(env, arg[idx]);
