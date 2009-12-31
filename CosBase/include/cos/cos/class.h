@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.15 2009/12/29 17:56:18 ldeniau Exp $
+ | $Id: class.h,v 1.16 2009/12/31 17:56:53 ldeniau Exp $
  |
 */
 
@@ -143,10 +143,10 @@
 /* class declaration
  */
 #define COS_CLS_DCL(...) \
-        COS_PP_SEP(COS_PP_MAP((__VA_ARGS__),COS_CLS_DCL_1))
+        COS_PP_SEPWITH(COS_PP_MAP((__VA_ARGS__),COS_CLS_DCL_1),;)
 
 #define COS_CLS_DCL_1(NAME) \
-        extern struct Class COS_CLS_NAME(NAME);
+        extern struct Class COS_CLS_NAME(NAME)
 
 /* class use
  */
