@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.35 2009/12/28 00:43:18 ldeniau Exp $
+ | $Id: algorithm.h,v 1.36 2009/12/31 11:15:27 ldeniau Exp $
  |
 */
 
@@ -138,7 +138,7 @@ defgeneric(OBJ, gunique     , _1, fun); // remove contiguous equal elements
 
 // set-like algorithms
 defgeneric(OBJ, gdiff       , _1, _2, fun); // _1 - _2 [asymmetric]
-defgeneric(OBJ, gunion      , _1, _2, fun); // _1 + _2
+defgeneric(OBJ, gmerge      , _1, _2, fun); // _1 + _2 (requires sorted _1, _2)
 defgeneric(OBJ, gintersect  , _1, _2, fun); // _1 - (_1 - _2) [asymmetric]
 
 #endif // COS_GEN_ALGORITHM_H

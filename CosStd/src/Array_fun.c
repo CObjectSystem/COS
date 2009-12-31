@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.26 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.27 2009/12/31 11:15:28 ldeniau Exp $
  |
 */
 
@@ -882,6 +882,45 @@ defmethod(OBJ, ggroup, Array, Functor)
   gadjust(arr_t);
 
   retmethod(arr);
+endmethod
+
+// ----- merge
+
+defmethod(OBJ, gmerge, Array, Array, Functor)
+  U32 size = self->size+self2->size;
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
+
+  I32  val_s  = self->stride;
+  OBJ *val    = self->object;
+  I32  val2_s = self2->stride;
+  OBJ *val2   = self2->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
+  OBJ *end    = val  + val_s  *self->size;
+  OBJ *end2   = val2 + val2_s *self2->size;
+  
+  while (val != end && val2 != end2) {
+    if (geval(_3, *val, *val2) == Greater) {
+      *dst++ = gretain(*val2), ++*dst_n;
+      val2 += val2_s;
+    } else {
+      *dst++ = gretain(*val), ++*dst_n;
+      val += val_s;
+    }
+  }
+
+  while (val != end) {
+    *dst++ = gretain(*val), ++*dst_n;
+    val += val_s;
+  }
+
+  while (val2 != end2) {
+    *dst++ = gretain(*val2), ++*dst_n;
+    val2 += val2_s;
+  }
+
+  retmethod(_arr);
 endmethod
 
 // ----- diff (asymmetric diff, self1 - self2)
