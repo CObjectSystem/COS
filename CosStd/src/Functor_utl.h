@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.3 2009/12/30 01:00:45 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.4 2010/01/01 14:23:37 ldeniau Exp $
  |
 */
 
@@ -95,6 +95,22 @@ isFunc(U32 msk, OBJ arg[], U32 n)
     if (!(isIdx(msk, idx) && idx == (size_t)arg[idx]))
       break;
       
+  return idx == n;
+}
+
+static COS_ALWAYS_INLINE BOOL
+isClosed(U32 msk, OBJ arg[], U32 n)
+{
+  U32 idx, narg = 0;
+  
+  for (idx = 0; idx < n; idx++) {
+    if (isArg(msk, idx)) ++narg;
+
+    else
+    if (!(isIdx(msk, idx) && idx-narg == (size_t)arg[idx]))
+      break;
+  }
+       
   return idx == n;
 }
 

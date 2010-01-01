@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.4 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.5 2010/01/01 14:23:37 ldeniau Exp $
  |
 */
 
@@ -79,6 +79,10 @@ STATIC_ASSERT(functor9_to_function9_compatibility,
               COS_FIELD_COMPATIBILITY(Function9,FunExpr9,fct));
 
 // ----- ctors
+
+// TODO ?
+
+// ----- copy
 
 #undef  DEFMETHOD
 #define DEFMETHOD(N) \
@@ -134,16 +138,13 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Function1, Array)
   OBJ *var = self2->object;
-  U32 size = self2->size;
 
-  test_assert( size >= 1, "invalid placeholder index" );
+  test_assert( self2->size >= 1, "invalid placeholder index" );
 
   retmethod( self->fct(var[0]) );
 endmethod
 
 // ----- 2
-
-#include <cos/gen/value.h>
 
 defmethod(OBJ, gevalEnv, Function2, Array2)
   OBJ *var = self2->Array.object;
@@ -153,9 +154,8 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Function2, Array)
   OBJ *var = self2->object;
-  U32 size = self2->size;
   
-  test_assert( size >= 2, "invalid placeholder index" );
+  test_assert( self2->size >= 2, "invalid placeholder index" );
 
   retmethod( self->fct(var[0], var[1]) );
 endmethod
@@ -170,9 +170,8 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Function3, Array)
   OBJ *var = self2->object;
-  U32 size = self2->size;
 
-  test_assert( size >= 3, "invalid placeholder index" );
+  test_assert( self2->size >= 3, "invalid placeholder index" );
 
   retmethod( self->fct(var[0], var[1], var[2]) );
 endmethod
@@ -187,9 +186,8 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Function4, Array)
   OBJ *var = self2->object;
-  U32 size = self2->size;
 
-  test_assert( size >= 4, "invalid placeholder index" );
+  test_assert( self2->size >= 4, "invalid placeholder index" );
 
   retmethod( self->fct(var[0], var[1], var[2], var[3]) );
 endmethod
@@ -204,9 +202,8 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Function5, Array)
   OBJ *var = self2->object;
-  U32 size = self2->size;
 
-  test_assert( size >= 5, "invalid placeholder index" );
+  test_assert( self2->size >= 5, "invalid placeholder index" );
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4]) );
 endmethod
@@ -221,9 +218,8 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Function6, Array)
   OBJ *var = self2->object;
-  U32 size = self2->size;
 
-  test_assert( size >= 6, "invalid placeholder index" );
+  test_assert( self2->size >= 6, "invalid placeholder index" );
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4], var[5]) );
 endmethod
@@ -239,9 +235,8 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Function7, Array)
   OBJ *var = self2->object;
-  U32 size = self2->size;
 
-  test_assert( size >= 7, "invalid placeholder index" );
+  test_assert( self2->size >= 7, "invalid placeholder index" );
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
                        var[5], var[6]) );
@@ -258,9 +253,8 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Function8, Array)
   OBJ *var = self2->object;
-  U32 size = self2->size;
 
-  test_assert( size >= 8, "invalid placeholder index" );
+  test_assert( self2->size >= 8, "invalid placeholder index" );
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
                        var[5], var[6], var[7]) );
@@ -277,9 +271,8 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Function9, Array)
   OBJ *var = self2->object;
-  U32 size = self2->size;
 
-  test_assert( size >= 9, "invalid placeholder index" );
+  test_assert( self2->size >= 9, "invalid placeholder index" );
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
                        var[5], var[6], var[7], var[8]) );

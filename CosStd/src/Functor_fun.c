@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.3 2009/12/30 01:00:45 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.4 2010/01/01 14:23:37 ldeniau Exp $
  |
 */
 
@@ -54,6 +54,8 @@ makclass(FunExpr9, FunExpr);
 
 // ----- initializer
 
+dclclass(Functor1, Functor2, Functor3);
+
 #undef  DEFFUNC
 #define DEFFUNC(N) \
 \
@@ -65,7 +67,12 @@ struct Functor* COS_PP_CAT(FunExpr_init,N) \
   if (isFunc(fun->msk, fun->arg, N)) \
     fun->FunExpr.Functor.Object.id = \
       cos_class_id(classref(COS_PP_CAT(Function,N))); \
-\
+  COS_PP_IF(COS_PP_GT(N,3))(, \
+  else \
+  if (isClosed(fun->msk, fun->arg, N)) \
+    fun->FunExpr.Functor.Object.id = \
+      cos_class_id(classref(COS_PP_CAT(Functor,N))); \
+  )\
   return &fun->FunExpr.Functor; \
 }
 
@@ -81,7 +88,7 @@ DEFFUNC(9)
 
 // ----- ctors
 
-// TODO
+// TODO ?
 
 // ----- copy
 
