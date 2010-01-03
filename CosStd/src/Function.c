@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Function.c,v 1.4 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Function.c,v 1.5 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -37,8 +37,6 @@
 #include <cos/Function.h>
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
-
-makclass(GenFunction ,Functor);
 
 makclass(IntFunction ,Functor);
 makclass(IntFunction1,IntFunction);

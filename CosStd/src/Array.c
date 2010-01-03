@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.48 2009/12/17 14:08:57 ldeniau Exp $
+ | $Id: Array.c,v 1.49 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -134,31 +134,49 @@ clone(const struct Array *arr)
 }
 
 defmethod(OBJ, gclone, Array) // clone
-  PRE POST BODY
-    retmethod(clone(self));
+  retmethod(clone(self));
+endmethod
+
+defmethod(OBJ, gdeepClone, Array) // deepClone
+  U32  size  = self->size;
+  I32  src_s = self->stride;
+  OBJ *src   = self->object;
+  OBJ *end   = src + src_s*size;
+
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+
+  OBJ *dst   = arr->object;
+  U32 *dst_n = &arr->size;
+
+  while (src != end) {
+    *dst++ = gdeepClone(*src), ++*dst_n;
+     src += src_s;
+  }
+
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Array);
 defmethod(OBJ,  ginitWith         , pmArray, Array) // clone
-  PRE POST BODY
-    retmethod(clone(self2));
+  retmethod(clone(self2));
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Slice);
 defmethod(OBJ,  ginitWith         , pmArray, Slice) // Int sequence
-  PRE POST BODY
-    U32 size = Slice_size(self2);
-    
-    struct Array* vec = Array_alloc(size);
-    OBJ _vec = (OBJ)vec; PRT(_vec);
+  U32 size = Slice_size(self2);
   
-    for (U32 i = 0; i < size; i++) {
-      vec->object[i] = gretain(aInt(Slice_eval(self2,i)));
-      vec->size++;
-    }
+  struct Array* vec = Array_alloc(size);
+  OBJ _vec = (OBJ)vec; PRT(_vec);
 
-    UNPRT(_vec);
-    retmethod(_vec);
+  for (U32 i = 0; i < size; i++) {
+    vec->object[i] = gretain(aInt(Slice_eval(self2,i)));
+    vec->size++;
+  }
+
+  UNPRT(_vec);
+  retmethod(_vec);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Range);

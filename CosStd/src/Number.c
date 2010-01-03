@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.21 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: Number.c,v 1.22 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -39,8 +39,8 @@
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/init.h>
-#include <cos/gen/mathop.h>
 #include <cos/gen/new.h>
+#include <cos/gen/numop.h>
 #include <cos/gen/object.h>
 #include <cos/gen/relop.h>
 #include <cos/gen/value.h>
@@ -91,7 +91,8 @@ DEFMETHOD(Complex,     )
 #undef  DEFMETHOD
 #define DEFMETHOD(T,P) \
 \
-defmethod(OBJ, gclone, T) \
+defalias (OBJ, (gclone)gdeepClone, T); \
+defmethod(OBJ,  gclone           , T)  \
   struct T *new = STATIC_CAST(struct T*, galloc(T)); \
   new->P value = self->P value; \
   retmethod( (OBJ)new ); \

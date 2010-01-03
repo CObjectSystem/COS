@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.9 2009/09/26 09:02:07 ldeniau Exp $
+ | $Id: String.c,v 1.10 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -113,7 +113,8 @@ endmethod
 
 // ----- constructors
 
-defmethod(OBJ, gclone, String) // clone
+defalias (OBJ, (gclone)gdeepClone, String);
+defmethod(OBJ,  gclone           , String) // clone
     struct String* str = String_alloc(self->size);
 
     memcpy(str->value, self->value, str->size);

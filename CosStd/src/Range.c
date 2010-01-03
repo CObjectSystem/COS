@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.16 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: Range.c,v 1.17 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -70,7 +70,8 @@ endmethod
 
 // ----- copy
 
-defmethod(OBJ, gclone, Range)
+defalias (OBJ, (gclone)gdeepClone, Range);
+defmethod(OBJ,  gclone           , Range)
   retmethod( (OBJ)Range_copy((void*)galloc(Range), self) );
 endmethod
 

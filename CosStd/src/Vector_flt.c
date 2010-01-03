@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_flt.c,v 1.5 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: Vector_flt.c,v 1.6 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -39,8 +39,8 @@
 #include <cos/Function.h>
 
 #include <cos/gen/object.h>
-#include <cos/gen/mathop.h>
 #include <cos/gen/floatop.h>
+#include <cos/gen/numop.h>
 #include <cos/gen/vectop.h>
 #include <cos/gen/value.h>
 
@@ -73,137 +73,6 @@ endmethod
 
 DEFMETHOD(FltVector, F64, aFloat  )
 DEFMETHOD(CpxVector, C64, aComplex)
-
-// ----- mapSum
-
-#undef  DEFMETHOD
-#define DEFMETHOD(T,E,TF,F,O) \
-\
-defmethod(OBJ, gmapSum, TF, T) \
-  E  *val   = self2->value; \
-  I32 val_s = self2->stride; \
-  E  *end   = self2->value + self2->size*self2->stride; \
-  F   fct   = self ->fct; \
-  E c, s, t, v, y; \
-\
-  s = c = 0; \
-  while (val != end) { \
-    v = fct(*val); \
-    y = v - c; \
-    t = s + y; \
-    c = (t - s) - y; \
-    s = t; \
-    val += val_s; \
-  } \
-\
-  retmethod(gautoDelete(O(s))); \
-endmethod
-
-DEFMETHOD(FltVector, F64, FltFunction1, F64FCT1, aFloat  )
-DEFMETHOD(CpxVector, C64, CpxFunction1, C64FCT1, aComplex)
-
-// ----- mapSum2
-
-#undef  DEFMETHOD
-#define DEFMETHOD(T,E,TF,F,O) \
-\
-defmethod(OBJ, gmapSum2, TF, T, T) \
-  PRE \
-    test_assert(self2->size == self3->size, "incompatible vector sizes"); \
-\
-  BODY \
-    E  *val    = self2->value; \
-    I32 val_s  = self2->stride; \
-    E  *end    = self2->value + self2->size*self2->stride; \
-    E  *val2   = self3->value; \
-    I32 val2_s = self3->stride; \
-    F   fct    = self ->fct; \
-    E c, s, t, v, y; \
-\
-    s = c = 0; \
-    while (val != end) { \
-      v = fct(*val,*val2); \
-      y = v - c; \
-      t = s + y; \
-      c = (t - s) - y; \
-      s = t; \
-      val  += val_s; \
-      val2 += val2_s; \
-    } \
-\
-    retmethod(gautoDelete(O(s))); \
-endmethod
-
-DEFMETHOD(FltVector, F64, FltFunction2, F64FCT2, aFloat  )
-DEFMETHOD(CpxVector, C64, CpxFunction2, C64FCT2, aComplex)
-
-#undef  DEFMETHOD
-#define DEFMETHOD(T,E,TE,TF,F,O) \
-\
-defmethod(OBJ, gmapSum2, TF, T, TE) \
-  E  *val    = self2->value; \
-  I32 val_s  = self2->stride; \
-  E  *end    = self2->value + self2->size*self2->stride; \
-  E   val2   = self3->value; \
-  F   fct    = self ->fct; \
-  E c, s, t, v, y; \
-\
-  s = c = 0; \
-  while (val != end) { \
-    v = fct(*val,val2); \
-    y = v - c; \
-    t = s + y; \
-    c = (t - s) - y; \
-    s = t; \
-    val += val_s; \
-  } \
-\
-  retmethod(gautoDelete(O(s))); \
-endmethod
-
-DEFMETHOD(FltVector, F64, Float  , FltFunction2, F64FCT2, aFloat  )
-DEFMETHOD(CpxVector, C64, Complex, CpxFunction2, C64FCT2, aComplex)
-
-// ---- mean
-
-defmethod(OBJ, gmean, Sequence)
-  U32 size;
-
-  PRE
-    size = gsize(_1);
-    test_assert(size > 0, "invalid sequence size");
-
-  BODY
-    if (!COS_CONTRACT)
-      size = gsize(_1);
-
-    retmethod( gdivBy(gsum(_1),aInt(size)) );
-endmethod
-
-// ---- standard deviation
-
-static F64 sqrDiff(F64 x, F64 a) {
-  return (x-a)*(x-a);
-}
-
-defmethod(OBJ, gstdev, Sequence)
-  U32 size;
-
-  PRE
-    size = gsize(_1);
-    test_assert(size > 1, "invalid sequence size");
-
-  BODY
-    if (!COS_CONTRACT)
-      size = gsize(_1);
-
-    OBJ rms   = aFltFunction(sqrDiff,0,0);
-    OBJ mean  = gdivBy(gsum(_1),aInt(size)); PRT(mean);
-    OBJ stdev = gautoDelete(gsqroot(gmapSum2(rms, _1, mean)));
-    UNPRT(mean); gdelete(mean);
-
-    retmethod( stdev );
-endmethod
 
 // ----- prod
 
@@ -330,32 +199,18 @@ defmethod(OBJ, gpower, CpxVector, Floating)
   retmethod(_1);
 endmethod
 
-// ----- conj
-
-defmethod(OBJ, gconj, CpxVector)
-  retmethod(gautoDelete( gconjugate(gclone(_1)) ));
-endmethod
-
-// ----- abs
-
-defmethod(OBJ, gabs, CpxVector)
-  retmethod(gautoDelete( gabsolute(gclone(_1)) ));
-endmethod
-
-// ----- arg
-
-defmethod(OBJ, garg, CpxVector)
-  retmethod(gautoDelete( gargument(gclone(_1)) ));
-endmethod
-
 // ----- math methods
 
 #undef  DEFMETHOD
 #define DEFMETHOD(mth,gen) \
 \
 defmethod(OBJ, mth, FloatingVector) \
-  retmethod(gautoDelete( gen(gclone(_1)) )); \
+  retmethod(gen(gautoDelete(gclone(_1)))); \
 endmethod
+
+DEFMETHOD(gconj , gconjugate  )
+DEFMETHOD(gabs  , gabsolute   )
+DEFMETHOD(garg  , gargument   )
 
 DEFMETHOD(gexp  , gexponential)
 DEFMETHOD(glog  , glogarithm  )

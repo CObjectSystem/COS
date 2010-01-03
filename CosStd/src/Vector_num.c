@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_num.c,v 1.2 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: Vector_num.c,v 1.3 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -40,8 +40,8 @@
 #include <cos/CpxVector.h>
 #include <cos/Number.h>
 
+#include <cos/gen/numop.h>
 #include <cos/gen/object.h>
-#include <cos/gen/mathop.h>
 
 // ----- absolute
 
@@ -79,6 +79,30 @@ defmethod(OBJ, gnegate, T) \
 \
   while (val != end) { \
     *val = -*val; \
+    val += val_s; \
+  } \
+\
+  retmethod(_1); \
+endmethod
+
+DEFMETHOD(ShtVector, I16)
+DEFMETHOD(IntVector, I32)
+DEFMETHOD(LngVector, I64)
+DEFMETHOD(FltVector, F64)
+DEFMETHOD(CpxVector, C64)
+
+// ----- square
+
+#undef  DEFMETHOD
+#define DEFMETHOD(T, V) \
+\
+defmethod(OBJ, gsquare, T) \
+  V  *val   = self->value; \
+  I32 val_s = self->stride; \
+  V  *end   = self->value + self->size*self->stride; \
+\
+  while (val != end) { \
+    *val *= *val; \
     val += val_s; \
   } \
 \
@@ -237,112 +261,112 @@ endmethod
 // ----- abs
 
 defmethod(OBJ, gabs, Vector)
-  retmethod(gautoDelete( gabsolute(gclone(_1)) ));
+  retmethod(gabsolute(gautoDelete(gclone(_1))));
 endmethod
 
 // ----- neg
 
 defmethod(OBJ, gneg, Vector)
-  retmethod(gautoDelete( gnegate(gclone(_1)) ));
+  retmethod(gnegate(gautoDelete(gclone(_1))));
 endmethod
 
 // ----- sqr
 
 defmethod(OBJ, gsqr, Vector)
-  retmethod(gautoDelete( gmulBy(gclone(_1),_1) ));
+  retmethod(gsquare(gautoDelete(gclone(_1))));
 endmethod
 
 // ----- inv
 
 defmethod(OBJ, ginv, FloatingVector)
-  retmethod(gautoDelete( ginvert(gclone(_1)) ));
+  retmethod(ginvert(gautoDelete(gclone(_1))));
 endmethod
 
 // ----- add
 
 defmethod(OBJ, gadd, Vector, Vector)
-  retmethod(gautoDelete( gaddTo(gclone(_1),_2) ));
+  retmethod(gaddTo(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gadd, IntegralVector, LngVector)
-  retmethod(gautoDelete( gaddTo(gclone(_2),_1) ));
+  retmethod(gaddTo(gautoDelete(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gadd, IntegralVector, FloatingVector)
-  retmethod(gautoDelete( gaddTo(gclone(_2),_1) ));
+  retmethod(gaddTo(gautoDelete(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gadd, FloatingVector, CpxVector)
-  retmethod(gautoDelete( gaddTo(gclone(_2),_1) ));
+  retmethod(gaddTo(gautoDelete(gclone(_2)),_1));
 endmethod
 
 // ----- sub
 
 defmethod(OBJ, gsub, Vector, Vector)
-  retmethod(gautoDelete( gsubTo(gclone(_1),_2) ));
+  retmethod(gsubTo(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gsub, IntegralVector, LngVector)
-  retmethod(gautoDelete( gnegate(gsubTo(gclone(_2),_1)) ));
+  retmethod(gnegate(gsubTo(gautoDelete(gclone(_2)),_1)));
 endmethod
 
 defmethod(OBJ, gsub, IntegralVector, FloatingVector)
-  retmethod(gautoDelete( gnegate(gsubTo(gclone(_2),_1)) ));
+  retmethod(gnegate(gsubTo(gautoDelete(gclone(_2)),_1)));
 endmethod
 
 defmethod(OBJ, gsub, FloatingVector, CpxVector)
-  retmethod(gautoDelete( gnegate(gsubTo(gclone(_2),_1)) ));
+  retmethod(gnegate(gsubTo(gautoDelete(gclone(_2)),_1)));
 endmethod
 
 // ----- mul
 
 defmethod(OBJ, gmul, Vector, Vector)
-  retmethod(gautoDelete( gmulBy(gclone(_1),_2) ));
+  retmethod(gmulBy(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gmul, IntegralVector, LngVector)
-  retmethod(gautoDelete( gmulBy(gclone(_2),_1) ));
+  retmethod(gmulBy(gautoDelete(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gmul, IntegralVector, FloatingVector)
-  retmethod(gautoDelete( gmulBy(gclone(_2),_1) ));
+  retmethod(gmulBy(gautoDelete(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gmul, FloatingVector, CpxVector)
-  retmethod(gautoDelete( gmulBy(gclone(_2),_1) ));
+  retmethod(gmulBy(gautoDelete(gclone(_2)),_1));
 endmethod
 
 // ----- div
 
 defmethod(OBJ, gdiv, Vector, Vector)
-  retmethod(gautoDelete( gdivBy(gclone(_1),_2) ));
+  retmethod(gdivBy(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gdiv, IntegralVector, LngVector)
-  retmethod(gautoDelete( gmulBy(ginvert(gclone(_2)),_1) ));
+  retmethod(gmulBy(ginvert(gautoDelete(gclone(_2))),_1));
 endmethod
 
 defmethod(OBJ, gdiv, IntegralVector, FloatingVector)
-  retmethod(gautoDelete( gmulBy(ginvert(gclone(_2)),_1) ));
+  retmethod(gmulBy(ginvert(gautoDelete(gclone(_2))),_1));
 endmethod
 
 defmethod(OBJ, gdiv, FloatingVector, CpxVector)
-  retmethod(gautoDelete( gmulBy(ginvert(gclone(_2)),_1) ));
+  retmethod(gmulBy(ginvert(gautoDelete(gclone(_2))),_1));
 endmethod
 
 // ----- pow
 
 defmethod(OBJ, gpow, FloatingVector, Int)
-  retmethod(gautoDelete( gpower(gclone(_1),_2) ));
+  retmethod(gpower(gautoDelete(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gpow, FloatingVector, Floating)
-  retmethod(gautoDelete( gpower(gclone(_1),_2) ));
+  retmethod(gpower(gautoDelete(gclone(_1)),_2));
 endmethod
 
 // ----- mod
 
 defmethod(OBJ, gmod, IntegralVector, Integral)
-  retmethod(gautoDelete( gmodulo(gclone(_1),_2) ));
+  retmethod(gmodulo(gautoDelete(gclone(_1)),_2));
 endmethod
 

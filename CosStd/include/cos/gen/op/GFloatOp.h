@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GFloatOp.h,v 1.2 2010/01/03 12:38:48 ldeniau Exp $
+ | $Id: GFloatOp.h,v 1.3 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -63,7 +63,7 @@ defclass(GConjugate  , GUnaryOp  ) endclass
 defclass(GArgument   , GUnaryOp  ) endclass
 defclass(GExponential, GUnaryOp  ) endclass
 defclass(GLogarithm  , GUnaryOp  ) endclass
-defclass(GSqroot     , GUnaryOp  ) endclass
+defclass(GSqRoot     , GUnaryOp  ) endclass
 defclass(GCosine     , GUnaryOp  ) endclass
 defclass(GSine       , GUnaryOp  ) endclass
 defclass(GTangent    , GUnaryOp  ) endclass

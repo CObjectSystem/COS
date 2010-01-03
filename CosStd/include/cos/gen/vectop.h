@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: vectop.h,v 1.4 2010/01/03 12:35:30 ldeniau Exp $
+ | $Id: vectop.h,v 1.5 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -40,8 +40,5 @@
 
 defgeneric(OBJ, (GSum   ) gsum , _1);
 defgeneric(OBJ, (GProd  ) gprod, _1);
-
-defgeneric(OBJ, (GMean  ) gmean  , _1);
-defgeneric(OBJ, (GStdDev) gstddev, _1);
 
 #endif // COS_GEN_VECTOP_H

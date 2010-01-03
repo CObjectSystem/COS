@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.2 2010/01/03 12:35:30 ldeniau Exp $
+ | $Id: Generic.c,v 1.3 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,7 @@ makclass(GUnaryOp  , GOperator);
 makclass(GBinaryOp , GOperator);
 makclass(GTernaryOp, GOperator);
 
-#include <cos/gen/op/GMathOp.h>
+#include <cos/gen/op/GNumOp.h>
 
 makclass(GAbs      , GUnaryOp );
 makclass(GNeg      , GUnaryOp );
@@ -91,7 +91,7 @@ makclass(GConjugate  , GUnaryOp  );
 makclass(GArgument   , GUnaryOp  );
 makclass(GExponential, GUnaryOp  );
 makclass(GLogarithm  , GUnaryOp  );
-makclass(GSqroot     , GUnaryOp  );
+makclass(GSqRoot     , GUnaryOp  );
 makclass(GCosine     , GUnaryOp  );
 makclass(GSine       , GUnaryOp  );
 makclass(GTangent    , GUnaryOp  );
@@ -129,8 +129,6 @@ makclass(GImplies, GBinaryOp);
 
 #include <cos/gen/op/GVectOp.h>
 
-makclass(GSum   , GUnaryOp);
-makclass(GProd  , GUnaryOp);
-makclass(GMean  , GUnaryOp);
-makclass(GStdDev, GUnaryOp);
+makclass(GSum , GUnaryOp);
+makclass(GProd, GUnaryOp);
 

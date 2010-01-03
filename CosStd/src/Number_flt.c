@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.9 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: Number_flt.c,v 1.10 2010/01/03 14:54:33 ldeniau Exp $
  |
 */
 
@@ -38,7 +38,7 @@
 
 #include <cos/gen/object.h>
 #include <cos/gen/floatop.h>
-#include <cos/gen/mathop.h>
+#include <cos/gen/numop.h>
 #include <cos/gen/new.h>
 
 #include <math.h>

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Function.h,v 1.9 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Function.h,v 1.10 2010/01/03 14:54:32 ldeniau Exp $
  |
 */
 
@@ -92,9 +92,7 @@ typedef C64 (*C64FCT9)(C64,C64,C64,C64,C64,C64,C64,C64,C64);
 
 // ----- definitions
 
-defclass(GenFunction ,Functor    ) FCT     fct; endclass
-
-defclass(IntFunction ,Functor    )              endclass
+defclass(IntFunction ,Functor    ) STR     str; endclass
 defclass(IntFunction1,IntFunction) I32FCT1 fct; endclass
 defclass(IntFunction2,IntFunction) I32FCT2 fct; endclass
 defclass(IntFunction3,IntFunction) I32FCT3 fct; endclass
@@ -105,7 +103,7 @@ defclass(IntFunction7,IntFunction) I32FCT7 fct; endclass
 defclass(IntFunction8,IntFunction) I32FCT8 fct; endclass
 defclass(IntFunction9,IntFunction) I32FCT9 fct; endclass
 
-defclass(LngFunction ,Functor    )              endclass
+defclass(LngFunction ,Functor    ) STR     str; endclass
 defclass(LngFunction1,LngFunction) I64FCT1 fct; endclass
 defclass(LngFunction2,LngFunction) I64FCT2 fct; endclass
 defclass(LngFunction3,LngFunction) I64FCT3 fct; endclass
@@ -116,7 +114,7 @@ defclass(LngFunction7,LngFunction) I64FCT7 fct; endclass
 defclass(LngFunction8,LngFunction) I64FCT8 fct; endclass
 defclass(LngFunction9,LngFunction) I64FCT9 fct; endclass
 
-defclass(FltFunction ,Functor    )              endclass
+defclass(FltFunction ,Functor    ) STR     str; endclass
 defclass(FltFunction1,FltFunction) F64FCT1 fct; endclass
 defclass(FltFunction2,FltFunction) F64FCT2 fct; endclass
 defclass(FltFunction3,FltFunction) F64FCT3 fct; endclass
@@ -127,7 +125,7 @@ defclass(FltFunction7,FltFunction) F64FCT7 fct; endclass
 defclass(FltFunction8,FltFunction) F64FCT8 fct; endclass
 defclass(FltFunction9,FltFunction) F64FCT9 fct; endclass
 
-defclass(CpxFunction ,Functor    )              endclass
+defclass(CpxFunction ,Functor    ) STR     str; endclass
 defclass(CpxFunction1,CpxFunction) C64FCT1 fct; endclass
 defclass(CpxFunction2,CpxFunction) C64FCT2 fct; endclass
 defclass(CpxFunction3,CpxFunction) C64FCT3 fct; endclass
@@ -140,14 +138,26 @@ defclass(CpxFunction9,CpxFunction) C64FCT9 fct; endclass
 
 // ----- automatic constructors
 
-#define aGenFunction(F)     aFunctionT(Gen,F,                        )
 #define aIntFunction(F,...) aFunctionT(Int,F,COS_PP_NARG(__VA_ARGS__))
 #define aLngFunction(F,...) aFunctionT(Lng,F,COS_PP_NARG(__VA_ARGS__))
 #define aFltFunction(F,...) aFunctionT(Flt,F,COS_PP_NARG(__VA_ARGS__))
 #define aCpxFunction(F,...) aFunctionT(Cpx,F,COS_PP_NARG(__VA_ARGS__))
 
+// --- shortcuts
+
+#ifndef COS_NOSHORTCUT
+#define aIntFct(...)  aIntFunction (__VA_ARGS__)
+#define aLngFct(...)  aLngFunction (__VA_ARGS__)
+#define aFltFct(...)  aFltFunction (__VA_ARGS__)
+#define aCpxFct(...)  aCpxFunction (__VA_ARGS__)
+#endif
+
+/***********************************************************
+ * Implementation (private)
+ */
+
 #define aFunctionT(T,F,N) \
   ((OBJ)&(struct COS_PP_CAT3(T,Function,N)) { \
-   {{ cos_object_auto(COS_PP_CAT3(T,Function,N)) }}, (F) })
+   {{ cos_object_auto(COS_PP_CAT3(T,Function,N)) }, COS_PP_STR(F) }, (F) })
 
 #endif // COS_FUNCTION_H
