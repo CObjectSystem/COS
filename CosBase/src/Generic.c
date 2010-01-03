@@ -29,19 +29,21 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.5 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: Generic.c,v 1.6 2010/01/03 11:02:39 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <cos/Generic.h>
+#include <cos/GAccessor.h>
 #include <cos/gen/value.h>
 
-makclass(Generic      , Behavior);
+makclass(Generic, Behavior);
 
-makclass(GenAccessor  , Generic);
-makclass(GenComparator, Generic);
-makclass(GenOperator  , Generic);
+// -----
+
+makclass(GAccessor, Generic);
+makclass(GGetter  , GAccessor);
+makclass(GSetter  , GAccessor);
 
 // -----
 

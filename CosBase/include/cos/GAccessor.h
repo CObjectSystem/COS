@@ -1,10 +1,10 @@
-#ifndef COS_GENERIC_H
-#define COS_GENERIC_H
+#ifndef COS_GACCESSOR_H
+#define COS_GACCESSOR_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS Generic
+ | COS Generic Accessor classes
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.h,v 1.5 2009/08/03 10:07:00 ldeniau Exp $
+ | $Id: GAccessor.h,v 1.1 2010/01/03 11:02:38 ldeniau Exp $
  |
 */
 
@@ -42,9 +42,8 @@
 
 // Generic is a core class, see cos/cos/coscls.h
 
-// generics classification
-defclass(GenAccessor  , Generic) endclass
-defclass(GenComparator, Generic) endclass
-defclass(GenOperator  , Generic) endclass
+defclass(GAccessor, Generic  ) endclass
+defclass(GGetter  , GAccessor) endclass
+defclass(GSetter  , GAccessor) endclass
 
-#endif // COS_GENERIC_H
+#endif // COS_GACCESSOR_H

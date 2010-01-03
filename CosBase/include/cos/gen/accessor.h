@@ -32,20 +32,20 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: accessor.h,v 1.7 2009/11/27 09:37:42 ldeniau Exp $
+ | $Id: accessor.h,v 1.8 2010/01/03 11:02:39 ldeniau Exp $
  |
 */
 
-#ifndef COS_GENERIC_H
-#include <cos/Generic.h>
+#ifndef COS_GACCESSOR_H
+#include <cos/GAccessor.h>
 #endif 
 
 // getters, setters, properties, keys
-defgeneric(OBJ, (GenAccessor) ggetAt, _1, at);
-defgeneric(OBJ, (GenAccessor) gputAt, _1, at, what);
+defgeneric(OBJ, (GGetter) ggetAt, _1, at);
+defgeneric(OBJ, (GSetter) gputAt, _1, at, what);
 
 // common case for indexes
-defgeneric(OBJ, (GenAccessor) ggetAtIdx, _1, (I32)idx);
-defgeneric(OBJ, (GenAccessor) gputAtIdx, _1, (I32)idx, what);
+defgeneric(OBJ, (GGetter) ggetAtIdx, _1, (I32)idx);
+defgeneric(OBJ, (GSetter) gputAtIdx, _1, (I32)idx, what);
 
 #endif // COS_GEN_ACCESSOR_H

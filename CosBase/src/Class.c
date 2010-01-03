@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.6 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: Class.c,v 1.7 2010/01/03 11:02:39 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,7 @@
 
 // -----
 
-makclass(Class,Behavior);
+makclass(Class, Behavior);
 
 // ----- properties (read-only)
 
