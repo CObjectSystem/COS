@@ -1,10 +1,10 @@
-#ifndef COS_GOPERATOR_H
-#define COS_GOPERATOR_H
+#ifndef COS_GRELOP_H
+#define COS_GRELOP_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS Generic classes for operators
+ | COS Generic classes for relational operators
  |
  o---------------------------------------------------------------------o
  |
@@ -32,15 +32,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GOperator.h,v 1.1 2010/01/03 12:29:57 ldeniau Exp $
+ | $Id: GRelOp.h,v 1.1 2010/01/03 12:33:22 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
+#include <cos/GOperator.h>
 
-defclass(GOperator , Generic  ) endclass
-defclass(GUnaryOp  , GOperator) endclass
-defclass(GBinaryOp , GOperator) endclass
-defclass(GTernaryOp, GOperator) endclass
+defclass(GCompare       , GBinaryOp) endclass
+defclass(GEqual         , GBinaryOp) endclass
+defclass(GNotEqual      , GBinaryOp) endclass
+defclass(GLesser        , GBinaryOp) endclass
+defclass(GLesserOrEqual , GBinaryOp) endclass
+defclass(GGreater       , GBinaryOp) endclass
+defclass(GGreaterOrEqual, GBinaryOp) endclass
 
-#endif // COS_GOPERATOR_H
+defclass(GMin           , GBinaryOp) endclass
+defclass(GMax           , GBinaryOp) endclass
+
+defclass(GHash          , GUnaryOp ) endclass
+
+#endif // COS_GRELOP_H
