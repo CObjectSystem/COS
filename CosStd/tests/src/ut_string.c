@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_string.c,v 1.2 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: ut_string.c,v 1.3 2010/01/03 15:00:01 ldeniau Exp $
  |
 */
 
@@ -38,8 +38,8 @@
 #include <cos/String.h>
 
 #include <cos/gen/algorithm.h>
-#include <cos/gen/compare.h>
 #include <cos/gen/object.h>
+#include <cos/gen/relop.h>
 
 #include <cos/utest.h>
 

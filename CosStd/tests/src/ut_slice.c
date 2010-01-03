@@ -29,13 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_slice.c,v 1.5 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: ut_slice.c,v 1.6 2010/01/03 15:00:01 ldeniau Exp $
  |
 */
 
 #include <cos/Slice.h>
-#include <cos/gen/compare.h>
 #include <cos/gen/object.h>
+#include <cos/gen/relop.h>
 #include <cos/gen/sequence.h>
 #include <cos/utest.h>
 

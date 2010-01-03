@@ -29,13 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_xrange.c,v 1.5 2009/12/11 13:55:54 ldeniau Exp $
+ | $Id: ut_xrange.c,v 1.6 2010/01/03 15:00:01 ldeniau Exp $
  |
 */
 
 #include <cos/XRange.h>
-#include <cos/gen/compare.h>
 #include <cos/gen/object.h>
+#include <cos/gen/relop.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
 #include <cos/utest.h>
