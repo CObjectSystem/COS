@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: mathop.h,v 1.2 2010/01/03 12:35:30 ldeniau Exp $
+ | $Id: numop.h,v 1.1 2010/01/03 14:56:05 ldeniau Exp $
  |
 */
 
-#include <cos/gen/op/GMathOp.h>
+#include <cos/gen/op/GNumOp.h>
 
 /* NOTE-USER: operators policy
    The policy of these methods is to return the operation result in a
