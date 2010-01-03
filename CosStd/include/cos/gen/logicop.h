@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logicop.h,v 1.1 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: logicop.h,v 1.2 2010/01/03 12:35:30 ldeniau Exp $
  |
 */
 
-#include <cos/GLogicOp.h>
+#include <cos/gen/op/GLogicOp.h>
 
 defgeneric(OBJ, (GNot    ) gnot    , _1);
 defgeneric(OBJ, (GAnd    ) gand    , _1, _2);

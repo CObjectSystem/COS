@@ -1,5 +1,5 @@
-#ifndef COS_GVECTOP_H
-#define COS_GVECTOP_H
+#ifndef COS_GEN_OP_GVECTOP_H
+#define COS_GEN_OP_GVECTOP_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GVectOp.h,v 1.1 2010/01/03 12:33:22 ldeniau Exp $
+ | $Id: GVectOp.h,v 1.2 2010/01/03 12:38:48 ldeniau Exp $
  |
 */
 
-#include <cos/GOperator.h>
+#include <cos/gen/op/GOperator.h>
 
 defclass(GSum   , GUnaryOp) endclass
 defclass(GProd  , GUnaryOp) endclass
@@ -44,4 +44,4 @@ defclass(GProd  , GUnaryOp) endclass
 defclass(GMean  , GUnaryOp) endclass
 defclass(GStdDev, GUnaryOp) endclass
 
-#endif // COS_GVECTOP_H
+#endif // COS_GEN_OP_GVECTOP_H

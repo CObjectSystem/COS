@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: relop.h,v 1.1 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: relop.h,v 1.2 2010/01/03 12:35:30 ldeniau Exp $
  |
 */
 
-#include <cos/GRelOp.h>
+#include <cos/gen/op/GRelOp.h>
 
 /* NOTE-USER: object comparison
 

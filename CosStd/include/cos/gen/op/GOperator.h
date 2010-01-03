@@ -1,5 +1,5 @@
-#ifndef COS_GOPERATOR_H
-#define COS_GOPERATOR_H
+#ifndef COS_GEN_OP_GOPERATOR_H
+#define COS_GEN_OP_GOPERATOR_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GOperator.h,v 1.1 2010/01/03 12:33:22 ldeniau Exp $
+ | $Id: GOperator.h,v 1.2 2010/01/03 12:38:48 ldeniau Exp $
  |
 */
 
@@ -43,4 +43,4 @@ defclass(GUnaryOp  , GOperator) endclass
 defclass(GBinaryOp , GOperator) endclass
 defclass(GTernaryOp, GOperator) endclass
 
-#endif // COS_GOPERATOR_H
+#endif // COS_GEN_OP_GOPERATOR_H

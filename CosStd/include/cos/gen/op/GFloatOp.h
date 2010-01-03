@@ -1,5 +1,5 @@
-#ifndef COS_GFLOATOP_H
-#define COS_GFLOATOP_H
+#ifndef COS_GEN_OP_GFLOATOP_H
+#define COS_GEN_OP_GFLOATOP_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GFloatOp.h,v 1.1 2010/01/03 12:33:22 ldeniau Exp $
+ | $Id: GFloatOp.h,v 1.2 2010/01/03 12:38:48 ldeniau Exp $
  |
 */
 
-#include <cos/GOperator.h>
+#include <cos/gen/op/GOperator.h>
 
 defclass(GConj       , GUnaryOp  ) endclass
 defclass(GArg        , GUnaryOp  ) endclass
@@ -78,4 +78,4 @@ defclass(GASineH     , GUnaryOp  ) endclass
 defclass(GATangentH  , GUnaryOp  ) endclass
 defclass(GHypotenuse , GBinaryOp ) endclass
 
-#endif // COS_GFLOATOP_H
+#endif // COS_GEN_OP_GFLOATOP_H

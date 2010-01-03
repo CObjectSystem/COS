@@ -1,5 +1,5 @@
-#ifndef COS_GLOGICOP_H
-#define COS_GLOGICOP_H
+#ifndef COS_GEN_OP_GLOGICOP_H
+#define COS_GEN_OP_GLOGICOP_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GLogicOp.h,v 1.1 2010/01/03 12:33:22 ldeniau Exp $
+ | $Id: GLogicOp.h,v 1.2 2010/01/03 12:38:48 ldeniau Exp $
  |
 */
 
-#include <cos/GOperator.h>
+#include <cos/gen/op/GOperator.h>
 
 defclass(GNot    , GUnaryOp ) endclass
 defclass(GAnd    , GBinaryOp) endclass
@@ -44,4 +44,4 @@ defclass(GOr     , GBinaryOp) endclass
 defclass(GXOr    , GBinaryOp) endclass
 defclass(GImplies, GBinaryOp) endclass
 
-#endif // COS_GLOGICOP_H
+#endif // COS_GEN_OP_GLOGICOP_H

@@ -29,18 +29,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.1 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: Generic.c,v 1.2 2010/01/03 12:35:30 ldeniau Exp $
  |
 */
 
-#include <cos/GOperator.h>
+#include <cos/gen/op/GOperator.h>
 
 makclass(GOperator , Generic  );
 makclass(GUnaryOp  , GOperator);
 makclass(GBinaryOp , GOperator);
 makclass(GTernaryOp, GOperator);
 
-#include <cos/GMathOp.h>
+#include <cos/gen/op/GMathOp.h>
 
 makclass(GAbs      , GUnaryOp );
 makclass(GNeg      , GUnaryOp );
@@ -64,7 +64,7 @@ makclass(GDivBy    , GBinaryOp);
 makclass(GPower    , GBinaryOp);
 makclass(GModulo   , GBinaryOp);
 
-#include <cos/GFloatOp.h>
+#include <cos/gen/op/GFloatOp.h>
 
 makclass(GConj       , GUnaryOp  );
 makclass(GArg        , GUnaryOp  );
@@ -106,7 +106,7 @@ makclass(GASineH     , GUnaryOp  );
 makclass(GATangentH  , GUnaryOp  );
 makclass(GHypotenuse , GBinaryOp );
 
-#include <cos/GRelOp.h>
+#include <cos/gen/op/GRelOp.h>
 
 makclass(GCompare       , GBinaryOp);
 makclass(GEqual         , GBinaryOp);
@@ -119,7 +119,7 @@ makclass(GMin           , GBinaryOp);
 makclass(GMax           , GBinaryOp);
 makclass(GHash          , GUnaryOp );
 
-#include <cos/GLogicOp.h>
+#include <cos/gen/op/GLogicOp.h>
 
 makclass(GNot    , GUnaryOp );
 makclass(GAnd    , GBinaryOp);
@@ -127,7 +127,7 @@ makclass(GOr     , GBinaryOp);
 makclass(GXOr    , GBinaryOp);
 makclass(GImplies, GBinaryOp);
 
-#include <cos/GVectOp.h>
+#include <cos/gen/op/GVectOp.h>
 
 makclass(GSum   , GUnaryOp);
 makclass(GProd  , GUnaryOp);

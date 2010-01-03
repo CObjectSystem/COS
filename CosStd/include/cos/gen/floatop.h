@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: floatop.h,v 1.3 2010/01/03 12:28:55 ldeniau Exp $
+ | $Id: floatop.h,v 1.4 2010/01/03 12:35:30 ldeniau Exp $
  |
 */
 
-#include <cos/GFloatOp.h>
+#include <cos/gen/op/GFloatOp.h>
 
 /* NOTE-USER: operators policy
    The policy of these methods is to return the operation result in a

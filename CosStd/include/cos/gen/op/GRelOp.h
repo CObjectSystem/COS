@@ -1,5 +1,5 @@
-#ifndef COS_GRELOP_H
-#define COS_GRELOP_H
+#ifndef COS_GEN_OP_GRELOP_H
+#define COS_GEN_OP_GRELOP_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,11 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GRelOp.h,v 1.1 2010/01/03 12:33:22 ldeniau Exp $
+ | $Id: GRelOp.h,v 1.2 2010/01/03 12:38:48 ldeniau Exp $
  |
 */
 
-#include <cos/GOperator.h>
+#include <cos/gen/op/GOperator.h>
 
 defclass(GCompare       , GBinaryOp) endclass
 defclass(GEqual         , GBinaryOp) endclass
@@ -51,4 +51,4 @@ defclass(GMax           , GBinaryOp) endclass
 
 defclass(GHash          , GUnaryOp ) endclass
 
-#endif // COS_GRELOP_H
+#endif // COS_GEN_OP_GRELOP_H
