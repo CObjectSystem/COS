@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.15 2009/12/10 09:12:49 ldeniau Exp $
+ | $Id: Slice.c,v 1.16 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
@@ -40,9 +40,9 @@
 #include <cos/IntVector.h>
 
 #include <cos/gen/algorithm.h>
-#include <cos/gen/compare.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
+#include <cos/gen/relop.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
 

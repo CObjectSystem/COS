@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_num.c,v 1.1 2009/09/02 10:48:16 ldeniau Exp $
+ | $Id: Vector_num.c,v 1.2 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #include <cos/Number.h>
 
 #include <cos/gen/object.h>
-#include <cos/gen/operator.h>
+#include <cos/gen/mathop.h>
 
 // ----- absolute
 

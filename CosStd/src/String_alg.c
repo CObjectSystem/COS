@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.15 2009/12/11 13:15:42 ldeniau Exp $
+ | $Id: String_alg.c,v 1.16 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
@@ -39,9 +39,9 @@
 #include <cos/Slice.h>
 
 #include <cos/gen/algorithm.h>
-#include <cos/gen/compare.h>
 #include <cos/gen/container.h>
 #include <cos/gen/object.h>
+#include <cos/gen/relop.h>
 #include <cos/gen/value.h>
 
 #include <cos/carray.h>

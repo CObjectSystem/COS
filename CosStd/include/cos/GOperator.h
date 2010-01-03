@@ -1,10 +1,10 @@
-#ifndef COS_GEN_LOGIC_H
-#define COS_GEN_LOGIC_H
+#ifndef COS_GOPERATOR_H
+#define COS_GOPERATOR_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS generic logical operators
+ | COS Generic classes for operators
  |
  o---------------------------------------------------------------------o
  |
@@ -32,14 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.9 2009/08/03 12:12:32 ldeniau Exp $
+ | $Id: GOperator.h,v 1.1 2010/01/03 12:29:57 ldeniau Exp $
  |
 */
 
-defgeneric(OBJ, gnot    , _1);
-defgeneric(OBJ, gand    , _1, _2);
-defgeneric(OBJ, gor     , _1, _2);
-defgeneric(OBJ, gxor    , _1, _2); // not (_1 isEqual _2)
-defgeneric(OBJ, gimplies, _1, _2); // (not _1) or _2
+#include <cos/Object.h>
 
-#endif // COS_GEN_LOGIC_H
+defclass(GOperator , Generic  ) endclass
+defclass(GUnaryOp  , GOperator) endclass
+defclass(GBinaryOp , GOperator) endclass
+defclass(GTernaryOp, GOperator) endclass
+
+#endif // COS_GOPERATOR_H

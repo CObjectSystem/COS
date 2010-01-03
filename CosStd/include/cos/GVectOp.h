@@ -1,7 +1,10 @@
+#ifndef COS_GVECTOP_H
+#define COS_GVECTOP_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Class
+ | COS Generic classes for vector operators
  |
  o---------------------------------------------------------------------o
  |
@@ -29,17 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.2 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: GVectOp.h,v 1.1 2010/01/03 12:29:29 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
+#include <cos/GOperator.h>
 
-#include <cos/gen/relop.h>
+defclass(GSum   , GUnaryOp) endclass
+defclass(GProd  , GUnaryOp) endclass
 
-// ----- 
+defclass(GMean  , GUnaryOp) endclass
+defclass(GStdDev, GUnaryOp) endclass
 
-defmethod(OBJ, gisEqual, Class, Class)
-  retmethod(self1 == self2 ? True : False);
-endmethod
-
+#endif // COS_GVECTOP_H

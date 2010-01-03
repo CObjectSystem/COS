@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.9 2009/12/11 13:15:42 ldeniau Exp $
+ | $Id: XRange.c,v 1.10 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
@@ -40,9 +40,9 @@
 #include <cos/FltVector.h>
 
 #include <cos/gen/algorithm.h>
-#include <cos/gen/compare.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
+#include <cos/gen/relop.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
 

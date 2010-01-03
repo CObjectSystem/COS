@@ -29,15 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: TrueFalse.c,v 1.5 2009/08/08 16:36:10 ldeniau Exp $
+ | $Id: TrueFalse.c,v 1.6 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/TrueFalse.h>
 
-#include <cos/gen/compare.h>
-#include <cos/gen/logic.h>
+#include <cos/gen/relop.h>
+#include <cos/gen/logicop.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 

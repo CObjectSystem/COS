@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.20 2009/12/30 01:00:45 ldeniau Exp $
+ | $Id: Number.c,v 1.21 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
@@ -38,11 +38,11 @@
 #include <cos/TrueFalse.h>
 
 #include <cos/gen/algorithm.h>
-#include <cos/gen/compare.h>
 #include <cos/gen/init.h>
+#include <cos/gen/mathop.h>
 #include <cos/gen/new.h>
 #include <cos/gen/object.h>
-#include <cos/gen/operator.h>
+#include <cos/gen/relop.h>
 #include <cos/gen/value.h>
 
 makclass(Number  , Value);

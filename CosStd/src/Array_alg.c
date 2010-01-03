@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.18 2009/12/28 00:43:18 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.19 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,7 @@
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/container.h>
-#include <cos/gen/compare.h>
+#include <cos/gen/relop.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 

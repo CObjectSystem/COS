@@ -1,7 +1,10 @@
+#ifndef COS_GRELOP_H
+#define COS_GRELOP_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Class
+ | COS Generic classes for relational operators
  |
  o---------------------------------------------------------------------o
  |
@@ -29,17 +32,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.2 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: GRelOp.h,v 1.1 2010/01/03 12:29:29 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
+#include <cos/GOperator.h>
 
-#include <cos/gen/relop.h>
+defclass(GCompare       , GBinaryOp) endclass
+defclass(GEqual         , GBinaryOp) endclass
+defclass(GNotEqual      , GBinaryOp) endclass
+defclass(GLesser        , GBinaryOp) endclass
+defclass(GLesserOrEqual , GBinaryOp) endclass
+defclass(GGreater       , GBinaryOp) endclass
+defclass(GGreaterOrEqual, GBinaryOp) endclass
 
-// ----- 
+defclass(GMin           , GBinaryOp) endclass
+defclass(GMax           , GBinaryOp) endclass
 
-defmethod(OBJ, gisEqual, Class, Class)
-  retmethod(self1 == self2 ? True : False);
-endmethod
+defclass(GHash          , GUnaryOp ) endclass
 
+#endif // COS_GRELOP_H

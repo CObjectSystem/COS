@@ -29,13 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Ordered.c,v 1.8 2009/12/30 01:00:45 ldeniau Exp $
+ | $Id: Ordered.c,v 1.9 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
 #include <cos/Ordered.h>
 #include <cos/gen/algorithm.h>
-#include <cos/gen/operator.h>
+#include <cos/gen/mathop.h>
 
 // -----
 
@@ -71,7 +71,8 @@ endmethod
 
 #if 0
 
-IMPORTANT NOTE: these methods are too generic and prevent ANY specialization
+IMPORTANT NOTE: these methods are too generic and prevent
+                ANY specialization through the delegation
 
 // -----
 

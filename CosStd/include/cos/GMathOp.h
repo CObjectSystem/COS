@@ -1,10 +1,10 @@
-#ifndef COS_GEN_COMPARE_H
-#define COS_GEN_COMPARE_H
+#ifndef COS_GMATHOP_H
+#define COS_GMATHOP_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS comparison generics
+ | COS Generic classes for math operators
  |
  o---------------------------------------------------------------------o
  |
@@ -32,42 +32,32 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: compare.h,v 1.4 2009/08/15 14:54:57 ldeniau Exp $
+ | $Id: GMathOp.h,v 1.1 2010/01/03 12:29:29 ldeniau Exp $
  |
 */
 
-#include <cos/Generic.h>
+#include <cos/GOperator.h>
 
-/* NOTE-USER: object comparison
+defclass(GAbs     , GUnaryOp ) endclass
+defclass(GNeg     , GUnaryOp ) endclass
+defclass(GSqr     , GUnaryOp ) endclass
+defclass(GInv     , GUnaryOp ) endclass
+defclass(GAdd     , GBinaryOp) endclass
+defclass(GSub     , GBinaryOp) endclass
+defclass(GMul     , GBinaryOp) endclass
+defclass(GDiv     , GBinaryOp) endclass
+defclass(GPow     , GBinaryOp) endclass
+defclass(GMod     , GBinaryOp) endclass
 
-   gcompare(a,b)
-     | a < b     = Lesser
-     | a > b     = Geater
-     | otherwise = Equal
+defclass(GAbsolute, GUnaryOp ) endclass
+defclass(GNegate  , GUnaryOp ) endclass
+defclass(GSquare  , GUnaryOp ) endclass
+defclass(GInvert  , GUnaryOp ) endclass
+defclass(GAddTo   , GBinaryOp) endclass
+defclass(GSubTo   , GBinaryOp) endclass
+defclass(GMulBy   , GBinaryOp) endclass
+defclass(GDivBy   , GBinaryOp) endclass
+defclass(GPower   , GBinaryOp) endclass
+defclass(GModulo  , GBinaryOp) endclass
 
-   gisEqual(a,b)
-     | a == b    = True
-     | otherwise = False
-
-   gisLesser(a,b)
-     | a < b     = True
-     | otherwise = False
-
-   gisGreater(a,b)
-     | a > b     = True
-     | otherwise = False
-*/
-
-// comparison
-defgeneric(OBJ, (GenComparator) gcompare         , _1, _2);
-defgeneric(OBJ, (GenComparator) gisEqual         , _1, _2);
-defgeneric(OBJ, (GenComparator) gisLesser        , _1, _2);
-defgeneric(OBJ, (GenComparator) gisGreater       , _1, _2);
-defgeneric(OBJ, (GenComparator) gisLesserOrEqual , _1, _2);
-defgeneric(OBJ, (GenComparator) gisGreaterOrEqual, _1, _2);
-defgeneric(OBJ, (GenComparator) gisNotEqual      , _1, _2);
-
-// hash
-defgeneric(U32, (GenOperator  ) ghash, _1);
-
-#endif // COS_GEN_COMPARE_H
+#endif // COS_GMATHOP_H

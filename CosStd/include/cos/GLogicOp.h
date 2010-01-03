@@ -1,7 +1,10 @@
+#ifndef COS_GLOGICOP_H
+#define COS_GLOGICOP_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Class
+ | COS Generic classes for logic operators
  |
  o---------------------------------------------------------------------o
  |
@@ -29,17 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.2 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: GLogicOp.h,v 1.1 2010/01/03 12:29:29 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
+#include <cos/GOperator.h>
 
-#include <cos/gen/relop.h>
+defclass(GNot    , GUnaryOp ) endclass
+defclass(GAnd    , GBinaryOp) endclass
+defclass(GOr     , GBinaryOp) endclass
+defclass(GXOr    , GBinaryOp) endclass
+defclass(GImplies, GBinaryOp) endclass
 
-// ----- 
-
-defmethod(OBJ, gisEqual, Class, Class)
-  retmethod(self1 == self2 ? True : False);
-endmethod
-
+#endif // COS_GLOGICOP_H

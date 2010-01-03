@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.36 2009/12/31 11:15:27 ldeniau Exp $
+ | $Id: algorithm.h,v 1.37 2010/01/03 12:28:55 ldeniau Exp $
  |
 */
 
@@ -111,12 +111,6 @@ defgeneric(OBJ, ggenerate, fun, ini); // stops when fun return Nil
 defgeneric(OBJ, gall  , _1, fun); // fun should return TrueFalse
 defgeneric(OBJ, gany  , _1, fun); // fun should return TrueFalse
 defgeneric(U32, gcount, _1, fun); // fun should return TrueFalse
-
-// min, max
-defgeneric(OBJ, gmin, _1, _2 or fun); // fun should return Ordered or the min
-defgeneric(OBJ, gmax, _1, _2 or fun); // fun should return Ordered or the max
-// note: gmin   (_1, gmin(__1,__2)) should work like
-//       greduce(_1, gmin(__1,__2), maxVal)
 
 // sorting (fun must return Ordered)
 defgeneric(OBJ, gsort    , _1, fun); // in place

@@ -1,7 +1,10 @@
+#ifndef COS_GEN_LOGICOP_H
+#define COS_GEN_LOGICOP_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Class
+ | COS generic logical operators
  |
  o---------------------------------------------------------------------o
  |
@@ -29,17 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.2 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: logicop.h,v 1.1 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
+#include <cos/GLogicOp.h>
 
-#include <cos/gen/relop.h>
+defgeneric(OBJ, (GNot    ) gnot    , _1);
+defgeneric(OBJ, (GAnd    ) gand    , _1, _2);
+defgeneric(OBJ, (GOr     ) gor     , _1, _2);
+defgeneric(OBJ, (GXOr    ) gxor    , _1, _2); // not (_1 isEqual _2)
+defgeneric(OBJ, (GImplies) gimplies, _1, _2); // (not _1) or _2
 
-// ----- 
-
-defmethod(OBJ, gisEqual, Class, Class)
-  retmethod(self1 == self2 ? True : False);
-endmethod
-
+#endif // COS_GEN_LOGICOP_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_flt.c,v 1.4 2009/09/14 13:35:15 ldeniau Exp $
+ | $Id: Vector_flt.c,v 1.5 2010/01/03 12:28:56 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,7 @@
 #include <cos/Function.h>
 
 #include <cos/gen/object.h>
-#include <cos/gen/operator.h>
+#include <cos/gen/mathop.h>
 #include <cos/gen/floatop.h>
 #include <cos/gen/vectop.h>
 #include <cos/gen/value.h>
