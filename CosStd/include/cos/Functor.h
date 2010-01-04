@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.22 2010/01/04 14:18:23 ldeniau Exp $
+ | $Id: Functor.h,v 1.23 2010/01/04 14:35:29 ldeniau Exp $
  |
 */
 
@@ -48,17 +48,17 @@ endclass
 
 // ----- Functor placeholder
 
-defclass(Argument, Expression)
+defclass(FunArg, Expression)
   U32 idx;
   FINAL_CLASS
 endclass
 
-defclass(Variable, Expression)
+defclass(FunVar, Expression)
   OBJ var;
   FINAL_CLASS
 endclass
 
-defclass(LazyFun, Expression)
+defclass(FunLzy, Expression)
   OBJ fun;
   FINAL_CLASS
 endclass
@@ -192,31 +192,31 @@ endclass
 // ----- automatic constructor
 
 #define aFunctor(...)  ( (OBJ)atFunctor (__VA_ARGS__) )
-#define aArgument(...) ( (OBJ)atArgument(__VA_ARGS__) )
-#define aVariable(...) ( (OBJ)atVariable(__VA_ARGS__) )
-#define aLazyFun(...)  ( (OBJ)atLazyFun (__VA_ARGS__) )
+#define aFunArg(...)   ( (OBJ)atFunArg(__VA_ARGS__) )
+#define aFunVar(...)   ( (OBJ)atFunVar(__VA_ARGS__) )
+#define aFunLzy(...)   ( (OBJ)atFunLzy(__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
-#define aFun(...)  aFunctor (__VA_ARGS__)
-#define aArg(...)  aArgument(__VA_ARGS__)
-#define aVar(...)  aVariable(__VA_ARGS__)
-#define aLzy(...)  aLazyFun (__VA_ARGS__)
+#define aFun(...)  aFunctor(__VA_ARGS__)
+#define aArg(...)  aFunArg (__VA_ARGS__)
+#define aVar(...)  aFunVar (__VA_ARGS__)
+#define aLzy(...)  aFunLzy (__VA_ARGS__)
 #endif
 
 // --- placeholders
 
 #ifndef COS_NOPLACEHOLDER
-#define __1  aArgument(0)
-#define __2  aArgument(1)
-#define __3  aArgument(2)
-#define __4  aArgument(3)
-#define __5  aArgument(4)
-#define __6  aArgument(5)
-#define __7  aArgument(6)
-#define __8  aArgument(7)
-#define __9  aArgument(8)
+#define __1  aFunArg(0)
+#define __2  aFunArg(1)
+#define __3  aFunArg(2)
+#define __4  aFunArg(3)
+#define __5  aFunArg(4)
+#define __6  aFunArg(5)
+#define __7  aFunArg(6)
+#define __8  aFunArg(7)
+#define __9  aFunArg(8)
 #endif
 
 /***********************************************************
@@ -243,14 +243,14 @@ endclass
 
 // ----- PlaceHolders
 
-#define atArgument(IDX) \
-  ( &(struct Argument){ { cos_object_auto(Argument) }, (IDX) } )
+#define atFunArg(IDX) \
+  ( &(struct FunArg){ { cos_object_auto(FunArg) }, (IDX) } )
 
-#define atVariable(VAR) \
-  ( &(struct Variable){ { cos_object_auto(Variable) }, (VAR) } )
+#define atFunVar(VAR) \
+  ( &(struct FunVar){ { cos_object_auto(FunVar) }, (VAR) } )
 
-#define atLazyFun(FUN) \
-  ( &(struct LazyFun ){ { cos_object_auto(LazyFun ) }, (FUN) } )
+#define atFunLzy(FUN) \
+  ( &(struct FunLzy){ { cos_object_auto(FunLzy) }, (FUN) } )
 
 // ----- initializers
 

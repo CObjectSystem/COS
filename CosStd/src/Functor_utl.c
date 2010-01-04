@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.4 2009/12/30 01:00:45 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.5 2010/01/04 14:35:29 ldeniau Exp $
  |
 */
 
@@ -49,22 +49,22 @@ Functor_getMask(OBJ arg[], U32 n, STR file, int line)
     test_assert( arg[idx], "invalid (null) argument", file, line );
 
           // environment index (placeholder)
-    if (cos_object_isa(arg[idx], classref(Argument))) {
+    if (cos_object_isa(arg[idx], classref(FunArg))) {
       setIdx(&msk, idx);
-      arg[idx] = (OBJ)(size_t)STATIC_CAST(struct Argument*, arg[idx])->idx;
+      arg[idx] = (OBJ)(size_t)STATIC_CAST(struct FunArg*, arg[idx])->idx;
     }
     
     else  // environment key (placeholder)
-    if (cos_object_isa(arg[idx], classref(Variable))) {
+    if (cos_object_isa(arg[idx], classref(FunVar))) {
       setVar(&msk, idx);
-      arg[idx] = STATIC_CAST(struct Variable*, arg[idx])->var;
+      arg[idx] = STATIC_CAST(struct FunVar*, arg[idx])->var;
     }
 
-    else  // lazy functor (treat it as argument)
-    if (cos_object_isa(arg[idx], classref(LazyFun))) {
+    else  // lazy functor (treat it as argument, idempotent)
+    if (cos_object_isa(arg[idx], classref(FunLzy))) {
       setArg(&msk, idx);
-      do arg[idx] = STATIC_CAST(struct LazyFun*, arg[idx])->fun;
-      while(cos_object_isa(arg[idx], classref(LazyFun)));
+      do arg[idx] = STATIC_CAST(struct FunLzy*, arg[idx])->fun;
+      while (cos_object_isa(arg[idx], classref(FunLzy)));
     }
     
     else  // argument (free variable)

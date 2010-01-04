@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.19 2010/01/04 14:18:24 ldeniau Exp $
+ | $Id: Functor.c,v 1.20 2010/01/04 14:35:29 ldeniau Exp $
  |
 */
 
@@ -38,11 +38,11 @@
 #include <cos/gen/value.h>
 
 makclass(Expression);
-makclass(Functor, Expression);
 
-makclass(Argument, Expression);
-makclass(Variable, Expression);
-makclass(LazyFun , Expression);
+makclass(Functor, Expression);
+makclass(FunArg , Expression);
+makclass(FunVar , Expression);
+makclass(FunLzy , Expression);
 
 // ----- generics
 
