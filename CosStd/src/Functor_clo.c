@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_clo.c,v 1.1 2010/01/01 14:23:37 ldeniau Exp $
+ | $Id: Functor_clo.c,v 1.2 2010/01/04 14:18:24 ldeniau Exp $
  |
 */
 
@@ -181,7 +181,7 @@ endmethod
 // ----- 2
 
 defmethod(OBJ, gevalEnv, Functor2, Array)
-  U32 *id = &self->FunExpr.Functor.Object.id;
+  U32 *id = &self->FunExpr.Functor.Expression.Object.id;
 
   switch(self->msk) {
     case  9: *id = cos_class_id(classref(Functor23)); break;
@@ -221,7 +221,7 @@ endmethod
 // ----- 3
 
 defmethod(OBJ, gevalEnv, Functor3, Array)
-  U32 *id = &self->FunExpr.Functor.Object.id;
+  U32 *id = &self->FunExpr.Functor.Expression.Object.id;
 
   switch(self->msk) {
     case  73: *id = cos_class_id(classref(Functor37)); break;

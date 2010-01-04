@@ -32,81 +32,42 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.21 2009/12/30 01:00:45 ldeniau Exp $
+ | $Id: Functor.h,v 1.22 2010/01/04 14:18:23 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-// ----- Functor class cluster
+// ----- Functor/Expression class cluster
 
-defclass(Functor)
+defclass(Expression)
 endclass
 
-// variables
-defclass(VarExpr, Functor)
+defclass(Functor, Expression)
 endclass
 
-// functors
-defclass(FunExpr, Functor)
-  STR str;
-endclass
+// ----- Functor placeholder
 
-// ----- Functor variable
-
-// placeholder
-defclass(Argument, VarExpr)
+defclass(Argument, Expression)
   U32 idx;
+  FINAL_CLASS
 endclass
 
-// variable
-defclass(Variable, VarExpr)
+defclass(Variable, Expression)
   OBJ var;
+  FINAL_CLASS
 endclass
 
-// ----- Functor function
-
-defclass(Function0, FunExpr)
-  FUN0 fct;
-endclass
-
-defclass(Function1, FunExpr)
-  FUN1 fct;
-endclass
-
-defclass(Function2, FunExpr)
-  FUN2 fct;
-endclass
-
-defclass(Function3, FunExpr)
-  FUN3 fct;
-endclass
-
-defclass(Function4, FunExpr)
-  FUN4 fct;
-endclass
-
-defclass(Function5, FunExpr)
-  FUN5 fct;
-endclass
-
-defclass(Function6, FunExpr)
-  FUN6 fct;
-endclass
-
-defclass(Function7, FunExpr)
-  FUN7 fct;
-endclass
-
-defclass(Function8, FunExpr)
-  FUN8 fct;
-endclass
-
-defclass(Function9, FunExpr)
-  FUN9 fct;
+defclass(LazyFun, Expression)
+  OBJ fun;
+  FINAL_CLASS
 endclass
 
 // ----- Functor expression
+
+defclass(FunExpr, Functor)
+  STR str;
+endclass
 
 defclass(FunExpr1, FunExpr)
   FUN1 fct;
@@ -171,10 +132,46 @@ defclass(FunExpr9, FunExpr)
   OBJ  arg[9];
 endclass
 
-// ----- Delayed functor
+// ----- Functor as function (faster)
 
-defclass(LazyFun, Functor)
-  OBJ fun;
+defclass(Function0, FunExpr)
+  FUN0 fct;
+endclass
+
+defclass(Function1, FunExpr)
+  FUN1 fct;
+endclass
+
+defclass(Function2, FunExpr)
+  FUN2 fct;
+endclass
+
+defclass(Function3, FunExpr)
+  FUN3 fct;
+endclass
+
+defclass(Function4, FunExpr)
+  FUN4 fct;
+endclass
+
+defclass(Function5, FunExpr)
+  FUN5 fct;
+endclass
+
+defclass(Function6, FunExpr)
+  FUN6 fct;
+endclass
+
+defclass(Function7, FunExpr)
+  FUN7 fct;
+endclass
+
+defclass(Function8, FunExpr)
+  FUN8 fct;
+endclass
+
+defclass(Function9, FunExpr)
+  FUN9 fct;
 endclass
 
 // ----- Composition of functors
@@ -195,17 +192,17 @@ endclass
 // ----- automatic constructor
 
 #define aFunctor(...)  ( (OBJ)atFunctor (__VA_ARGS__) )
-#define aLazyFun(...)  ( (OBJ)atLazyFun (__VA_ARGS__) )
 #define aArgument(...) ( (OBJ)atArgument(__VA_ARGS__) )
 #define aVariable(...) ( (OBJ)atVariable(__VA_ARGS__) )
+#define aLazyFun(...)  ( (OBJ)atLazyFun (__VA_ARGS__) )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
 #define aFun(...)  aFunctor (__VA_ARGS__)
-#define aLzy(...)  aLazyFun (__VA_ARGS__)
 #define aArg(...)  aArgument(__VA_ARGS__)
 #define aVar(...)  aVariable(__VA_ARGS__)
+#define aLzy(...)  aLazyFun (__VA_ARGS__)
 #endif
 
 // --- placeholders
@@ -241,21 +238,19 @@ endclass
 
 #define atFunctorN(N,F,...) \
   COS_PP_CAT(FunExpr_init,N)( &(struct COS_PP_CAT(FunExpr,N)) { \
-    {{ cos_object_auto(COS_PP_CAT(FunExpr,N)) }, COS_PP_STR(F) }, \
+    {{{ cos_object_auto(COS_PP_CAT(FunExpr,N)) }}, COS_PP_STR(F) }, \
     F, 0, -1, {__VA_ARGS__} }, __FILE__, __LINE__)
 
-// ----- Lazy modifier
-
-#define atLazyFun(FUN) \
-  ( &(struct LazyFun){ { cos_object_auto(LazyFun) }, (FUN) } )
-
-// ----- Variables
+// ----- PlaceHolders
 
 #define atArgument(IDX) \
-  ( &(struct Argument){ {{ cos_object_auto(Argument) }}, (IDX) } )
+  ( &(struct Argument){ { cos_object_auto(Argument) }, (IDX) } )
 
 #define atVariable(VAR) \
-  ( &(struct Variable){ {{ cos_object_auto(Variable) }}, (VAR) } )
+  ( &(struct Variable){ { cos_object_auto(Variable) }, (VAR) } )
+
+#define atLazyFun(FUN) \
+  ( &(struct LazyFun ){ { cos_object_auto(LazyFun ) }, (FUN) } )
 
 // ----- initializers
 

@@ -32,12 +32,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.4 2010/01/01 14:23:37 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.5 2010/01/04 14:18:24 ldeniau Exp $
  |
 */
 
 // mask convention
-// 001 -> argument       (free variable)
+// 001 -> variable free
 // 010 -> variable index (placeholder)
 // 100 -> variable key   (placeholder)
 // 000 -> expression
@@ -139,10 +139,12 @@ getVar(U32 idx, U32 msk, OBJ *arg, OBJ env)
   if (isArg(msk, idx))            // simple argument (free variable)
     return arg[idx];
 
-  if (isVar(msk, idx)) {          // environment key (placeholder)
-    size_t i = (size_t)arg[idx];
-    test_assert( i >= 32, "invalid placeholder key" );
+  if (isVar(msk, idx))            // environment key (placeholder)
     return ggetAt(env, arg[idx]);
+
+  if (isIdx(msk, idx)) {          // environment index (placeholder)
+    size_t i = (size_t)arg[idx];
+    return ggetAtIdx(env, i);
   }
 
   return gevalEnv(arg[idx], env); // other (expression)
