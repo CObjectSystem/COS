@@ -29,24 +29,27 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.6 2010/01/03 11:02:39 ldeniau Exp $
+ | $Id: Generic.c,v 1.7 2010/01/04 09:40:11 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <cos/GAccessor.h>
 #include <cos/gen/value.h>
+#include <cos/gen/op/GAccessor.h>
 
 makclass(Generic, Behavior);
 
 // -----
 
-makclass(GAccessor, Generic);
-makclass(GGetter  , GAccessor);
-makclass(GSetter  , GAccessor);
+makclass(GAccessor , Generic  );
+makclass(G_getAt   , GAccessor);
+makclass(G_putAt   , GAccessor);
+makclass(G_getAtIdx, GAccessor);
+makclass(G_putAtIdx, GAccessor);
 
 // -----
 
 defmethod(STR, gstr, Generic)
   retmethod( self->str );
 endmethod
+

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.32 2010/01/03 14:12:40 ldeniau Exp $
+ | $Id: object.h,v 1.33 2010/01/04 09:40:10 ldeniau Exp $
  |
 */
 
@@ -102,8 +102,9 @@ static COS_ALWAYS_INLINE OBJ
 gretain_inline(OBJ _1) {
   struct Object *obj = STATIC_CAST(struct Object*, _1);
   
-  return obj->rc >= COS_RC_UNIT   ? (obj->rc++, _1) : 
-         obj->rc == COS_RC_STATIC ? _1 : (gretain)(_1);
+  return obj->rc >= COS_RC_UNIT   ? (obj->rc++, _1)
+       : obj->rc == COS_RC_STATIC ? _1
+       : (gretain)(_1);
 
   COS_UNUSED(gretain_inline);
 }
@@ -112,11 +113,9 @@ static COS_ALWAYS_INLINE void
 grelease_inline(OBJ _1) {
   struct Object *obj = STATIC_CAST(struct Object*, _1);
 
-  if (obj->rc > COS_RC_UNIT)
-    obj->rc--;
-  else
-  if (obj->rc != COS_RC_STATIC)
-    (grelease)(_1);
+  (void)(obj->rc >  COS_RC_UNIT   ? obj->rc--
+       : obj->rc != COS_RC_STATIC ? ((grelease)(_1), 0)
+       : 0);
 
   COS_UNUSED(grelease_inline);
 }

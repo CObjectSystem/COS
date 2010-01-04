@@ -1,10 +1,10 @@
-#ifndef COS_GACCESSOR_H
-#define COS_GACCESSOR_H
+#ifndef COS_GEN_OP_GACCESSOR_H
+#define COS_GEN_OP_GACCESSOR_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS Generic Accessor classes
+ | COS Generic classes for accessors
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GAccessor.h,v 1.1 2010/01/03 11:02:38 ldeniau Exp $
+ | $Id: GAccessor.h,v 1.1 2010/01/04 09:41:37 ldeniau Exp $
  |
 */
 
@@ -42,8 +42,10 @@
 
 // Generic is a core class, see cos/cos/coscls.h
 
-defclass(GAccessor, Generic  ) endclass
-defclass(GGetter  , GAccessor) endclass
-defclass(GSetter  , GAccessor) endclass
+defclass(GAccessor , Generic  ) endclass
+defclass(G_getAt   , GAccessor) endclass
+defclass(G_putAt   , GAccessor) endclass
+defclass(G_getAtIdx, GAccessor) endclass
+defclass(G_putAtIdx, GAccessor) endclass
 
-#endif // COS_GACCESSOR_H
+#endif // COS_GEN_OP_GACCESSOR_H
