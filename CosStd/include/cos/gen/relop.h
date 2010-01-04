@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: relop.h,v 1.2 2010/01/03 12:35:30 ldeniau Exp $
+ | $Id: relop.h,v 1.3 2010/01/04 09:59:01 ldeniau Exp $
  |
 */
 
@@ -59,20 +59,20 @@
 */
 
 // comparison
-defgeneric(OBJ, (GCompare       ) gcompare         , _1, _2);
-defgeneric(OBJ, (GEqual         ) gisEqual         , _1, _2);
-defgeneric(OBJ, (GLesser        ) gisLesser        , _1, _2);
-defgeneric(OBJ, (GGreater       ) gisGreater       , _1, _2);
-defgeneric(OBJ, (GLesserOrEqual ) gisLesserOrEqual , _1, _2);
-defgeneric(OBJ, (GGreaterOrEqual) gisGreaterOrEqual, _1, _2);
-defgeneric(OBJ, (GNotEqual      ) gisNotEqual      , _1, _2);
+defgeneric(OBJ, (G_compare         ) gcompare         , _1, _2);
+defgeneric(OBJ, (G_isEqual         ) gisEqual         , _1, _2);
+defgeneric(OBJ, (G_isLesser        ) gisLesser        , _1, _2);
+defgeneric(OBJ, (G_isGreater       ) gisGreater       , _1, _2);
+defgeneric(OBJ, (G_isLesserOrEqual ) gisLesserOrEqual , _1, _2);
+defgeneric(OBJ, (G_isGreaterOrEqual) gisGreaterOrEqual, _1, _2);
+defgeneric(OBJ, (G_isNotEqual      ) gisNotEqual      , _1, _2);
 
 // hash
-defgeneric(U32, (GHash          ) ghash, _1);
+defgeneric(U32, (G_hash            ) ghash, _1);
 
 // min, max (fun should return Ordered or the min, max)
-defgeneric(OBJ, (GMin           ) gmin, _1, _2 or fun);
-defgeneric(OBJ, (GMax           ) gmax, _1, _2 or fun);
+defgeneric(OBJ, (G_min             ) gmin, _1, _2 or fun);
+defgeneric(OBJ, (G_max             ) gmax, _1, _2 or fun);
 // note: gmin   (_1, gmin(__1,__2)) should work like
 //       greduce(_1, gmin(__1,__2), maxVal)
 

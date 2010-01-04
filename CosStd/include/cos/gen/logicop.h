@@ -32,16 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logicop.h,v 1.2 2010/01/03 12:35:30 ldeniau Exp $
+ | $Id: logicop.h,v 1.3 2010/01/04 09:59:01 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GLogicOp.h>
 
-defgeneric(OBJ, (GNot    ) gnot    , _1);
-defgeneric(OBJ, (GAnd    ) gand    , _1, _2);
-defgeneric(OBJ, (GOr     ) gor     , _1, _2);
-defgeneric(OBJ, (GXOr    ) gxor    , _1, _2); // not (_1 isEqual _2)
-defgeneric(OBJ, (GImplies) gimplies, _1, _2); // (not _1) or _2
+defgeneric(OBJ, (G_not    ) gnot    , _1);
+defgeneric(OBJ, (G_and    ) gand    , _1, _2);
+defgeneric(OBJ, (G_or     ) gor     , _1, _2);
+defgeneric(OBJ, (G_xor    ) gxor    , _1, _2); // not (_1 isEqual _2)
+defgeneric(OBJ, (G_implies) gimplies, _1, _2); // (not _1) or _2
 
 #endif // COS_GEN_LOGICOP_H

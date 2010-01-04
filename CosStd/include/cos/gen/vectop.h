@@ -32,13 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: vectop.h,v 1.5 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: vectop.h,v 1.6 2010/01/04 09:59:01 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GVectOp.h>
 
-defgeneric(OBJ, (GSum   ) gsum , _1);
-defgeneric(OBJ, (GProd  ) gprod, _1);
+defgeneric(OBJ, (G_sum ) gsum , _1);
+defgeneric(OBJ, (G_prod) gprod, _1);
 
 #endif // COS_GEN_VECTOP_H

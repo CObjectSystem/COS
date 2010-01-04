@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.3 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Generic.c,v 1.4 2010/01/04 09:59:02 ldeniau Exp $
  |
 */
 
@@ -42,93 +42,93 @@ makclass(GTernaryOp, GOperator);
 
 #include <cos/gen/op/GNumOp.h>
 
-makclass(GAbs      , GUnaryOp );
-makclass(GNeg      , GUnaryOp );
-makclass(GSqr      , GUnaryOp );
-makclass(GInv      , GUnaryOp );
-makclass(GAdd      , GBinaryOp);
-makclass(GSub      , GBinaryOp);
-makclass(GMul      , GBinaryOp);
-makclass(GDiv      , GBinaryOp);
-makclass(GPow      , GBinaryOp);
-makclass(GMod      , GBinaryOp);
+makclass(G_abs      , GUnaryOp );
+makclass(G_neg      , GUnaryOp );
+makclass(G_sqr      , GUnaryOp );
+makclass(G_inv      , GUnaryOp );
+makclass(G_add      , GBinaryOp);
+makclass(G_sub      , GBinaryOp);
+makclass(G_mul      , GBinaryOp);
+makclass(G_div      , GBinaryOp);
+makclass(G_pow      , GBinaryOp);
+makclass(G_mod      , GBinaryOp);
 
-makclass(GAbsolute , GUnaryOp );
-makclass(GNegate   , GUnaryOp );
-makclass(GSquare   , GUnaryOp );
-makclass(GInvert   , GUnaryOp );
-makclass(GAddTo    , GBinaryOp);
-makclass(GSubTo    , GBinaryOp);
-makclass(GMulBy    , GBinaryOp);
-makclass(GDivBy    , GBinaryOp);
-makclass(GPower    , GBinaryOp);
-makclass(GModulo   , GBinaryOp);
+makclass(G_absolute , GUnaryOp );
+makclass(G_negate   , GUnaryOp );
+makclass(G_square   , GUnaryOp );
+makclass(G_invert   , GUnaryOp );
+makclass(G_addTo    , GBinaryOp);
+makclass(G_subTo    , GBinaryOp);
+makclass(G_mulBy    , GBinaryOp);
+makclass(G_divBy    , GBinaryOp);
+makclass(G_power    , GBinaryOp);
+makclass(G_modulo   , GBinaryOp);
 
 #include <cos/gen/op/GFloatOp.h>
 
-makclass(GConj       , GUnaryOp  );
-makclass(GArg        , GUnaryOp  );
-makclass(GExp        , GUnaryOp  );
-makclass(GLog        , GUnaryOp  );
-makclass(GSqrt       , GUnaryOp  );
-makclass(GCos        , GUnaryOp  );
-makclass(GSin        , GUnaryOp  );
-makclass(GTan        , GUnaryOp  );
-makclass(GACos       , GUnaryOp  );
-makclass(GASin       , GUnaryOp  );
-makclass(GATan       , GUnaryOp  );
-makclass(GCosH       , GUnaryOp  );
-makclass(GSinH       , GUnaryOp  );
-makclass(GTanH       , GUnaryOp  );
-makclass(GACosH      , GUnaryOp  );
-makclass(GASinH      , GUnaryOp  );
-makclass(GATanH      , GUnaryOp  );
-makclass(GHypot      , GBinaryOp );
-makclass(GSubSqr     , GBinaryOp );
-makclass(GMulAdd     , GTernaryOp);
+makclass(G_conj       , GUnaryOp  );
+makclass(G_arg        , GUnaryOp  );
+makclass(G_exp        , GUnaryOp  );
+makclass(G_log        , GUnaryOp  );
+makclass(G_sqrt       , GUnaryOp  );
+makclass(G_cos        , GUnaryOp  );
+makclass(G_sin        , GUnaryOp  );
+makclass(G_tan        , GUnaryOp  );
+makclass(G_acos       , GUnaryOp  );
+makclass(G_asin       , GUnaryOp  );
+makclass(G_atan       , GUnaryOp  );
+makclass(G_cosh       , GUnaryOp  );
+makclass(G_sinh       , GUnaryOp  );
+makclass(G_tanh       , GUnaryOp  );
+makclass(G_acosh      , GUnaryOp  );
+makclass(G_asinh      , GUnaryOp  );
+makclass(G_atanh      , GUnaryOp  );
+makclass(G_hypot      , GBinaryOp );
+makclass(G_subSqr     , GBinaryOp );
+makclass(G_mulAdd     , GTernaryOp);
 
-makclass(GConjugate  , GUnaryOp  );
-makclass(GArgument   , GUnaryOp  );
-makclass(GExponential, GUnaryOp  );
-makclass(GLogarithm  , GUnaryOp  );
-makclass(GSqRoot     , GUnaryOp  );
-makclass(GCosine     , GUnaryOp  );
-makclass(GSine       , GUnaryOp  );
-makclass(GTangent    , GUnaryOp  );
-makclass(GACosine    , GUnaryOp  );
-makclass(GASine      , GUnaryOp  );
-makclass(GATangent   , GUnaryOp  );
-makclass(GCosineH    , GUnaryOp  );
-makclass(GSineH      , GUnaryOp  );
-makclass(GTangentH   , GUnaryOp  );
-makclass(GACosineH   , GUnaryOp  );
-makclass(GASineH     , GUnaryOp  );
-makclass(GATangentH  , GUnaryOp  );
-makclass(GHypotenuse , GBinaryOp );
+makclass(G_conjugate  , GUnaryOp  );
+makclass(G_argument   , GUnaryOp  );
+makclass(G_exponential, GUnaryOp  );
+makclass(G_logarithm  , GUnaryOp  );
+makclass(G_sqroot     , GUnaryOp  );
+makclass(G_cosine     , GUnaryOp  );
+makclass(G_sine       , GUnaryOp  );
+makclass(G_tangent    , GUnaryOp  );
+makclass(G_acosine    , GUnaryOp  );
+makclass(G_asine      , GUnaryOp  );
+makclass(G_atangent   , GUnaryOp  );
+makclass(G_cosineh    , GUnaryOp  );
+makclass(G_sineh      , GUnaryOp  );
+makclass(G_tangenth   , GUnaryOp  );
+makclass(G_acosineh   , GUnaryOp  );
+makclass(G_asineh     , GUnaryOp  );
+makclass(G_atangenth  , GUnaryOp  );
+makclass(G_hypotenuse , GBinaryOp );
 
 #include <cos/gen/op/GRelOp.h>
 
-makclass(GCompare       , GBinaryOp);
-makclass(GEqual         , GBinaryOp);
-makclass(GNotEqual      , GBinaryOp);
-makclass(GLesser        , GBinaryOp);
-makclass(GLesserOrEqual , GBinaryOp);
-makclass(GGreater       , GBinaryOp);
-makclass(GGreaterOrEqual, GBinaryOp);
-makclass(GMin           , GBinaryOp);
-makclass(GMax           , GBinaryOp);
-makclass(GHash          , GUnaryOp );
+makclass(G_compare         , GBinaryOp);
+makclass(G_isEqual         , GBinaryOp);
+makclass(G_isNotEqual      , GBinaryOp);
+makclass(G_isLesser        , GBinaryOp);
+makclass(G_isLesserOrEqual , GBinaryOp);
+makclass(G_isGreater       , GBinaryOp);
+makclass(G_isGreaterOrEqual, GBinaryOp);
+makclass(G_min             , GBinaryOp);
+makclass(G_max             , GBinaryOp);
+makclass(G_hash            , GUnaryOp );
 
 #include <cos/gen/op/GLogicOp.h>
 
-makclass(GNot    , GUnaryOp );
-makclass(GAnd    , GBinaryOp);
-makclass(GOr     , GBinaryOp);
-makclass(GXOr    , GBinaryOp);
-makclass(GImplies, GBinaryOp);
+makclass(G_not    , GUnaryOp );
+makclass(G_and    , GBinaryOp);
+makclass(G_or     , GBinaryOp);
+makclass(G_xor    , GBinaryOp);
+makclass(G_implies, GBinaryOp);
 
 #include <cos/gen/op/GVectOp.h>
 
-makclass(GSum , GUnaryOp);
-makclass(GProd, GUnaryOp);
+makclass(G_sum , GUnaryOp);
+makclass(G_prod, GUnaryOp);
 

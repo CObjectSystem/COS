@@ -1,5 +1,5 @@
-#ifndef COS_GEN_MATHOP_H
-#define COS_GEN_MATHOP_H
+#ifndef COS_GEN_NUMOP_H
+#define COS_GEN_NUMOP_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: numop.h,v 1.1 2010/01/03 14:56:05 ldeniau Exp $
+ | $Id: numop.h,v 1.2 2010/01/04 09:59:01 ldeniau Exp $
  |
 */
 
@@ -43,16 +43,16 @@
    new autoDelete object resulting from the promotion/coercion of _1
    and _2 which follows the rules of C99 for primitive types.
 */
-defgeneric(OBJ, (GAbs) gabs, _1);     // return |_1|    
-defgeneric(OBJ, (GNeg) gneg, _1);     // return -_1    
-defgeneric(OBJ, (GSqr) gsqr, _1);     // return _1 * _1
-defgeneric(OBJ, (GInv) ginv, _1);     // return  1 / _1   
-defgeneric(OBJ, (GAdd) gadd, _1, _2); // return _1 + _2
-defgeneric(OBJ, (GSub) gsub, _1, _2); // return _1 - _2
-defgeneric(OBJ, (GMul) gmul, _1, _2); // return _1 * _2
-defgeneric(OBJ, (GDiv) gdiv, _1, _2); // return _1 / _2
-defgeneric(OBJ, (GPow) gpow, _1, _2); // return _1 ^ _2
-defgeneric(OBJ, (GMod) gmod, _1, _2); // return _1 % _2
+defgeneric(OBJ, (G_abs) gabs, _1);     // return |_1|    
+defgeneric(OBJ, (G_neg) gneg, _1);     // return -_1    
+defgeneric(OBJ, (G_sqr) gsqr, _1);     // return _1 * _1
+defgeneric(OBJ, (G_inv) ginv, _1);     // return  1 / _1   
+defgeneric(OBJ, (G_add) gadd, _1, _2); // return _1 + _2
+defgeneric(OBJ, (G_sub) gsub, _1, _2); // return _1 - _2
+defgeneric(OBJ, (G_mul) gmul, _1, _2); // return _1 * _2
+defgeneric(OBJ, (G_div) gdiv, _1, _2); // return _1 / _2
+defgeneric(OBJ, (G_pow) gpow, _1, _2); // return _1 ^ _2
+defgeneric(OBJ, (G_mod) gmod, _1, _2); // return _1 % _2
 
 /* NOTE-USER: operators policy
    The policy of these methods is to perform the operation 'in place'
@@ -60,15 +60,15 @@ defgeneric(OBJ, (GMod) gmod, _1, _2); // return _1 % _2
    the types of _1 and _2 differ, some operations may not be available
    if they may induce a loss of information (e.g. gaddTo(Int,Long)).
 */
-defgeneric(OBJ, (GAbsolute) gabsolute, _1);     // return _1 = |_1| 
-defgeneric(OBJ, (GNegate  ) gnegate  , _1);     // return _1 = -_1
-defgeneric(OBJ, (GSquare  ) gsquare  , _1);     // return _1 = _1 ^ 2
-defgeneric(OBJ, (GInvert  ) ginvert  , _1);     // return _1 = 1 / _1
-defgeneric(OBJ, (GAddTo   ) gaddTo   , _1, _2); // return _1 += _2 
-defgeneric(OBJ, (GSubTo   ) gsubTo   , _1, _2); // return _1 -= _2 
-defgeneric(OBJ, (GMulBy   ) gmulBy   , _1, _2); // return _1 *= _2 
-defgeneric(OBJ, (GDivBy   ) gdivBy   , _1, _2); // return _1 /= _2 
-defgeneric(OBJ, (GPower   ) gpower   , _1, _2); // return _1 = _1 ^ _2
-defgeneric(OBJ, (GModulo  ) gmodulo  , _1, _2); // return _1 %= _2 
+defgeneric(OBJ, (G_absolute) gabsolute, _1);     // return _1 = |_1| 
+defgeneric(OBJ, (G_negate  ) gnegate  , _1);     // return _1 = -_1
+defgeneric(OBJ, (G_square  ) gsquare  , _1);     // return _1 = _1 ^ 2
+defgeneric(OBJ, (G_invert  ) ginvert  , _1);     // return _1 = 1 / _1
+defgeneric(OBJ, (G_addTo   ) gaddTo   , _1, _2); // return _1 += _2 
+defgeneric(OBJ, (G_subTo   ) gsubTo   , _1, _2); // return _1 -= _2 
+defgeneric(OBJ, (G_mulBy   ) gmulBy   , _1, _2); // return _1 *= _2 
+defgeneric(OBJ, (G_divBy   ) gdivBy   , _1, _2); // return _1 /= _2 
+defgeneric(OBJ, (G_power   ) gpower   , _1, _2); // return _1 = _1 ^ _2
+defgeneric(OBJ, (G_modulo  ) gmodulo  , _1, _2); // return _1 %= _2 
 
-#endif // COS_GEN_MATHOP_H
+#endif // COS_GEN_NUMOP_H

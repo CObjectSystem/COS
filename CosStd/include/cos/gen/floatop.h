@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: floatop.h,v 1.4 2010/01/03 12:35:30 ldeniau Exp $
+ | $Id: floatop.h,v 1.5 2010/01/04 09:59:01 ldeniau Exp $
  |
 */
 
@@ -43,55 +43,55 @@
    new autoDelete object resulting from the promotion/coercion of _1
    and _2 which follows the rules of C99 for primitive types.
 */
-defgeneric(OBJ, (GConj  ) gconj , _1);  // return _1^*
-defgeneric(OBJ, (GArg   ) garg  , _1);  // return arg(_1)
+defgeneric(OBJ, (G_conj  ) gconj , _1);  // return _1^*
+defgeneric(OBJ, (G_arg   ) garg  , _1);  // return arg(_1)
 
-defgeneric(OBJ, (GExp   ) gexp  , _1);  // return exp(_1)
-defgeneric(OBJ, (GLog   ) glog  , _1);  // return log(_1)
-defgeneric(OBJ, (GSqrt  ) gsqrt , _1);  // return sqrt(_1)
+defgeneric(OBJ, (G_exp   ) gexp  , _1);  // return exp(_1)
+defgeneric(OBJ, (G_log   ) glog  , _1);  // return log(_1)
+defgeneric(OBJ, (G_sqrt  ) gsqrt , _1);  // return sqrt(_1)
 
-defgeneric(OBJ, (GCos   ) gcos  , _1);  // return cos(_1)
-defgeneric(OBJ, (GSin   ) gsin  , _1);  // return sin(_1)
-defgeneric(OBJ, (GTan   ) gtan  , _1);  // return tan(_1)
-defgeneric(OBJ, (GACos  ) gacos , _1);  // return acos(_1)
-defgeneric(OBJ, (GASin  ) gasin , _1);  // return asin(_1)
-defgeneric(OBJ, (GATan  ) gatan , _1);  // return atan(_1)
-defgeneric(OBJ, (GCosH  ) gcosh , _1);  // return cosh(_1)
-defgeneric(OBJ, (GSinH  ) gsinh , _1);  // return sinh(_1)
-defgeneric(OBJ, (GTanH  ) gtanh , _1);  // return tanh(_1)
-defgeneric(OBJ, (GACosH ) gacosh, _1);  // return acosh(_1)
-defgeneric(OBJ, (GASinH ) gasinh, _1);  // return asinh(_1)
-defgeneric(OBJ, (GATanH ) gatanh, _1);  // return atanh(_1)
+defgeneric(OBJ, (G_cos   ) gcos  , _1);  // return cos(_1)
+defgeneric(OBJ, (G_sin   ) gsin  , _1);  // return sin(_1)
+defgeneric(OBJ, (G_tan   ) gtan  , _1);  // return tan(_1)
+defgeneric(OBJ, (G_acos  ) gacos , _1);  // return acos(_1)
+defgeneric(OBJ, (G_asin  ) gasin , _1);  // return asin(_1)
+defgeneric(OBJ, (G_atan  ) gatan , _1);  // return atan(_1)
+defgeneric(OBJ, (G_cosh  ) gcosh , _1);  // return cosh(_1)
+defgeneric(OBJ, (G_sinh  ) gsinh , _1);  // return sinh(_1)
+defgeneric(OBJ, (G_tanh  ) gtanh , _1);  // return tanh(_1)
+defgeneric(OBJ, (G_acosh ) gacosh, _1);  // return acosh(_1)
+defgeneric(OBJ, (G_asinh ) gasinh, _1);  // return asinh(_1)
+defgeneric(OBJ, (G_atanh ) gatanh, _1);  // return atanh(_1)
 
-defgeneric(OBJ, (GHypot ) ghypot , _1, _2);     // return sqrt(_1^2+_2^2)
-defgeneric(OBJ, (GSubSqr) gsubSqr, _1, _2);     // return (_1-_2)^2
-defgeneric(OBJ, (GMulAdd) gmulAdd, _1, _2, _3); // return _1*_2+_3
+defgeneric(OBJ, (G_hypot ) ghypot , _1, _2);     // return sqrt(_1^2+_2^2)
+defgeneric(OBJ, (G_subSqr) gsubSqr, _1, _2);     // return (_1-_2)^2
+defgeneric(OBJ, (G_mulAdd) gmulAdd, _1, _2, _3); // return _1*_2+_3
 
 /* NOTE-USER: operators policy
    The policy of these methods is to perform the operation 'in place'
    in _1 without any type promotion/coercion and return _1. For Complex
    results from gabsolute and gargument are returned in the real part.
 */
-defgeneric(OBJ, (GConjugate  ) gconjugate  , _1);  // return _1 = _1^*
-defgeneric(OBJ, (GArgument   ) gargument   , _1);  // return _1 = arg(_1)
+defgeneric(OBJ, (G_conjugate  ) gconjugate  , _1);  // return _1 = _1^*
+defgeneric(OBJ, (G_argument   ) gargument   , _1);  // return _1 = arg(_1)
 
-defgeneric(OBJ, (GExponential) gexponential, _1);  // return _1 = exp(_1)
-defgeneric(OBJ, (GLogarithm  ) glogarithm  , _1);  // return _1 = log(_1)
-defgeneric(OBJ, (GSqRoot     ) gsqroot     , _1);  // return _1 = sqrt(_1)
+defgeneric(OBJ, (G_exponential) gexponential, _1);  // return _1 = exp(_1)
+defgeneric(OBJ, (G_logarithm  ) glogarithm  , _1);  // return _1 = log(_1)
+defgeneric(OBJ, (G_sqroot     ) gsqroot     , _1);  // return _1 = sqrt(_1)
 
-defgeneric(OBJ, (GCosine     ) gcosine     , _1);  // return _1 = cos(_1)
-defgeneric(OBJ, (GSine       ) gsine       , _1);  // return _1 = sin(_1)
-defgeneric(OBJ, (GTangent    ) gtangent    , _1);  // return _1 = tan(_1)
-defgeneric(OBJ, (GACosine    ) gacosine    , _1);  // return _1 = acos(_1)
-defgeneric(OBJ, (GASine      ) gasine      , _1);  // return _1 = asin(_1)
-defgeneric(OBJ, (GATangent   ) gatangent   , _1);  // return _1 = atan(_1)
-defgeneric(OBJ, (GCosineH    ) gcosineh    , _1);  // return _1 = cosh(_1)
-defgeneric(OBJ, (GSineH      ) gsineh      , _1);  // return _1 = sinh(_1)
-defgeneric(OBJ, (GTangentH   ) gtangenth   , _1);  // return _1 = tanh(_1)
-defgeneric(OBJ, (GACosineH   ) gacosineh   , _1);  // return _1 = acosh(_1)
-defgeneric(OBJ, (GASineH     ) gasineh     , _1);  // return _1 = asinh(_1)
-defgeneric(OBJ, (GATangentH  ) gatangenth  , _1);  // return _1 = atanh(_1)
+defgeneric(OBJ, (G_cosine     ) gcosine     , _1);  // return _1 = cos(_1)
+defgeneric(OBJ, (G_sine       ) gsine       , _1);  // return _1 = sin(_1)
+defgeneric(OBJ, (G_tangent    ) gtangent    , _1);  // return _1 = tan(_1)
+defgeneric(OBJ, (G_acosine    ) gacosine    , _1);  // return _1 = acos(_1)
+defgeneric(OBJ, (G_asine      ) gasine      , _1);  // return _1 = asin(_1)
+defgeneric(OBJ, (G_atangent   ) gatangent   , _1);  // return _1 = atan(_1)
+defgeneric(OBJ, (G_cosineh    ) gcosineh    , _1);  // return _1 = cosh(_1)
+defgeneric(OBJ, (G_sineh      ) gsineh      , _1);  // return _1 = sinh(_1)
+defgeneric(OBJ, (G_tangenth   ) gtangenth   , _1);  // return _1 = tanh(_1)
+defgeneric(OBJ, (G_acosineh   ) gacosineh   , _1);  // return _1 = acosh(_1)
+defgeneric(OBJ, (G_asineh     ) gasineh     , _1);  // return _1 = asinh(_1)
+defgeneric(OBJ, (G_atangenth  ) gatangenth  , _1);  // return _1 = atanh(_1)
 
-defgeneric(OBJ, (GHypotenuse ) ghypotenuse , _1, _2); // return _1 = sqrt(_1^2+_2^2)
+defgeneric(OBJ, (G_hypotenuse ) ghypotenuse , _1, _2); // return _1 = sqrt(_1^2+_2^2)
 
 #endif // COS_GEN_FLOATOP_H

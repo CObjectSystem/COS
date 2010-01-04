@@ -32,32 +32,32 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GNumOp.h,v 1.1 2010/01/03 14:56:05 ldeniau Exp $
+ | $Id: GNumOp.h,v 1.2 2010/01/04 09:59:01 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GOperator.h>
 
-defclass(GAbs     , GUnaryOp ) endclass
-defclass(GNeg     , GUnaryOp ) endclass
-defclass(GSqr     , GUnaryOp ) endclass
-defclass(GInv     , GUnaryOp ) endclass
-defclass(GAdd     , GBinaryOp) endclass
-defclass(GSub     , GBinaryOp) endclass
-defclass(GMul     , GBinaryOp) endclass
-defclass(GDiv     , GBinaryOp) endclass
-defclass(GPow     , GBinaryOp) endclass
-defclass(GMod     , GBinaryOp) endclass
+defclass(G_abs     , GUnaryOp ) endclass
+defclass(G_neg     , GUnaryOp ) endclass
+defclass(G_sqr     , GUnaryOp ) endclass
+defclass(G_inv     , GUnaryOp ) endclass
+defclass(G_add     , GBinaryOp) endclass
+defclass(G_sub     , GBinaryOp) endclass
+defclass(G_mul     , GBinaryOp) endclass
+defclass(G_div     , GBinaryOp) endclass
+defclass(G_pow     , GBinaryOp) endclass
+defclass(G_mod     , GBinaryOp) endclass
 
-defclass(GAbsolute, GUnaryOp ) endclass
-defclass(GNegate  , GUnaryOp ) endclass
-defclass(GSquare  , GUnaryOp ) endclass
-defclass(GInvert  , GUnaryOp ) endclass
-defclass(GAddTo   , GBinaryOp) endclass
-defclass(GSubTo   , GBinaryOp) endclass
-defclass(GMulBy   , GBinaryOp) endclass
-defclass(GDivBy   , GBinaryOp) endclass
-defclass(GPower   , GBinaryOp) endclass
-defclass(GModulo  , GBinaryOp) endclass
+defclass(G_absolute, GUnaryOp ) endclass
+defclass(G_negate  , GUnaryOp ) endclass
+defclass(G_square  , GUnaryOp ) endclass
+defclass(G_invert  , GUnaryOp ) endclass
+defclass(G_addTo   , GBinaryOp) endclass
+defclass(G_subTo   , GBinaryOp) endclass
+defclass(G_mulBy   , GBinaryOp) endclass
+defclass(G_divBy   , GBinaryOp) endclass
+defclass(G_power   , GBinaryOp) endclass
+defclass(G_modulo  , GBinaryOp) endclass
 
 #endif // COS_GEN_OP_GMATHOP_H
