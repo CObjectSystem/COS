@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: arith.h,v 1.1 2008/06/27 16:17:16 ldeniau Exp $
+ | $Id: arith.h,v 1.2 2010/01/07 22:46:31 ldeniau Exp $
  |
  o
 */
@@ -54,7 +54,7 @@
         COS_PP_1ST(COS_PP_2ND(COS_PP_SPLIT(n, \
           COS_PP_2ND(COS_PP_SPLIT(m,(0,COS_PP_NUMSEQ_N()))))))
 
-// substract two integers m >= 0, n >= 0, , m <= n <= COS_PP_MAX_N
+// substract two integers m >= 0, n >= 0, (m,n,m-n) <= COS_PP_MAX_N
 #define COS_PP_SUB(m,n) \
         COS_PP_IF(COS_PP_ISZERO(m))(0, \
           COS_PP_1ST(COS_PP_2ND(COS_PP_SPLIT(n,COS_PP_RCONS(COS_PP_REV( \
