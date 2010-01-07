@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.38 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: algorithm.h,v 1.39 2010/01/07 17:25:45 ldeniau Exp $
  |
 */
 
@@ -41,8 +41,8 @@
 #endif 
 
 // in place
-defgeneric(OBJ, greverse , _1);
-defgeneric(OBJ, gpermute , _1, idx);
+defgeneric(OBJ, greverse, _1);
+defgeneric(OBJ, gpermute, _1, idx);
 
 // cat
 defgeneric(OBJ, gcat , _1, _2);
@@ -63,7 +63,7 @@ defgeneric(void, gforeach     , _1, fun);
 defgeneric(void, gforeach2    , _1, _2, fun);
 defgeneric(void, gforeach3    , _1, _2, _3, fun);
 defgeneric(void, gforeach4    , _1, _2, _3, _4, fun);
-defgeneric(void, gforeachWhile, _1, fun); // stop when fun returns Nil
+defgeneric(void, gforeachWhile, _1, fun); // stop if fun returns Nil
 
 // apply (in-place map on _1, return _1)
 defgeneric(OBJ, gapply     , fun, _1);
@@ -71,7 +71,7 @@ defgeneric(OBJ, gapply2    , fun, _1, _2);
 defgeneric(OBJ, gapply3    , fun, _1, _2, _3);
 defgeneric(OBJ, gapply4    , fun, _1, _2, _3, _4);
 defgeneric(OBJ, gapplyIf   , fun, _1); // reject if fun returns Nil
-defgeneric(OBJ, gapplyWhile, fun, _1); // stop when fun returns Nil
+defgeneric(OBJ, gapplyWhile, fun, _1); // stop   if fun returns Nil
 
 // map
 defgeneric(OBJ, gmap     , fun, _1);
@@ -79,7 +79,7 @@ defgeneric(OBJ, gmap2    , fun, _1, _2);
 defgeneric(OBJ, gmap3    , fun, _1, _2, _3);
 defgeneric(OBJ, gmap4    , fun, _1, _2, _3, _4);
 defgeneric(OBJ, gmapIf   , fun, _1); // reject if fun returns Nil
-defgeneric(OBJ, gmapWhile, fun, _1); // stop when fun returns Nil
+defgeneric(OBJ, gmapWhile, fun, _1); // stop   if fun returns Nil
 
 // filter
 defgeneric(OBJ, gselect     , _1, fun); // select if    fun returns True
@@ -130,11 +130,10 @@ defgeneric(OBJ, ggroup      , _1, fun); // group true then false (pair)
 defgeneric(OBJ, gsplit      , _1, fun); // split when true
 defgeneric(OBJ, gunique     , _1, fun); // remove contiguous equal elements
 
-// set-like algorithms
 defgeneric(OBJ, gdiff       , _1, _2, fun); // _1 - _2 [asymmetric]
 defgeneric(OBJ, gmerge      , _1, _2, fun); // _1 + _2 (requires sorted _1, _2)
-defgeneric(OBJ, gmatch      , _1, _2, fun); // _2 where find _1 in _2 is not Nil
+defgeneric(OBJ, gmatch      , _1, _2, fun); // _2 - (_2 - _1) [asymmetric]
 defgeneric(OBJ, gintersect  , _1, _2, fun); // _1 - (_1 - _2) [asymmetric]
-
+  // note : gmatch(_1,_2) == gintersect(_2,_1), except for fun and complexity
 #endif // COS_GEN_ALGORITHM_H
 

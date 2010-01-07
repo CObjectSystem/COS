@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.27 2009/12/31 11:15:28 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.28 2010/01/07 17:25:45 ldeniau Exp $
  |
 */
 
@@ -868,13 +868,11 @@ defmethod(OBJ, ggroup, Array, Functor)
   I32  val_s = self->stride;
   OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
+  OBJ  res;
 
   while (val != end) {
-    if (geval(_2, *val) == True)
-      gpush(arr_t, *val);
-    else
-      gpush(arr_f, *val);
-
+    res = geval(_2, *val);
+    gpush(res == True ? arr_t : arr_f, *val);
     val += val_s;
   }
 
@@ -905,13 +903,13 @@ defmethod(OBJ, gmerge, Array, Array, Functor)
       *dst++ = gretain(*val2), ++*dst_n;
       val2 += val2_s;
     } else {
-      *dst++ = gretain(*val), ++*dst_n;
+      *dst++ = gretain(*val ), ++*dst_n;
       val += val_s;
     }
   }
 
   while (val != end) {
-    *dst++ = gretain(*val), ++*dst_n;
+    *dst++ = gretain(*val ), ++*dst_n;
     val += val_s;
   }
 
@@ -940,6 +938,31 @@ defmethod(OBJ, gdiff, Array, Container, Functor)
   while (val != end) {
     if (gfind(_2, aFun(geval2, fun, *val, __1)) == Nil)
       *dst++ = gretain(*val), ++*dst_n;
+    val += val_s;
+  }
+
+  retmethod(gadjust(_arr));
+endmethod
+
+// ----- match (asymmetric match, self2 - (self2 - self1))
+
+defmethod(OBJ, gmatch, Array, Container, Functor)
+  U32 size = self->size;
+  OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
+  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+
+  I32  val_s  = self->stride;
+  OBJ *val    = self->object;
+  U32 *dst_n  = &arr->size;
+  OBJ *dst    = arr->object;
+  OBJ *end    = val + val_s*size;
+  OBJ  fun    = aLzy(_3);
+  OBJ  res;
+
+  while (val != end) {
+    res = gfind(_2, aFun(geval2, fun, *val, __1));
+    if (res != Nil)
+      *dst++ = gretain(res), ++*dst_n;
     val += val_s;
   }
 
