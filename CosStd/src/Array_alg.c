@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.19 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.20 2010/01/07 17:40:46 ldeniau Exp $
  |
 */
 
@@ -439,7 +439,7 @@ defmethod(OBJ, gflatten, Array)
 
   gapply(aFun(gappend, arr, __1), _1);
   
-  retmethod(arr);
+  retmethod(gadjust(arr));
 endmethod
 
 // ----- search (object)
