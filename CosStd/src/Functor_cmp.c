@@ -29,16 +29,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.5 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
 #include <cos/Functor.h>
-#include <cos/gen/object.h>
 #include <cos/gen/functor.h>
+#include <cos/gen/object.h>
+#include <cos/gen/value.h>
+
+#include "Array_utl.h"
+
+// -----
 
 makclass(ComposeFun, Functor);
+
+// -----
 
 useclass(ComposeFun);
 
@@ -50,7 +57,7 @@ ComposeFun_alloc(U32 size)
   OBJ _cmp = gallocWithSize(ComposeFun, size * sizeof(OBJ));
   struct ComposeFun *cmp = STATIC_CAST(struct ComposeFun*, _cmp);
 
-  cmp->size = size;
+  cmp->size = 0;
   
   return cmp;
 }
@@ -59,60 +66,49 @@ defmethod(OBJ, galloc, pmComposeFun)
   retmethod(_1); // lazy alloc
 endmethod
 
-defmethod(OBJ, ginitWith, pmComposeFun, ComposeFun) // clone
-  retmethod( ginitWith((OBJ)ComposeFun_alloc(self2->size),_2) );
-endmethod
-
-defmethod(OBJ, ginitWith, pmComposeFun, Array) // clone
-  retmethod( ginitWith((OBJ)ComposeFun_alloc(self2->size),_2) );
-endmethod
-
-defmethod(OBJ, ginitWith, ComposeFun, ComposeFun) // copy
-  PRT(_1);
-  test_assert(self->size == self2->size, "incompatible composition size");
+defalias (OBJ, (ginitWith)gnewWith, pmComposeFun, ComposeFun);
+defmethod(OBJ,  ginitWith         , pmComposeFun, ComposeFun) // clone
+  struct ComposeFun* cpy = ComposeFun_alloc(self2->size);
+  OBJ _cpy = (OBJ)cpy; PRT(_cpy);
   
-  OBJ *src = self2->fun;
-  OBJ *fun = self->fun;
-  OBJ *end = self->fun + self->size;
+  cpy->Functor.msk = self2->Functor.msk;
+  copy(cpy->fun,1,&cpy->size,self2->fun,1,self2->size);
 
-  while (fun < end)
-    *fun++ = gretain(*src++);
-
-  UNPRT(_1);
-  retmethod(_1);
+  UNPRT(_cpy);
+  retmethod(_cpy);
 endmethod
 
-defmethod(OBJ, ginitWith, ComposeFun, Array) // from array
-  PRT(_1);
-  test_assert(self->size == self2->size, "incompatible composition size");
+defalias (OBJ, (ginitWith)gnewWith, pmComposeFun, Array);
+defmethod(OBJ,  ginitWith         , pmComposeFun, Array) // copy
+  struct ComposeFun* cpy = ComposeFun_alloc(self2->size);
+  OBJ _cpy = (OBJ)cpy; PRT(_cpy);
 
-  OBJ *obj   = self2->object;
-  I32  obj_s = self2->stride;
-  OBJ *fun   = self->fun + self->size;
-  OBJ *end   = self->fun;
+  test_assert( self2->size > 0, "zero length array");
+  
+  cpy->Functor.msk = OBJECT_EDYNCAST(Functor, self2->object[0])->msk;  
+  copy(cpy->fun,1,&cpy->size,self2->object,self2->stride,self2->size);
 
-  while (fun-- > end) { // reverse references
-    *fun = gretain(*obj);
-    obj += obj_s;
-  }
-
-  UNPRT(_1);
-  retmethod(_1);
+  UNPRT(_cpy);
+  retmethod(_cpy);
 endmethod
 
 // ----- dtor
 
 defmethod(OBJ, gdeinit, ComposeFun)
-  for (U32 i = 0; i < self->size; i++)
-    grelease(self->fun[i]);
+  U32 *val_n = &self->size;
+  OBJ *val   = self->fun;
+  OBJ *end   = val + *val_n;
+
+  while (val != end)
+    grelease(*--end), --*val_n;
 
   retmethod(_1);
 endmethod
 
-// ----- arity
+// ----- str
 
-defmethod(I32, garity, ComposeFun)
-  retmethod( garity(self->fun[0]) );
+defmethod(STR, gstr, ComposeFun)
+  retmethod(gstr(self->fun[0]));
 endmethod
 
 // ----- compose

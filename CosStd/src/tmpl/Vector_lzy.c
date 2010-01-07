@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_lzy.c,v 1.6 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: Vector_lzy.c,v 1.7 2010/01/07 00:46:27 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,7 @@ makclass(TL, TD);
 
 // -----
 
-useclass(ExBadArity, TL);
+useclass(TL);
 
 // ----- constructors
 
@@ -74,9 +74,6 @@ defmethod(OBJ,  ginitWith3, TL, Functor, T, Int) // generator
 
   PRT(_1);
   self->generator = gretain(_2);
-  self->arity     = garity (_2);
-
-  test_assert( (U32)self->arity < 3, "invalid generator arity" );
 
   if (self3->size > 0)
     gappend(_1,_3);
@@ -108,25 +105,8 @@ defmethod(OBJ, ggetAt, TL, Int)
   struct T *vec = &self->TD.TF.T;
   U32 i = Range_index(self2->value, vec->size);
 
-  switch(self->arity) {
-  case 0:
-    while (vec->size <= i)
-      gappend(_1, geval(self->generator));
-    break;
-
-  case 1:
-    while (vec->size <= i)
-      gappend(_1, geval(self->generator, _1));
-    break;
-
-  case 2:
-    while (vec->size <= i)
-      gappend(_1, geval(self->generator, _1, aInt(vec->size)));
-    break;
-
-  default:
-    THROW( gnewWithStr(ExBadArity, "lazy " TS " generator eval") );
-  }
+  while (vec->size <= i)
+    gappend(_1, geval(self->generator));
 
   retmethod( gautoDelete(VALOBJ(vec->value[i*vec->stride])) );
 endmethod

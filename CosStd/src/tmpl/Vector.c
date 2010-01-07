@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.12 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Vector.c,v 1.13 2010/01/07 00:46:27 ldeniau Exp $
  |
 */
 
@@ -230,14 +230,9 @@ defmethod(OBJ,  ginitWith2          , TP, Int, Functor) // generator
     U32 *dst_n = &vec->size;
     VAL *dst   = vec->value;
     VAL *end   = dst + size;
-    int argc   = garity(_3);
 
-    if (!argc)
-      while (dst != end)
-        *dst++ = TOVAL(geval(_3)), ++*dst_n;
-    else
-      for (I32 i = 0; dst != end; i++)
-        *dst++ = TOVAL(geval(_3, aInt(i))), ++*dst_n;
+    while (dst != end)
+      *dst++ = TOVAL(geval(_3)), ++*dst_n;
 
     UNPRT(_vec);
     retmethod(_vec);

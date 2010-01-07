@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.9 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: functor.h,v 1.10 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,6 @@
 defgeneric(OBJ, gevalEnv, fun, env); // rank 2
 defgeneric(OBJ, gcompose, _1);       // compose Array of functors
 defgeneric(OBJ, giterate, fun, num); // compose num times functor
-defgeneric(I32, garity  , fun);
 
 // ----- wrapper
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.10 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: String.c,v 1.11 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -167,15 +167,9 @@ defmethod(OBJ,  ginitWith2          , pmString, Int, Functor) // generator
 
     U8* dst  = str->value;
     U8* end  = dst + size;
-    int argc = garity(_3);
 
-    if (!argc)
-      while (dst != end)
-        *dst++ = (U32)gchr(geval(_3));
-
-    else
-      for (I32 i = 0; dst != end; i++)
-        *dst++ = (U32)gchr(geval(_3, aInt(i)));
+    while (dst != end)
+      *dst++ = (U32)gchr(geval(_3));
 
     UNPRT(_str);
     retmethod(_str);

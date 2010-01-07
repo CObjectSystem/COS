@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_lzy.c,v 1.5 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: String_lzy.c,v 1.6 2010/01/07 00:46:27 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,7 @@ makclass(StringLzy, StringDyn);
 
 // ----- exception
 
-useclass(ExBadArity, StringLzy);
+useclass(StringLzy);
 
 // ----- constructors
 
@@ -81,9 +81,6 @@ defmethod(OBJ,  ginitWith3, StringLzy, Functor, String, Int) // generator
 
   PRT(_1);
   self->generator = gretain(_2);
-  self->arity     = garity (_2);
-
-  test_assert( (U32)self->arity < 3, "invalid generator arity" );
 
   if (self3->size > 0)
     gappend(_1,_3);
@@ -115,25 +112,8 @@ defmethod(OBJ, ggetAt, StringLzy, Int)
   struct String *str = &self->StringDyn.StringFix.String;
   U32 i = Range_index(self2->value, str->size);
 
-  switch(self->arity) {
-  case 0:
-    while (str->size <= i)
-      gappend(_1, geval(self->generator));
-    break;
-
-  case 1:
-    while (str->size <= i)
-      gappend(_1, geval(self->generator, _1));
-    break;
-
-  case 2:
-    while (str->size <= i)
-      gappend(_1, geval(self->generator, _1, aInt(str->size)));
-    break;
-
-  default:
-    THROW( gnewWithStr(ExBadArity, "lazy string generator eval") );
-  }
+  while (str->size <= i)
+    gappend(_1, geval(self->generator));
 
   retmethod( gautoDelete(aChar(str->value[i])) );
 endmethod

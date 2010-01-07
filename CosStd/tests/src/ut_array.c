@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.10 2010/01/03 15:00:01 ldeniau Exp $
+ | $Id: ut_array.c,v 1.11 2010/01/07 00:46:27 ldeniau Exp $
  |
 */
 
@@ -160,6 +160,7 @@ ut_array_functor(void)
   OBJ eq    = aFun(gisEqual  , __1, __2);
   OBJ gt    = aFun(gisGreater, __1, aInt(3));
 */
+// /*
   OBJ div   = gdiv      (__1, __2);
   OBJ add   = gadd      (__1, __2);
   OBJ addTo = gaddTo    (__1, __2);
@@ -167,6 +168,7 @@ ut_array_functor(void)
   OBJ cmp   = gcompare  (__1, __2);
   OBJ eq    = gisEqual  (__1, __2);
   OBJ gt    = gisGreater(__1, aInt(3));
+// */
   OBJ arr   = Nil;
   OBJ obj   = Nil;
 

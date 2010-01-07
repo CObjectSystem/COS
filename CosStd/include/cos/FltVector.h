@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.h,v 1.8 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: FltVector.h,v 1.9 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -93,7 +93,6 @@ defclass(FltVectorDyn, FltVectorFix)
 endclass
 
 defclass(FltVectorLzy, FltVectorDyn)
-  I32 arity;
   OBJ generator;
 endclass
 

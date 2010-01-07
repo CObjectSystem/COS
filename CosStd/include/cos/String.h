@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.7 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: String.h,v 1.8 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -107,7 +107,6 @@ defclass(StringDyn, StringFix)
 endclass
 
 defclass(StringLzy, StringDyn)
-  I32 arity;
   OBJ generator;
 endclass
 

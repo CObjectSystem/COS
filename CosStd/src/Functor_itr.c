@@ -29,32 +29,24 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_itr.c,v 1.5 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Functor_itr.c,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
 #include <cos/Number.h>
 #include <cos/Functor.h>
-#include <cos/gen/object.h>
-#include <cos/gen/functor.h>
 #include <cos/gen/algorithm.h>
+#include <cos/gen/functor.h>
+#include <cos/gen/object.h>
+#include <cos/gen/value.h>
+
+// -----
 
 makclass(IterateFun, Functor);
 
-// ----- ator
+// -----
 
-static inline struct IterateFun*
-IterateFun_alloc(I32 num)
-{
-  useclass(IterateFun);
-
-  OBJ _itr = galloc(IterateFun);
-  struct IterateFun *itr = STATIC_CAST(struct IterateFun*, _itr);
-
-  itr->num = num;
-  
-  return itr;
-}
+useclass(IterateFun);
 
 // ----- dtor
 
@@ -67,13 +59,14 @@ endmethod
 
 defmethod(OBJ, giterate, Functor, Int)
   test_assert(self2->value > 0, "invalid number of iteration");
-  test_assert(garity(_1)  == 1, "invalid arity");
 
-  struct IterateFun *itr = IterateFun_alloc(self2->value);
-  OBJ _itr = gautoDelete( (OBJ)itr );
+  OBJ _itr = gautoDelete(galloc(IterateFun));
+  struct IterateFun *itr = STATIC_CAST(struct IterateFun*, _itr);
 
+  itr->Functor.msk = self->msk;
+  itr->num = self2->value;
   itr->fun = gretain(_1);
-  itr->fct =  0;
+  itr->fct = 0;
 
   retmethod(_itr);
 endmethod
@@ -81,19 +74,21 @@ endmethod
 defmethod(OBJ, giterate, Function1, Int)
   test_assert(self2->value > 0, "invalid number of iteration");
 
-  struct IterateFun *itr = IterateFun_alloc(self2->value);
-  OBJ _itr = gautoDelete( (OBJ)itr );
+  OBJ _itr = gautoDelete(galloc(IterateFun));
+  struct IterateFun *itr = STATIC_CAST(struct IterateFun*, _itr);
 
+  itr->Functor.msk = self->FunExpr.Functor.msk;
+  itr->num = self2->value;
   itr->fun = gretain(_1);
   itr->fct = STATIC_CAST(struct Function1*, itr->fun)->fct;
 
   retmethod(_itr);
 endmethod
 
-// ----- arity
+// ----- str
 
-defmethod(I32, garity, IterateFun)
-  retmethod(1);
+defmethod(STR, gstr, IterateFun)
+  retmethod(gstr(self->fun));
 endmethod
 
 // ----- eval

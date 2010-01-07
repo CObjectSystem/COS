@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.49 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Array.c,v 1.50 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -257,20 +257,12 @@ defmethod(OBJ,  ginitWith2          , pmArray, Int, Functor) // generator
     U32 *dst_n = &vec->size;
     OBJ *dst   = vec->object;
     OBJ *end   = dst + size;
-    int argc   = garity(_3);
     OBJ res;
 
-    if (!argc)
-      while (dst != end) {
-        res = geval(_3);
-        *dst++ = gretain(res), ++*dst_n;
-      }
-
-    else
-      for (I32 i = 0; dst != end; i++) {
-        res = geval(_3, aInt(i));
-        *dst++ = gretain(res), ++*dst_n;
-      }
+    while (dst != end) {
+      res = geval(_3);
+      *dst++ = gretain(res), ++*dst_n;
+    }
 
     UNPRT(_vec);
     retmethod(_vec);

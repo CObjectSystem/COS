@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.5 2010/01/04 14:18:24 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -43,6 +43,35 @@
 // 000 -> expression
 
 // ----- helper
+
+#define PAR_UNIT ((U32) 1 << 27)
+#define PAR_MASK ((U32)31 << 27)
+
+enum { FUN_ISEXPR, FUN_ISCLOSED, FUN_ISFUNC };
+
+static COS_ALWAYS_INLINE U32
+getPar(U32 msk)
+{
+  return msk & PAR_MASK;
+}
+
+static COS_ALWAYS_INLINE U32
+getIdx(OBJ arg) // unsafe
+{
+  return STATIC_CAST(struct FunArg*, arg)->idx;
+}
+
+static COS_ALWAYS_INLINE OBJ
+getVar(OBJ arg) // unsafe
+{
+  return STATIC_CAST(struct FunVar*, arg)->var;
+}
+
+static COS_ALWAYS_INLINE U32
+getMsk(OBJ arg) // unsafe
+{
+  return STATIC_CAST(struct Functor*, arg)->msk;
+}
 
 static COS_ALWAYS_INLINE void
 setArg(U32 *msk, U32 idx)
@@ -80,26 +109,10 @@ isVar(U32 msk, U32 idx)
   return msk & (4 << 3*idx);
 }
 
-static COS_ALWAYS_INLINE BOOL
-isExpr(U32 msk, U32 idx)
-{
-  return !(msk & (7 << 3*idx));
-}
+// ----- compute type of functor: function, closure, expression
 
-static COS_ALWAYS_INLINE BOOL
-isFunc(U32 msk, OBJ arg[], U32 n)
-{
-  U32 idx;
-  
-  for (idx = 0; idx < n; idx++)
-    if (!(isIdx(msk, idx) && idx == (size_t)arg[idx]))
-      break;
-      
-  return idx == n;
-}
-
-static COS_ALWAYS_INLINE BOOL
-isClosed(U32 msk, OBJ arg[], U32 n)
+static COS_ALWAYS_INLINE int
+funType(U32 msk, OBJ arg[], U32 n)
 {
   U32 idx, narg = 0;
   
@@ -107,11 +120,11 @@ isClosed(U32 msk, OBJ arg[], U32 n)
     if (isArg(msk, idx)) ++narg;
 
     else
-    if (!(isIdx(msk, idx) && idx-narg == (size_t)arg[idx]))
+    if (!isIdx(msk, idx) || idx - narg != getIdx(arg[idx]))
       break;
   }
        
-  return idx == n;
+  return idx == n ? (!narg ? FUN_ISFUNC : FUN_ISCLOSED) : FUN_ISEXPR;
 }
 
 // ----- "array-like" environment
@@ -123,7 +136,7 @@ getArg(U32 idx, U32 msk, OBJ *arg, OBJ *var, U32 size, OBJ env)
     return arg[idx];
 
   if (isIdx(msk, idx)) {          // environment index (placeholder)
-    size_t i = (size_t)arg[idx];
+    U32 i = getIdx(arg[idx]);
     test_assert( i < size, "invalid placeholder index" );
     return  var[ i ];
   }
@@ -134,25 +147,22 @@ getArg(U32 idx, U32 msk, OBJ *arg, OBJ *var, U32 size, OBJ env)
 // ----- "dictionnary-like" environment
 
 static COS_ALWAYS_INLINE OBJ
-getVar(U32 idx, U32 msk, OBJ *arg, OBJ env)
+getArgVar(U32 idx, U32 msk, OBJ *arg, OBJ env)
 {
   if (isArg(msk, idx))            // simple argument (free variable)
     return arg[idx];
 
   if (isVar(msk, idx))            // environment key (placeholder)
-    return ggetAt(env, arg[idx]);
+    return ggetAt(env, getVar(arg[idx]));
 
-  if (isIdx(msk, idx)) {          // environment index (placeholder)
-    size_t i = (size_t)arg[idx];
-    return ggetAtIdx(env, i);
-  }
+  if (isIdx(msk, idx))            // environment index (placeholder)
+    return ggetAtIdx(env, getIdx(arg[idx]));
 
   return gevalEnv(arg[idx], env); // other (expression)
 }
 
-// ----- build context mask and compute arity
+// ----- build context mask
 
 U32 Functor_getMask (OBJ arg[], U32 n, STR file, int line);
-I32 Functor_getArity(OBJ arg[], U32 n, U32 msk);
 
 #endif // COS_FUNCTOR_UTL_H

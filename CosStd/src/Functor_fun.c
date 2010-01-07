@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.5 2010/01/04 14:18:24 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -54,7 +54,7 @@ makclass(FunExpr9, FunExpr);
 
 // ----- initializer
 
-dclclass(Functor1, Functor2, Functor3);
+dclclass(Functor1, Functor2, Functor3, Functor4);
 
 #undef  DEFFUNC
 #define DEFFUNC(N) \
@@ -62,17 +62,20 @@ dclclass(Functor1, Functor2, Functor3);
 struct Functor* COS_PP_CAT(FunExpr_init,N) \
 (struct COS_PP_CAT(FunExpr,N) *fun, STR file, int line) \
 { \
-  fun->msk = Functor_getMask(fun->arg, N, file, line); \
+  fun->FunExpr.Functor.msk = Functor_getMask(fun->arg, N, file, line); \
 \
-  if (isFunc(fun->msk, fun->arg, N)) \
+  switch(funType(fun->FunExpr.Functor.msk, fun->arg, N)) { \
+  case FUN_ISFUNC: \
     fun->FunExpr.Functor.Expression.Object.id = \
-      cos_class_id(classref(COS_PP_CAT(Function,N))); \
-  COS_PP_IF(COS_PP_GT(N,3))(, \
-  else \
-  if (isClosed(fun->msk, fun->arg, N)) \
+      cos_class_id(classref(COS_PP_CAT(Function,N))); break; \
+\
+  COS_PP_IF(COS_PP_GT(N,4))(, \
+  case FUN_ISCLOSED: \
     fun->FunExpr.Functor.Expression.Object.id = \
-      cos_class_id(classref(COS_PP_CAT(Functor,N))); \
-  )\
+      cos_class_id(classref(COS_PP_CAT(Functor,N))); break; \
+  ) \
+  } \
+\
   return &fun->FunExpr.Functor; \
 }
 
@@ -96,13 +99,12 @@ DEFFUNC(9)
 #define DEFMETHOD(N) \
 \
 defmethod(OBJ, ginitWith, COS_PP_CAT(FunExpr,N), COS_PP_CAT(FunExpr,N)) \
+  self->FunExpr.Functor.msk = self2->FunExpr.Functor.msk; \
   self->FunExpr.str = self2->FunExpr.str; \
   self->fct = self2->fct; \
-  self->msk = self2->msk; \
-  self->ary = self2->ary; \
 \
   for (int i = 0; i < N; i++) \
-    self->arg[i] = isIdx(self->msk, i) ? self2->arg[i] : gretain(self2->arg[i]); \
+    self->arg[i] = gretain(self2->arg[i]); \
 \
   retmethod(_1); \
 endmethod
@@ -124,31 +126,9 @@ DEFMETHOD(9)
 \
 defmethod(OBJ, gdeinit, COS_PP_CAT(FunExpr,N)) \
   for (int i = 0; i < N; i++) \
-    if (!isIdx(self->msk, i)) grelease(self->arg[i]); \
+    grelease(self->arg[i]); \
 \
   retmethod(_1); \
-endmethod
-
-DEFMETHOD(1)
-DEFMETHOD(2)
-DEFMETHOD(3)
-DEFMETHOD(4)
-DEFMETHOD(5)
-DEFMETHOD(6)
-DEFMETHOD(7)
-DEFMETHOD(8)
-DEFMETHOD(9)
-
-// ----- arity
-
-#undef  DEFMETHOD
-#define DEFMETHOD(N) \
-\
-defmethod(I32, garity, COS_PP_CAT(FunExpr,N)) \
-  if (self->ary == -1) \
-    self->ary = Functor_getArity(self->arg, N, self->msk); \
-\
-  retmethod(self->ary); \
 endmethod
 
 DEFMETHOD(1)
@@ -164,7 +144,7 @@ DEFMETHOD(9)
 // ----- eval (stack-like environment)
 
 defmethod(OBJ, gevalEnv, FunExpr1, Array)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -175,7 +155,7 @@ defmethod(OBJ, gevalEnv, FunExpr1, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr2, Array)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -187,7 +167,7 @@ defmethod(OBJ, gevalEnv, FunExpr2, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr3, Array)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -200,7 +180,7 @@ defmethod(OBJ, gevalEnv, FunExpr3, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr4, Array)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -209,12 +189,12 @@ defmethod(OBJ, gevalEnv, FunExpr4, Array)
   OBJ arg1 = getArg(1, msk, arg, var, size, _2);
   OBJ arg2 = getArg(2, msk, arg, var, size, _2);
   OBJ arg3 = getArg(3, msk, arg, var, size, _2);
-
+  
   retmethod( self->fct(arg0, arg1, arg2, arg3) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr5, Array)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -229,7 +209,7 @@ defmethod(OBJ, gevalEnv, FunExpr5, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr6, Array)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -245,7 +225,7 @@ defmethod(OBJ, gevalEnv, FunExpr6, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr7, Array)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -262,7 +242,7 @@ defmethod(OBJ, gevalEnv, FunExpr7, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr8, Array)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -280,7 +260,7 @@ defmethod(OBJ, gevalEnv, FunExpr8, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr9, Array)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -301,118 +281,118 @@ endmethod
 // ----- eval (generic environment)
 
 defmethod(OBJ, gevalEnv, FunExpr1, Container)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
 
-  OBJ arg0 = getVar(0, msk, arg, _2);
+  OBJ arg0 = getArgVar(0, msk, arg, _2);
 
   retmethod( self->fct(arg0) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr2, Container)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
 
-  OBJ arg0 = getVar(0, msk, arg, _2);
-  OBJ arg1 = getVar(1, msk, arg, _2);
+  OBJ arg0 = getArgVar(0, msk, arg, _2);
+  OBJ arg1 = getArgVar(1, msk, arg, _2);
 
   retmethod( self->fct(arg0, arg1) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr3, Container)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
 
-  OBJ arg0 = getVar(0, msk, arg, _2);
-  OBJ arg1 = getVar(1, msk, arg, _2);
-  OBJ arg2 = getVar(2, msk, arg, _2);
+  OBJ arg0 = getArgVar(0, msk, arg, _2);
+  OBJ arg1 = getArgVar(1, msk, arg, _2);
+  OBJ arg2 = getArgVar(2, msk, arg, _2);
 
   retmethod( self->fct(arg0, arg1, arg2) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr4, Container)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
 
-  OBJ arg0 = getVar(0, msk, arg, _2);
-  OBJ arg1 = getVar(1, msk, arg, _2);
-  OBJ arg2 = getVar(2, msk, arg, _2);
-  OBJ arg3 = getVar(3, msk, arg, _2);
+  OBJ arg0 = getArgVar(0, msk, arg, _2);
+  OBJ arg1 = getArgVar(1, msk, arg, _2);
+  OBJ arg2 = getArgVar(2, msk, arg, _2);
+  OBJ arg3 = getArgVar(3, msk, arg, _2);
 
   retmethod( self->fct(arg0, arg1, arg2, arg3) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr5, Container)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
 
-  OBJ arg0 = getVar(0, msk, arg, _2);
-  OBJ arg1 = getVar(1, msk, arg, _2);
-  OBJ arg2 = getVar(2, msk, arg, _2);
-  OBJ arg3 = getVar(3, msk, arg, _2);
-  OBJ arg4 = getVar(4, msk, arg, _2);
+  OBJ arg0 = getArgVar(0, msk, arg, _2);
+  OBJ arg1 = getArgVar(1, msk, arg, _2);
+  OBJ arg2 = getArgVar(2, msk, arg, _2);
+  OBJ arg3 = getArgVar(3, msk, arg, _2);
+  OBJ arg4 = getArgVar(4, msk, arg, _2);
 
   retmethod( self->fct(arg0, arg1, arg2, arg3, arg4) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr6, Container)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
 
-  OBJ arg0 = getVar(0, msk, arg, _2);
-  OBJ arg1 = getVar(1, msk, arg, _2);
-  OBJ arg2 = getVar(2, msk, arg, _2);
-  OBJ arg3 = getVar(3, msk, arg, _2);
-  OBJ arg4 = getVar(4, msk, arg, _2);
-  OBJ arg5 = getVar(5, msk, arg, _2);
+  OBJ arg0 = getArgVar(0, msk, arg, _2);
+  OBJ arg1 = getArgVar(1, msk, arg, _2);
+  OBJ arg2 = getArgVar(2, msk, arg, _2);
+  OBJ arg3 = getArgVar(3, msk, arg, _2);
+  OBJ arg4 = getArgVar(4, msk, arg, _2);
+  OBJ arg5 = getArgVar(5, msk, arg, _2);
 
   retmethod( self->fct(arg0, arg1, arg2, arg3, arg4, arg5) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr7, Container)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
 
-  OBJ arg0 = getVar(0, msk, arg, _2);
-  OBJ arg1 = getVar(1, msk, arg, _2);
-  OBJ arg2 = getVar(2, msk, arg, _2);
-  OBJ arg3 = getVar(3, msk, arg, _2);
-  OBJ arg4 = getVar(4, msk, arg, _2);
-  OBJ arg5 = getVar(5, msk, arg, _2);
-  OBJ arg6 = getVar(6, msk, arg, _2);
+  OBJ arg0 = getArgVar(0, msk, arg, _2);
+  OBJ arg1 = getArgVar(1, msk, arg, _2);
+  OBJ arg2 = getArgVar(2, msk, arg, _2);
+  OBJ arg3 = getArgVar(3, msk, arg, _2);
+  OBJ arg4 = getArgVar(4, msk, arg, _2);
+  OBJ arg5 = getArgVar(5, msk, arg, _2);
+  OBJ arg6 = getArgVar(6, msk, arg, _2);
 
   retmethod( self->fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr8, Container)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
 
-  OBJ arg0 = getVar(0, msk, arg, _2);
-  OBJ arg1 = getVar(1, msk, arg, _2);
-  OBJ arg2 = getVar(2, msk, arg, _2);
-  OBJ arg3 = getVar(3, msk, arg, _2);
-  OBJ arg4 = getVar(4, msk, arg, _2);
-  OBJ arg5 = getVar(5, msk, arg, _2);
-  OBJ arg6 = getVar(6, msk, arg, _2);
-  OBJ arg7 = getVar(7, msk, arg, _2);
+  OBJ arg0 = getArgVar(0, msk, arg, _2);
+  OBJ arg1 = getArgVar(1, msk, arg, _2);
+  OBJ arg2 = getArgVar(2, msk, arg, _2);
+  OBJ arg3 = getArgVar(3, msk, arg, _2);
+  OBJ arg4 = getArgVar(4, msk, arg, _2);
+  OBJ arg5 = getArgVar(5, msk, arg, _2);
+  OBJ arg6 = getArgVar(6, msk, arg, _2);
+  OBJ arg7 = getArgVar(7, msk, arg, _2);
 
   retmethod( self->fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr9, Container)
-  U32  msk = self->msk;
+  U32  msk = self->FunExpr.Functor.msk;
   OBJ *arg = self->arg;
 
-  OBJ arg0 = getVar(0, msk, arg, _2);
-  OBJ arg1 = getVar(1, msk, arg, _2);
-  OBJ arg2 = getVar(2, msk, arg, _2);
-  OBJ arg3 = getVar(3, msk, arg, _2);
-  OBJ arg4 = getVar(4, msk, arg, _2);
-  OBJ arg5 = getVar(5, msk, arg, _2);
-  OBJ arg6 = getVar(6, msk, arg, _2);
-  OBJ arg7 = getVar(7, msk, arg, _2);
-  OBJ arg8 = getVar(8, msk, arg, _2);
+  OBJ arg0 = getArgVar(0, msk, arg, _2);
+  OBJ arg1 = getArgVar(1, msk, arg, _2);
+  OBJ arg2 = getArgVar(2, msk, arg, _2);
+  OBJ arg3 = getArgVar(3, msk, arg, _2);
+  OBJ arg4 = getArgVar(4, msk, arg, _2);
+  OBJ arg5 = getArgVar(5, msk, arg, _2);
+  OBJ arg6 = getArgVar(6, msk, arg, _2);
+  OBJ arg7 = getArgVar(7, msk, arg, _2);
+  OBJ arg8 = getArgVar(8, msk, arg, _2);
 
   retmethod( self->fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) );
 endmethod

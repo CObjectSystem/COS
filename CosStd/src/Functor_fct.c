@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.5 2010/01/01 14:23:37 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -88,28 +88,10 @@ STATIC_ASSERT(functor9_to_function9_compatibility,
 #define DEFMETHOD(N) \
 \
 defmethod(OBJ, ginitWith, COS_PP_CAT(Function,N), COS_PP_CAT(Function,N)) \
+  self->FunExpr.Functor.msk = self2->FunExpr.Functor.msk; \
   self->FunExpr.str = self2->FunExpr.str; \
   self->fct = self2->fct; \
   retmethod(_1); \
-endmethod
-
-DEFMETHOD(1)
-DEFMETHOD(2)
-DEFMETHOD(3)
-DEFMETHOD(4)
-DEFMETHOD(5)
-DEFMETHOD(6)
-DEFMETHOD(7)
-DEFMETHOD(8)
-DEFMETHOD(9)
-
-// ----- arity
-
-#undef  DEFMETHOD
-#define DEFMETHOD(N) \
-\
-defmethod(I32, garity, COS_PP_CAT(Function,N)) \
-  retmethod(N); \
 endmethod
 
 DEFMETHOD(1)

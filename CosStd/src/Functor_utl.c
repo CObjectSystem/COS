@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.5 2010/01/04 14:35:29 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -38,6 +38,12 @@
 #include <cos/gen/functor.h>
 
 #include "Functor_utl.h"
+
+static inline void
+setPar(U32 *msk, U32 par)
+{
+  *msk = (*msk & ~PAR_MASK) | par;
+}
 
 U32
 Functor_getMask(OBJ arg[], U32 n, STR file, int line)
@@ -48,58 +54,30 @@ Functor_getMask(OBJ arg[], U32 n, STR file, int line)
 
     test_assert( arg[idx], "invalid (null) argument", file, line );
 
-          // environment index (placeholder)
-    if (cos_object_isa(arg[idx], classref(FunArg))) {
+            // environment index (placeholder)
+    if (cos_object_isa(arg[idx], classref(FunArg)))
       setIdx(&msk, idx);
-      arg[idx] = (OBJ)(size_t)STATIC_CAST(struct FunArg*, arg[idx])->idx;
-    }
     
-    else  // environment key (placeholder)
-    if (cos_object_isa(arg[idx], classref(FunVar))) {
+    else    // environment key (placeholder)
+    if (cos_object_isa(arg[idx], classref(FunVar)))
       setVar(&msk, idx);
-      arg[idx] = STATIC_CAST(struct FunVar*, arg[idx])->var;
-    }
 
-    else  // lazy functor (treat it as argument, idempotent)
+    else    // lazy expression (placeholder)
     if (cos_object_isa(arg[idx], classref(FunLzy))) {
-      setArg(&msk, idx);
-      do arg[idx] = STATIC_CAST(struct FunLzy*, arg[idx])->fun;
-      while (cos_object_isa(arg[idx], classref(FunLzy)));
+      U32 par = STATIC_CAST(struct FunLzy*, arg[idx])->cnt*PAR_UNIT;
+      if (par > msk) setPar(&msk, par);
     }
     
-    else  // argument (free variable)
-    if (!cos_object_isKindOf(arg[idx], classref(Functor))) {
+    else    // argument (free variable)
+    if (!cos_object_isKindOf(arg[idx], classref(Functor)))
       setArg(&msk, idx);
-    }
       
-    else  // expression
-    {}
+    else {  // functor (!)
+      U32 par = getPar(getMsk(arg[idx]));
+      if (par > msk + PAR_UNIT) setPar(&msk, par - PAR_UNIT);
+    }
   }
 
   return msk;
 }
-
-I32
-Functor_getArity(OBJ arg[], U32 n, U32 msk)
-{
-  U32 arity = 0;
-  
-  for (U32 idx = 0; idx < n; idx++) {
-    if (isIdx(msk, idx)) {
-      U32 i = (size_t)arg[idx];
-      if (arity < i && i < 32)
-        arity = i;
-    }
-
-    else
-    if (!isArg(msk, idx)) {
-      U32 i = garity(arg[idx]);
-      if (arity < i && i < 32)
-        arity = i;
-    }
-  }
-
-  return arity;
-}
-
 

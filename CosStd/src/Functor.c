@@ -29,26 +29,88 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.20 2010/01/04 14:35:29 ldeniau Exp $
+ | $Id: Functor.c,v 1.21 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
 #include <cos/Functor.h>
+#include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 
+// -----
+
 makclass(Expression);
 
-makclass(Functor, Expression);
-makclass(FunArg , Expression);
-makclass(FunVar , Expression);
-makclass(FunLzy , Expression);
+makclass(Functor    , Expression);
+makclass(PlaceHolder, Expression);
 
-// ----- generics
+makclass(FunArg     , PlaceHolder);
+makclass(FunVar     , PlaceHolder);
+makclass(FunLzy     , PlaceHolder);
+
+// -----
+
+useclass(FunArg, FunVar, FunLzy);
+
+// ----- ctors
+
+defmethod(OBJ, gclone, FunArg)
+  OBJ _arg = galloc(FunArg);
+  struct FunArg *arg = STATIC_CAST(struct FunArg*, _arg);
+
+  arg->idx = self->idx;
+  
+  retmethod(_arg);
+endmethod
+
+defmethod(OBJ, gclone, FunVar)
+  OBJ _var = galloc(FunVar);
+  struct FunVar *var = STATIC_CAST(struct FunVar*, _var);
+
+  var->var = gretain(self->var);
+
+  retmethod(_var);
+endmethod
+
+defmethod(OBJ, gclone, FunLzy)
+  OBJ _lzy = galloc(FunLzy);
+  struct FunLzy *lzy = STATIC_CAST(struct FunLzy*, _lzy);
+
+  lzy->fun = gretain(self->fun);
+  lzy->cnt = self->cnt;
+
+  retmethod(_lzy);
+endmethod
+
+// ----- dtors
+
+defmethod(OBJ, gdeinit, FunArg)
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gdeinit, FunVar)
+  grelease(self->var);
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gdeinit, FunLzy)
+  grelease(self->fun);
+  retmethod(_1);
+endmethod
 
 defmethod(OBJ, gdeinit, FunExpr)
   retmethod(_1);
 endmethod
+
+// ----- eval
+
+defmethod(OBJ, gevalEnv, FunLzy, Container)
+  retmethod ( self->cnt == 1 ? self->fun
+                             : gautoDelete(aFunLzyN(self->cnt-1, self->fun)) );
+endmethod
+
+// ----- str
 
 defmethod(STR, gstr, FunExpr)
   retmethod(self->str);

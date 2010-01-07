@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_lzy.c,v 1.5 2009/09/30 21:52:59 ldeniau Exp $
+ | $Id: Array_lzy.c,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,7 @@ makclass(ArrayLzy, ArrayDyn);
 
 // -----
 
-useclass(ArrayLzy, ExBadArity);
+useclass(ArrayLzy);
 
 // ----- constructors
 
@@ -81,9 +81,6 @@ defmethod(OBJ,  ginitWith3, ArrayLzy, Functor, Array, Int) // generator
 
   PRT(_1);
   self->generator = gretain(_2);
-  self->arity     = garity (_2);
-
-  test_assert( (U32)self->arity < 3, "invalid generator arity" );
 
   if (self3->size > 0)
     gappend(_1,_3);
@@ -115,25 +112,8 @@ defmethod(OBJ, ggetAt, ArrayLzy, Int)
   struct Array *vec = &self->ArrayDyn.ArrayFix.Array;
   U32 i = Range_index(self2->value, vec->size);
 
-  switch(self->arity) {
-  case 0:
-    while (vec->size <= i)
-      gappend(_1, geval(self->generator));
-    break;
-
-  case 1:
-    while (vec->size <= i)
-      gappend(_1, geval(self->generator, _1));
-    break;
-
-  case 2:
-    while (vec->size <= i)
-      gappend(_1, geval(self->generator, _1, aInt(vec->size)));
-    break;
-
-  default:
-    THROW( gnewWithStr(ExBadArity, "lazy array generator eval") );
-  }
+  while (vec->size <= i)
+    gappend(_1, geval(self->generator));
 
   retmethod( vec->object[i*vec->stride] );
 endmethod
