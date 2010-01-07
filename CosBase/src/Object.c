@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.23 2010/01/03 14:27:04 ldeniau Exp $
+ | $Id: Object.c,v 1.24 2010/01/07 22:40:14 ldeniau Exp $
  |
 */
 
@@ -218,7 +218,7 @@ defmethod(OBJ, gisInstanceOf, Object, Class)
 endmethod
 
 defmethod(OBJ, gisKindOf, Object, Class)
-  retmethod( self1->id == self2->Behavior.id || cos_object_isKindOf(_1,self2)
+  retmethod( self1->id == self2->Behavior.id || cos_object_isKindOf(_1, self2)
              ? True : False );
 endmethod
 

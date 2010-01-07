@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.23 2009/12/29 15:20:59 ldeniau Exp $
+ | $Id: generic.h,v 1.24 2010/01/07 22:40:14 ldeniau Exp $
  |
 */
 
@@ -430,7 +430,7 @@ struct Generic COS_GEN_NAME(NAME) = { \
   /* size of returned value, sizeof OBJ = 0, void = -1 */ \
   COS_PP_IF(R)(COS_PP_IF(COS_TOK_ISOBJ(RET))(0,sizeof(COS_RET_TYPE(NAME))),-1), \
   /* cryptic information */ \
-  COS_GEN_INFO(0,COS_PP_LEN(PS),O,COS_GEN_RET(RET),V) \
+  COS_GEN_INFO(0,COS_PP_IF(A)(COS_PP_LEN(AS),0),O,COS_GEN_RET(RET),V) \
 }
 
 // argument initialization
