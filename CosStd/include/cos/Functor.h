@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.24 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: Functor.h,v 1.25 2010/01/07 14:53:51 ldeniau Exp $
  |
 */
 
@@ -63,8 +63,8 @@ defclass(FunVar, PlaceHolder)
 endclass
 
 defclass(FunLzy, PlaceHolder)
-  U32 cnt;
   OBJ fun;
+  U32 cnt;
   FINAL_CLASS
 endclass
 
@@ -119,7 +119,7 @@ defclass(FunExpr9, FunExpr)
   OBJ  arg[9];
 endclass
 
-// ----- Functor as function (faster)
+// ----- Functor as function (lightweight optimization)
 
 defclass(Function0, FunExpr)
   FUN0 fct;
@@ -247,7 +247,7 @@ endclass
         atFunLzyN(1,FUN)
 
 #define atFunLzyN(N,FUN) \
-  ( &(struct FunLzy){ {{ cos_object_auto(FunLzy) }}, (N), (FUN) } )
+  ( &(struct FunLzy){ {{ cos_object_auto(FunLzy) }}, (FUN), (N) } )
 
 // ----- initializers
 

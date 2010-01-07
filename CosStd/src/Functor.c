@@ -29,10 +29,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.21 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: Functor.c,v 1.22 2010/01/07 14:53:52 ldeniau Exp $
  |
 */
 
+/* NOTE-INFO: PlaceHolder specializations
+
+   PlaceHolders should only override Object's methods, no more,
+   since High Order Messages are commonly built with delegation.
+*/
+ 
 #include <cos/Functor.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
@@ -104,6 +110,11 @@ defmethod(OBJ, gdeinit, FunExpr)
 endmethod
 
 // ----- eval
+
+defmethod(OBJ, gevalEnv, PlaceHolder, Container)
+  test_assert(0, "invalid placeholder evaluation (geval)");
+  retmethod(Nil);
+endmethod
 
 defmethod(OBJ, gevalEnv, FunLzy, Container)
   retmethod ( self->cnt == 1 ? self->fun

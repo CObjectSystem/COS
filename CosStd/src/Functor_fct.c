@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.7 2010/01/07 14:53:52 ldeniau Exp $
  |
 */
 
@@ -77,10 +77,6 @@ STATIC_ASSERT(functor8_to_function8_compatibility,
 
 STATIC_ASSERT(functor9_to_function9_compatibility,
               COS_FIELD_COMPATIBILITY(Function9,FunExpr9,fct));
-
-// ----- ctors
-
-// TODO ?
 
 // ----- copy
 

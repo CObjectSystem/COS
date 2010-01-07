@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.7 2010/01/07 14:53:52 ldeniau Exp $
  |
 */
 
@@ -39,11 +39,71 @@
 
 #include "Functor_utl.h"
 
+// -----
+
+static inline U32
+getFunIdx(OBJ arg) // unsafe, use with isIdx()
+{
+  return STATIC_CAST(struct FunArg*, arg)->idx;
+}
+
+static inline OBJ
+getFunVar(OBJ arg) // unsafe, use with isVar()
+{
+  return STATIC_CAST(struct FunVar*, arg)->var;
+}
+
+static inline OBJ
+getFunFun(OBJ arg) // unsafe
+{
+  return STATIC_CAST(struct FunLzy*, arg)->fun;
+}
+
+static inline U32
+getFunCnt(OBJ arg) // unsafe
+{
+  return STATIC_CAST(struct FunLzy*, arg)->cnt;
+}
+
+static inline U32
+getFunMsk(OBJ arg) // unsafe
+{
+  return STATIC_CAST(struct Functor*, arg)->msk;
+}
+
+static inline U32
+getFunPar(OBJ arg, OBJ *var)
+{
+  U32 cnt = 0;
+  
+  do {
+    cnt += getFunCnt(arg);
+    arg  = getFunFun(arg);
+  } while (cos_object_isa(arg, classref(FunLzy)));
+
+  *var = arg;
+
+  return cnt;
+}
+
+// -----
+
 static inline void
 setPar(U32 *msk, U32 par)
 {
   *msk = (*msk & ~PAR_MASK) | par;
 }
+
+static inline void
+setFunPar(OBJ arg, OBJ var, U32 cnt)
+{
+  struct FunLzy* lzy = STATIC_CAST(struct FunLzy*, arg);
+  
+  lzy->fun = var;
+  lzy->cnt = cnt;
+}
+
+// -----
 
 U32
 Functor_getMask(OBJ arg[], U32 n, STR file, int line)
@@ -54,28 +114,47 @@ Functor_getMask(OBJ arg[], U32 n, STR file, int line)
 
     test_assert( arg[idx], "invalid (null) argument", file, line );
 
-            // environment index (placeholder)
-    if (cos_object_isa(arg[idx], classref(FunArg)))
-      setIdx(&msk, idx);
+          // placeholder
+    if (cos_object_isKindOf(arg[idx], classref(PlaceHolder))) {
+              // environment index 
+        if (cos_object_isa(arg[idx], classref(FunArg))) {
+          setIdx(&msk, idx);
+          arg[idx] = (OBJ)(size_t)getFunIdx(arg[idx]);
+        }
     
-    else    // environment key (placeholder)
-    if (cos_object_isa(arg[idx], classref(FunVar)))
-      setVar(&msk, idx);
+        else  // environment key
+        if (cos_object_isa(arg[idx], classref(FunVar))) {
+          setVar(&msk, idx);
+          arg[idx] = getFunVar(arg[idx]);    
+        }
 
-    else    // lazy expression (placeholder)
-    if (cos_object_isa(arg[idx], classref(FunLzy))) {
-      U32 par = STATIC_CAST(struct FunLzy*, arg[idx])->cnt*PAR_UNIT;
-      if (par > msk) setPar(&msk, par);
+        else  // lazy expression
+        if (cos_object_isa(arg[idx], classref(FunLzy))) {
+          OBJ var = Nil;
+          U32 cnt = getFunPar(arg[idx], &var);
+      
+          if (cos_object_isKindOf(var, classref(PlaceHolder))) {
+            setFunPar(arg[idx], var, cnt);
+            U32 par = cnt*PAR_UNIT;
+            if (par > msk) setPar(&msk, par);
+          } else { // lazyness is idempotent on non-placeholder
+            setArg(&msk, idx);
+            arg[idx] = var;
+          }
+        }
+        
+        else
+          test_assert( 0, "invalid placeholder", file, line );
     }
     
-    else    // argument (free variable)
-    if (!cos_object_isKindOf(arg[idx], classref(Functor)))
-      setArg(&msk, idx);
-      
-    else {  // functor (!)
-      U32 par = getPar(getMsk(arg[idx]));
+    else  // functor
+    if (cos_object_isKindOf(arg[idx], classref(Functor))) {
+      U32 par = getPar(getFunMsk(arg[idx]));
       if (par > msk + PAR_UNIT) setPar(&msk, par - PAR_UNIT);
     }
+          
+    else  // argument (free variable)
+      setArg(&msk, idx);
   }
 
   return msk;

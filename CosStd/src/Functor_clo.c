@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_clo.c,v 1.3 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: Functor_clo.c,v 1.4 2010/01/07 14:53:52 ldeniau Exp $
  |
 */
 
@@ -41,32 +41,21 @@
 
 #include "Functor_utl.h"
 
-defclass(Functor1, FunExpr)
-  FUN1 fct;
-  OBJ  arg[1];
-endclass
+// ----- closure: optimized functors built by FunExpr_init
 
-defclass(Functor2, FunExpr)
-  FUN2 fct;
-  OBJ  arg[2];
-endclass
+defclass(Functor1, FunExpr1) endclass
+defclass(Functor2, FunExpr2) endclass
+defclass(Functor3, FunExpr3) endclass
+defclass(Functor4, FunExpr4) endclass
 
-defclass(Functor3, FunExpr)
-  FUN3 fct;
-  OBJ  arg[3];
-endclass
+// -----
 
-defclass(Functor4, FunExpr)
-  FUN4 fct;
-  OBJ  arg[4];
-endclass
+makclass(Functor1, FunExpr1);
+makclass(Functor2, FunExpr2);
+makclass(Functor3, FunExpr3);
+makclass(Functor4, FunExpr4);
 
-makclass(Functor1, FunExpr);
-makclass(Functor2, FunExpr);
-makclass(Functor3, FunExpr);
-makclass(Functor4, FunExpr);
-
-// ----- specialization for eval
+// ----- more specialization for eval
 
 defclass(Functor21, Functor2) endclass
 defclass(Functor22, Functor2) endclass
@@ -94,6 +83,8 @@ defclass(Functor4D, Functor4) endclass
 defclass(Functor4E, Functor4) endclass
 defclass(Functor4F, Functor4) endclass
 
+// -----
+
 makclass(Functor21, Functor2);
 makclass(Functor22, Functor2);
 makclass(Functor23, Functor2);
@@ -120,84 +111,23 @@ makclass(Functor4D, Functor4);
 makclass(Functor4E, Functor4);
 makclass(Functor4F, Functor4);
 
-// ----- type compatibility within the class cluster
-
-STATIC_ASSERT(functor1_to_closure1_compatibility,
-              COS_TYPE_COMPATIBILITY(struct FunExpr1, struct Functor1) &&
-              COS_FIELD_COMPATIBILITY(Functor1,FunExpr1,fct) &&
-              COS_FIELD_COMPATIBILITY(Functor1,FunExpr1,arg));
-
-STATIC_ASSERT(functor2_to_closure2_compatibility,
-              COS_TYPE_COMPATIBILITY(struct FunExpr2, struct Functor2) &&
-              COS_FIELD_COMPATIBILITY(Functor2,FunExpr2,fct) &&
-              COS_FIELD_COMPATIBILITY(Functor2,FunExpr2,arg));
-
-STATIC_ASSERT(functor3_to_closure3_compatibility,
-              COS_TYPE_COMPATIBILITY(struct FunExpr3, struct Functor3) &&
-              COS_FIELD_COMPATIBILITY(Functor3,FunExpr3,fct) &&
-              COS_FIELD_COMPATIBILITY(Functor3,FunExpr3,arg));
-
-STATIC_ASSERT(functor4_to_closure4_compatibility,
-              COS_TYPE_COMPATIBILITY(struct FunExpr4, struct Functor4) &&
-              COS_FIELD_COMPATIBILITY(Functor4,FunExpr4,fct) &&
-              COS_FIELD_COMPATIBILITY(Functor4,FunExpr4,arg));
-
-// ----- ctors
-
-// TODO ?
-
-// ----- copy
-
-#undef  DEFMETHOD
-#define DEFMETHOD(N) \
-\
-defmethod(OBJ, ginitWith, COS_PP_CAT(Functor,N), COS_PP_CAT(Functor,N)) \
-  self->FunExpr.Functor.msk = self2->FunExpr.Functor.msk; \
-  self->FunExpr.str = self2->FunExpr.str; \
-  self->fct = self2->fct; \
-\
-  for (int i = 0; i < N; i++) \
-    self->arg[i] = gretain(self2->arg[i]); \
-\
-  retmethod(_1); \
-endmethod
-
-DEFMETHOD(1)
-DEFMETHOD(2)
-DEFMETHOD(3)
-DEFMETHOD(4)
-
-// ----- dtors
-
-#undef  DEFMETHOD
-#define DEFMETHOD(N) \
-\
-defmethod(OBJ, gdeinit, COS_PP_CAT(Functor,N)) \
-  for (int i = 0; i < N; i++) \
-    grelease(self->arg[i]); \
-\
-  retmethod(_1); \
-endmethod
-
-DEFMETHOD(1)
-DEFMETHOD(2)
-DEFMETHOD(3)
-DEFMETHOD(4)
-
 // ---- eval
 
 // ----- 1
 
 defmethod(OBJ, gevalEnv, Functor1, Array)
-  retmethod( self->fct(self->arg[0]) );
+  OBJ *arg = self->FunExpr1.arg;
+  FUN1 fct = self->FunExpr1.fct;
+
+  retmethod( fct(arg[0]) );
 endmethod
 
 // ----- 2
 
 defmethod(OBJ, gevalEnv, Functor2, Array)
-  U32 *id = &self->FunExpr.Functor.Expression.Object.id;
+  U32 *id = &self->FunExpr2.FunExpr.Functor.Expression.Object.id;
 
-  switch(self->FunExpr.Functor.msk) {
+  switch(self->FunExpr2.FunExpr.Functor.msk) {
     case 011: *id = cos_class_id(classref(Functor21)); break;
     case 012: *id = cos_class_id(classref(Functor22)); break;
     case 021: *id = cos_class_id(classref(Functor23)); break;
@@ -208,35 +138,38 @@ defmethod(OBJ, gevalEnv, Functor2, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor21, Array)
-  OBJ *arg = self->Functor2.arg;
+  OBJ *arg = self->Functor2.FunExpr2.arg;
+  FUN2 fct = self->Functor2.FunExpr2.fct;
 
-  retmethod( self->Functor2.fct(arg[0], arg[1]) ); // 011
+  retmethod( fct(arg[0], arg[1]) ); // 011
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor22, Array)
-  OBJ *arg = self->Functor2.arg;
+  OBJ *arg = self->Functor2.FunExpr2.arg;
+  FUN2 fct = self->Functor2.FunExpr2.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 1, "invalid placeholder index" );
 
-  retmethod( self->Functor2.fct(var[0], arg[1]) ); // 012
+  retmethod( fct(var[0], arg[1]) ); // 012
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor23, Array)
-  OBJ *arg = self->Functor2.arg;
+  OBJ *arg = self->Functor2.FunExpr2.arg;
+  FUN2 fct = self->Functor2.FunExpr2.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 1, "invalid placeholder index" );
 
-  retmethod( self->Functor2.fct(arg[0], var[0]) ); // 021
+  retmethod( fct(arg[0], var[0]) ); // 021
 endmethod
 
 // ----- 3
 
 defmethod(OBJ, gevalEnv, Functor3, Array)
-  U32 *id = &self->FunExpr.Functor.Expression.Object.id;
+  U32 *id = &self->FunExpr3.FunExpr.Functor.Expression.Object.id;
 
-  switch(self->FunExpr.Functor.msk) {
+  switch(self->FunExpr3.FunExpr.Functor.msk) {
     case 0111: *id = cos_class_id(classref(Functor31)); break;
     case 0112: *id = cos_class_id(classref(Functor32)); break;
     case 0121: *id = cos_class_id(classref(Functor33)); break;
@@ -251,71 +184,78 @@ defmethod(OBJ, gevalEnv, Functor3, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor31, Array)
-  OBJ *arg = self->Functor3.arg;
+  OBJ *arg = self->Functor3.FunExpr3.arg;
+  FUN3 fct = self->Functor3.FunExpr3.fct;
 
-  retmethod( self->Functor3.fct(arg[0], arg[1], arg[2]) ); // 0111
+  retmethod( fct(arg[0], arg[1], arg[2]) ); // 0111
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor32, Array)
-  OBJ *arg = self->Functor3.arg;
+  OBJ *arg = self->Functor3.FunExpr3.arg;
+  FUN3 fct = self->Functor3.FunExpr3.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 1, "invalid placeholder index" );
 
-  retmethod( self->Functor3.fct(var[0], arg[1], arg[2]) ); // 0112
+  retmethod( fct(var[0], arg[1], arg[2]) ); // 0112
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor33, Array)
-  OBJ *arg = self->Functor3.arg;
+  OBJ *arg = self->Functor3.FunExpr3.arg;
+  FUN3 fct = self->Functor3.FunExpr3.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 1, "invalid placeholder index" );
 
-  retmethod( self->Functor3.fct(arg[0], var[0], arg[2]) ); // 0121
+  retmethod( fct(arg[0], var[0], arg[2]) ); // 0121
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor34, Array)
-  OBJ *arg = self->Functor3.arg;
+  OBJ *arg = self->Functor3.FunExpr3.arg;
+  FUN3 fct = self->Functor3.FunExpr3.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 2, "invalid placeholder index" );
 
-  retmethod( self->Functor3.fct(var[0], var[1], arg[2]) ); // 0122
+  retmethod( fct(var[0], var[1], arg[2]) ); // 0122
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor35, Array)
-  OBJ *arg = self->Functor3.arg;
+  OBJ *arg = self->Functor3.FunExpr3.arg;
+  FUN3 fct = self->Functor3.FunExpr3.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 1, "invalid placeholder index" );
 
-  retmethod( self->Functor3.fct(arg[0], arg[1], var[0]) ); // 0211
+  retmethod( fct(arg[0], arg[1], var[0]) ); // 0211
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor36, Array)
-  OBJ *arg = self->Functor3.arg;
+  OBJ *arg = self->Functor3.FunExpr3.arg;
+  FUN3 fct = self->Functor3.FunExpr3.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 2, "invalid placeholder index" );
 
-  retmethod( self->Functor3.fct(var[0], arg[1], var[1]) ); // 0212
+  retmethod( fct(var[0], arg[1], var[1]) ); // 0212
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor37, Array)
-  OBJ *arg = self->Functor3.arg;
+  OBJ *arg = self->Functor3.FunExpr3.arg;
+  FUN3 fct = self->Functor3.FunExpr3.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 2, "invalid placeholder index" );
 
-  retmethod( self->Functor3.fct(arg[0], var[0], var[1]) ); // 0221
+  retmethod( fct(arg[0], var[0], var[1]) ); // 0221
 endmethod
 
 // ----- 4
 
 defmethod(OBJ, gevalEnv, Functor4, Array)
-  U32 *id = &self->FunExpr.Functor.Expression.Object.id;
+  U32 *id = &self->FunExpr4.FunExpr.Functor.Expression.Object.id;
 
-  switch(self->FunExpr.Functor.msk) {
+  switch(self->FunExpr4.FunExpr.Functor.msk) {
     case 01111: *id = cos_class_id(classref(Functor41)); break;
     case 01112: *id = cos_class_id(classref(Functor42)); break;
     case 01121: *id = cos_class_id(classref(Functor43)); break;
@@ -338,134 +278,149 @@ defmethod(OBJ, gevalEnv, Functor4, Array)
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor41, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
 
-  retmethod( self->Functor4.fct(arg[0], arg[1], arg[2], arg[3]) ); // 01111
+  retmethod( fct(arg[0], arg[1], arg[2], arg[3]) ); // 01111
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor42, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 1, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(var[0], arg[1], arg[2], arg[3]) ); // 01112
+  retmethod( fct(var[0], arg[1], arg[2], arg[3]) ); // 01112
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor43, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 1, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(arg[0], var[0], arg[2], arg[3]) ); // 01121
+  retmethod( fct(arg[0], var[0], arg[2], arg[3]) ); // 01121
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor44, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 2, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(var[0], var[1], arg[2], arg[3]) ); // 01122
+  retmethod( fct(var[0], var[1], arg[2], arg[3]) ); // 01122
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor45, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 1, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(arg[0], arg[1], var[0], arg[3]) ); // 01211
+  retmethod( fct(arg[0], arg[1], var[0], arg[3]) ); // 01211
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor46, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 2, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(var[0], arg[1], var[1], arg[3]) ); // 01212
+  retmethod( fct(var[0], arg[1], var[1], arg[3]) ); // 01212
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor47, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 2, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(arg[0], var[0], var[1], arg[3]) ); // 01221
+  retmethod( fct(arg[0], var[0], var[1], arg[3]) ); // 01221
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor48, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 3, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(var[0], var[1], var[2], arg[3]) ); // 01222
+  retmethod( fct(var[0], var[1], var[2], arg[3]) ); // 01222
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor49, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 1, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(arg[0], arg[1], arg[2], var[0]) ); // 02111
+  retmethod( fct(arg[0], arg[1], arg[2], var[0]) ); // 02111
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor4A, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 2, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(var[0], arg[1], arg[2], var[1]) ); // 02112
+  retmethod( fct(var[0], arg[1], arg[2], var[1]) ); // 02112
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor4B, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 2, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(arg[0], var[0], arg[2], var[1]) ); // 02121
+  retmethod( fct(arg[0], var[0], arg[2], var[1]) ); // 02121
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor4C, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 3, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(var[0], var[1], arg[2], var[2]) ); // 02122
+  retmethod( fct(var[0], var[1], arg[2], var[2]) ); // 02122
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor4D, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 2, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(arg[0], arg[1], var[0], var[1]) ); // 02211
+  retmethod( fct(arg[0], arg[1], var[0], var[1]) ); // 02211
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor4E, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 3, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(var[0], arg[1], var[1], var[2]) ); // 02212
+  retmethod( fct(var[0], arg[1], var[1], var[2]) ); // 02212
 endmethod
 
 defmethod(OBJ, gevalEnv, Functor4F, Array)
-  OBJ *arg = self->Functor4.arg;
+  OBJ *arg = self->Functor4.FunExpr4.arg;
+  FUN4 fct = self->Functor4.FunExpr4.fct;
   OBJ *var = self2->object;
 
   test_assert( self2->size >= 3, "invalid placeholder index" );
 
-  retmethod( self->Functor4.fct(arg[0], var[0], var[1], var[2]) ); // 02221
+  retmethod( fct(arg[0], var[0], var[1], var[2]) ); // 02221
 endmethod
 

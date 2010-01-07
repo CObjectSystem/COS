@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.7 2010/01/07 14:53:52 ldeniau Exp $
  |
 */
 
@@ -49,61 +49,55 @@
 
 enum { FUN_ISEXPR, FUN_ISCLOSED, FUN_ISFUNC };
 
-static COS_ALWAYS_INLINE U32
+static inline U32
 getPar(U32 msk)
 {
   return msk & PAR_MASK;
 }
 
-static COS_ALWAYS_INLINE U32
-getIdx(OBJ arg) // unsafe
+static inline U32
+getIdx(OBJ arg)
 {
-  return STATIC_CAST(struct FunArg*, arg)->idx;
+  return (size_t)arg;
 }
 
-static COS_ALWAYS_INLINE OBJ
-getVar(OBJ arg) // unsafe
+static inline OBJ
+getVar(OBJ arg)
 {
-  return STATIC_CAST(struct FunVar*, arg)->var;
+  return arg;
 }
 
-static COS_ALWAYS_INLINE U32
-getMsk(OBJ arg) // unsafe
-{
-  return STATIC_CAST(struct Functor*, arg)->msk;
-}
-
-static COS_ALWAYS_INLINE void
+static inline void
 setArg(U32 *msk, U32 idx)
 {
   *msk |= 1 << 3*idx;
 }
 
-static COS_ALWAYS_INLINE void
+static inline void
 setIdx(U32 *msk, U32 idx)
 {
   *msk |= 2 << 3*idx;
 }
 
-static COS_ALWAYS_INLINE void
+static inline void
 setVar(U32 *msk, U32 idx)
 {
   *msk |= 4 << 3*idx;
 }
 
-static COS_ALWAYS_INLINE BOOL
+static inline BOOL
 isArg(U32 msk, U32 idx)
 {
   return msk & (1 << 3*idx);
 }
 
-static COS_ALWAYS_INLINE BOOL
+static inline BOOL
 isIdx(U32 msk, U32 idx)
 {
   return msk & (2 << 3*idx);
 }
 
-static COS_ALWAYS_INLINE BOOL
+static inline BOOL
 isVar(U32 msk, U32 idx)
 {
   return msk & (4 << 3*idx);
@@ -112,7 +106,7 @@ isVar(U32 msk, U32 idx)
 // ----- compute type of functor: function, closure, expression
 
 static COS_ALWAYS_INLINE int
-funType(U32 msk, OBJ arg[], U32 n)
+getFunType(U32 msk, OBJ arg[], U32 n)
 {
   U32 idx, narg = 0;
   
@@ -163,6 +157,6 @@ getArgVar(U32 idx, U32 msk, OBJ *arg, OBJ env)
 
 // ----- build context mask
 
-U32 Functor_getMask (OBJ arg[], U32 n, STR file, int line);
+U32 Functor_getMask(OBJ arg[], U32 n, STR file, int line);
 
 #endif // COS_FUNCTOR_UTL_H
