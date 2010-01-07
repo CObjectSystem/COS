@@ -218,6 +218,7 @@
                     
                     <!-- COS Add-on -->
                     <keyword>classref</keyword>
+                    <keyword>dclclass</keyword>
                     <keyword>useclass</keyword>
                     <keyword>defclass</keyword>
                     <keyword>endclass</keyword>
@@ -278,7 +279,28 @@
                     <keyword>SEL</keyword>
                     <keyword>STR</keyword>
                     <keyword>PAIR</keyword>
-                    <keyword>FUNC</keyword>
+                    <keyword>FCT</keyword>
+                    <keyword>FCT1</keyword>
+                    <keyword>FCT2</keyword>
+                    <keyword>FCT3</keyword>
+                    <keyword>FCT4</keyword>
+                    <keyword>FCT5</keyword>
+                    <keyword>FCT6</keyword>
+                    <keyword>FCT7</keyword>
+                    <keyword>FCT8</keyword>
+                    <keyword>FCT9</keyword>
+                    <keyword>FCTN</keyword>
+                    <keyword>FUN0</keyword>
+                    <keyword>FUN1</keyword>
+                    <keyword>FUN2</keyword>
+                    <keyword>FUN3</keyword>
+                    <keyword>FUN4</keyword>
+                    <keyword>FUN5</keyword>
+                    <keyword>FUN6</keyword>
+                    <keyword>FUN7</keyword>
+                    <keyword>FUN8</keyword>
+                    <keyword>FUN9</keyword>
+                    <keyword>FUNN</keyword>
                     <keyword>IMP1</keyword>
                     <keyword>IMP2</keyword>
                     <keyword>IMP3</keyword>
@@ -341,9 +363,22 @@
                     <keyword>FINAL_CLASS</keyword>
                     <keyword>STATIC_CAST</keyword>
                     <keyword>STATIC_ASSERT</keyword>
+                    <keyword>OBJECT_CAST</keyword>
+                    <keyword>OBJECT_ECAST</keyword>
+                    <keyword>OBJECT_DYNCAST</keyword>
+                    <keyword>OBJECT_EDYNCAST</keyword>
                     <keyword>test_assert</keyword>
                     <keyword>test_invariant</keyword>
                     <keyword>__FUNC__</keyword>
+                    <keyword>__1</keyword>
+                    <keyword>__2</keyword>
+                    <keyword>__3</keyword>
+                    <keyword>__4</keyword>
+                    <keyword>__5</keyword>
+                    <keyword>__6</keyword>
+                    <keyword>__7</keyword>
+                    <keyword>__8</keyword>
+                    <keyword>__9</keyword>
                 </context>
 
                 <!-- C99 booleans -->
