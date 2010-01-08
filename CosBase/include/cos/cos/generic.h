@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.26 2010/01/08 12:54:17 ldeniau Exp $
+ | $Id: generic.h,v 1.27 2010/01/08 18:01:25 ldeniau Exp $
  |
 */
 
@@ -405,6 +405,11 @@ void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
 // component instantiation (see cos/cos/coscls.h)
 #define COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,C,A,O,R,V) \
 \
+COS_PP_IF(A)( \
+static struct cos_generic_rcvinfo COS_RCV_INFO(NAME)[] = { \
+  COS_GEN_RCV(PS) \
+};,/* no args */) \
+\
 COS_PP_IF(COS_PP_AND(A,COS_PP_NOT(O)))( \
 static struct cos_generic_arginfo COS_ARG_INFO(NAME)[] = { \
   COS_GEN_ARG(AS,(COS_PP_DUPSEQ(COS_PP_LEN(AS),COS_ARG_TYPE(NAME)))) \
@@ -423,7 +428,9 @@ struct Generic COS_GEN_NAME(NAME) = { \
   COS_PP_SEPWITH(COS_PP_MAP(((RET),COS_PP_SEQ(PS)),COS_GEN_STR),"\0"), \
   /* link to generic class */ \
   (void*)&COS_CLS_NAME(CLS), \
-  /* argument info, 0 if all objects, sizeof OBJ = 0 */ \
+  /* receivers info, 0 if no monomorphic arguments */ \
+  COS_PP_IF(A)(COS_RCV_INFO(NAME),0), \
+  /* arguments info, 0 if all objects, sizeof OBJ = 0 */ \
   COS_PP_IF(COS_PP_AND(A,COS_PP_NOT(O)))(COS_ARG_INFO(NAME),0), \
   /* size of monomorphic arguments struct */ \
   COS_PP_IF(A)(sizeof(COS_ARG_TYPE(NAME)),0), \
@@ -457,6 +464,14 @@ struct Generic COS_GEN_NAME(NAME) = { \
     COS_PP_IF(COS_PP_OR(COS_TOK_ISVOID(COS_PRM_TYPE(a)), \
                         COS_TOK_ISOBJ (COS_PRM_TYPE(a)))) \
       ( ""/* void or OBJ */, COS_PP_STR(COS_PRM_TYPE(a)) ), "@"/* receiver */)
+
+// receivers infos
+#define COS_GEN_RCV(PS) \
+  COS_PP_SEQ(COS_PP_FILTER( \
+    COS_PP_MAP2(PS,(COS_PP_NUMSEQ_N()),COS_GEN_RCVI), COS_PP_ISNZERO) )
+
+#define COS_GEN_RCVI(p,i) \
+  COS_PP_IF(COS_PP_ISTUPLE(p))(0,i)
 
 // arguments infos
 #define COS_GEN_ARG(AS,TS) \

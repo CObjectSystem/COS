@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: logic.h,v 1.5 2009/12/29 15:20:59 ldeniau Exp $
+ | $Id: logic.h,v 1.6 2010/01/08 18:01:25 ldeniau Exp $
  |
  o
 */
@@ -118,6 +118,10 @@
 // return 1 if 'a' is 0, 0 otherwise
 #define COS_PP_ISZERO(a) \
         COS_PP_ISTUPLE(COS_PP_CAT_(COS_PP_ISZERO_,a))
+
+// return 1 if 'a' is not 0, 0 otherwise
+#define COS_PP_ISNZERO(a) \
+        COS_PP_ISNTUPLE(COS_PP_CAT_(COS_PP_ISZERO_,a))
 
 // return 1 if 'a' is 1, 0 otherwise
 #define COS_PP_ISONE(a) \

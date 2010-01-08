@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.24 2009/12/26 15:02:44 ldeniau Exp $
+ | $Id: cosdef.h,v 1.25 2010/01/08 18:01:25 ldeniau Exp $
  |
 */
 
@@ -177,9 +177,14 @@ typedef struct OBJ_as_SEL* OBJ_as_SEL;
 // compile-time checks of OBJ vs void*
 struct OBJ { char isOBJ; };
 
-// generic arguments
+// generic receivers info
+struct cos_generic_rcvinfo {
+  U8 index;
+};
+
+// generic arguments info
 struct cos_generic_arginfo {
-  U16 size;
+  U16 size; // OBJects have "zero" size
   U16 offset;
 };
 

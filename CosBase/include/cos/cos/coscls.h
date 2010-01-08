@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.11 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: coscls.h,v 1.12 2010/01/08 18:01:25 ldeniau Exp $
  |
 */
 
@@ -132,6 +132,7 @@ COS_CLS_DEF(Generic,Behavior)
   U32 mth;
   STR str;
   STR sig;
+  struct cos_generic_rcvinfo *rcvinfo;
   struct cos_generic_arginfo *arginfo;
   U16 argsize;
   U16 retsize;
