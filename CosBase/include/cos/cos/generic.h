@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.27 2010/01/08 18:01:25 ldeniau Exp $
+ | $Id: generic.h,v 1.28 2010/01/08 18:07:42 ldeniau Exp $
  |
 */
 
@@ -467,11 +467,14 @@ struct Generic COS_GEN_NAME(NAME) = { \
 
 // receivers infos
 #define COS_GEN_RCV(PS) \
-  COS_PP_SEQ(COS_PP_FILTER( \
-    COS_PP_MAP2(PS,(COS_PP_NUMSEQ_N()),COS_GEN_RCVI), COS_PP_ISNZERO) )
+  COS_PP_SEQ(COS_PP_MAP(COS_PP_FILTER( \
+    COS_PP_MAP2(PS,(COS_PP_NUMSEQ_N()),COS_GEN_RCVI), COS_PP_ISNZERO), \
+       COS_GEN_RCVI_))
 
 #define COS_GEN_RCVI(p,i) \
   COS_PP_IF(COS_PP_ISTUPLE(p))(0,i)
+
+#define COS_GEN_RCVI_(i) { i }
 
 // arguments infos
 #define COS_GEN_ARG(AS,TS) \
