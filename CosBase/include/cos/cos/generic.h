@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.28 2010/01/08 18:07:42 ldeniau Exp $
+ | $Id: generic.h,v 1.29 2010/01/08 22:36:54 ldeniau Exp $
  |
 */
 
@@ -474,7 +474,7 @@ struct Generic COS_GEN_NAME(NAME) = { \
 #define COS_GEN_RCVI(p,i) \
   COS_PP_IF(COS_PP_ISTUPLE(p))(0,i)
 
-#define COS_GEN_RCVI_(i) { i }
+#define COS_GEN_RCVI_(i) { i-1 }
 
 // arguments infos
 #define COS_GEN_ARG(AS,TS) \
