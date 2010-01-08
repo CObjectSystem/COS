@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.25 2010/01/08 01:23:44 ldeniau Exp $
+ | $Id: generic.h,v 1.26 2010/01/08 12:54:17 ldeniau Exp $
  |
 */
 
@@ -486,20 +486,20 @@ struct Generic COS_GEN_NAME(NAME) = { \
 /* generic info encoding and decoding
  */
 #define COS_GEN_INFO(nmth,narg,oarg,rett,varg) \
-  ((((U32)(rett) & 0x03) << 30) | \
-   (((U32)(varg) & 0x01) << 29) | \
-   (((U32)(oarg) & 0x01) << 28) | \
-   (((U32)(narg) & 0x3F) << 22) | \
+  ((((U32)(rett) & 3)   << 30) | \
+   (((U32)(varg) & 1)   << 29) | \
+   (((U32)(oarg) & 1)   << 28) | \
+   (((U32)(narg) & 077) << 22) | \
     ((U32)(nmth) & COS_GEN_MTHMSK))
 
-#define COS_GEN_ORET(gen)  ((gen)->info & ((U32)0x01 << 31)) // ret is OBJ   {0,>0}
-#define COS_GEN_VRET(gen)  ((gen)->info & ((U32)0x01 << 30)) // ret is void  {0,>0}
-#define COS_GEN_VARG(gen)  ((gen)->info & ((U32)0x01 << 29)) // is variadic  {0,>0}
-#define COS_GEN_OARG(gen)  ((gen)->info & ((U32)0x01 << 28)) // args are OBJ {0,>0}
-#define COS_GEN_NARG(gen) (((gen)->info >> 22) & ((U32)0x3F))// num args    {0..63}
-#define COS_GEN_NMTH(gen)  ((gen)->info &  COS_GEN_MTHMSK  ) // num mths {0..4194303}
+#define COS_GEN_ORET(gen)  ((gen)->info & ((U32)1 << 31)) // ret is OBJ   {0,>0}
+#define COS_GEN_VRET(gen)  ((gen)->info & ((U32)1 << 30)) // ret is void  {0,>0}
+#define COS_GEN_VARG(gen)  ((gen)->info & ((U32)1 << 29)) // is variadic  {0,>0}
+#define COS_GEN_OARG(gen)  ((gen)->info & ((U32)1 << 28)) // args are OBJ {0,>0}
+#define COS_GEN_NARG(gen) (((gen)->info >> 22) & 077    ) // num args    {0..63}
+#define COS_GEN_NMTH(gen)  ((gen)->info & COS_GEN_MTHMSK) // num mths {0..4194303}
 
-#define COS_GEN_MTHSHT  22   // 32-10
+#define COS_GEN_MTHSHT  22
 #define COS_GEN_MTHMSK (((U32)1<<22)-1)
 
 #endif // COS_COS_GENERIC_H
