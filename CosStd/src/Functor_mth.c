@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.6 2010/01/07 14:53:52 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.7 2010/01/09 16:18:39 ldeniau Exp $
  |
 */
 
@@ -53,28 +53,53 @@ defclass(MthExpr, Functor)
 endclass
 
 defclass(MthExpr1, MthExpr)
-  OBJ   arg[1];
-  void *args;
+  OBJ   rcv[1]; // receivers
+  char *arg;    // arguments
+  U16   off[8]; // arguments OBJects offsets
+  U8    idx[8]; // arguments OBJects indexes in env
+  U8    pos[1]; // receivers indexes in env 
+  U8    noff;   // number of arguments offsets
+  U8    nexp;   // number of arguments expressions
 endclass
 
 defclass(MthExpr2, MthExpr)
-  OBJ   arg[2];
-  void *args;
+  OBJ   rcv[2];
+  char *arg;
+  U16   off[7];
+  U8    idx[7];
+  U8    pos[2];
+  U8    noff;
+  U8    nexp;
 endclass
 
 defclass(MthExpr3, MthExpr)
-  OBJ   arg[3];
-  void *args;
+  OBJ   rcv[3];
+  char *arg;
+  U16   off[6];
+  U8    idx[6];
+  U8    pos[3];
+  U8    noff;
+  U8    nexp;
 endclass
 
 defclass(MthExpr4, MthExpr)
-  OBJ   arg[4];
-  void *args;
+  OBJ   rcv[4];
+  char *arg;
+  U16   off[5];
+  U8    idx[5];
+  U8    pos[4];
+  U8    noff;
+  U8    nexp;
 endclass
 
 defclass(MthExpr5, MthExpr)
-  OBJ   arg[5];
-  void *args;
+  OBJ   rcv[5];
+  char *arg;
+  U16   off[4];
+  U8    idx[4];
+  U8    pos[5];
+  U8    noff;
+  U8    nexp;
 endclass
 
 makclass(MthExpr , Functor);
@@ -102,7 +127,7 @@ makclass(MthPart5, MthExpr5);
 
 useclass(ExBadAlloc);
 
-// ----- helper
+// ----- automatic ctor (private)
 
 #define aMthExpr(...) ( (OBJ)atMthExpr(__VA_ARGS__) )
 
@@ -112,99 +137,156 @@ useclass(ExBadAlloc);
 #define atMthExprN(N,S,A,...) \
   COS_PP_CAT(MthExpr_init,N)( &(struct COS_PP_CAT(MthExpr,N)) { \
     {{{ cos_object_auto(COS_PP_CAT(MthExpr,N)) }, 0 }, S }, \
-    {__VA_ARGS__}, A }, __FILE__, __LINE__)
+    {__VA_ARGS__}, A, \
+    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
+    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
+    { COS_PP_DUP(COS_PP_SUB(N,1), 0,) 0 }, \
+    0, 0 }, __FILE__, __LINE__)
 
 // ----- utils
 
-static void*
-cloneArgs(SEL sel, char *_args)
+static U32
+getOffs(SEL sel, U16 off[], U8 idx[], U8 pos[])
 {
-  U32   size = sel->argsize;
-  char *args = 0;
-  
-  // generic has monomorphic arguments
-  if (size) {
-    U32 narg = COS_GEN_NARG(sel) - COS_GEN_RNK(sel);
-    
-    // sanity check
-    assert(args);
-    assert(narg);
-  
-    args = malloc(size);
-    if (!args) THROW(ExBadAlloc);
-    
-    // all arguments are OBJects
-    if (COS_GEN_OARG(sel)) {
-      OBJ *dst = (OBJ*)   args;
-      OBJ *src = (OBJ*)  _args;
-      OBJ *end = (OBJ*) (_args + size);
-      
-      // sanity check
-      assert(size >= narg*sizeof(OBJ));
-      
-      while (src < end) {
-        *dst++ = *src ? gretain(*src) : 0;
-         src++;
+  U32 nrcv = COS_GEN_RNK (sel);
+  U32 narg = COS_GEN_NARG(sel);
+  U32 noff = 9-nrcv;
+  U32 ircv = 0;
+  U32 iarg = 0;
+  U32 ioff = 0;
+  U32 iobj = 0;
+
+  if (!sel->argsize) {      // only receivers
+    while (ircv < nrcv)
+      pos[ircv] = ircv, ircv++;
+  }
+  else
+  if (COS_GEN_OARG(sel)) {  // only OBJects
+    assert(sel->rcvinfo);   // sanity check
+
+    while ( !(ircv > nrcv && iarg > narg) ) {
+      // receiver
+      if (ircv < nrcv && ircv+iarg == sel->rcvinfo[ircv].index) {
+        pos[ircv] = iobj;
+        ircv++, iobj++;
+        continue;
       }
+
+      // argument (OBJect)
+      if (ioff < noff) {
+        off[ioff] = iarg * sizeof(OBJ);
+        idx[ioff] = iobj;
+        ioff++;
+      }
+      iarg++, iobj++;
     }
-    
-    // some/all arguments aren't OBJect
-    else {
-      // sanity check
-      assert(sel->arginfo[0].offset == 0);
-      
-      memcpy(args, _args, size);
-    
-      for (U32 idx = 0; idx < narg; idx++)
-        if (!sel->arginfo[idx].size) { // convention for objects
-          OBJ *obj = (OBJ*) (args + sel->arginfo[idx].offset);
-          if (*obj) *obj = gretain(*obj);
+  }
+  else {                  // some aren't OBJects
+    assert(sel->rcvinfo); // sanity check
+    assert(sel->arginfo); // sanity check
+
+    while ( !(ircv > nrcv && iarg > narg) ) {
+      // receiver
+      if (ircv < nrcv && ircv+iarg == sel->rcvinfo[ircv].index) {
+        pos[ircv] = iobj;
+        ircv++, iobj++;
+        continue;
+      }
+
+      // argument (OBJect)
+      if (!sel->arginfo[iarg].size) {
+        if (ioff < noff) {
+          off[ioff] = sel->arginfo[iarg].offset;
+          idx[ioff] = iobj;
+          ioff++;
         }
+        iobj++;
+      }
+      iarg++;
     }
   }
 
-  return args;
+  return ioff;
+}
+
+static inline U32
+optArgs(U16 off[], U8 idx[], I32 noff, U32 msk)
+{
+  I32 i = 0, j = noff-1;
+
+  while (i < j)
+    if (!isArg(msk, idx[i]))
+      i++; // expr
+    else { // swap
+      U16 toff = off[j]; off[j] = off[i]; off[i] = toff;
+      U8  tidx = idx[j]; idx[j] = idx[i]; idx[i] = tidx;
+      j--;
+    }
+    
+  return i;
+}
+
+static void*
+cloneArgs(SEL sel, char *_arg)
+{
+  assert(_arg); // sanity check
+
+  char *arg = 0;
+  U32   narg = COS_GEN_NARG(sel);
+  
+  arg = malloc(sel->argsize);
+  if (!arg) THROW(ExBadAlloc);
+
+  if (COS_GEN_OARG(sel)) {  // only OBJects
+    OBJ *dst = (OBJ*) arg;
+    OBJ *src = (OBJ*)_arg;
+
+    for (U32 i = 0; i < narg; i++)
+      if (getIdx(src[i]) >= 9)
+        dst[i] = gretain(src[i]);
+      else
+        dst[i] = src[i];    // placeholder index or null
+  }
+  else {                    // some/all aren't OBJects
+    memcpy(arg, _arg, sel->argsize);
+
+    for (U32 i = 0; i < narg; i++)
+      if (!sel->arginfo[i].size) {
+        OBJ *obj = (OBJ*)(arg + sel->arginfo[i].offset);
+        
+        if (getIdx(*obj) >= 9)
+          *obj = gretain(*obj);
+      }
+  }
+
+  return arg;
 }
 
 static void
-deleteArgs(SEL sel, char *args)
+deleteArgs(SEL sel, char *arg)
 {
-  // generic has monomorphic arguments
-  if (args) {
-    U32 size = sel->argsize;
-    U32 narg = COS_GEN_NARG(sel) - COS_GEN_RNK(sel);
-    
-    // sanity check
-    assert(narg);
+  assert(arg); // sanity check
 
-    // all arguments are OBJects
-    if (COS_GEN_OARG(sel)) {
-      OBJ *obj = (OBJ*)  args;
-      OBJ *end = (OBJ*) (args + size);
-      
-      // sanity check
-      assert(size >= narg*sizeof(OBJ));
-      
-      while (obj < end) {
-        if (*obj) grelease(*obj);
-        ++obj;
-      }
-    }
+  U32 narg = COS_GEN_NARG(sel);
 
-    // some/all arguments aren't OBJect
-    else {
-      // sanity check
-      assert(sel->arginfo[0].offset == 0);
-      
-      for (U32 idx = 0; idx < narg; idx++)
-        if (!sel->arginfo[idx].size) { // convention for objects
-          OBJ *obj = (OBJ*) (args + sel->arginfo[idx].offset);
-          if (*obj) grelease(*obj);
-        }
-    }
+  if (COS_GEN_OARG(sel)) {  // only OBJects
+    OBJ *obj = (OBJ*)arg;
     
-    free(args);
+    for (U32 i = 0; i < narg; i++)
+      if (getIdx(obj[i]) >= 9)
+        grelease(obj[i]);
   }
+  else {                    // some/all aren't OBJects
+    for (U32 i = 0; i < narg; i++)
+      if (!sel->arginfo[i].size) { // convention for objects
+        OBJ *obj = (OBJ*)(arg + sel->arginfo[i].offset);
+        
+        if (getIdx(*obj) >= 9)
+          grelease(*obj);
+      }
+  }
+  
+  free(arg);
 }
 
 // ----- initializer
@@ -215,14 +297,31 @@ deleteArgs(SEL sel, char *args)
 static struct Functor* COS_PP_CAT(MthExpr_init,N) \
 (struct COS_PP_CAT(MthExpr,N) *mth, STR file, int line) \
 { \
-  test_assert(COS_GEN_ORET(mth->MthExpr.sel), \
+  U32 *msk = &mth->MthExpr.Functor.msk; \
+  SEL  sel =  mth->MthExpr.sel; \
+\
+  test_assert(COS_GEN_ORET(sel), \
               "invalid method expression, returned value must be an object"); \
-  test_assert(!COS_GEN_VARG(mth->MthExpr.sel), \
+  test_assert(!COS_GEN_VARG(sel), \
               "invalid method expression, variadic generic not supported"); \
 \
-  mth->MthExpr.Functor.msk = Functor_getMask(mth->arg, N, file, line); \
+  mth->noff = getOffs(sel, mth->off, mth->idx, mth->pos); \
 \
-  if (getPar(mth->MthExpr.Functor.msk)) \
+  for (U32 i = 0; i < N; i++) \
+    Functor_setMask(msk, mth->pos[i], mth->rcv+i, file, line); \
+\
+  if (mth->noff) { \
+    if (COS_GEN_OARG(sel)) \
+      for (U32 i = 0; i < mth->noff; i++) \
+        Functor_setMask(msk, mth->idx[i], (OBJ*)mth->arg+i, file, line); \
+    else \
+      for (U32 i = 0; i < mth->noff; i++) \
+        Functor_setMask(msk, mth->idx[i], (OBJ*)(mth->arg+mth->off[i]), file, line); \
+\
+    mth->nexp = optArgs(mth->off, mth->idx, mth->noff, *msk); \
+  } \
+\
+  if (getPar(*msk)) \
     mth->MthExpr.Functor.Expression.Object.id = \
       cos_class_id(classref(COS_PP_CAT(MthPart,N))); \
 \
@@ -245,15 +344,22 @@ DEFFUNC(5)
 #define DEFMETHOD(N) \
 \
 defmethod(OBJ, ginitWith, COS_PP_CAT(MthExpr,N), COS_PP_CAT(MthExpr,N)) \
-  self->MthExpr.Functor.msk = self2->MthExpr.Functor.msk; \
-  self->MthExpr.sel = self2->MthExpr.sel; \
-  self->args = 0; \
+  U32 msk = self2->MthExpr.Functor.msk; \
+  SEL sel = self2->MthExpr.sel; \
 \
-  for (int i = 0; i < N; i++) \
-    self->arg[i] = isIdx(self2->MthExpr.Functor.msk, i) \
-                   ? self2->arg[i] : gretain(self2->arg[i]); \
+  self->MthExpr.Functor.msk = msk; \
+  self->MthExpr.sel = sel; \
+  self->arg = 0; \
 \
-  self->args = cloneArgs(self2->MthExpr.sel, self2->args); \
+  for (U32 i = 0; i < N; i++) \
+    self->rcv[i] = \
+      isIdx(msk, self2->pos[i]) ? self2->rcv[i] : gretain(self2->rcv[i]); \
+\
+  if (self2->arg) \
+    self->arg = cloneArgs(sel, self2->arg); \
+\
+  memcpy(self->off, self2->off, \
+         sizeof *self - offsetof(struct COS_PP_CAT(MthExpr,N), off)); \
 \
   retmethod(_1); \
 endmethod
@@ -270,11 +376,15 @@ DEFMETHOD(5)
 #define DEFMETHOD(N) \
 \
 defmethod(OBJ, gdeinit, COS_PP_CAT(MthExpr,N)) \
-  for (int i = 0; i < N; i++) \
-    if (!isIdx(self->MthExpr.Functor.msk, i)) \
-      grelease(self->arg[i]); \
+  U32 msk = self->MthExpr.Functor.msk; \
+  SEL sel = self->MthExpr.sel; \
 \
-  deleteArgs(self->MthExpr.sel, self->args); \
+  for (int i = 0; i < N; i++) \
+    if (!isIdx(msk, self->pos[i])) \
+      grelease(self->rcv[i]); \
+\
+  if (self->arg) \
+    deleteArgs(sel, self->arg); \
 \
   retmethod(_1); \
 endmethod
@@ -291,112 +401,85 @@ defmethod(STR, gstr, MthExpr)
   retmethod(self->sel->str);
 endmethod
 
-// ---- eval (stack-like environment)
+// ---- eval (stack-like environment with full evaluation)
 
 defmethod(OBJ, gevalEnv, MthExpr1, Array)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
   OBJ *var = self2->object;
   U32 size = self2->size;
 
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
 
   U32 aid0 = cos_object_id(arg0);
   IMP1 mth = cos_method_fastLookup1(sel, aid0);
 
-  mth(sel, arg0, self->args, _ret);
-endmethod
-
-defmethod(OBJ, gevalEnv, MthPart1, Array)
-  U32  msk = self->MthExpr1.MthExpr.Functor.msk;
-  SEL  sel = self->MthExpr1.MthExpr.sel;
-  OBJ *arg = self->MthExpr1.arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
-
-  // partial evaluation
-  retmethod( gautoDelete(aMthExpr(sel, arg, arg0)) );
+  mth(sel, arg0, self->arg, _ret);
 endmethod
 
 defmethod(OBJ, gevalEnv, MthExpr2, Array)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
   OBJ *var = self2->object;
   U32 size = self2->size;
 
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg, var, size, _2);
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
+  OBJ arg1 = getArg(idx[1], msk, arg[1], var, size, _2);
 
   U32 aid0 = cos_object_id(arg0);
   U32 aid1 = cos_object_id(arg1);
   IMP2 mth = cos_method_fastLookup2(sel, aid0, aid1);
 
-  mth(sel, arg0, arg1, self->args, _ret);
-endmethod
-
-defmethod(OBJ, gevalEnv, MthPart2, Array)
-  U32  msk = self->MthExpr2.MthExpr.Functor.msk;
-  SEL  sel = self->MthExpr2.MthExpr.sel;
-  OBJ *arg = self->MthExpr2.arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg, var, size, _2);
-
-  // partial evaluation
-  retmethod( gautoDelete(aMthExpr(sel, arg, arg0, arg1)) );
+  mth(sel, arg0, arg1, self->arg, _ret);
 endmethod
 
 defmethod(OBJ, gevalEnv, MthExpr3, Array)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
   OBJ *var = self2->object;
   U32 size = self2->size;
 
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg, var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg, var, size, _2);
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
+  OBJ arg1 = getArg(idx[1], msk, arg[1], var, size, _2);
+  OBJ arg2 = getArg(idx[2], msk, arg[2], var, size, _2);
 
   U32 aid0 = cos_object_id(arg0);
   U32 aid1 = cos_object_id(arg1);
   U32 aid2 = cos_object_id(arg2);
   IMP3 mth = cos_method_fastLookup3(sel, aid0, aid1, aid2);
+  
+/*
+  if (self->arg) {
+    BUF(sel->argsize) arg;
+    memcpy(arg, self->arg, sel->argsize);
 
-  mth(sel, arg0, arg1, arg2, self->args, _ret);
-endmethod
+    for (U32 i = self->nexp; i-- ;)
+      getArgOff(self->idx[i], msk, i, arg, self->off[i], var, size, _2);
 
-defmethod(OBJ, gevalEnv, MthPart3, Array)
-  U32  msk = self->MthExpr3.MthExpr.Functor.msk;
-  SEL  sel = self->MthExpr3.MthExpr.sel;
-  OBJ *arg = self->MthExpr3.arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg, var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg, var, size, _2);
-
-  // partial evaluation
-  retmethod( gautoDelete(aMthExpr(sel, arg, arg0, arg1, arg2)) );
+    mth(sel, arg0, arg1, arg2, arg, _ret);
+  } else
+*/
+    mth(sel, arg0, arg1, arg2, self->arg, _ret);
 endmethod
 
 defmethod(OBJ, gevalEnv, MthExpr4, Array)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
   OBJ *var = self2->object;
   U32 size = self2->size;
 
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg, var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg, var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg, var, size, _2);
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
+  OBJ arg1 = getArg(idx[1], msk, arg[1], var, size, _2);
+  OBJ arg2 = getArg(idx[2], msk, arg[2], var, size, _2);
+  OBJ arg3 = getArg(idx[3], msk, arg[3], var, size, _2);
 
   U32 aid0 = cos_object_id(arg0);
   U32 aid1 = cos_object_id(arg1);
@@ -404,37 +487,22 @@ defmethod(OBJ, gevalEnv, MthExpr4, Array)
   U32 aid3 = cos_object_id(arg3);
   IMP4 mth = cos_method_fastLookup4(sel, aid0, aid1, aid2, aid3);
 
-  mth(sel, arg0, arg1, arg2, arg3, self->args, _ret);
-endmethod
-
-defmethod(OBJ, gevalEnv, MthPart4, Array)
-  U32  msk = self->MthExpr4.MthExpr.Functor.msk;
-  SEL  sel = self->MthExpr4.MthExpr.sel;
-  OBJ *arg = self->MthExpr4.arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg, var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg, var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg, var, size, _2);
-
-  // partial evaluation
-  retmethod( gautoDelete(aMthExpr(sel, arg, arg0, arg1, arg2, arg3)) );
+  mth(sel, arg0, arg1, arg2, arg3, self->arg, _ret);
 endmethod
 
 defmethod(OBJ, gevalEnv, MthExpr5, Array)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
   OBJ *var = self2->object;
   U32 size = self2->size;
 
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg, var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg, var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg, var, size, _2);
-  OBJ arg4 = getArg(4, msk, arg, var, size, _2);
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
+  OBJ arg1 = getArg(idx[1], msk, arg[1], var, size, _2);
+  OBJ arg2 = getArg(idx[2], msk, arg[2], var, size, _2);
+  OBJ arg3 = getArg(idx[3], msk, arg[3], var, size, _2);
+  OBJ arg4 = getArg(idx[4], msk, arg[4], var, size, _2);
 
   U32 aid0 = cos_object_id(arg0);
   U32 aid1 = cos_object_id(arg1);
@@ -443,121 +511,146 @@ defmethod(OBJ, gevalEnv, MthExpr5, Array)
   U32 aid4 = cos_object_id(arg4);
   IMP5 mth = cos_method_fastLookup5(sel, aid0, aid1, aid2, aid3, aid4);
 
-  mth(sel, arg0, arg1, arg2, arg3, arg4, self->args, _ret);
+  mth(sel, arg0, arg1, arg2, arg3, arg4, self->arg, _ret);
+endmethod
+
+// ---- eval (stack-like environment with partial evaluation)
+
+defmethod(OBJ, gevalEnv, MthPart1, Array)
+  U32  msk = self->MthExpr1.MthExpr.Functor.msk;
+  SEL  sel = self->MthExpr1.MthExpr.sel;
+  OBJ *arg = self->MthExpr1.rcv;
+  U8  *idx = self->MthExpr1.pos;
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
+
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr1.arg, arg0)) );
+endmethod
+
+defmethod(OBJ, gevalEnv, MthPart2, Array)
+  U32  msk = self->MthExpr2.MthExpr.Functor.msk;
+  SEL  sel = self->MthExpr2.MthExpr.sel;
+  OBJ *arg = self->MthExpr2.rcv;
+  U8  *idx = self->MthExpr2.pos;
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
+  OBJ arg1 = getArg(idx[1], msk, arg[1], var, size, _2);
+
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr2.arg, arg0, arg1)) );
+endmethod
+
+defmethod(OBJ, gevalEnv, MthPart3, Array)
+  U32  msk = self->MthExpr3.MthExpr.Functor.msk;
+  SEL  sel = self->MthExpr3.MthExpr.sel;
+  OBJ *arg = self->MthExpr3.rcv;
+  U8  *idx = self->MthExpr3.pos;
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
+  OBJ arg1 = getArg(idx[1], msk, arg[1], var, size, _2);
+  OBJ arg2 = getArg(idx[2], msk, arg[2], var, size, _2);
+
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr3.arg, arg0, arg1, arg2)) );
+endmethod
+
+defmethod(OBJ, gevalEnv, MthPart4, Array)
+  U32  msk = self->MthExpr4.MthExpr.Functor.msk;
+  SEL  sel = self->MthExpr4.MthExpr.sel;
+  OBJ *arg = self->MthExpr4.rcv;
+  U8  *idx = self->MthExpr4.pos;
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
+  OBJ arg1 = getArg(idx[1], msk, arg[1], var, size, _2);
+  OBJ arg2 = getArg(idx[2], msk, arg[2], var, size, _2);
+  OBJ arg3 = getArg(idx[3], msk, arg[3], var, size, _2);
+
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr4.arg, arg0, arg1, arg2, arg3)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, MthPart5, Array)
   U32  msk = self->MthExpr5.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr5.MthExpr.sel;
-  OBJ *arg = self->MthExpr5.arg;
+  OBJ *arg = self->MthExpr5.rcv;
+  U8  *idx = self->MthExpr5.pos;
   OBJ *var = self2->object;
   U32 size = self2->size;
 
-  OBJ arg0 = getArg(0, msk, arg, var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg, var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg, var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg, var, size, _2);
-  OBJ arg4 = getArg(4, msk, arg, var, size, _2);
+  OBJ arg0 = getArg(idx[0], msk, arg[0], var, size, _2);
+  OBJ arg1 = getArg(idx[1], msk, arg[1], var, size, _2);
+  OBJ arg2 = getArg(idx[2], msk, arg[2], var, size, _2);
+  OBJ arg3 = getArg(idx[3], msk, arg[3], var, size, _2);
+  OBJ arg4 = getArg(idx[4], msk, arg[4], var, size, _2);
 
-  // partial evaluation
-  retmethod( gautoDelete(aMthExpr(sel, arg, arg0, arg1, arg2, arg3, arg4)) );
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr5.arg, arg0,arg1,arg2,arg3,arg4)) );
 endmethod
 
-// ---- eval (generic environement)
+// ---- eval (generic environement with full evaluation)
 
 defmethod(OBJ, gevalEnv, MthExpr1, Container)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
 
-  OBJ arg0 = getArgVar(0, msk, arg, _2);
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
 
   U32 aid0 = cos_object_id(arg0);
   IMP1 mth = cos_method_fastLookup1(sel, aid0);
 
-  mth(sel, arg0, self->args, _ret);
-endmethod
-
-defmethod(OBJ, gevalEnv, MthPart1, Container)
-  U32  msk = self->MthExpr1.MthExpr.Functor.msk;
-  SEL  sel = self->MthExpr1.MthExpr.sel;
-  OBJ *arg = self->MthExpr1.arg;
-
-  OBJ arg0 = getArgVar(0, msk, arg, _2);
-
-  // partial evaluation
-  retmethod( gautoDelete(aMthExpr(sel, arg, arg0)) );
+  mth(sel, arg0, self->arg, _ret);
 endmethod
 
 defmethod(OBJ, gevalEnv, MthExpr2, Container)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
 
-  OBJ arg0 = getArgVar(0, msk, arg, _2);
-  OBJ arg1 = getArgVar(1, msk, arg, _2);
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
+  OBJ arg1 = getArgVar(idx[1], msk, arg[1], _2);
 
   U32 aid0 = cos_object_id(arg0);
   U32 aid1 = cos_object_id(arg1);
   IMP2 mth = cos_method_fastLookup2(sel, aid0, aid1);
 
-  mth(sel, arg0, arg1, self->args, _ret);
-endmethod
-
-defmethod(OBJ, gevalEnv, MthPart2, Container)
-  U32  msk = self->MthExpr2.MthExpr.Functor.msk;
-  SEL  sel = self->MthExpr2.MthExpr.sel;
-  OBJ *arg = self->MthExpr2.arg;
-
-  OBJ arg0 = getArgVar(0, msk, arg, _2);
-  OBJ arg1 = getArgVar(1, msk, arg, _2);
-
-  // partial evaluation
-  retmethod( gautoDelete(aMthExpr(sel, arg, arg0, arg1)) );
+  mth(sel, arg0, arg1, self->arg, _ret);
 endmethod
 
 defmethod(OBJ, gevalEnv, MthExpr3, Container)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
 
-  OBJ arg0 = getArgVar(0, msk, arg, _2);
-  OBJ arg1 = getArgVar(1, msk, arg, _2);
-  OBJ arg2 = getArgVar(2, msk, arg, _2);
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
+  OBJ arg1 = getArgVar(idx[1], msk, arg[1], _2);
+  OBJ arg2 = getArgVar(idx[2], msk, arg[2], _2);
 
   U32 aid0 = cos_object_id(arg0);
   U32 aid1 = cos_object_id(arg1);
   U32 aid2 = cos_object_id(arg2);
   IMP3 mth = cos_method_fastLookup3(sel, aid0, aid1, aid2);
 
-  mth(sel, arg0, arg1, arg2, self->args, _ret);
-endmethod
-
-defmethod(OBJ, gevalEnv, MthPart3, Container)
-  U32  msk = self->MthExpr3.MthExpr.Functor.msk;
-  SEL  sel = self->MthExpr3.MthExpr.sel;
-  OBJ *arg = self->MthExpr3.arg;
-
-  OBJ arg0 = getArgVar(0, msk, arg, _2);
-  OBJ arg1 = getArgVar(1, msk, arg, _2);
-  OBJ arg2 = getArgVar(2, msk, arg, _2);
-
-  // partial evaluation
-  retmethod( gautoDelete(aMthExpr(sel, arg, arg0, arg1, arg2)) );
+  mth(sel, arg0, arg1, arg2, self->arg, _ret);
 endmethod
 
 defmethod(OBJ, gevalEnv, MthExpr4, Container)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
 
-  OBJ arg0 = getArgVar(0, msk, arg, _2);
-  OBJ arg1 = getArgVar(1, msk, arg, _2);
-  OBJ arg2 = getArgVar(2, msk, arg, _2);
-  OBJ arg3 = getArgVar(3, msk, arg, _2);
-
-  if (getPar(msk)) // partial evaluation
-    retmethod( gautoDelete(aMthExpr(sel, arg, arg0, arg1, arg2, arg3)) );
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
+  OBJ arg1 = getArgVar(idx[1], msk, arg[1], _2);
+  OBJ arg2 = getArgVar(idx[2], msk, arg[2], _2);
+  OBJ arg3 = getArgVar(idx[3], msk, arg[3], _2);
 
   U32 aid0 = cos_object_id(arg0);
   U32 aid1 = cos_object_id(arg1);
@@ -565,22 +658,20 @@ defmethod(OBJ, gevalEnv, MthExpr4, Container)
   U32 aid3 = cos_object_id(arg3);
   IMP4 mth = cos_method_fastLookup4(sel, aid0, aid1, aid2, aid3);
 
-  mth(sel, arg0, arg1, arg2, arg3, self->args, _ret);
+  mth(sel, arg0, arg1, arg2, arg3, self->arg, _ret);
 endmethod
 
 defmethod(OBJ, gevalEnv, MthExpr5, Container)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
-  OBJ *arg = self->arg;
+  OBJ *arg = self->rcv;
+  U8  *idx = self->pos;
 
-  OBJ arg0 = getArgVar(0, msk, arg, _2);
-  OBJ arg1 = getArgVar(1, msk, arg, _2);
-  OBJ arg2 = getArgVar(2, msk, arg, _2);
-  OBJ arg3 = getArgVar(3, msk, arg, _2);
-  OBJ arg4 = getArgVar(4, msk, arg, _2);
-
-  if (getPar(msk)) // partial evaluation
-    retmethod( gautoDelete(aMthExpr(sel, arg, arg0, arg1, arg2, arg3, arg4)) );
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
+  OBJ arg1 = getArgVar(idx[1], msk, arg[1], _2);
+  OBJ arg2 = getArgVar(idx[2], msk, arg[2], _2);
+  OBJ arg3 = getArgVar(idx[3], msk, arg[3], _2);
+  OBJ arg4 = getArgVar(idx[4], msk, arg[4], _2);
 
   U32 aid0 = cos_object_id(arg0);
   U32 aid1 = cos_object_id(arg1);
@@ -589,7 +680,74 @@ defmethod(OBJ, gevalEnv, MthExpr5, Container)
   U32 aid4 = cos_object_id(arg4);
   IMP5 mth = cos_method_fastLookup5(sel, aid0, aid1, aid2, aid3, aid4);
 
-  mth(sel, arg0, arg1, arg2, arg3, arg4, self->args, _ret);
+  mth(sel, arg0, arg1, arg2, arg3, arg4, self->arg, _ret);
+endmethod
+
+// ---- eval (generic environement with partial evaluation)
+
+defmethod(OBJ, gevalEnv, MthPart1, Container)
+  U32  msk = self->MthExpr1.MthExpr.Functor.msk;
+  SEL  sel = self->MthExpr1.MthExpr.sel;
+  OBJ *arg = self->MthExpr1.rcv;
+  U8  *idx = self->MthExpr1.pos;
+
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
+
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr1.arg, arg0)) );
+endmethod
+
+defmethod(OBJ, gevalEnv, MthPart2, Container)
+  U32  msk = self->MthExpr2.MthExpr.Functor.msk;
+  SEL  sel = self->MthExpr2.MthExpr.sel;
+  OBJ *arg = self->MthExpr2.rcv;
+  U8  *idx = self->MthExpr2.pos;
+
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
+  OBJ arg1 = getArgVar(idx[1], msk, arg[1], _2);
+
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr2.arg, arg0, arg1)) );
+endmethod
+
+defmethod(OBJ, gevalEnv, MthPart3, Container)
+  U32  msk = self->MthExpr3.MthExpr.Functor.msk;
+  SEL  sel = self->MthExpr3.MthExpr.sel;
+  OBJ *arg = self->MthExpr3.rcv;
+  U8  *idx = self->MthExpr3.pos;
+
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
+  OBJ arg1 = getArgVar(idx[1], msk, arg[1], _2);
+  OBJ arg2 = getArgVar(idx[2], msk, arg[2], _2);
+
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr3.arg, arg0, arg1, arg2)) );
+endmethod
+
+defmethod(OBJ, gevalEnv, MthPart4, Container)
+  U32  msk = self->MthExpr4.MthExpr.Functor.msk;
+  SEL  sel = self->MthExpr4.MthExpr.sel;
+  OBJ *arg = self->MthExpr4.rcv;
+  U8  *idx = self->MthExpr4.pos;
+
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
+  OBJ arg1 = getArgVar(idx[1], msk, arg[1], _2);
+  OBJ arg2 = getArgVar(idx[2], msk, arg[2], _2);
+  OBJ arg3 = getArgVar(idx[3], msk, arg[3], _2);
+
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr4.arg, arg0, arg1, arg2, arg3)) );
+endmethod
+
+defmethod(OBJ, gevalEnv, MthPart5, Container)
+  U32  msk = self->MthExpr5.MthExpr.Functor.msk;
+  SEL  sel = self->MthExpr5.MthExpr.sel;
+  OBJ *arg = self->MthExpr5.rcv;
+  U8  *idx = self->MthExpr5.pos;
+
+  OBJ arg0 = getArgVar(idx[0], msk, arg[0], _2);
+  OBJ arg1 = getArgVar(idx[1], msk, arg[1], _2);
+  OBJ arg2 = getArgVar(idx[2], msk, arg[2], _2);
+  OBJ arg3 = getArgVar(idx[3], msk, arg[3], _2);
+  OBJ arg4 = getArgVar(idx[4], msk, arg[4], _2);
+
+  retmethod( gautoDelete(aMthExpr(sel, self->MthExpr5.arg, arg0,arg1,arg2,arg3,arg4)) );
 endmethod
 
 // ---- unrecognizedMessage (ctors)

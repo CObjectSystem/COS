@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_clo.c,v 1.4 2010/01/07 14:53:52 ldeniau Exp $
+ | $Id: Functor_clo.c,v 1.5 2010/01/09 16:18:39 ldeniau Exp $
  |
 */
 
@@ -38,8 +38,6 @@
 #include <cos/gen/accessor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
-
-#include "Functor_utl.h"
 
 // ----- closure: optimized functors built by FunExpr_init
 

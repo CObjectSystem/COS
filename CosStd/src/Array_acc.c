@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.16 2009/12/31 11:15:28 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.17 2010/01/09 16:18:39 ldeniau Exp $
  |
 */
 
@@ -61,7 +61,7 @@ endmethod
 
 // ----- getters (index, slice, range, intvector)
 
-defmethod(OBJ, ggetAtIdx, Array, (I32)idx)
+defmethod(OBJ, ggetAtInt, Array, (I32)idx)
   U32 i = Range_index(idx, self->size);
 
   test_assert( i < self->size, "index out of range" );
@@ -95,7 +95,7 @@ endmethod
 
 // ----- object setters (index, slice, range, intvector)
 
-defmethod(OBJ, gputAtIdx, Array, (I32)idx, Object)
+defmethod(OBJ, gputAtInt, Array, (I32)idx, Object)
   U32 i = Range_index(idx, self->size);
 
   test_assert( i < self->size, "index out of range" );

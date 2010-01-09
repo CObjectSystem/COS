@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.7 2010/01/07 14:53:52 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.8 2010/01/09 16:18:39 ldeniau Exp $
  |
 */
 
@@ -46,8 +46,6 @@
 
 #define PAR_UNIT ((U32) 1 << 27)
 #define PAR_MASK ((U32)31 << 27)
-
-enum { FUN_ISEXPR, FUN_ISCLOSED, FUN_ISFUNC };
 
 static inline U32
 getPar(U32 msk)
@@ -103,60 +101,42 @@ isVar(U32 msk, U32 idx)
   return msk & (4 << 3*idx);
 }
 
-// ----- compute type of functor: function, closure, expression
-
-static COS_ALWAYS_INLINE int
-getFunType(U32 msk, OBJ arg[], U32 n)
-{
-  U32 idx, narg = 0;
-  
-  for (idx = 0; idx < n; idx++) {
-    if (isArg(msk, idx)) ++narg;
-
-    else
-    if (!isIdx(msk, idx) || idx - narg != getIdx(arg[idx]))
-      break;
-  }
-       
-  return idx == n ? (!narg ? FUN_ISFUNC : FUN_ISCLOSED) : FUN_ISEXPR;
-}
-
 // ----- "array-like" environment
 
 static COS_ALWAYS_INLINE OBJ
-getArg(U32 idx, U32 msk, OBJ *arg, OBJ *var, U32 size, OBJ env)
+getArg(U32 idx, U32 msk, OBJ arg, OBJ var[], U32 size, OBJ env)
 {
-  if (isArg(msk, idx))            // argument (free variable)
-    return arg[idx];
+  if (isArg(msk, idx))        // argument (free variable)
+    return arg;
 
-  if (isIdx(msk, idx)) {          // environment index (placeholder)
-    U32 i = getIdx(arg[idx]);
+  if (isIdx(msk, idx)) {      // environment index (placeholder)
+    U32 i = getIdx(arg);
     test_assert( i < size, "invalid placeholder index" );
     return  var[ i ];
   }
 
-  return gevalEnv(arg[idx], env); // other (expression)
+  return gevalEnv(arg, env);  // other (expression)
 }
 
 // ----- "dictionnary-like" environment
 
 static COS_ALWAYS_INLINE OBJ
-getArgVar(U32 idx, U32 msk, OBJ *arg, OBJ env)
+getArgVar(U32 idx, U32 msk, OBJ arg, OBJ env)
 {
-  if (isArg(msk, idx))            // simple argument (free variable)
-    return arg[idx];
+  if (isArg(msk, idx))        // simple argument (free variable)
+    return arg;
 
-  if (isVar(msk, idx))            // environment key (placeholder)
-    return ggetAt(env, getVar(arg[idx]));
+  if (isVar(msk, idx))        // environment key (placeholder)
+    return ggetAt(env, getVar(arg));
 
-  if (isIdx(msk, idx))            // environment index (placeholder)
-    return ggetAtIdx(env, getIdx(arg[idx]));
+  if (isIdx(msk, idx))        // environment index (placeholder)
+    return ggetAtInt(env, getIdx(arg));
 
-  return gevalEnv(arg[idx], env); // other (expression)
+  return gevalEnv(arg, env);  // other (expression)
 }
 
 // ----- build context mask
 
-U32 Functor_getMask(OBJ arg[], U32 n, STR file, int line);
+void Functor_setMask(U32 *msk, U32 i, OBJ *arg, STR file, int line);
 
 #endif // COS_FUNCTOR_UTL_H

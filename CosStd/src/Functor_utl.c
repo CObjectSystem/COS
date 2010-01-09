@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.7 2010/01/07 14:53:52 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.8 2010/01/09 16:18:39 ldeniau Exp $
  |
 */
 
@@ -105,58 +105,55 @@ setFunPar(OBJ arg, OBJ var, U32 cnt)
 
 // -----
 
-U32
-Functor_getMask(OBJ arg[], U32 n, STR file, int line)
+void
+Functor_setMask(U32 *msk, U32 i, OBJ *arg, STR file, int line)
 {
-  U32 idx, msk = 0;
+  test_assert( i < 10, "HOF/HOM with 9+ OBJects arguments", file, line );
 
-  for (idx = 0; idx < n; idx++) {
-
-    test_assert( arg[idx], "invalid (null) argument", file, line );
-
-          // placeholder
-    if (cos_object_isKindOf(arg[idx], classref(PlaceHolder))) {
-              // environment index 
-        if (cos_object_isa(arg[idx], classref(FunArg))) {
-          setIdx(&msk, idx);
-          arg[idx] = (OBJ)(size_t)getFunIdx(arg[idx]);
-        }
-    
-        else  // environment key
-        if (cos_object_isa(arg[idx], classref(FunVar))) {
-          setVar(&msk, idx);
-          arg[idx] = getFunVar(arg[idx]);    
-        }
-
-        else  // lazy expression
-        if (cos_object_isa(arg[idx], classref(FunLzy))) {
-          OBJ var = Nil;
-          U32 cnt = getFunPar(arg[idx], &var);
-      
-          if (cos_object_isKindOf(var, classref(PlaceHolder))) {
-            setFunPar(arg[idx], var, cnt);
-            U32 par = cnt*PAR_UNIT;
-            if (par > msk) setPar(&msk, par);
-          } else { // lazyness is idempotent on non-placeholder
-            setArg(&msk, idx);
-            arg[idx] = var;
-          }
-        }
-        
-        else
-          test_assert( 0, "invalid placeholder", file, line );
-    }
-    
-    else  // functor
-    if (cos_object_isKindOf(arg[idx], classref(Functor))) {
-      U32 par = getPar(getFunMsk(arg[idx]));
-      if (par > msk + PAR_UNIT) setPar(&msk, par - PAR_UNIT);
-    }
-          
-    else  // argument (free variable)
-      setArg(&msk, idx);
+  // argument (null)
+  if (!*arg) {
+    setArg(msk, i);
+    return;  
   }
 
-  return msk;
+  // environment index (placeholder)
+  if (cos_object_isa(*arg, classref(FunArg))) {
+    setIdx(msk, i);
+    *arg = (OBJ)(size_t)getFunIdx(*arg);
+    return;
+  }
+
+  // environment key (placeholder)
+  if (cos_object_isa(*arg, classref(FunVar))) {
+    setVar(msk, i);
+    *arg = getFunVar(*arg);
+    return;
+  }
+
+  // lazy expression (placeholder)
+  if (cos_object_isa(*arg, classref(FunLzy))) {
+    OBJ var = Nil;
+    U32 cnt = getFunPar(*arg, &var);
+
+    if (cos_object_isKindOf(var, classref(PlaceHolder))) {
+      setFunPar(*arg, var, cnt);
+      U32 par = cnt*PAR_UNIT;
+      if (par > *msk) setPar(msk, par);
+    } else { // lazyness is idempotent for non-placeholder
+      setArg(msk, i);
+      *arg = var;
+    }
+    return;
+  }
+  
+  // functor
+  if (cos_object_isKindOf(*arg, classref(Functor))) {
+    U32 par = getPar(getFunMsk(*arg));
+    if (par > *msk + PAR_UNIT) setPar(msk, par - PAR_UNIT);
+    return;
+  }
+       
+  // argument (free variable)
+  setArg(msk, i);
 }
 
