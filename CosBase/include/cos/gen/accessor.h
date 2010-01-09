@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: accessor.h,v 1.9 2010/01/04 09:40:10 ldeniau Exp $
+ | $Id: accessor.h,v 1.10 2010/01/09 10:00:11 ldeniau Exp $
  |
 */
 
@@ -45,7 +45,11 @@ defgeneric(OBJ, (G_getAt) ggetAt, _1, at);
 defgeneric(OBJ, (G_putAt) gputAt, _1, at, what);
 
 // common case for indexes
-defgeneric(OBJ, (G_getAtIdx) ggetAtIdx, _1, (I32)idx);
-defgeneric(OBJ, (G_putAtIdx) gputAtIdx, _1, (I32)idx, what);
+defgeneric(OBJ, (G_getAtInt) ggetAtInt, _1, (I32)idx);
+defgeneric(OBJ, (G_putAtInt) gputAtInt, _1, (I32)idx, what);
+
+// common case for strings
+defgeneric(OBJ, (G_getAtStr) ggetAtStr, _1, (STR)key);
+defgeneric(OBJ, (G_putAtStr) gputAtStr, _1, (STR)key, what);
 
 #endif // COS_GEN_ACCESSOR_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GAccessor.h,v 1.1 2010/01/04 09:41:37 ldeniau Exp $
+ | $Id: GAccessor.h,v 1.2 2010/01/09 10:03:47 ldeniau Exp $
  |
 */
 
@@ -45,7 +45,9 @@
 defclass(GAccessor , Generic  ) endclass
 defclass(G_getAt   , GAccessor) endclass
 defclass(G_putAt   , GAccessor) endclass
-defclass(G_getAtIdx, GAccessor) endclass
-defclass(G_putAtIdx, GAccessor) endclass
+defclass(G_getAtInt, GAccessor) endclass
+defclass(G_putAtInt, GAccessor) endclass
+defclass(G_getAtStr, GAccessor) endclass
+defclass(G_putAtStr, GAccessor) endclass
 
 #endif // COS_GEN_OP_GACCESSOR_H
