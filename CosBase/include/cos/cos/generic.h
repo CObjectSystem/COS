@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.29 2010/01/08 22:36:54 ldeniau Exp $
+ | $Id: generic.h,v 1.30 2010/01/09 00:03:54 ldeniau Exp $
  |
 */
 
@@ -407,12 +407,12 @@ void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
 \
 COS_PP_IF(A)( \
 static struct cos_generic_rcvinfo COS_RCV_INFO(NAME)[] = { \
-  COS_GEN_RCV(PS) \
+  COS_GEN_RCV(COS_GEN_RCVI(PS)) \
 };,/* no args */) \
 \
 COS_PP_IF(COS_PP_AND(A,COS_PP_NOT(O)))( \
 static struct cos_generic_arginfo COS_ARG_INFO(NAME)[] = { \
-  COS_GEN_ARG(AS,(COS_PP_DUPSEQ(COS_PP_LEN(AS),COS_ARG_TYPE(NAME)))) \
+  COS_GEN_ARG(AS,(COS_PP_DUPSEQ_N(COS_ARG_TYPE(NAME))),COS_GEN_ARGI(PS)) \
 };,/* no args or all OBJ */) \
 \
 struct Generic COS_GEN_NAME(NAME) = { \
@@ -465,24 +465,35 @@ struct Generic COS_GEN_NAME(NAME) = { \
                         COS_TOK_ISOBJ (COS_PRM_TYPE(a)))) \
       ( ""/* void or OBJ */, COS_PP_STR(COS_PRM_TYPE(a)) ), "@"/* receiver */)
 
-// receivers infos
-#define COS_GEN_RCV(PS) \
-  COS_PP_SEQ(COS_PP_MAP(COS_PP_FILTER( \
-    COS_PP_MAP2(PS,(COS_PP_NUMSEQ_N()),COS_GEN_RCVI), COS_PP_ISNZERO), \
-       COS_GEN_RCVI_))
+// receivers indexes
+#define COS_GEN_RCVI(PS) \
+  COS_PP_FILTER(COS_PP_MAP2( \
+    PS,(COS_PP_NUMSEQ_N()),COS_GEN_RCVI_0), COS_PP_ISNZERO)
 
-#define COS_GEN_RCVI(p,i) \
+#define COS_GEN_RCVI_0(p,i) \
   COS_PP_IF(COS_PP_ISTUPLE(p))(0,i)
 
-#define COS_GEN_RCVI_(i) { i-1 }
+// arguments indexes
+#define COS_GEN_ARGI(PS) \
+  COS_PP_FILTER(COS_PP_MAP2( \
+    PS,(COS_PP_NUMSEQ_N()), COS_GEN_ARGI_0), COS_PP_ISNZERO)
+
+#define COS_GEN_ARGI_0(p,i) \
+  COS_PP_IF(COS_PP_ISTUPLE(p))(i,0)
+
+// receivers infos
+#define COS_GEN_RCV(IS) \
+  COS_PP_SEQ(COS_PP_MAP(IS,COS_GEN_RCVINFO))
+  
+#define COS_GEN_RCVINFO(i) { i-1 }
 
 // arguments infos
-#define COS_GEN_ARG(AS,TS) \
-  COS_PP_SEQ(COS_PP_MAP2(AS,TS,COS_GEN_ARGI))
+#define COS_GEN_ARG(AS,TS,IS) \
+  COS_PP_SEQ(COS_PP_MAP3(AS,TS,IS,COS_GEN_ARGINFO))
 
-#define COS_GEN_ARGI(a,t) \
+#define COS_GEN_ARGINFO(a,t,i) \
   { COS_PP_IF(COS_TOK_ISOBJ(COS_PRM_TYPE(a)))(0,sizeof(COS_PRM_TYPE(a))), \
-    offsetof(t, COS_PRM_NAME(a)) }
+    offsetof(t, COS_PRM_NAME(a)), i-1 }
 
 #define COS_GEN_ISOBJ(gen)  ((gen)->retsize == (U16) 0)
 #define COS_GEN_ISVOID(gen) ((gen)->retsize == (U16)-1)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.25 2010/01/08 18:01:25 ldeniau Exp $
+ | $Id: cosdef.h,v 1.26 2010/01/09 00:03:54 ldeniau Exp $
  |
 */
 
@@ -186,6 +186,7 @@ struct cos_generic_rcvinfo {
 struct cos_generic_arginfo {
   U16 size; // OBJects have "zero" size
   U16 offset;
+  U8  index;
 };
 
 // exception context
