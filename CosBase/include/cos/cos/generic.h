@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.31 2010/01/09 10:03:47 ldeniau Exp $
+ | $Id: generic.h,v 1.32 2010/01/09 17:29:55 ldeniau Exp $
  |
 */
 
@@ -155,10 +155,10 @@
    CS = class-parameters (selectors)
    AS = arg-parameters (non-selectors)
    IS = class-indexes
-   C  = number of class-parameters
-   A  = number of arguments > 0   (bool)
-   O  = all arguments are objects (bool)
-   R  = return-type is not void   (bool)
+   C  = number of class-parameters (1..5)
+   A  = number of arguments > 0    (bool)
+   O  = all arguments are objects  (bool)
+   R  = return-type is not void    (bool)
 */
 
 /* generic reference

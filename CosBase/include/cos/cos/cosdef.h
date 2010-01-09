@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.26 2010/01/09 00:03:54 ldeniau Exp $
+ | $Id: cosdef.h,v 1.27 2010/01/09 17:29:55 ldeniau Exp $
  |
 */
 
@@ -41,53 +41,53 @@
 #endif
 
 #if __STDC_VERSION__ >= 199901L
-typedef _Bool                BOOL;
+typedef _Bool                 BOOL;
 #else
-typedef unsigned char        BOOL;
+typedef unsigned char         BOOL;
 #endif
 
-typedef signed   char        I8;
-typedef unsigned char        U8;
+typedef signed   char         I8;
+typedef unsigned char         U8;
 
-typedef signed   short       I16;
-typedef unsigned short       U16;
+typedef signed   short        I16;
+typedef unsigned short        U16;
 
 #if UINT_MAX >= 4294967295UL
-typedef signed   int         I32;
-typedef unsigned int         U32;
+typedef signed   int          I32;
+typedef unsigned int          U32;
 #else
-typedef signed   long        I32;
-typedef unsigned long        U32;
+typedef signed   long         I32;
+typedef unsigned long         U32;
 #endif
 
 #if ULONG_MAX >= 18446744073709551615ULL
-typedef signed   long        I64;
-typedef unsigned long        U64;
+typedef signed   long         I64;
+typedef unsigned long         U64;
 #elif ULLONG_MAX >= 18446744073709551615ULL
-typedef signed   long long   I64;
-typedef unsigned long long   U64;
+typedef signed   long long    I64;
+typedef unsigned long long    U64;
 #elif defined(_LongLong)
-typedef  _LongLong           I64;
-typedef _ULongLong           U64;
+typedef  _LongLong            I64;
+typedef _ULongLong            U64;
 #else
-typedef struct { U32 _[2]; } I64;
-typedef struct { U32 _[2]; } U64;
+typedef struct { U32 _[2]; }  I64;
+typedef struct { U32 _[2]; }  U64;
 #endif
 
-typedef double               F64;
+typedef double                F64;
 
 #if __STDC_VERSION__ >= 199901L
-typedef _Complex double      C64;
+typedef _Complex double       C64;
 #elif defined(_ComplexDouble)
-typedef _ComplexDouble       C64;
+typedef _ComplexDouble        C64;
 #else
-typedef struct { F64 _[2]; } C64;
+typedef struct { F64 _[2]; }  C64;
 #endif
 
 typedef const char*           STR;  // string literal
 typedef struct OBJ*           OBJ;  // object ADT
 typedef const struct Generic* SEL;  // message selector
-typedef struct { OBJ _1,_2; } PAIR; // return by value
+typedef struct { OBJ _[2]; }  PAIR; // return by value
 
 // function signatures
 typedef void (*FCT )(void);
@@ -139,6 +139,20 @@ typedef void (*cos_exception_handler)(OBJ,STR,STR,int);
 #define I64_MAX (U64_MAX/2)
 #define U64_MAX ((U64)-1ULL)
 
+// universal alignment
+typedef union {
+  BOOL  u1,   *pu1;
+  U8    u8,   *pu8;
+  U16   u16,  *pu16;
+  U32   u32,  *pu32;
+  U64   u64,  *pu64;
+  F64   f64,  *pf64;
+  C64   c64,  *pc64;
+  STR   str,  *pstr;
+  void *ptr, **pptr;
+  OBJ   obj,  *pobj;
+  FCT   fct,  *pfct;
+} cos_alignment_t;
 
 /***********************************************************
  * Implementation
