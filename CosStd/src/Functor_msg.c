@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_msg.c,v 1.2 2010/01/10 13:13:31 ldeniau Exp $
+ | $Id: Functor_msg.c,v 1.3 2010/01/10 14:24:59 ldeniau Exp $
  |
 */
 
@@ -50,6 +50,7 @@
 defmethod(OBJ, ginitWith, COS_PP_CAT(Message,N), COS_PP_CAT(Message,N)) \
   self->MthExpr.Functor.msk = self2->MthExpr.Functor.msk; \
   self->MthExpr.sel = self2->MthExpr.sel; \
+  self->arg = 0; \
 \
   if (self2->arg) \
     self->arg = Functor_cloneArgs(self2->MthExpr.sel, self2->arg); \

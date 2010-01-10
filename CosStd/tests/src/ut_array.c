@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.11 2010/01/07 00:46:27 ldeniau Exp $
+ | $Id: ut_array.c,v 1.12 2010/01/10 14:25:00 ldeniau Exp $
  |
 */
 
@@ -150,6 +150,9 @@ ut_array_functor(void)
 
   OBJ buf[] = { aInt(0,1,2,3,4,5,6,7,8,9) };
   OBJ pool  = gnew(AutoRelease);
+
+  UTEST_START("Array functor")
+
   OBJ id    = aFun(cos_ident, __1);
 /* these definitions are equivalent and faster
   OBJ div   = aFun(gdiv      , __1, __2);
@@ -171,8 +174,6 @@ ut_array_functor(void)
 // */
   OBJ arr   = Nil;
   OBJ obj   = Nil;
-
-  UTEST_START("Array functor")
 
   // apply
   gapply(incr, arr = aArrayRef(buf,0));

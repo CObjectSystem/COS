@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.12 2010/01/10 13:23:52 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.13 2010/01/10 14:24:59 ldeniau Exp $
  |
 */
 
@@ -79,17 +79,17 @@ enum { FUN_ISEXPR, FUN_ISCLOSED, FUN_ISFUNC };
 static inline int
 getFunType(U32 msk, OBJ arg[], U32 n)
 {
-  U32 idx, narg = 0;
+  U32 i, narg = 0;
   
-  for (idx = 0; idx < n; idx++) {
-    if (isArg(msk, idx)) ++narg;
+  for (i = 0; i < n; i++) {
+    if (isArg(msk, i)) ++narg;
 
     else
-    if (!isIdx(msk, idx) || idx - narg != getIdx(arg[idx]))
+    if (!isIdx(msk, i) || i - narg != getIdx(arg[i]))
       break;
   }
        
-  return idx == n ? (!narg ? FUN_ISFUNC : FUN_ISCLOSED) : FUN_ISEXPR;
+  return i == n ? (!narg ? FUN_ISFUNC : FUN_ISCLOSED) : FUN_ISEXPR;
 }
 
 // ----- initializer
@@ -119,7 +119,7 @@ struct Functor* COS_PP_CAT(FunExpr_init,N) \
   ) \
   COS_PP_IF(COS_PP_GT(N,5))(, \
   case FUN_ISEXPR: \
-    if (getPar(fun->FunExpr.Functor.msk)) \
+    if (getPar(*msk)) \
       fun->FunExpr.Functor.Expression.Object.id = \
         cos_class_id(classref(COS_PP_CAT(PFunExpr,N))); break; \
   ) \

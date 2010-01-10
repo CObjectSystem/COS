@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.9 2010/01/10 13:13:31 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.10 2010/01/10 14:24:59 ldeniau Exp $
  |
 */
 
@@ -166,19 +166,21 @@ optArgs(U16 off[], U8 idx[], I32 noff, U32 msk)
 enum { MTH_ISEXPR, MTH_ISCLOSED, MTH_ISMESS };
 
 static inline int
-getMthType(U32 msk, OBJ arg[], U32 n) // TODO!!!!
+getMthType(U32 msk, OBJ arg[], U8 pos[], U32 n, U32 nexp)
 {
-  U32 idx, narg = 0;
+  if (nexp) return MTH_ISEXPR;
+
+  U32 i, narg = 0;
   
-  for (idx = 0; idx < n; idx++) {
-    if (isArg(msk, idx)) ++narg;
+  for (i = 0; i < n; i++) {
+    if (isArg(msk, pos[i])) ++narg;
 
     else
-    if (!isIdx(msk, idx) || idx - narg != getIdx(arg[idx]))
+    if (!isIdx(msk, pos[i]) || i - narg != getIdx(arg[i]))
       break;
   }
        
-  return idx == n ? (!narg ? MTH_ISMESS : MTH_ISCLOSED) : MTH_ISEXPR;
+  return i == n ? (!narg ? MTH_ISMESS : MTH_ISCLOSED) : MTH_ISEXPR;
 }
 
 // ----- initializer
@@ -213,9 +215,21 @@ static struct Functor* COS_PP_CAT(MthExpr_init,N) \
     mth->nexp = optArgs(mth->off, mth->idx, mth->noff, *msk); \
   } \
 \
-  if (getPar(*msk)) \
+  switch(getMthType(*msk, mth->rcv, mth->pos, N, mth->nexp)) { \
+  case MTH_ISMESS: \
     mth->MthExpr.Functor.Expression.Object.id = \
-      cos_class_id(classref(COS_PP_CAT(PMthExpr,N))); \
+      cos_class_id(classref(COS_PP_CAT(Message,N))); break; \
+\
+  COS_PP_IF(COS_PP_GT(N,4))(, \
+  case MTH_ISCLOSED: \
+    mth->MthExpr.Functor.Expression.Object.id = \
+      cos_class_id(classref(COS_PP_CAT(SMthExpr,N))); break; \
+  ) \
+  case MTH_ISEXPR: \
+    if (getPar(*msk))\
+      mth->MthExpr.Functor.Expression.Object.id = \
+        cos_class_id(classref(COS_PP_CAT(PMthExpr,N))); break; \
+  } \
 \
   return &mth->MthExpr.Functor; \
 }
