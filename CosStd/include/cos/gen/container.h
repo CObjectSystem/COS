@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.18 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: container.h,v 1.19 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
@@ -67,9 +67,6 @@ defgeneric(OBJ, glast     , _1);
 
 // check for elements
 defgeneric(OBJ, gisEmpty  , _1);
-
-// flatten container
-defgeneric(OBJ, gflatten  , _1);
 
 // adjust container (e.g. capacity to size)
 defgeneric(OBJ, gadjust   , _1);

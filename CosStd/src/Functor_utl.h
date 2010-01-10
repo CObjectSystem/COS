@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.8 2010/01/09 16:18:39 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.9 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
@@ -118,6 +118,18 @@ getArg(U32 idx, U32 msk, OBJ arg, OBJ var[], U32 size, OBJ env)
   return gevalEnv(arg, env);  // other (expression)
 }
 
+static COS_ALWAYS_INLINE void
+getArgOff(U32 idx, U32 msk, OBJ *arg, OBJ var[], U32 size, OBJ env)
+{
+  if (isIdx(msk, idx)) {      // environment index (placeholder)
+    U32 i = getIdx(*arg);
+    test_assert( i < size, "invalid placeholder index" );
+    *arg = var[ i ];
+  }
+  else
+  *arg = gevalEnv(*arg, env); // other (expression)
+}
+
 // ----- "dictionnary-like" environment
 
 static COS_ALWAYS_INLINE OBJ
@@ -135,8 +147,24 @@ getArgVar(U32 idx, U32 msk, OBJ arg, OBJ env)
   return gevalEnv(arg, env);  // other (expression)
 }
 
+static COS_ALWAYS_INLINE void
+getArgVarOff(U32 idx, U32 msk, OBJ *arg, OBJ env)
+{
+  if (isVar(msk, idx))        // environment key (placeholder)
+    *arg = ggetAt(env, getVar(*arg));
+
+  else
+  if (isIdx(msk, idx))        // environment index (placeholder)
+    *arg = ggetAtInt(env, getIdx(*arg));
+
+  else
+  *arg = gevalEnv(*arg, env); // other (expression)
+}
+
 // ----- build context mask
 
-void Functor_setMask(U32 *msk, U32 i, OBJ *arg, STR file, int line);
+void  Functor_setMask   (U32 *msk, U32 i, OBJ *arg, STR file, int line);
+void* Functor_cloneArgs (SEL sel, char *arg);
+void  Functor_deleteArgs(SEL sel, char *arg);
 
 #endif // COS_FUNCTOR_UTL_H

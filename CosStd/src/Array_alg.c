@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.20 2010/01/07 17:40:46 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.21 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
@@ -336,9 +336,9 @@ defmethod(OBJ, gzipn, Array)
   retmethod(_arr);
 endmethod
 
-// ----- cat, cat3, cat4, cat5, catn
+// ----- concat, concat3, concat4, concat5, concatn
 
-defmethod(OBJ, gcat, Array, Array)
+defmethod(OBJ, gconcat, Array, Array)
   U32 size = self->size + self2->size;
   struct Array *arr = Array_alloc(size);
   OBJ _arr = gautoDelete( (OBJ)arr );
@@ -351,7 +351,7 @@ defmethod(OBJ, gcat, Array, Array)
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, gcat3, Array, Array, Array)
+defmethod(OBJ, gconcat3, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size;
   struct Array *arr = Array_alloc(size);
   OBJ _arr = gautoDelete( (OBJ)arr );
@@ -365,7 +365,7 @@ defmethod(OBJ, gcat3, Array, Array, Array)
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, gcat4, Array, Array, Array, Array)
+defmethod(OBJ, gconcat4, Array, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size + self4->size;
   struct Array *arr = Array_alloc(size);
   OBJ _arr = gautoDelete( (OBJ)arr );
@@ -380,7 +380,7 @@ defmethod(OBJ, gcat4, Array, Array, Array, Array)
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, gcat5, Array, Array, Array, Array, Array)
+defmethod(OBJ, gconcat5, Array, Array, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size + self4->size + self5->size;
   struct Array *arr = Array_alloc(size);
   OBJ _arr = gautoDelete( (OBJ)arr );
@@ -396,7 +396,7 @@ defmethod(OBJ, gcat5, Array, Array, Array, Array, Array)
   retmethod(_arr);
 endmethod
 
-defmethod(OBJ, gcatn, Array)
+defmethod(OBJ, gconcatn, Array)
   U32  size  = self->size;
   I32  src_s = self->stride;
   OBJ *src   = self->object;
@@ -425,21 +425,6 @@ defmethod(OBJ, gcatn, Array)
   }
 
   retmethod(_arr);
-endmethod
-
-// ----- flatten array content
-
-defmethod(OBJ, gflatten, Array)
-  U32 size = 0;
-
-  for (U32 i = 0; i < self->size; i += self->stride)
-    size += gsize(self->object[i]);
-
-  OBJ arr = gautoDelete( gnewWith(Array, aInt(size)) );
-
-  gapply(aFun(gappend, arr, __1), _1);
-  
-  retmethod(gadjust(arr));
 endmethod
 
 // ----- search (object)

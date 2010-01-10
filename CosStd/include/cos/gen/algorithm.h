@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.39 2010/01/07 17:25:45 ldeniau Exp $
+ | $Id: algorithm.h,v 1.40 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
@@ -44,12 +44,12 @@
 defgeneric(OBJ, greverse, _1);
 defgeneric(OBJ, gpermute, _1, idx);
 
-// cat
-defgeneric(OBJ, gcat , _1, _2);
-defgeneric(OBJ, gcat3, _1, _2, _3);
-defgeneric(OBJ, gcat4, _1, _2, _3, _4);
-defgeneric(OBJ, gcat5, _1, _2, _3, _4, _5);
-defgeneric(OBJ, gcatn, _1);
+// concat
+defgeneric(OBJ, gconcat , _1, _2);
+defgeneric(OBJ, gconcat3, _1, _2, _3);
+defgeneric(OBJ, gconcat4, _1, _2, _3, _4);
+defgeneric(OBJ, gconcat5, _1, _2, _3, _4, _5);
+defgeneric(OBJ, gconcatn, _1);
 
 // zip
 defgeneric(OBJ, gzip , _1, _2);

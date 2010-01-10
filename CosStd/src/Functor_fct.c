@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.7 2010/01/07 14:53:52 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.8 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
@@ -48,35 +48,6 @@ makclass(Function6, FunExpr);
 makclass(Function7, FunExpr);
 makclass(Function8, FunExpr);
 makclass(Function9, FunExpr);
-
-// ----- type compatibility within the class cluster
-
-STATIC_ASSERT(functor1_to_function1_compatibility,
-              COS_FIELD_COMPATIBILITY(Function1,FunExpr1,fct));
-
-STATIC_ASSERT(functor2_to_function2_compatibility,
-              COS_FIELD_COMPATIBILITY(Function2,FunExpr2,fct));
-
-STATIC_ASSERT(functor3_to_function3_compatibility,
-              COS_FIELD_COMPATIBILITY(Function3,FunExpr3,fct));
-
-STATIC_ASSERT(functor4_to_function4_compatibility,
-              COS_FIELD_COMPATIBILITY(Function4,FunExpr4,fct));
-
-STATIC_ASSERT(functor5_to_function5_compatibility,
-              COS_FIELD_COMPATIBILITY(Function5,FunExpr5,fct));
-
-STATIC_ASSERT(functor6_to_function6_compatibility,
-              COS_FIELD_COMPATIBILITY(Function6,FunExpr6,fct));
-
-STATIC_ASSERT(functor7_to_function7_compatibility,
-              COS_FIELD_COMPATIBILITY(Function7,FunExpr7,fct));
-
-STATIC_ASSERT(functor8_to_function8_compatibility,
-              COS_FIELD_COMPATIBILITY(Function8,FunExpr8,fct));
-
-STATIC_ASSERT(functor9_to_function9_compatibility,
-              COS_FIELD_COMPATIBILITY(Function9,FunExpr9,fct));
 
 // ----- copy
 

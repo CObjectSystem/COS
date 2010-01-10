@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.25 2010/01/07 14:53:51 ldeniau Exp $
+ | $Id: Functor.h,v 1.26 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
@@ -43,11 +43,19 @@
 defclass(Expression)
 endclass
 
+defclass(PlaceHolder, Expression)
+endclass
+
 defclass(Functor, Expression)
   U32 msk;
 endclass
 
-defclass(PlaceHolder, Expression)
+defclass(FunExpr, Functor)
+  STR str;
+endclass
+
+defclass(MthExpr, Functor)
+  SEL sel;
 endclass
 
 // ----- Functor placeholder
@@ -69,10 +77,6 @@ defclass(FunLzy, PlaceHolder)
 endclass
 
 // ----- Functor expression
-
-defclass(FunExpr, Functor)
-  STR str;
-endclass
 
 defclass(FunExpr1, FunExpr)
   FUN1 fct;
@@ -159,6 +163,28 @@ endclass
 
 defclass(Function9, FunExpr)
   FUN9 fct;
+endclass
+
+// ----- Functor as message (lightweight optimization)
+
+defclass(Message1, MthExpr)
+  char *arg;
+endclass
+
+defclass(Message2, MthExpr)
+  char *arg;
+endclass
+
+defclass(Message3, MthExpr)
+  char *arg;
+endclass
+
+defclass(Message4, MthExpr)
+  char *arg;
+endclass
+
+defclass(Message5, MthExpr)
+  char *arg;
 endclass
 
 // ----- Composition of functors

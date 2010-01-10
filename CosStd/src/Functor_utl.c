@@ -29,15 +29,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.8 2010/01/09 16:18:39 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.9 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
 #include <cos/Functor.h>
 #include <cos/gen/accessor.h>
 #include <cos/gen/functor.h>
+#include <cos/gen/object.h>
 
 #include "Functor_utl.h"
+
+#include <assert.h>
+#include <string.h>
+
+// -----
+
+useclass(ExBadAlloc);
 
 // -----
 
@@ -155,5 +163,72 @@ Functor_setMask(U32 *msk, U32 i, OBJ *arg, STR file, int line)
        
   // argument (free variable)
   setArg(msk, i);
+}
+
+// -----
+
+void*
+Functor_cloneArgs(SEL sel, char *_arg)
+{
+  assert(_arg); // sanity check
+
+  char *arg = 0;
+  U32   narg = COS_GEN_NARG(sel);
+  
+  arg = malloc(sel->argsize);
+  if (!arg) THROW(ExBadAlloc);
+
+  if (COS_GEN_OARG(sel)) {  // only OBJects
+    OBJ *dst = (OBJ*) arg;
+    OBJ *src = (OBJ*)_arg;
+
+    for (U32 i = 0; i < narg; i++)
+      if (getIdx(src[i]) >= 9)
+        dst[i] = gretain(src[i]);
+      else
+        dst[i] = src[i];    // placeholder index or null
+  }
+  else {                    // some/all aren't OBJects
+    memcpy(arg, _arg, sel->argsize);
+
+    for (U32 i = 0; i < narg; i++)
+      if (!sel->arginfo[i].size) {
+        OBJ *obj = (OBJ*)(arg + sel->arginfo[i].offset);
+        
+        if (getIdx(*obj) >= 9)
+          *obj = gretain(*obj);
+      }
+  }
+
+  return arg;
+}
+
+// -----
+
+void
+Functor_deleteArgs(SEL sel, char *arg)
+{
+  assert(arg); // sanity check
+
+  U32 narg = COS_GEN_NARG(sel);
+
+  if (COS_GEN_OARG(sel)) {  // only OBJects
+    OBJ *obj = (OBJ*)arg;
+    
+    for (U32 i = 0; i < narg; i++)
+      if (getIdx(obj[i]) >= 9)
+        grelease(obj[i]);
+  }
+  else {                    // some/all aren't OBJects
+    for (U32 i = 0; i < narg; i++)
+      if (!sel->arginfo[i].size) { // convention for objects
+        OBJ *obj = (OBJ*)(arg + sel->arginfo[i].offset);
+        
+        if (getIdx(*obj) >= 9)
+          grelease(*obj);
+      }
+  }
+  
+  free(arg);
 }
 

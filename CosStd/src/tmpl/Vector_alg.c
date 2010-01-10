@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.9 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.10 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
@@ -258,9 +258,9 @@ defmethod(OBJ, gzip5, T, T, T, T, T)
   retmethod(gautoDelete( (OBJ)vec ));
 endmethod
 
-// ----- cat, cat3, cat4, cat5
+// ----- concat, concat3, concat4, concat5
 
-defmethod(OBJ, gcat, T, T)
+defmethod(OBJ, gconcat, T, T)
   U32 size = self->size + self2->size;
   struct T *vec = T_alloc(size);
 
@@ -272,7 +272,7 @@ defmethod(OBJ, gcat, T, T)
   retmethod(gautoDelete( (OBJ)vec ));
 endmethod
 
-defmethod(OBJ, gcat3, T, T, T)
+defmethod(OBJ, gconcat3, T, T, T)
   U32 size = self->size + self2->size + self3->size;
   struct T *vec = T_alloc(size);
 
@@ -285,7 +285,7 @@ defmethod(OBJ, gcat3, T, T, T)
   retmethod(gautoDelete( (OBJ)vec ));
 endmethod
 
-defmethod(OBJ, gcat4, T, T, T, T)
+defmethod(OBJ, gconcat4, T, T, T, T)
   U32 size = self->size + self2->size + self3->size + self4->size;
   struct T *vec = T_alloc(size);
 
@@ -299,7 +299,7 @@ defmethod(OBJ, gcat4, T, T, T, T)
   retmethod(gautoDelete( (OBJ)vec ));
 endmethod
 
-defmethod(OBJ, gcat5, T, T, T, T, T)
+defmethod(OBJ, gconcat5, T, T, T, T, T)
   U32 size = self->size + self2->size + self3->size + self4->size + self5->size;
   struct T *vec = T_alloc(size);
 

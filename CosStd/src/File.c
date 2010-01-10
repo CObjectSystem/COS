@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.13 2009/12/10 09:12:49 ldeniau Exp $
+ | $Id: File.c,v 1.14 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
@@ -196,7 +196,7 @@ defmethod(OBJ, gopen, ClosedFile, String, String)
   STR mode = gstr(_3);
   self->fd = fopen(gstr(_2), mode);
   if (!self->fd)
-    THROW( gnewWith(ExBadStream, gcat(aStr("unable to open file "), _2)) );
+    THROW( gnewWith(ExBadStream, gconcat(aStr("unable to open file "), _2)) );
 
   self->own = YES;
   self->name = gretain(_2);
@@ -215,7 +215,7 @@ defmethod(OBJ, gclose, OpenFile)
   test_assert(ch_cls, "unable to change from OpenFile to ClosedFile");
 
   if (fclose(self->fd))
-    THROW( gnewWith(ExBadStream, gcat(aStr("unable to close file "), self->name)) );
+    THROW( gnewWith(ExBadStream, gconcat(aStr("unable to close file "), self->name)) );
 
   grelease(self->name);
 
@@ -237,7 +237,7 @@ defmethod(OBJ, gflush, OutFile)
   struct OpenFile *file = &self->OpenFile;
 
   if (fflush(file->fd))
-    THROW( gnewWith(ExBadStream, gcat(aStr("unable to flush file "), file->name)) );
+    THROW( gnewWith(ExBadStream, gconcat(aStr("unable to flush file "), file->name)) );
 
   retmethod(_1);
 endmethod
@@ -255,7 +255,7 @@ defmethod(OBJ, gremove, OpenFile)
   gclose(_1);
 
   if (remove(gstr(name)))
-    THROW( gnewWith(ExBadStream, gcat(aStr("unable to remove file "), name)) );
+    THROW( gnewWith(ExBadStream, gconcat(aStr("unable to remove file "), name)) );
 
   UNPRT(name);
   grelease(name);

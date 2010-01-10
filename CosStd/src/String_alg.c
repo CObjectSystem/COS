@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.16 2010/01/03 12:28:56 ldeniau Exp $
+ | $Id: String_alg.c,v 1.17 2010/01/10 01:11:42 ldeniau Exp $
  |
 */
 
@@ -131,9 +131,9 @@ defmethod(OBJ, gzip3, String, String, String)
   retmethod(gautoDelete( (OBJ)str ));
 endmethod
 
-// ----- cat, cat3, cat4, cat5
+// ----- concat, concat3, concat4, concat5
 
-defmethod(OBJ, gcat, String, String)
+defmethod(OBJ, gconcat, String, String)
   U32 size = self->size + self2->size;
   struct String *str = String_alloc(size);
 
@@ -145,7 +145,7 @@ defmethod(OBJ, gcat, String, String)
   retmethod(gautoDelete( (OBJ)str ));
 endmethod
 
-defmethod(OBJ, gcat3, String, String, String)
+defmethod(OBJ, gconcat3, String, String, String)
   U32 size = self->size + self2->size + self3->size;
   struct String *str = String_alloc(size);
 
@@ -158,7 +158,7 @@ defmethod(OBJ, gcat3, String, String, String)
   retmethod(gautoDelete( (OBJ)str ));
 endmethod
 
-defmethod(OBJ, gcat4, String, String, String, String)
+defmethod(OBJ, gconcat4, String, String, String, String)
   U32 size = self->size + self2->size + self3->size + self4->size;
   struct String *str = String_alloc(size);
 
@@ -172,7 +172,7 @@ defmethod(OBJ, gcat4, String, String, String, String)
   retmethod(gautoDelete( (OBJ)str ));
 endmethod
 
-defmethod(OBJ, gcat5, String, String, String, String, String)
+defmethod(OBJ, gconcat5, String, String, String, String, String)
   U32 size = self->size + self2->size +
              self3->size + self4->size + self5->size;
   struct String *str = String_alloc(size);
