@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.10 2010/01/10 14:24:59 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.11 2010/01/10 14:51:49 ldeniau Exp $
  |
 */
 
@@ -93,54 +93,34 @@ getOffs(SEL sel, U16 off[], U8 idx[], U8 pos[])
   U32 ioff = 0;
   U32 iobj = 0;
 
-  if (!sel->argsize) {      // only receivers
+  if (!sel->argsize) {  // only receivers
     while (ircv < nrcv)
       pos[ircv] = ircv, ircv++;
+
+    return ioff;
   }
-  else
-  if (COS_GEN_OARG(sel)) {  // only OBJects
-    assert(sel->rcvinfo);   // sanity check
 
-    while ( !(ircv > nrcv && iarg > narg) ) {
-      // receiver
-      if (ircv < nrcv && ircv+iarg == sel->rcvinfo[ircv].index) {
-        pos[ircv] = iobj;
-        ircv++, iobj++;
-        continue;
-      }
+  assert(sel->rcvinfo); // sanity check
+  assert(sel->arginfo); // sanity check
 
-      // argument (OBJect)
+  while ( !(ircv > nrcv && iarg > narg) ) {
+    // receiver
+    if (ircv < nrcv && ircv+iarg == sel->rcvinfo[ircv].index) {
+      pos[ircv] = iobj;
+      ircv++, iobj++;
+      continue;
+    }
+
+    // argument (OBJect)
+    if ( cos_arginfo_isObject(sel->arginfo+iarg) ) {
       if (ioff < noff) {
-        off[ioff] = iarg * sizeof(OBJ);
+        off[ioff] = sel->arginfo[iarg].offset;
         idx[ioff] = iobj;
         ioff++;
       }
-      iarg++, iobj++;
+      iobj++;
     }
-  }
-  else {                  // some aren't OBJects
-    assert(sel->rcvinfo); // sanity check
-    assert(sel->arginfo); // sanity check
-
-    while ( !(ircv > nrcv && iarg > narg) ) {
-      // receiver
-      if (ircv < nrcv && ircv+iarg == sel->rcvinfo[ircv].index) {
-        pos[ircv] = iobj;
-        ircv++, iobj++;
-        continue;
-      }
-
-      // argument (OBJect)
-      if (!sel->arginfo[iarg].size) {
-        if (ioff < noff) {
-          off[ioff] = sel->arginfo[iarg].offset;
-          idx[ioff] = iobj;
-          ioff++;
-        }
-        iobj++;
-      }
-      iarg++;
-    }
+    iarg++;
   }
 
   return ioff;
@@ -205,12 +185,8 @@ static struct Functor* COS_PP_CAT(MthExpr_init,N) \
     Functor_setMask(msk, mth->pos[i], mth->rcv+i, file, line); \
 \
   if (mth->noff) { \
-    if (COS_GEN_OARG(sel)) \
-      for (U32 i = 0; i < mth->noff; i++) \
-        Functor_setMask(msk, mth->idx[i], (OBJ*)mth->arg+i, file, line); \
-    else \
-      for (U32 i = 0; i < mth->noff; i++) \
-        Functor_setMask(msk, mth->idx[i], (OBJ*)(mth->arg+mth->off[i]), file, line); \
+    for (U32 i = 0; i < mth->noff; i++) \
+      Functor_setMask(msk, mth->idx[i], (OBJ*)(mth->arg+mth->off[i]), file, line); \
 \
     mth->nexp = optArgs(mth->off, mth->idx, mth->noff, *msk); \
   } \
@@ -242,7 +218,7 @@ DEFFUNC(5)
 
 // ----- ctors
 
-// TODO
+// TODO ??
 
 // ----- copy
 

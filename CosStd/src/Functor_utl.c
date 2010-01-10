@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.9 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.10 2010/01/10 14:51:49 ldeniau Exp $
  |
 */
 
@@ -178,7 +178,7 @@ Functor_cloneArgs(SEL sel, char *_arg)
   arg = malloc(sel->argsize);
   if (!arg) THROW(ExBadAlloc);
 
-  if (COS_GEN_OARG(sel)) {  // only OBJects
+  if (COS_GEN_OARG(sel)) {  // only OBJects optimization
     OBJ *dst = (OBJ*) arg;
     OBJ *src = (OBJ*)_arg;
 
@@ -192,7 +192,7 @@ Functor_cloneArgs(SEL sel, char *_arg)
     memcpy(arg, _arg, sel->argsize);
 
     for (U32 i = 0; i < narg; i++)
-      if (!sel->arginfo[i].size) {
+      if ( cos_arginfo_isObject(sel->arginfo+i) ) {
         OBJ *obj = (OBJ*)(arg + sel->arginfo[i].offset);
         
         if (getIdx(*obj) >= 9)
@@ -212,7 +212,7 @@ Functor_deleteArgs(SEL sel, char *arg)
 
   U32 narg = COS_GEN_NARG(sel);
 
-  if (COS_GEN_OARG(sel)) {  // only OBJects
+  if (COS_GEN_OARG(sel)) {  // only OBJects optimization
     OBJ *obj = (OBJ*)arg;
     
     for (U32 i = 0; i < narg; i++)
@@ -221,7 +221,7 @@ Functor_deleteArgs(SEL sel, char *arg)
   }
   else {                    // some/all aren't OBJects
     for (U32 i = 0; i < narg; i++)
-      if (!sel->arginfo[i].size) { // convention for objects
+      if ( cos_arginfo_isObject(sel->arginfo+i) ) {
         OBJ *obj = (OBJ*)(arg + sel->arginfo[i].offset);
         
         if (getIdx(*obj) >= 9)
