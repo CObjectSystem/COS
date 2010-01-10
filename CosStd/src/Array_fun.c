@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.28 2010/01/07 17:25:45 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.29 2010/01/10 21:23:04 ldeniau Exp $
  |
 */
 
@@ -506,14 +506,33 @@ endmethod
 // ----- reduce
 
 /*
-  reduce:
+  reduce1:
   res = f(ini, in[0])
   res = f(res, in[1])
   ...
   res = f(res, in[N-1])
 */
 
-defmethod(OBJ, greduce, Array, Functor, Object)
+defmethod(OBJ, greduce, Array, Functor)
+  test_assert( self->size > 0, "empty array" );
+
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res   = gautoDelete(gclone(*val));
+  
+  val += val_s;
+
+  while (val != end) {
+    res = geval(_2, res, *val);
+    val += val_s;
+  }
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, greduce1, Array, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
@@ -529,14 +548,33 @@ defmethod(OBJ, greduce, Array, Functor, Object)
 endmethod
 
 /*
-  rreduce:
+  rreduce1:
   res = f(in[N-1], ini)
   res = f(in[N-2], res)
   ...
   res = f(in[0]  , res)
 */
 
-defmethod(OBJ, grreduce, Array, Functor, Object)
+defmethod(OBJ, grreduce, Array, Functor)
+  test_assert( self->size > 0, "empty array" );
+
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res   = gautoDelete(gclone(*(end-val_s)));
+
+  end -= val_s;
+  
+  while (val != end) {
+    end -= val_s;
+    res = geval(_2, *end, res);
+  }
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, grreduce1, Array, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
@@ -614,14 +652,23 @@ endmethod
 // ----- accumulate
 
 /*
-  accumulate:
+  accumulate1:
   res = f(ini, in[0])   -> out[0]
   res = f(res, in[1])   -> out[1]
   ...
   res = f(res, in[N-1]) -> out[N-1]
 */
 
-defmethod(OBJ, gaccumulate, Array, Functor, Object)
+defmethod(OBJ, gaccumulate, Array, Functor)
+  test_assert( self->size > 0, "empty array" );
+
+  OBJ ini = gautoDelete(gclone(self->object[0]));
+  OBJ arr = aArrayView(self, atSlice(1, self->size-1));
+  
+  retmethod( gaccumulate1(arr, _2, ini) );
+endmethod
+
+defmethod(OBJ, gaccumulate1, Array, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
@@ -644,14 +691,23 @@ defmethod(OBJ, gaccumulate, Array, Functor, Object)
 endmethod
 
 /*
-  raccumulate:
+  raccumulate1:
   res = f(in[N-1], ini) -> out[N-1]
   res = f(in[N-2], res) -> out[N-2]
   ...
   res = f(in[0]  , res) -> out[0]
 */
 
-defmethod(OBJ, graccumulate, Array, Functor, Object)
+defmethod(OBJ, graccumulate, Array, Functor)
+  test_assert( self->size > 0, "empty array" );
+
+  OBJ ini = gautoDelete(gclone(glast(_1)));
+  OBJ arr = aArrayView(self, atSlice(self->size-1));
+  
+  retmethod( graccumulate1(arr, _2, ini) );
+endmethod
+
+defmethod(OBJ, graccumulate1, Array, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.18 2009/12/28 00:43:18 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.19 2010/01/10 21:23:04 ldeniau Exp $
  |
 */
 
@@ -481,9 +481,28 @@ defmethod(OBJ, grejectWhile, T, Functor)
   retmethod(gadjust(_vec));
 endmethod
 
-// ----- reduce
+// ----- reduce1
 
-defmethod(OBJ, greduce, T, Functor, Object)
+defmethod(OBJ, greduce, T, Functor)
+  test_assert( self->size > 0, "empty vector" );
+
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
+  VAL *end   = val + val_s*size;
+  OBJ  res   = gautoDelete(gclone(VALOBJ(*val)));
+  
+  val += val_s;
+
+  while (val != end) {
+    res = geval(_2, res, VALOBJ(*val));
+    val += val_s;
+  }
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, greduce1, T, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   VAL *val   = self->value;
@@ -498,7 +517,26 @@ defmethod(OBJ, greduce, T, Functor, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, grreduce, T, Functor, Object)
+defmethod(OBJ, grreduce, T, Functor)
+  test_assert( self->size > 0, "empty vector" );
+
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
+  VAL *end   = val + val_s*size;
+  OBJ  res   = gautoDelete(gclone(VALOBJ(*(end-val_s))));
+  
+  end -= val_s;
+  
+  while (val != end) {
+    end -= val_s;
+    res = geval(_2, VALOBJ(*end), res);
+  }
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, grreduce1, T, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   VAL *val   = self->value;
@@ -557,7 +595,16 @@ endmethod
 
 // ----- accumulate
 
-defmethod(OBJ, gaccumulate, T, Functor, Object)
+defmethod(OBJ, gaccumulate, T, Functor)
+  test_assert( self->size > 0, "empty vector" );
+  
+  OBJ ini = gautoDelete(gclone(VALOBJ(self->value[0])));
+  OBJ vec = aTView(self, atSlice(1, self->size-1));
+  
+  retmethod( gaccumulate1(vec, _2, ini) );
+endmethod
+
+defmethod(OBJ, gaccumulate1, T, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   VAL *val   = self->value;
@@ -579,7 +626,16 @@ defmethod(OBJ, gaccumulate, T, Functor, Object)
   retmethod(_vec);
 endmethod
 
-defmethod(OBJ, graccumulate, T, Functor, Object)
+defmethod(OBJ, graccumulate, T, Functor)
+  test_assert( self->size > 0, "empty vector" );
+  
+  OBJ ini = glast(_1);
+  OBJ vec = aTView(self, atSlice(self->size-1));
+  
+  retmethod( graccumulate1(vec, _2, ini) );
+endmethod
+
+defmethod(OBJ, graccumulate1, T, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   VAL *val   = self->value;

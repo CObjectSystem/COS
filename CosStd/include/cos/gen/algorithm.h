@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.40 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: algorithm.h,v 1.41 2010/01/10 21:23:04 ldeniau Exp $
  |
 */
 
@@ -90,17 +90,21 @@ defgeneric(OBJ, greject     , _1, fun); // reject if    fun returns True
 defgeneric(OBJ, grejectWhile, _1, fun); // reject while fun returns True
 
 // reduce, rreduce
-defgeneric(OBJ, greduce , _1, fun, ini);           // foldl
+defgeneric(OBJ, greduce , _1, fun);                // foldl1
+defgeneric(OBJ, greduce1, _1, fun, ini);           // foldl
 defgeneric(OBJ, greduce2, _1, fun, ini, fin);      // foldl with lookahead
 
-defgeneric(OBJ, grreduce , _1, fun, ini);          // foldr
+defgeneric(OBJ, grreduce , _1, fun);               // foldr1
+defgeneric(OBJ, grreduce1, _1, fun, ini);          // foldr
 defgeneric(OBJ, grreduce2, _1, fun, ini, fin);     // foldr with lookahead
 
 // accumulate, raccumulate
-defgeneric(OBJ, gaccumulate , _1, fun, ini);       // scanl
+defgeneric(OBJ, gaccumulate , _1, fun);            // scanl1
+defgeneric(OBJ, gaccumulate1, _1, fun, ini);       // scanl
 defgeneric(OBJ, gaccumulate2, _1, fun, ini, fin);  // scanl with lookahead
 
-defgeneric(OBJ, graccumulate , _1, fun, ini);      // scanr
+defgeneric(OBJ, graccumulate , _1, fun);           // scanr1
+defgeneric(OBJ, graccumulate1, _1, fun, ini);      // scanr
 defgeneric(OBJ, graccumulate2, _1, fun, ini, fin); // scanr with lookahead
 
 // repeat, generate

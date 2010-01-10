@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.13 2009/11/25 17:49:21 ldeniau Exp $
+ | $Id: String_fun.c,v 1.14 2010/01/10 21:23:04 ldeniau Exp $
  |
 */
 
@@ -339,7 +339,21 @@ endmethod
 
 // ----- reduce
 
-defmethod(OBJ, greduce, String, Functor, Object)
+defmethod(OBJ, greduce, String, Functor)
+  test_assert( self->size > 0, "empty string" );
+
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+  OBJ res  = gautoDelete(gclone(aChar(*val++)));
+
+  while (val != end)
+    res = geval(_2, res, aChar(*val++));
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, greduce1, String, Functor, Object)
   U32 size = self->size;
   U8* val  = self->value;
   U8* end  = val + size;
@@ -351,7 +365,21 @@ defmethod(OBJ, greduce, String, Functor, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, grreduce, String, Functor, Object)
+defmethod(OBJ, grreduce, String, Functor)
+  test_assert( self->size > 0, "empty string" );
+
+  U32 size = self->size;
+  U8* val  = self->value;
+  U8* end  = val + size;
+  OBJ  res   = gautoDelete(gclone(aChar(*(--end))));
+  
+  while (val != end)
+    res = geval(_2, aChar(*--end), res);
+
+  retmethod(res);
+endmethod
+
+defmethod(OBJ, grreduce1, String, Functor, Object)
   U32 size = self->size;
   U8* val  = self->value;
   U8* end  = val + size;
