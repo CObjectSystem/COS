@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.11 2010/01/10 13:23:01 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.12 2010/01/10 13:23:52 ldeniau Exp $
  |
 */
 
@@ -335,7 +335,7 @@ endmethod
 
 defmethod(OBJ, gevalEnv, PFunExpr5, Array)
   U32  msk = self->FunExpr5.FunExpr.Functor.msk;
-  FUN4 fct = self->FunExpr5.fct;
+  FUN5 fct = self->FunExpr5.fct;
   OBJ *arg = self->FunExpr5.arg;
   OBJ *var = self2->object;
   U32 size = self2->size;
@@ -549,7 +549,7 @@ endmethod
 
 defmethod(OBJ, gevalEnv, PFunExpr5, Container) // partial evaluation
   U32  msk = self->FunExpr5.FunExpr.Functor.msk;
-  FUN4 fct = self->FunExpr5.fct;
+  FUN5 fct = self->FunExpr5.fct;
   OBJ *arg = self->FunExpr5.arg;
 
   OBJ arg0 = getArgVar(0, msk, arg[0], _2);
