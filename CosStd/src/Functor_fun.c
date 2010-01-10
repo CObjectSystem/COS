@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.10 2010/01/10 13:13:31 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.11 2010/01/10 13:23:01 ldeniau Exp $
  |
 */
 
@@ -116,7 +116,8 @@ struct Functor* COS_PP_CAT(FunExpr_init,N) \
   case FUN_ISCLOSED: \
     fun->FunExpr.Functor.Expression.Object.id = \
       cos_class_id(classref(COS_PP_CAT(SFunExpr,N))); break; \
-\
+  ) \
+  COS_PP_IF(COS_PP_GT(N,5))(, \
   case FUN_ISEXPR: \
     if (getPar(fun->FunExpr.Functor.msk)) \
       fun->FunExpr.Functor.Expression.Object.id = \
@@ -329,10 +330,22 @@ defmethod(OBJ, gevalEnv, FunExpr5, Array)
   OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
   OBJ arg4 = getArg(4, msk, arg[4], var, size, _2);
 
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4) );
+  retmethod( fct(arg0, arg1, arg2, arg3, arg4) );
+endmethod
 
-  // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr5, Array)
+  U32  msk = self->FunExpr5.FunExpr.Functor.msk;
+  FUN4 fct = self->FunExpr5.fct;
+  OBJ *arg = self->FunExpr5.arg;
+  OBJ *var = self2->object;
+  U32 size = self2->size;
+
+  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
+  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
+  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
+  OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
+  OBJ arg4 = getArg(4, msk, arg[4], var, size, _2);
+  
   retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4)) );
 endmethod
 
@@ -531,10 +544,20 @@ defmethod(OBJ, gevalEnv, FunExpr5, Container)
   OBJ arg3 = getArgVar(3, msk, arg[3], _2);
   OBJ arg4 = getArgVar(4, msk, arg[4], _2);
 
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4) );
+  retmethod( fct(arg0, arg1, arg2, arg3, arg4) );
+endmethod
 
-  // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr5, Container) // partial evaluation
+  U32  msk = self->FunExpr5.FunExpr.Functor.msk;
+  FUN4 fct = self->FunExpr5.fct;
+  OBJ *arg = self->FunExpr5.arg;
+
+  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
+  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
+  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
+  OBJ arg3 = getArgVar(3, msk, arg[3], _2);
+  OBJ arg4 = getArgVar(4, msk, arg[4], _2);
+
   retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4)) );
 endmethod
 
