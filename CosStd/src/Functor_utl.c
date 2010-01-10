@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.11 2010/01/10 15:05:22 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.12 2010/01/10 15:10:12 ldeniau Exp $
  |
 */
 
@@ -116,6 +116,8 @@ setFunPar(OBJ arg, OBJ var, U32 cnt)
 void
 Functor_setMask(U32 *msk, U32 i, OBJ *arg)
 {
+  test_assert( i < 10, "HOF/HOM with 9+ OBJects arguments");
+
   // argument (null)
   if (!*arg) {
     setArg(msk, i);

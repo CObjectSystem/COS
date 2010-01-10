@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.15 2010/01/10 15:05:22 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.16 2010/01/10 15:07:44 ldeniau Exp $
  |
 */
 
@@ -100,7 +100,7 @@ dclclass(SFunExpr1, SFunExpr2, SFunExpr3, SFunExpr4);
 #define DEFFUNC(N) \
 \
 struct Functor* COS_PP_CAT(FunExpr_init,N) \
-(struct COS_PP_CAT(FunExpr,N) *fun, STR file, int line) \
+(struct COS_PP_CAT(FunExpr,N) *fun) \
 { \
   U32 *msk = &fun->FunExpr.Functor.msk; \
 \

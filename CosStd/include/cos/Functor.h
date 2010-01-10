@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.27 2010/01/10 13:13:28 ldeniau Exp $
+ | $Id: Functor.h,v 1.28 2010/01/10 15:07:44 ldeniau Exp $
  |
 */
 
@@ -259,7 +259,7 @@ endclass
 #define atFunctorN(N,F,...) \
   COS_PP_CAT(FunExpr_init,N)( &(struct COS_PP_CAT(FunExpr,N)) { \
     {{{ cos_object_auto(COS_PP_CAT(FunExpr,N)) }, 0 }, COS_PP_STR(F) }, \
-    F, {__VA_ARGS__} }, __FILE__, __LINE__)
+    F, {__VA_ARGS__} })
 
 // ----- PlaceHolders
 
@@ -277,15 +277,15 @@ endclass
 
 // ----- initializers
 
-struct Functor* FunExpr_init1(struct FunExpr1*, STR file, int line);
-struct Functor* FunExpr_init2(struct FunExpr2*, STR file, int line);
-struct Functor* FunExpr_init3(struct FunExpr3*, STR file, int line);
-struct Functor* FunExpr_init4(struct FunExpr4*, STR file, int line);
-struct Functor* FunExpr_init5(struct FunExpr5*, STR file, int line);
-struct Functor* FunExpr_init6(struct FunExpr6*, STR file, int line);
-struct Functor* FunExpr_init7(struct FunExpr7*, STR file, int line);
-struct Functor* FunExpr_init8(struct FunExpr8*, STR file, int line);
-struct Functor* FunExpr_init9(struct FunExpr9*, STR file, int line);
+struct Functor* FunExpr_init1(struct FunExpr1*);
+struct Functor* FunExpr_init2(struct FunExpr2*);
+struct Functor* FunExpr_init3(struct FunExpr3*);
+struct Functor* FunExpr_init4(struct FunExpr4*);
+struct Functor* FunExpr_init5(struct FunExpr5*);
+struct Functor* FunExpr_init6(struct FunExpr6*);
+struct Functor* FunExpr_init7(struct FunExpr7*);
+struct Functor* FunExpr_init8(struct FunExpr8*);
+struct Functor* FunExpr_init9(struct FunExpr9*);
 
 // ----- helpers
 

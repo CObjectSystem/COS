@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.12 2010/01/10 15:05:22 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.13 2010/01/10 15:07:44 ldeniau Exp $
  |
 */
 
@@ -77,8 +77,7 @@ STATIC_ASSERT(method5_to_message5_compatibility,
     {__VA_ARGS__}, \
     { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
     { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
-    { COS_PP_DUP(COS_PP_SUB(N,1), 0,) 0 }, \
-    0, 0 }, __FILE__, __LINE__)
+    { COS_PP_DUP(COS_PP_SUB(N,1), 0,) 0 }, 0, 0 })
 
 // ----- utils
 
@@ -169,7 +168,7 @@ getMthType(U32 msk, OBJ arg[], U8 pos[], U32 n, U32 nexp)
 #define DEFFUNC(N) \
 \
 static struct Functor* COS_PP_CAT(MthExpr_init,N) \
-(struct COS_PP_CAT(MthExpr,N) *mth, STR file, int line) \
+(struct COS_PP_CAT(MthExpr,N) *mth) \
 { \
   U32 *msk = &mth->MthExpr.Functor.msk; \
   SEL  sel =  mth->MthExpr.sel; \
