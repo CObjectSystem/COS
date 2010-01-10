@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.32 2010/01/09 17:29:55 ldeniau Exp $
+ | $Id: generic.h,v 1.33 2010/01/10 14:49:54 ldeniau Exp $
  |
 */
 
@@ -410,7 +410,7 @@ static struct cos_generic_rcvinfo COS_RCV_INFO(NAME)[] = { \
   COS_GEN_RCV(COS_GEN_RCVI(PS)) \
 };,/* no args */) \
 \
-COS_PP_IF(COS_PP_AND(A,COS_PP_NOT(O)))( \
+COS_PP_IF(A)( \
 static struct cos_generic_arginfo COS_ARG_INFO(NAME)[] = { \
   COS_GEN_ARG(AS,(COS_PP_DUPSEQ_N(COS_ARG_TYPE(NAME))),COS_GEN_ARGI(PS)) \
 };,/* no args or all OBJ */) \
@@ -430,8 +430,8 @@ struct Generic COS_GEN_NAME(NAME) = { \
   (void*)&COS_CLS_NAME(CLS), \
   /* receivers info, 0 if no monomorphic arguments */ \
   COS_PP_IF(A)(COS_RCV_INFO(NAME),0), \
-  /* arguments info, 0 if all objects, sizeof OBJ = 0 */ \
-  COS_PP_IF(COS_PP_AND(A,COS_PP_NOT(O)))(COS_ARG_INFO(NAME),0), \
+  /* arguments info, 0 if no monomorphic arguments */ \
+  COS_PP_IF(A)(COS_ARG_INFO(NAME),0), \
   /* size of monomorphic arguments struct */ \
   COS_PP_IF(A)(sizeof(COS_ARG_TYPE(NAME)),0), \
   /* size of returned value, sizeof OBJ = 0, void = -1 */ \

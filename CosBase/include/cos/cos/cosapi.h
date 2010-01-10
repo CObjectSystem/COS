@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.39 2009/12/30 00:59:59 ldeniau Exp $
+ | $Id: cosapi.h,v 1.40 2010/01/10 14:49:54 ldeniau Exp $
  |
 */
 
@@ -417,6 +417,20 @@ cos_object_edyncast(OBJ obj, const struct Class *cls,STR func,STR file,int line)
 
   cos_exception_badcast(obj, cls, func, file, line);
   COS_UNUSED(cos_object_edyncast);
+}
+
+static COS_ALWAYS_INLINE BOOL
+cos_arginfo_isObject(struct cos_generic_arginfo *info)
+{
+  return !info->size;
+  COS_UNUSED(cos_arginfo_isObject);
+}
+
+static COS_ALWAYS_INLINE U32
+cos_arginfo_size(struct cos_generic_arginfo *info)
+{
+  return info->size ? info->size : sizeof(OBJ);
+  COS_UNUSED(cos_arginfo_size);
 }
 
 static COS_ALWAYS_INLINE struct cos_exception_protect
