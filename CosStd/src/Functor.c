@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.22 2010/01/07 14:53:52 ldeniau Exp $
+ | $Id: Functor.c,v 1.23 2010/01/10 13:13:31 ldeniau Exp $
  |
 */
 
@@ -40,90 +40,148 @@
 */
  
 #include <cos/Functor.h>
-#include <cos/gen/functor.h>
-#include <cos/gen/object.h>
-#include <cos/gen/value.h>
 
-// -----
+#include "Functor.h"
+
+// ----- class cluster root classes
 
 makclass(Expression);
 
 makclass(Functor    , Expression);
 makclass(PlaceHolder, Expression);
 
+// ----- placeholder
+
 makclass(FunArg     , PlaceHolder);
 makclass(FunVar     , PlaceHolder);
 makclass(FunLzy     , PlaceHolder);
 
-// -----
+// ----- functor expression
 
-useclass(FunArg, FunVar, FunLzy);
+makclass(FunExpr , Functor);
+makclass(FunExpr1, FunExpr);
+makclass(FunExpr2, FunExpr);
+makclass(FunExpr3, FunExpr);
+makclass(FunExpr4, FunExpr);
+makclass(FunExpr5, FunExpr);
+makclass(FunExpr6, FunExpr);
+makclass(FunExpr7, FunExpr);
+makclass(FunExpr8, FunExpr);
+makclass(FunExpr9, FunExpr);
 
-// ----- ctors
+// ----- method expression
 
-defmethod(OBJ, gclone, FunArg)
-  OBJ _arg = galloc(FunArg);
-  struct FunArg *arg = STATIC_CAST(struct FunArg*, _arg);
+makclass(MthExpr , Functor);
+makclass(MthExpr1, MthExpr);
+makclass(MthExpr2, MthExpr);
+makclass(MthExpr3, MthExpr);
+makclass(MthExpr4, MthExpr);
+makclass(MthExpr5, MthExpr);
 
-  arg->idx = self->idx;
-  
-  retmethod(_arg);
-endmethod
+// ----- function (lightweight optimization)
 
-defmethod(OBJ, gclone, FunVar)
-  OBJ _var = galloc(FunVar);
-  struct FunVar *var = STATIC_CAST(struct FunVar*, _var);
+makclass(Function0, FunExpr);
+makclass(Function1, FunExpr);
+makclass(Function2, FunExpr);
+makclass(Function3, FunExpr);
+makclass(Function4, FunExpr);
+makclass(Function5, FunExpr);
+makclass(Function6, FunExpr);
+makclass(Function7, FunExpr);
+makclass(Function8, FunExpr);
+makclass(Function9, FunExpr);
 
-  var->var = gretain(self->var);
+// ----- message (lightweight optimization)
 
-  retmethod(_var);
-endmethod
+makclass(Message1, MthExpr);
+makclass(Message2, MthExpr);
+makclass(Message3, MthExpr);
+makclass(Message4, MthExpr);
+makclass(Message5, MthExpr);
 
-defmethod(OBJ, gclone, FunLzy)
-  OBJ _lzy = galloc(FunLzy);
-  struct FunLzy *lzy = STATIC_CAST(struct FunLzy*, _lzy);
+// ----- partially evaluated functor built by FunExpr_init (Functor_fun.h)
 
-  lzy->fun = gretain(self->fun);
-  lzy->cnt = self->cnt;
+makclass(PFunExpr1, FunExpr1);
+makclass(PFunExpr2, FunExpr2);
+makclass(PFunExpr3, FunExpr3);
+makclass(PFunExpr4, FunExpr4);
+makclass(PFunExpr5, FunExpr5);
 
-  retmethod(_lzy);
-endmethod
+// ----- partially evaluated method built by MthExpr_init (Functor_mth.h)
 
-// ----- dtors
+makclass(PMthExpr1, MthExpr1);
+makclass(PMthExpr2, MthExpr2);
+makclass(PMthExpr3, MthExpr3);
+makclass(PMthExpr4, MthExpr4);
+makclass(PMthExpr5, MthExpr5);
 
-defmethod(OBJ, gdeinit, FunArg)
-  retmethod(_1);
-endmethod
+// ----- optimized SFunExprs built by FunExpr_init
 
-defmethod(OBJ, gdeinit, FunVar)
-  grelease(self->var);
-  retmethod(_1);
-endmethod
+makclass(SFunExpr1, FunExpr1);
+makclass(SFunExpr2, FunExpr2);
+makclass(SFunExpr3, FunExpr3);
+makclass(SFunExpr4, FunExpr4);
 
-defmethod(OBJ, gdeinit, FunLzy)
-  grelease(self->fun);
-  retmethod(_1);
-endmethod
+// ----- optimized SMthExprs built by MthExpr_init
 
-defmethod(OBJ, gdeinit, FunExpr)
-  retmethod(_1);
-endmethod
+makclass(SMthExpr1, MthExpr1);
+makclass(SMthExpr2, MthExpr2);
+makclass(SMthExpr3, MthExpr3);
+makclass(SMthExpr4, MthExpr4);
 
-// ----- eval
+// ----- more SFunExprs specializations for eval
 
-defmethod(OBJ, gevalEnv, PlaceHolder, Container)
-  test_assert(0, "invalid placeholder evaluation (geval)");
-  retmethod(Nil);
-endmethod
+makclass(SFunExpr21, SFunExpr2);
+makclass(SFunExpr22, SFunExpr2);
+makclass(SFunExpr23, SFunExpr2);
+makclass(SFunExpr31, SFunExpr3);
+makclass(SFunExpr32, SFunExpr3);
+makclass(SFunExpr33, SFunExpr3);
+makclass(SFunExpr34, SFunExpr3);
+makclass(SFunExpr35, SFunExpr3);
+makclass(SFunExpr36, SFunExpr3);
+makclass(SFunExpr37, SFunExpr3);
+makclass(SFunExpr41, SFunExpr4);
+makclass(SFunExpr42, SFunExpr4);
+makclass(SFunExpr43, SFunExpr4);
+makclass(SFunExpr44, SFunExpr4);
+makclass(SFunExpr45, SFunExpr4);
+makclass(SFunExpr46, SFunExpr4);
+makclass(SFunExpr47, SFunExpr4);
+makclass(SFunExpr48, SFunExpr4);
+makclass(SFunExpr49, SFunExpr4);
+makclass(SFunExpr4A, SFunExpr4);
+makclass(SFunExpr4B, SFunExpr4);
+makclass(SFunExpr4C, SFunExpr4);
+makclass(SFunExpr4D, SFunExpr4);
+makclass(SFunExpr4E, SFunExpr4);
+makclass(SFunExpr4F, SFunExpr4);
 
-defmethod(OBJ, gevalEnv, FunLzy, Container)
-  retmethod ( self->cnt == 1 ? self->fun
-                             : gautoDelete(aFunLzyN(self->cnt-1, self->fun)) );
-endmethod
+// ----- more SMthExprs specialization for eval
 
-// ----- str
-
-defmethod(STR, gstr, FunExpr)
-  retmethod(self->str);
-endmethod
+makclass(SMthExpr21, SMthExpr2);
+makclass(SMthExpr22, SMthExpr2);
+makclass(SMthExpr23, SMthExpr2);
+makclass(SMthExpr31, SMthExpr3);
+makclass(SMthExpr32, SMthExpr3);
+makclass(SMthExpr33, SMthExpr3);
+makclass(SMthExpr34, SMthExpr3);
+makclass(SMthExpr35, SMthExpr3);
+makclass(SMthExpr36, SMthExpr3);
+makclass(SMthExpr37, SMthExpr3);
+makclass(SMthExpr41, SMthExpr4);
+makclass(SMthExpr42, SMthExpr4);
+makclass(SMthExpr43, SMthExpr4);
+makclass(SMthExpr44, SMthExpr4);
+makclass(SMthExpr45, SMthExpr4);
+makclass(SMthExpr46, SMthExpr4);
+makclass(SMthExpr47, SMthExpr4);
+makclass(SMthExpr48, SMthExpr4);
+makclass(SMthExpr49, SMthExpr4);
+makclass(SMthExpr4A, SMthExpr4);
+makclass(SMthExpr4B, SMthExpr4);
+makclass(SMthExpr4C, SMthExpr4);
+makclass(SMthExpr4D, SMthExpr4);
+makclass(SMthExpr4E, SMthExpr4);
+makclass(SMthExpr4F, SMthExpr4);
 

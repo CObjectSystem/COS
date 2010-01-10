@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.8 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.9 2010/01/10 13:13:31 ldeniau Exp $
  |
 */
 
@@ -44,80 +44,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include "Functor.h"
 #include "Functor_utl.h"
-
-// ----- Functor method
-
-defclass(MthExpr1, MthExpr)
-  char *arg;    // arguments
-  OBJ   rcv[1]; // receivers
-  U16   off[8]; // arguments OBJects offsets
-  U8    idx[8]; // arguments OBJects indexes
-  U8    pos[1]; // receivers indexes as OBJects 
-  U8    noff;   // number of arguments offsets
-  U8    nexp;   // number of arguments expressions
-endclass
-
-defclass(MthExpr2, MthExpr)
-  char *arg;
-  OBJ   rcv[2];
-  U16   off[7];
-  U8    idx[7];
-  U8    pos[2];
-  U8    noff;
-  U8    nexp;
-endclass
-
-defclass(MthExpr3, MthExpr)
-  char *arg;
-  OBJ   rcv[3];
-  U16   off[6];
-  U8    idx[6];
-  U8    pos[3];
-  U8    noff;
-  U8    nexp;
-endclass
-
-defclass(MthExpr4, MthExpr)
-  char *arg;
-  OBJ   rcv[4];
-  U16   off[5];
-  U8    idx[5];
-  U8    pos[4];
-  U8    noff;
-  U8    nexp;
-endclass
-
-defclass(MthExpr5, MthExpr)
-  char *arg;
-  OBJ   rcv[5];
-  U16   off[4];
-  U8    idx[4];
-  U8    pos[5];
-  U8    noff;
-  U8    nexp;
-endclass
-
-makclass(MthExpr , Functor);
-makclass(MthExpr1, MthExpr);
-makclass(MthExpr2, MthExpr);
-makclass(MthExpr3, MthExpr);
-makclass(MthExpr4, MthExpr);
-makclass(MthExpr5, MthExpr);
-
-// ----- partially evaluated method
-
-defclass(MthPart1, MthExpr1) endclass
-defclass(MthPart2, MthExpr2) endclass
-defclass(MthPart3, MthExpr3) endclass
-defclass(MthPart4, MthExpr4) endclass
-defclass(MthPart5, MthExpr5) endclass
-
-makclass(MthPart1, MthExpr1);
-makclass(MthPart2, MthExpr2);
-makclass(MthPart3, MthExpr3);
-makclass(MthPart4, MthExpr4);
-makclass(MthPart5, MthExpr5);
 
 // ----- type compatibility with messages
 
@@ -235,6 +163,24 @@ optArgs(U16 off[], U8 idx[], I32 noff, U32 msk)
   return i;
 }
 
+enum { MTH_ISEXPR, MTH_ISCLOSED, MTH_ISMESS };
+
+static inline int
+getMthType(U32 msk, OBJ arg[], U32 n) // TODO!!!!
+{
+  U32 idx, narg = 0;
+  
+  for (idx = 0; idx < n; idx++) {
+    if (isArg(msk, idx)) ++narg;
+
+    else
+    if (!isIdx(msk, idx) || idx - narg != getIdx(arg[idx]))
+      break;
+  }
+       
+  return idx == n ? (!narg ? MTH_ISMESS : MTH_ISCLOSED) : MTH_ISEXPR;
+}
+
 // ----- initializer
 
 #undef  DEFFUNC
@@ -269,7 +215,7 @@ static struct Functor* COS_PP_CAT(MthExpr_init,N) \
 \
   if (getPar(*msk)) \
     mth->MthExpr.Functor.Expression.Object.id = \
-      cos_class_id(classref(COS_PP_CAT(MthPart,N))); \
+      cos_class_id(classref(COS_PP_CAT(PMthExpr,N))); \
 \
   return &mth->MthExpr.Functor; \
 }
@@ -351,8 +297,8 @@ endmethod
 
 #define CALL_METHOD(...) \
   do { \
-    if (!mth->arg) \
-      imp(sel, __VA_ARGS__,   0, _ret); \
+    if (!mth->nexp) \
+      imp(sel, __VA_ARGS__, mth->arg, _ret); \
     else { \
       MAKE_ARG_COPY; \
       imp(sel, __VA_ARGS__, arg, _ret); \
@@ -489,7 +435,7 @@ endmethod
 
 // ---- eval (stack-like environment with partial evaluation)
 
-defmethod(OBJ, gevalEnv, MthPart1, Array)
+defmethod(OBJ, gevalEnv, PMthExpr1, Array)
   U32  msk = self->MthExpr1.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr1.MthExpr.sel;
   OBJ *arg = self->MthExpr1.rcv;
@@ -504,7 +450,7 @@ defmethod(OBJ, gevalEnv, MthPart1, Array)
   RETURN_METHOD(arg0);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthPart2, Array)
+defmethod(OBJ, gevalEnv, PMthExpr2, Array)
   U32  msk = self->MthExpr2.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr2.MthExpr.sel;
   OBJ *arg = self->MthExpr2.rcv;
@@ -520,7 +466,7 @@ defmethod(OBJ, gevalEnv, MthPart2, Array)
   RETURN_METHOD(arg0,arg1);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthPart3, Array)
+defmethod(OBJ, gevalEnv, PMthExpr3, Array)
   U32  msk = self->MthExpr3.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr3.MthExpr.sel;
   OBJ *arg = self->MthExpr3.rcv;
@@ -537,7 +483,7 @@ defmethod(OBJ, gevalEnv, MthPart3, Array)
   RETURN_METHOD(arg0,arg1,arg2);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthPart4, Array)
+defmethod(OBJ, gevalEnv, PMthExpr4, Array)
   U32  msk = self->MthExpr4.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr4.MthExpr.sel;
   OBJ *arg = self->MthExpr4.rcv;
@@ -555,7 +501,7 @@ defmethod(OBJ, gevalEnv, MthPart4, Array)
   RETURN_METHOD(arg0,arg1,arg2,arg3);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthPart5, Array)
+defmethod(OBJ, gevalEnv, PMthExpr5, Array)
   U32  msk = self->MthExpr5.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr5.MthExpr.sel;
   OBJ *arg = self->MthExpr5.rcv;
@@ -681,7 +627,7 @@ endmethod
 
 // ---- eval (generic environement with partial evaluation)
 
-defmethod(OBJ, gevalEnv, MthPart1, Container)
+defmethod(OBJ, gevalEnv, PMthExpr1, Container)
   U32  msk = self->MthExpr1.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr1.MthExpr.sel;
   OBJ *arg = self->MthExpr1.rcv;
@@ -694,7 +640,7 @@ defmethod(OBJ, gevalEnv, MthPart1, Container)
   RETURN_METHOD(arg0);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthPart2, Container)
+defmethod(OBJ, gevalEnv, PMthExpr2, Container)
   U32  msk = self->MthExpr2.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr2.MthExpr.sel;
   OBJ *arg = self->MthExpr2.rcv;
@@ -708,7 +654,7 @@ defmethod(OBJ, gevalEnv, MthPart2, Container)
   RETURN_METHOD(arg0,arg1);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthPart3, Container)
+defmethod(OBJ, gevalEnv, PMthExpr3, Container)
   U32  msk = self->MthExpr3.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr3.MthExpr.sel;
   OBJ *arg = self->MthExpr3.rcv;
@@ -723,7 +669,7 @@ defmethod(OBJ, gevalEnv, MthPart3, Container)
   RETURN_METHOD(arg0,arg1,arg2);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthPart4, Container)
+defmethod(OBJ, gevalEnv, PMthExpr4, Container)
   U32  msk = self->MthExpr4.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr4.MthExpr.sel;
   OBJ *arg = self->MthExpr4.rcv;
@@ -739,7 +685,7 @@ defmethod(OBJ, gevalEnv, MthPart4, Container)
   RETURN_METHOD(arg0,arg1,arg2,arg3);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthPart5, Container)
+defmethod(OBJ, gevalEnv, PMthExpr5, Container)
   U32  msk = self->MthExpr5.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr5.MthExpr.sel;
   OBJ *arg = self->MthExpr5.rcv;

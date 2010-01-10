@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Functor (Function Expression)
+ | COS Functor (Functor Expression)
  |
  o---------------------------------------------------------------------o
  |
@@ -29,42 +29,19 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.9 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.10 2010/01/10 13:13:31 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
 #include <cos/Functor.h>
 #include <cos/gen/accessor.h>
-#include <cos/gen/object.h>
 #include <cos/gen/functor.h>
+#include <cos/gen/object.h>
+#include <cos/gen/value.h>
 
+#include "Functor.h"
 #include "Functor_utl.h"
-
-// -----
-
-makclass(FunExpr , Functor);
-makclass(FunExpr1, FunExpr);
-makclass(FunExpr2, FunExpr);
-makclass(FunExpr3, FunExpr);
-makclass(FunExpr4, FunExpr);
-makclass(FunExpr5, FunExpr);
-makclass(FunExpr6, FunExpr);
-makclass(FunExpr7, FunExpr);
-makclass(FunExpr8, FunExpr);
-makclass(FunExpr9, FunExpr);
-
-// ----- partially evaluated functor
-
-defclass(FunPart1, FunExpr1) endclass
-defclass(FunPart2, FunExpr2) endclass
-defclass(FunPart3, FunExpr3) endclass
-defclass(FunPart4, FunExpr4) endclass
-
-makclass(FunPart1, FunExpr1);
-makclass(FunPart2, FunExpr2);
-makclass(FunPart3, FunExpr3);
-makclass(FunPart4, FunExpr4);
 
 // ----- type compatibility with functions
 
@@ -117,7 +94,7 @@ getFunType(U32 msk, OBJ arg[], U32 n)
 
 // ----- initializer
 
-dclclass(Functor1, Functor2, Functor3, Functor4);
+dclclass(SFunExpr1, SFunExpr2, SFunExpr3, SFunExpr4);
 
 #undef  DEFFUNC
 #define DEFFUNC(N) \
@@ -138,12 +115,12 @@ struct Functor* COS_PP_CAT(FunExpr_init,N) \
   COS_PP_IF(COS_PP_GT(N,4))(, \
   case FUN_ISCLOSED: \
     fun->FunExpr.Functor.Expression.Object.id = \
-      cos_class_id(classref(COS_PP_CAT(Functor,N))); break; \
+      cos_class_id(classref(COS_PP_CAT(SFunExpr,N))); break; \
 \
   case FUN_ISEXPR: \
     if (getPar(fun->FunExpr.Functor.msk)) \
       fun->FunExpr.Functor.Expression.Object.id = \
-        cos_class_id(classref(COS_PP_CAT(FunPart,N))); break; \
+        cos_class_id(classref(COS_PP_CAT(PFunExpr,N))); break; \
   ) \
   } \
 \
@@ -217,6 +194,18 @@ DEFMETHOD(7)
 DEFMETHOD(8)
 DEFMETHOD(9)
 
+// ----- dtor (default)
+
+defmethod(OBJ, gdeinit, FunExpr)
+  retmethod(_1);
+endmethod
+
+// ----- str
+
+defmethod(STR, gstr, FunExpr)
+  retmethod(self->str);
+endmethod
+
 // ----- eval (stack-like environment)
 
 defmethod(OBJ, gevalEnv, FunExpr1, Array)
@@ -231,7 +220,7 @@ defmethod(OBJ, gevalEnv, FunExpr1, Array)
   retmethod( fct(arg0) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunPart1, Array) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr1, Array) // partial evaluation
   U32  msk = self->FunExpr1.FunExpr.Functor.msk;
   FUN1 fct = self->FunExpr1.fct;
   OBJ *arg = self->FunExpr1.arg;
@@ -256,7 +245,7 @@ defmethod(OBJ, gevalEnv, FunExpr2, Array)
   retmethod( fct(arg0, arg1) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunPart2, Array) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr2, Array) // partial evaluation
   U32  msk = self->FunExpr2.FunExpr.Functor.msk;
   FUN2 fct = self->FunExpr2.fct;
   OBJ *arg = self->FunExpr2.arg;
@@ -283,7 +272,7 @@ defmethod(OBJ, gevalEnv, FunExpr3, Array)
   retmethod( fct(arg0, arg1, arg2) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunPart3, Array) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr3, Array) // partial evaluation
   U32  msk = self->FunExpr3.FunExpr.Functor.msk;
   FUN3 fct = self->FunExpr3.fct;
   OBJ *arg = self->FunExpr3.arg;
@@ -312,7 +301,7 @@ defmethod(OBJ, gevalEnv, FunExpr4, Array)
   retmethod( fct(arg0, arg1, arg2, arg3) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunPart4, Array) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr4, Array) // partial evaluation
   U32  msk = self->FunExpr4.FunExpr.Functor.msk;
   FUN4 fct = self->FunExpr4.fct;
   OBJ *arg = self->FunExpr4.arg;
@@ -449,7 +438,7 @@ defmethod(OBJ, gevalEnv, FunExpr1, Container)
   retmethod( fct(arg0) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunPart1, Container) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr1, Container) // partial evaluation
   U32  msk = self->FunExpr1.FunExpr.Functor.msk;
   FUN1 fct = self->FunExpr1.fct;
   OBJ *arg = self->FunExpr1.arg;
@@ -470,7 +459,7 @@ defmethod(OBJ, gevalEnv, FunExpr2, Container)
   retmethod( fct(arg0, arg1) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunPart2, Container) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr2, Container) // partial evaluation
   U32  msk = self->FunExpr2.FunExpr.Functor.msk;
   FUN2 fct = self->FunExpr2.fct;
   OBJ *arg = self->FunExpr2.arg;
@@ -493,7 +482,7 @@ defmethod(OBJ, gevalEnv, FunExpr3, Container)
   retmethod( fct(arg0, arg1, arg2) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunPart3, Container) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr3, Container) // partial evaluation
   U32  msk = self->FunExpr3.FunExpr.Functor.msk;
   FUN3 fct = self->FunExpr3.fct;
   OBJ *arg = self->FunExpr3.arg;
@@ -518,7 +507,7 @@ defmethod(OBJ, gevalEnv, FunExpr4, Container)
   retmethod( fct(arg0, arg1, arg2, arg3) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunPart4, Container) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr4, Container) // partial evaluation
   U32  msk = self->FunExpr4.FunExpr.Functor.msk;
   FUN4 fct = self->FunExpr4.fct;
   OBJ *arg = self->FunExpr4.arg;

@@ -1,5 +1,5 @@
-#ifndef COS_FUNCTOR_UTL_H
-#define COS_FUNCTOR_UTL_H
+#ifndef FUNCTOR_UTL_H
+#define FUNCTOR_UTL_H
 
 /*
  o---------------------------------------------------------------------o
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.9 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.10 2010/01/10 13:13:31 ldeniau Exp $
  |
 */
 
@@ -163,8 +163,6 @@ getArgVarOff(U32 idx, U32 msk, OBJ *arg, OBJ env)
 
 // ----- build context mask
 
-void  Functor_setMask   (U32 *msk, U32 i, OBJ *arg, STR file, int line);
-void* Functor_cloneArgs (SEL sel, char *arg);
-void  Functor_deleteArgs(SEL sel, char *arg);
+void  Functor_setMask(U32 *msk, U32 i, OBJ *arg, STR file, int line);
 
-#endif // COS_FUNCTOR_UTL_H
+#endif // FUNCTOR_UTL_H

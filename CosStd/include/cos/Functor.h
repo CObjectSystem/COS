@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.26 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: Functor.h,v 1.27 2010/01/10 13:13:28 ldeniau Exp $
  |
 */
 
@@ -286,5 +286,10 @@ struct Functor* FunExpr_init6(struct FunExpr6*, STR file, int line);
 struct Functor* FunExpr_init7(struct FunExpr7*, STR file, int line);
 struct Functor* FunExpr_init8(struct FunExpr8*, STR file, int line);
 struct Functor* FunExpr_init9(struct FunExpr9*, STR file, int line);
+
+// ----- helpers
+
+void* Functor_cloneArgs (SEL sel, char *arg);
+void  Functor_deleteArgs(SEL sel, char *arg);
 
 #endif // COS_FUNCTOR_H

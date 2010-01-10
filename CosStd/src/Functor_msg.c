@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_msg.c,v 1.1 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: Functor_msg.c,v 1.2 2010/01/10 13:13:31 ldeniau Exp $
  |
 */
 
@@ -39,15 +39,8 @@
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 
+#include "Functor.h"
 #include "Functor_utl.h"
-
-// -----
-
-makclass(Message1, MthExpr);
-makclass(Message2, MthExpr);
-makclass(Message3, MthExpr);
-makclass(Message4, MthExpr);
-makclass(Message5, MthExpr);
 
 // ----- copy
 

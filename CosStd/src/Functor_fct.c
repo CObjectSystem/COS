@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.8 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.9 2010/01/10 13:13:31 ldeniau Exp $
  |
 */
 
@@ -37,17 +37,6 @@
 #include <cos/Functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/functor.h>
-
-makclass(Function0, FunExpr);
-makclass(Function1, FunExpr);
-makclass(Function2, FunExpr);
-makclass(Function3, FunExpr);
-makclass(Function4, FunExpr);
-makclass(Function5, FunExpr);
-makclass(Function6, FunExpr);
-makclass(Function7, FunExpr);
-makclass(Function8, FunExpr);
-makclass(Function9, FunExpr);
 
 // ----- copy
 
