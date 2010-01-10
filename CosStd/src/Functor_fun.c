@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.14 2010/01/10 14:51:49 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.15 2010/01/10 15:05:22 ldeniau Exp $
  |
 */
 
@@ -105,7 +105,7 @@ struct Functor* COS_PP_CAT(FunExpr_init,N) \
   U32 *msk = &fun->FunExpr.Functor.msk; \
 \
   for (U32 i = 0; i < N; i++) \
-    Functor_setMask(msk, i, fun->arg+i, file, line); \
+    Functor_setMask(msk, i, fun->arg+i); \
 \
   switch(getFunType(*msk, fun->arg, N)) { \
   case FUN_ISFUNC: \

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.11 2010/01/10 14:51:49 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.12 2010/01/10 15:05:22 ldeniau Exp $
  |
 */
 
@@ -182,11 +182,11 @@ static struct Functor* COS_PP_CAT(MthExpr_init,N) \
   mth->noff = getOffs(sel, mth->off, mth->idx, mth->pos); \
 \
   for (U32 i = 0; i < N; i++) \
-    Functor_setMask(msk, mth->pos[i], mth->rcv+i, file, line); \
+    Functor_setMask(msk, mth->pos[i], mth->rcv+i); \
 \
   if (mth->noff) { \
     for (U32 i = 0; i < mth->noff; i++) \
-      Functor_setMask(msk, mth->idx[i], (OBJ*)(mth->arg+mth->off[i]), file, line); \
+      Functor_setMask(msk, mth->idx[i], (OBJ*)(mth->arg+mth->off[i])); \
 \
     mth->nexp = optArgs(mth->off, mth->idx, mth->noff, *msk); \
   } \
