@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.24 2010/01/07 22:40:14 ldeniau Exp $
+ | $Id: Object.c,v 1.25 2010/01/11 13:41:21 ldeniau Exp $
  |
 */
 
@@ -67,8 +67,8 @@ object_alloc(OBJ _cls, size_t extra)
 
   if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
 
-  obj->id = cos_class_id(cls);
-  obj->rc = COS_RC_UNIT;
+  obj->_id = cos_class_id(cls);
+  obj->_rc = COS_RC_UNIT;
 
   return obj;
 }
@@ -85,10 +85,11 @@ endmethod
 
 defmethod(void, gdealloc, Object)
   PRE
-    test_assert(self->id && self->rc != COS_RC_INVALID, "object already destroyed");
+    test_assert(cos_object_id(_1) != 0 &&
+                cos_object_rc(_1) != COS_RC_INVALID, "object already destroyed");
   BODY
-    self->id = 0;
-    self->rc = COS_RC_INVALID;
+    cos_object_setId(_1, 0);
+    cos_object_setRc(_1, COS_RC_INVALID);
     free(_1);
 endmethod
 
@@ -208,54 +209,56 @@ endmethod
 // ----- ownership
 
 defmethod(U32, gretainCount, Object)
-  retmethod( self->rc );
+  retmethod( cos_object_rc(_1) );
 endmethod
 
 // ----- identity
 
 defmethod(OBJ, gisInstanceOf, Object, Class)
-  retmethod( self1->id == self2->Behavior.id ? True : False );
+  retmethod( cos_object_id(_1) == self2->Behavior.id ? True : False );
 endmethod
 
 defmethod(OBJ, gisKindOf, Object, Class)
-  retmethod( self1->id == self2->Behavior.id || cos_object_isKindOf(_1, self2)
-             ? True : False );
+  retmethod( cos_object_id(_1) == self2->Behavior.id ||
+             cos_object_isKindOf(_1, self2) ? True : False );
 endmethod
 
 defmethod(OBJ, gclass, Object)
-  retmethod( (OBJ)cos_class_get(self->id) );
+  retmethod( (OBJ)cos_class_get(cos_object_id(_1)) );
 endmethod
 
 defmethod(STR, gclassName, Object)
-  retmethod( cos_class_get(self->id)->str );
+  retmethod( cos_class_get(cos_object_id(_1))->str );
 endmethod
 
 // ----- understanding
 
 defmethod(OBJ, gunderstandMessage1, Object, (SEL)msg)
-  retmethod( cos_method_understand1(msg, self1->id)
+  retmethod( cos_method_understand1(msg, cos_object_id(_1))
              ? True : False );
 endmethod
 
 defmethod(OBJ, gunderstandMessage2, Object, Object, (SEL)msg)
-  retmethod( cos_method_understand2(msg, self1->id, self2->id)
+  retmethod( cos_method_understand2(msg, cos_object_id(_1), cos_object_id(_2))
              ? True : False );
 endmethod
 
 defmethod(OBJ, gunderstandMessage3, Object, Object, Object, (SEL)msg)
-  retmethod( cos_method_understand3(msg, self1->id, self2->id, self3->id)
+  retmethod( cos_method_understand3(msg, cos_object_id(_1), cos_object_id(_2),
+                                         cos_object_id(_3))
              ? True : False );
 endmethod
 
 defmethod(OBJ, gunderstandMessage4, Object, Object, Object, Object, (SEL)msg)
- retmethod( cos_method_understand4(msg, self1->id, self2->id,
-                                        self3->id, self4->id)
+ retmethod( cos_method_understand4(msg, cos_object_id(_1), cos_object_id(_2),
+                                        cos_object_id(_3), cos_object_id(_4))
             ? True : False );
 endmethod
 
 defmethod(OBJ, gunderstandMessage5, Object, Object, Object, Object, Object, (SEL)msg)
- retmethod( cos_method_understand5(msg, self1->id, self2->id, self3->id,
-                                        self4->id, self5->id)
+ retmethod( cos_method_understand5(msg, cos_object_id(_1), cos_object_id(_2),
+                                        cos_object_id(_3), cos_object_id(_4),
+                                        cos_object_id(_5))
             ? True : False );
 endmethod
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.47 2009/10/02 21:52:40 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.48 2010/01/11 13:41:21 ldeniau Exp $
  |
 */
 
@@ -192,49 +192,45 @@ push(OBJ obj)
 // ----- Object ownership
 
 defmethod(OBJ, gretain, Object)
-  if (self->rc >= COS_RC_UNIT) {
-    ++self->rc;
-    retmethod(_1);
-  }
+  if (cos_object_rc(_1) >= COS_RC_UNIT)
+    retmethod( cos_object_incRc(_1) );
 
-  if (self->rc == COS_RC_AUTO)
+  if (cos_object_rc(_1) == COS_RC_AUTO)
     retmethod(gclone(_1));
 
-  if (self->rc == COS_RC_STATIC)
+  if (cos_object_rc(_1) == COS_RC_STATIC)
     retmethod(_1);
 
-  // self->rc < COS_RC_STATIC
+  // cos_object_rc(_1) < COS_RC_STATIC
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
 defalias (OBJ, (gautoRelease)gautoDelete, Object);
 defmethod(OBJ,  gautoRelease            , Object)
-  if (self->rc >= COS_RC_UNIT)
+  if (cos_object_rc(_1) >= COS_RC_UNIT)
     retmethod(push(_1));
 
-  if (self->rc == COS_RC_AUTO)
+  if (cos_object_rc(_1) == COS_RC_AUTO)
     retmethod(push(gclone(_1)));
 
-  if (self->rc == COS_RC_STATIC)
+  if (cos_object_rc(_1) == COS_RC_STATIC)
     retmethod(_1);
 
-  // self->rc < COS_RC_STATIC
+  // cos_object_rc(_1) < COS_RC_STATIC
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
 defalias (void, (grelease)gdelete, Object);
 defmethod(void,  grelease        , Object)
-  if (self->rc > COS_RC_UNIT)
-    --self->rc;
+  if (cos_object_rc(_1) > COS_RC_UNIT)
+    cos_object_decRc(_1);
   
   else
-  if (self->rc == COS_RC_UNIT) {
-    self->rc = COS_RC_STATIC; // avoid cyclic dependencies
-    gdealloc(gdeinit(_1));
-  }
+  if (cos_object_rc(_1) == COS_RC_UNIT) // take care of cyclic dependencies
+    gdealloc(gdeinit(cos_object_setRc(_1, COS_RC_STATIC)));
 
   else
-  if (self->rc < COS_RC_STATIC) // insensitive to STATIC and AUTO
+  if (cos_object_rc(_1) < COS_RC_STATIC) // insensitive to STATIC and AUTO
     THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
@@ -280,7 +276,7 @@ endmethod
 // -----
 
 defmethod(OBJ, ginit, AutoRelease)
-  self->Object.rc = COS_RC_AUTO; // AutoRelease pools are "linked" to the stack
+  cos_object_setRc(_1, COS_RC_AUTO); // AutoRelease pools are "linked" to the stack
   self->stk = self->_stk;
   self->top = self->_stk;
   self->end = self->_stk + COS_ARRLEN(self->_stk);
@@ -314,19 +310,24 @@ endmethod
 
 defmethod(void, ginitialize, pmAutoRelease)
   if (!_pool0.prv) {
+    OBJ pool = (OBJ)(void*)&_pool0;
     // cos_trace("ginitialize(pmAutoRelease)");
-    _pool0.Object.id = cos_class_id(classref(AutoRelease));
-    _pool0.Object.rc = COS_RC_STATIC;
+    cos_object_setId(pool, cos_class_id(classref(AutoRelease)));
+    cos_object_setRc(pool, COS_RC_STATIC);
+    
     _pool0.prv = &_pool0;
     _pool_init();
-    ginit((void*)&_pool0);
+    
+    ginit((OBJ)(void*)&_pool0);
   }
 endmethod
 
 defmethod(void, gdeinitialize, pmAutoRelease)
   if (_pool0.prv) {
+    OBJ pool = (OBJ)(void*)&_pool0;
     // cos_trace("gdeinitialize(pmAutoRelease)");
-    gdeinit((void*)&_pool0);
+    gdeinit(pool);
+    
     _pool0.prv = 0;
   }
 endmethod

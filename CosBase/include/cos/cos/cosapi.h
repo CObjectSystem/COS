@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.40 2010/01/10 14:49:54 ldeniau Exp $
+ | $Id: cosapi.h,v 1.41 2010/01/11 13:41:20 ldeniau Exp $
  |
 */
 
@@ -332,15 +332,47 @@ cos_ident(OBJ obj)
 static COS_ALWAYS_INLINE U32
 cos_object_id(OBJ obj)
 {
-  return COS_STATIC_CAST(struct Object*, obj)->id;
+  return COS_STATIC_CAST(struct Object*, obj)->_id;
   COS_UNUSED(cos_object_id);
 }
 
-static COS_ALWAYS_INLINE U32
+static COS_ALWAYS_INLINE OBJ
+cos_object_setId(OBJ obj, U32 id)
+{
+  COS_STATIC_CAST(struct Object*, obj)->_id = id;
+  return obj;
+  COS_UNUSED(cos_object_setId);
+}
+
+static COS_ALWAYS_INLINE I32
 cos_object_rc(OBJ obj)
 {
-  return COS_STATIC_CAST(struct Object*, obj)->rc;
+  return COS_STATIC_CAST(struct Object*, obj)->_rc;
   COS_UNUSED(cos_object_rc);
+}
+
+static COS_ALWAYS_INLINE OBJ
+cos_object_setRc(OBJ obj, I32 rc)
+{
+  COS_STATIC_CAST(struct Object*, obj)->_rc = rc;
+  return obj;
+  COS_UNUSED(cos_object_setRc);
+}
+
+static COS_ALWAYS_INLINE OBJ
+cos_object_incRc(OBJ obj)
+{
+  COS_STATIC_CAST(struct Object*, obj)->_rc++;
+  return obj;
+  COS_UNUSED(cos_object_incRc);
+}
+
+static COS_ALWAYS_INLINE OBJ
+cos_object_decRc(OBJ obj)
+{
+  COS_STATIC_CAST(struct Object*, obj)->_rc--;
+  return obj;
+  COS_UNUSED(cos_object_decRc);
 }
 
 static COS_ALWAYS_INLINE struct Class*

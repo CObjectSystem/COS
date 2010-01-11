@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.16 2009/12/31 17:56:53 ldeniau Exp $
+ | $Id: class.h,v 1.17 2010/01/11 13:41:20 ldeniau Exp $
  |
 */
 
@@ -181,7 +181,9 @@
                  COS_PP_IF(COS_TOK_ISNIL(NAME))(1,0), \
                COS_MCL_MSPE(NAME) = 0, \
                COS_PCL_MSPE(NAME) = 0 }; \
-        struct NAME {
+        struct NAME { \
+          U32 _id; \
+          I32 _rc;
 
 #define COS_CLS_DEF_N(NAME,SUPER) \
         COS_CLS_DEF_DCL(NAME); \
