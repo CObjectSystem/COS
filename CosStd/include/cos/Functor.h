@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.28 2010/01/10 15:07:44 ldeniau Exp $
+ | $Id: Functor.h,v 1.29 2010/01/11 14:22:10 ldeniau Exp $
  |
 */
 
@@ -202,27 +202,36 @@ defclass(IterateFun, Functor)
   FUN1 fct;
 endclass
 
+// ----- Special Expression Surrogate
+
+defclass(ExpressionSurrogate,_)
+  OBJ expr;
+endclass
+
 // ----- automatic constructor
 
-#define aFunctor(...)  ( (OBJ)atFunctor(__VA_ARGS__) )
-#define aFunArg(...)   ( (OBJ)atFunArg (__VA_ARGS__) )
-#define aFunVar(...)   ( (OBJ)atFunVar (__VA_ARGS__) )
-#define aFunLzy(...)   ( (OBJ)atFunLzy (__VA_ARGS__) )
-#define aFunLzyN(...)  ( (OBJ)atFunLzyN(__VA_ARGS__) )
+#define aFunctor(...)    ( (OBJ)atFunctor   (__VA_ARGS__) )
+#define aFunArg(A)       ( (OBJ)atFunArg    (A)           )
+#define aFunVar(V)       ( (OBJ)atFunVar    (V)           )
+#define aFunLzy(E)       ( (OBJ)atFunLzy    (E)           )
+#define aFunLzyN(N,E)    ( (OBJ)atFunLzyN   (N,E)         )
+#define aExpression(E)   ( (OBJ)atExpression(E)           )
 
 // --- shortcuts
 
 #ifndef COS_NOSHORTCUT
-#define aFun(...)  aFunctor(__VA_ARGS__)
-#define aArg(...)  aFunArg (__VA_ARGS__)
-#define aVar(...)  aFunVar (__VA_ARGS__)
-#define aLzy(...)  aFunLzy (__VA_ARGS__)
+#define aFun(...)   aFunctor(__VA_ARGS__)
+#define aArg(A)     aFunArg (A)
+#define aVar(V)     aFunVar (V)
+#define aLzy(E)     aFunLzy (E)
 
-#define aLzy2(...) aFunLzyN(2,__VA_ARGS__)
-#define aLzy3(...) aFunLzyN(3,__VA_ARGS__)
-#define aLzy4(...) aFunLzyN(4,__VA_ARGS__)
-#define aLzy5(...) aFunLzyN(5,__VA_ARGS__)
-#define aLzyN(...) aFunLzyN(  __VA_ARGS__)
+#define aLzy2(E)    aFunLzyN(2,E)
+#define aLzy3(E)    aFunLzyN(3,E)
+#define aLzy4(E)    aFunLzyN(4,E)
+#define aLzy5(E)    aFunLzyN(5,E)
+#define aLzyN(N,E)  aFunLzyN(N,E)
+
+#define aExpr(E)    aExpression(E)
 #endif
 
 // --- placeholders
@@ -274,6 +283,11 @@ endclass
 
 #define atFunLzyN(N,FUN) \
   ( &(struct FunLzy){ {{ cos_object_auto(FunLzy) }}, (FUN), (N) } )
+
+// ----- Expression surrogate
+
+#define atExpression(EXPR) \
+  (&(struct ExpressionSurrogate){cos_object_auto(ExpressionSurrogate), (EXPR)})
 
 // ----- initializers
 

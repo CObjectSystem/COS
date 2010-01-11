@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.13 2010/01/10 15:07:44 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.14 2010/01/11 14:22:11 ldeniau Exp $
  |
 */
 
@@ -192,18 +192,18 @@ static struct Functor* COS_PP_CAT(MthExpr_init,N) \
 \
   switch(getMthType(*msk, mth->rcv, mth->pos, N, mth->nexp)) { \
   case MTH_ISMESS: \
-    mth->MthExpr.Functor.Expression.Object.id = \
-      cos_class_id(classref(COS_PP_CAT(Message,N))); break; \
+    cos_object_setId((OBJ)mth, cos_class_id(classref(COS_PP_CAT(Message,N)))); \
+    break; \
 \
   COS_PP_IF(COS_PP_GT(N,4))(, \
   case MTH_ISCLOSED: \
-    mth->MthExpr.Functor.Expression.Object.id = \
-      cos_class_id(classref(COS_PP_CAT(SMthExpr,N))); break; \
+    cos_object_setId((OBJ)mth, cos_class_id(classref(COS_PP_CAT(SMthExpr,N))));\
+    break; \
   ) \
   case MTH_ISEXPR: \
     if (getPar(*msk))\
-      mth->MthExpr.Functor.Expression.Object.id = \
-        cos_class_id(classref(COS_PP_CAT(PMthExpr,N))); break; \
+      cos_object_setId((OBJ)mth,cos_class_id(classref(COS_PP_CAT(PMthExpr,N))));\
+    break; \
   } \
 \
   return &mth->MthExpr.Functor; \
@@ -691,7 +691,7 @@ defmethod(OBJ, gevalEnv, PMthExpr5, Container)
   RETURN_METHOD(arg0,arg1,arg2,arg3,arg4);
 endmethod
 
-// ---- unrecognizedMessage (ctors)
+// ---- unrecognizedMessage (Expression ctors)
 
 // ---- 1
 
@@ -760,6 +760,78 @@ defmethod(void, gunrecognizedMessage5, Object, Object, Object, Expression, Objec
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Expression)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
+endmethod
+
+// ---- unrecognizedMessage (ExpressionSurrogate ctors)
+
+// ---- 1
+
+defmethod(void, gunrecognizedMessage1, ExpressionSurrogate)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1));
+endmethod
+
+// ---- 2
+
+defmethod(void, gunrecognizedMessage2, ExpressionSurrogate, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2));
+endmethod
+
+defmethod(void, gunrecognizedMessage2, Object, ExpressionSurrogate)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2));
+endmethod
+
+// ---- 3
+
+defmethod(void, gunrecognizedMessage3, ExpressionSurrogate, Object, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
+endmethod
+
+defmethod(void, gunrecognizedMessage3, Object, ExpressionSurrogate, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
+endmethod
+
+defmethod(void, gunrecognizedMessage3, Object, Object, ExpressionSurrogate)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
+endmethod
+
+// ---- 4
+
+defmethod(void, gunrecognizedMessage4, ExpressionSurrogate, Object, Object, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Object, ExpressionSurrogate, Object, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Object, Object, ExpressionSurrogate, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
+endmethod
+
+defmethod(void, gunrecognizedMessage4, Object, Object, Object, ExpressionSurrogate)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
+endmethod
+
+// ---- 5
+
+defmethod(void, gunrecognizedMessage5, ExpressionSurrogate, Object, Object, Object, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, ExpressionSurrogate, Object, Object, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Object, ExpressionSurrogate, Object, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Object, Object, ExpressionSurrogate, Object)
+  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
+endmethod
+
+defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, ExpressionSurrogate)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 

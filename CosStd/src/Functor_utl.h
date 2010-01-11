@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.11 2010/01/10 15:05:22 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.12 2010/01/11 14:22:11 ldeniau Exp $
  |
 */
 
@@ -163,6 +163,6 @@ getArgVarOff(U32 idx, U32 msk, OBJ *arg, OBJ env)
 
 // ----- build context mask
 
-void  Functor_setMask(U32 *msk, U32 i, OBJ *arg);
+void Functor_setMask(U32 *msk, U32 i, OBJ *arg);
 
 #endif // FUNCTOR_UTL_H

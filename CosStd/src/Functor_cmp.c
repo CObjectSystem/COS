@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.6 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.7 2010/01/11 14:22:11 ldeniau Exp $
  |
 */
 
@@ -40,10 +40,6 @@
 #include <cos/gen/value.h>
 
 #include "Array_utl.h"
-
-// -----
-
-makclass(ComposeFun, Functor);
 
 // -----
 

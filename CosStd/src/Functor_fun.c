@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.16 2010/01/10 15:07:44 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.17 2010/01/11 14:22:11 ldeniau Exp $
  |
 */
 
@@ -109,19 +109,19 @@ struct Functor* COS_PP_CAT(FunExpr_init,N) \
 \
   switch(getFunType(*msk, fun->arg, N)) { \
   case FUN_ISFUNC: \
-    fun->FunExpr.Functor.Expression.Object.id = \
-      cos_class_id(classref(COS_PP_CAT(Function,N))); break; \
+    cos_object_setId((OBJ)fun, cos_class_id(classref(COS_PP_CAT(Function,N))));\
+    break; \
 \
   COS_PP_IF(COS_PP_GT(N,4))(, \
   case FUN_ISCLOSED: \
-    fun->FunExpr.Functor.Expression.Object.id = \
-      cos_class_id(classref(COS_PP_CAT(SFunExpr,N))); break; \
+    cos_object_setId((OBJ)fun, cos_class_id(classref(COS_PP_CAT(SFunExpr,N))));\
+    break; \
   ) \
   COS_PP_IF(COS_PP_GT(N,5))(, \
   case FUN_ISEXPR: \
     if (getPar(*msk)) \
-      fun->FunExpr.Functor.Expression.Object.id = \
-        cos_class_id(classref(COS_PP_CAT(PFunExpr,N))); break; \
+      cos_object_setId((OBJ)fun,cos_class_id(classref(COS_PP_CAT(PFunExpr,N))));\
+    break; \
   ) \
   } \
 \

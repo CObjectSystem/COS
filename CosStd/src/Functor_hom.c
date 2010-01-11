@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_hom.c,v 1.1 2010/01/10 13:14:19 ldeniau Exp $
+ | $Id: Functor_hom.c,v 1.2 2010/01/11 14:22:11 ldeniau Exp $
  |
 */
 
@@ -58,12 +58,10 @@ endmethod
 // ----- 2
 
 defmethod(OBJ, gevalEnv, SMthExpr2, Array)
-  U32 *id = &self->MthExpr2.MthExpr.Functor.Expression.Object.id;
-
   switch(self->MthExpr2.MthExpr.Functor.msk) {
-    case 011: *id = cos_class_id(classref(SMthExpr21)); break;
-    case 012: *id = cos_class_id(classref(SMthExpr22)); break;
-    case 021: *id = cos_class_id(classref(SMthExpr23)); break;
+    case 011: cos_object_setId(_1, cos_class_id(classref(SMthExpr21))); break;
+    case 012: cos_object_setId(_1, cos_class_id(classref(SMthExpr22))); break;
+    case 021: cos_object_setId(_1, cos_class_id(classref(SMthExpr23))); break;
     default : test_assert(0, "invalid SMthExpr2 mask");
   }
 
@@ -118,16 +116,14 @@ endmethod
 // ----- 3
 
 defmethod(OBJ, gevalEnv, SMthExpr3, Array)
-  U32 *id = &self->MthExpr3.MthExpr.Functor.Expression.Object.id;
-
   switch(self->MthExpr3.MthExpr.Functor.msk) {
-    case 0111: *id = cos_class_id(classref(SMthExpr31)); break;
-    case 0112: *id = cos_class_id(classref(SMthExpr32)); break;
-    case 0121: *id = cos_class_id(classref(SMthExpr33)); break;
-    case 0122: *id = cos_class_id(classref(SMthExpr34)); break;
-    case 0211: *id = cos_class_id(classref(SMthExpr35)); break;
-    case 0212: *id = cos_class_id(classref(SMthExpr36)); break;
-    case 0221: *id = cos_class_id(classref(SMthExpr37)); break;
+    case 0111: cos_object_setId(_1, cos_class_id(classref(SMthExpr31))); break;
+    case 0112: cos_object_setId(_1, cos_class_id(classref(SMthExpr32))); break;
+    case 0121: cos_object_setId(_1, cos_class_id(classref(SMthExpr33))); break;
+    case 0122: cos_object_setId(_1, cos_class_id(classref(SMthExpr34))); break;
+    case 0211: cos_object_setId(_1, cos_class_id(classref(SMthExpr35))); break;
+    case 0212: cos_object_setId(_1, cos_class_id(classref(SMthExpr36))); break;
+    case 0221: cos_object_setId(_1, cos_class_id(classref(SMthExpr37))); break;
     default  : test_assert(0, "invalid SMthExpr3 mask");
   }
 
@@ -253,24 +249,22 @@ endmethod
 // ----- 4
 
 defmethod(OBJ, gevalEnv, SMthExpr4, Array)
-  U32 *id = &self->MthExpr4.MthExpr.Functor.Expression.Object.id;
-
   switch(self->MthExpr4.MthExpr.Functor.msk) {
-    case 01111: *id = cos_class_id(classref(SMthExpr41)); break;
-    case 01112: *id = cos_class_id(classref(SMthExpr42)); break;
-    case 01121: *id = cos_class_id(classref(SMthExpr43)); break;
-    case 01122: *id = cos_class_id(classref(SMthExpr44)); break;
-    case 01211: *id = cos_class_id(classref(SMthExpr45)); break;
-    case 01212: *id = cos_class_id(classref(SMthExpr46)); break;
-    case 01221: *id = cos_class_id(classref(SMthExpr47)); break;
-    case 01222: *id = cos_class_id(classref(SMthExpr48)); break;
-    case 02111: *id = cos_class_id(classref(SMthExpr49)); break;
-    case 02112: *id = cos_class_id(classref(SMthExpr4A)); break;
-    case 02121: *id = cos_class_id(classref(SMthExpr4B)); break;
-    case 02122: *id = cos_class_id(classref(SMthExpr4C)); break;
-    case 02211: *id = cos_class_id(classref(SMthExpr4D)); break;
-    case 02212: *id = cos_class_id(classref(SMthExpr4E)); break;
-    case 02221: *id = cos_class_id(classref(SMthExpr4F)); break;
+    case 01111: cos_object_setId(_1, cos_class_id(classref(SMthExpr41))); break;
+    case 01112: cos_object_setId(_1, cos_class_id(classref(SMthExpr42))); break;
+    case 01121: cos_object_setId(_1, cos_class_id(classref(SMthExpr43))); break;
+    case 01122: cos_object_setId(_1, cos_class_id(classref(SMthExpr44))); break;
+    case 01211: cos_object_setId(_1, cos_class_id(classref(SMthExpr45))); break;
+    case 01212: cos_object_setId(_1, cos_class_id(classref(SMthExpr46))); break;
+    case 01221: cos_object_setId(_1, cos_class_id(classref(SMthExpr47))); break;
+    case 01222: cos_object_setId(_1, cos_class_id(classref(SMthExpr48))); break;
+    case 02111: cos_object_setId(_1, cos_class_id(classref(SMthExpr49))); break;
+    case 02112: cos_object_setId(_1, cos_class_id(classref(SMthExpr4A))); break;
+    case 02121: cos_object_setId(_1, cos_class_id(classref(SMthExpr4B))); break;
+    case 02122: cos_object_setId(_1, cos_class_id(classref(SMthExpr4C))); break;
+    case 02211: cos_object_setId(_1, cos_class_id(classref(SMthExpr4D))); break;
+    case 02212: cos_object_setId(_1, cos_class_id(classref(SMthExpr4E))); break;
+    case 02221: cos_object_setId(_1, cos_class_id(classref(SMthExpr4F))); break;
     default   : test_assert(0, "invalid SMthExpr4 mask");
   }
 

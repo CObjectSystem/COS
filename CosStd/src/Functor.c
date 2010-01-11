@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.23 2010/01/10 13:13:31 ldeniau Exp $
+ | $Id: Functor.c,v 1.24 2010/01/11 14:22:11 ldeniau Exp $
  |
 */
 
@@ -38,7 +38,7 @@
    PlaceHolders should only override Object's methods, no more,
    since High Order Messages are commonly built with delegation.
 */
- 
+
 #include <cos/Functor.h>
 
 #include "Functor.h"
@@ -50,11 +50,20 @@ makclass(Expression);
 makclass(Functor    , Expression);
 makclass(PlaceHolder, Expression);
 
+// ----- special root class
+
+makclass(ExpressionSurrogate, _);
+
 // ----- placeholder
 
-makclass(FunArg     , PlaceHolder);
-makclass(FunVar     , PlaceHolder);
-makclass(FunLzy     , PlaceHolder);
+makclass(FunArg, PlaceHolder);
+makclass(FunVar, PlaceHolder);
+makclass(FunLzy, PlaceHolder);
+
+// ----- functor operator (iterate, compose)
+
+makclass(IterateFun, Functor);
+makclass(ComposeFun, Functor);
 
 // ----- functor expression
 
