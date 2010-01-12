@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.13 2010/01/11 14:22:11 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.14 2010/01/12 11:32:01 ldeniau Exp $
  |
 */
 
@@ -192,11 +192,8 @@ Functor_cloneArgs(SEL sel, char *_arg)
     OBJ *dst = (OBJ*) arg;
     OBJ *src = (OBJ*)_arg;
 
-    for (U32 i = 0; i < narg; i++)
-      if (getIdx(src[i]) >= 9)
-        dst[i] = gretain(src[i]);
-      else
-        dst[i] = src[i];    // placeholder index or null
+    for (U32 i = 0; i < narg; i++) // care of placeholder index and null
+      dst[i] = getIdx(src[i]) >= 9 ? gretain(src[i]) : src[i];
   }
   else {                    // some/all aren't OBJects
     memcpy(arg, _arg, sel->argsize);
@@ -204,9 +201,7 @@ Functor_cloneArgs(SEL sel, char *_arg)
     for (U32 i = 0; i < narg; i++)
       if ( cos_arginfo_isObject(sel->arginfo+i) ) {
         OBJ *obj = (OBJ*)(arg + sel->arginfo[i].offset);
-        
-        if (getIdx(*obj) >= 9)
-          *obj = gretain(*obj);
+        if (getIdx(*obj) >= 9) *obj = gretain(*obj);
       }
   }
 
@@ -226,16 +221,13 @@ Functor_deleteArgs(SEL sel, char *arg)
     OBJ *obj = (OBJ*)arg;
     
     for (U32 i = 0; i < narg; i++)
-      if (getIdx(obj[i]) >= 9)
-        grelease(obj[i]);
+      if (getIdx(obj[i]) >= 9) grelease(obj[i]);
   }
   else {                    // some/all aren't OBJects
     for (U32 i = 0; i < narg; i++)
       if ( cos_arginfo_isObject(sel->arginfo+i) ) {
         OBJ *obj = (OBJ*)(arg + sel->arginfo[i].offset);
-        
-        if (getIdx(*obj) >= 9)
-          grelease(*obj);
+        if (getIdx(*obj) >= 9) grelease(*obj);
       }
   }
   

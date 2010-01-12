@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.17 2010/01/11 14:22:11 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.18 2010/01/12 11:32:01 ldeniau Exp $
  |
 */
 
@@ -179,8 +179,7 @@ defmethod(OBJ, gdeinit, COS_PP_CAT(FunExpr,N)) \
   U32 msk = self->FunExpr.Functor.msk; \
 \
   for (int i = 0; i < N; i++) \
-    if (!isIdx(msk, i)) \
-      grelease(self->arg[i]); \
+    if (!isIdx(msk, i)) grelease(self->arg[i]); \
 \
   retmethod(_1); \
 endmethod

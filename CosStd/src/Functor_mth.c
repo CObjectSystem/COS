@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.14 2010/01/11 14:22:11 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.15 2010/01/12 11:32:01 ldeniau Exp $
  |
 */
 
@@ -64,21 +64,6 @@ STATIC_ASSERT(method4_to_message4_compatibility,
 STATIC_ASSERT(method5_to_message5_compatibility,
               COS_FIELD_COMPATIBILITY(Message5,MthExpr5,arg));
 
-// ----- automatic ctor (private)
-
-#define aMthExpr(...) ( (OBJ)atMthExpr(__VA_ARGS__) )
-
-#define atMthExpr(S,A,...) \
-  atMthExprN(COS_PP_NARG(__VA_ARGS__), S, A, __VA_ARGS__)
-
-#define atMthExprN(N,S,A,...) \
-  COS_PP_CAT(MthExpr_init,N)( &(struct COS_PP_CAT(MthExpr,N)) { \
-    {{{ cos_object_auto(COS_PP_CAT(MthExpr,N)) }, 0 }, S }, A, \
-    {__VA_ARGS__}, \
-    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
-    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
-    { COS_PP_DUP(COS_PP_SUB(N,1), 0,) 0 }, 0, 0 })
-
 // ----- utils
 
 static U32
@@ -87,42 +72,29 @@ getOffs(SEL sel, U16 off[], U8 idx[], U8 pos[])
   U32 nrcv = COS_GEN_RNK (sel);
   U32 narg = COS_GEN_NARG(sel);
   U32 noff = 9-nrcv;
-  U32 ircv = 0;
-  U32 iarg = 0;
-  U32 ioff = 0;
-  U32 iobj = 0;
+  U32 i, j;
 
   if (!sel->argsize) {  // only receivers
-    while (ircv < nrcv)
-      pos[ircv] = ircv, ircv++;
+    for (i = 0; i < nrcv; i++)
+      pos[i] = i;
 
-    return ioff;
+    return 0;
   }
 
   assert(sel->rcvinfo); // sanity check
   assert(sel->arginfo); // sanity check
+  
+  for (i = 0; i < nrcv; i++)
+    pos[i] = sel->rcvinfo[i].objidx;
 
-  while ( !(ircv > nrcv && iarg > narg) ) {
-    // receiver
-    if (ircv < nrcv && ircv+iarg == sel->rcvinfo[ircv].index) {
-      pos[ircv] = iobj;
-      ircv++, iobj++;
-      continue;
+  for (i = j = 0; i < narg && j < noff; i++)
+    if ( cos_arginfo_isObject(sel->arginfo+i) ) {
+      off[j] = sel->arginfo[i].offset;
+      idx[j] = sel->arginfo[i].objidx;
+      j++;
     }
 
-    // argument (OBJect)
-    if ( cos_arginfo_isObject(sel->arginfo+iarg) ) {
-      if (ioff < noff) {
-        off[ioff] = sel->arginfo[iarg].offset;
-        idx[ioff] = iobj;
-        ioff++;
-      }
-      iobj++;
-    }
-    iarg++;
-  }
-
-  return ioff;
+  return j;
 }
 
 static inline U32
@@ -233,8 +205,8 @@ defmethod(OBJ, ginitWith, COS_PP_CAT(MthExpr,N), COS_PP_CAT(MthExpr,N)) \
   self->arg = 0; \
 \
   for (U32 i = 0; i < N; i++) \
-    self->rcv[i] = \
-      isIdx(msk, self2->pos[i]) ? self2->rcv[i] : gretain(self2->rcv[i]); \
+    self->rcv[i] = isIdx(msk, self2->pos[i]) \
+      ? self2->rcv[i] : gretain(self2->rcv[i]); \
 \
   if (self2->arg) \
     self->arg = Functor_cloneArgs(sel, self2->arg); \
@@ -261,8 +233,7 @@ defmethod(OBJ, gdeinit, COS_PP_CAT(MthExpr,N)) \
   SEL sel = self->MthExpr.sel; \
 \
   for (int i = 0; i < N; i++) \
-    if (!isIdx(msk, self->pos[i])) \
-      grelease(self->rcv[i]); \
+    if (!isIdx(msk, self->pos[i])) grelease(self->rcv[i]); \
 \
   if (self->arg) \
     Functor_deleteArgs(sel, self->arg); \
@@ -281,6 +252,21 @@ DEFMETHOD(5)
 defmethod(STR, gstr, MthExpr)
   retmethod(self->sel->str);
 endmethod
+
+// ----- automatic ctor (private)
+
+#define aMthExpr(...) ( (OBJ)atMthExpr(__VA_ARGS__) )
+
+#define atMthExpr(S,A,...) \
+  atMthExprN(COS_PP_NARG(__VA_ARGS__), S, A, __VA_ARGS__)
+
+#define atMthExprN(N,S,A,...) \
+  COS_PP_CAT(MthExpr_init,N)( &(struct COS_PP_CAT(MthExpr,N)) { \
+    {{{ cos_object_auto(COS_PP_CAT(MthExpr,N)) }, 0 }, S }, A, \
+    {__VA_ARGS__}, \
+    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
+    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
+    { COS_PP_DUP(COS_PP_SUB(N,1), 0,) 0 }, 0, 0 })
 
 // ---- eval (stack-like environment with full evaluation)
 
