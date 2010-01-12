@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.29 2010/01/11 14:22:10 ldeniau Exp $
+ | $Id: Functor.h,v 1.30 2010/01/12 15:25:18 ldeniau Exp $
  |
 */
 
@@ -260,7 +260,7 @@ endclass
 
 #define atFunctor0(F) \
   ( (struct Functor*)&(struct Function0) { \
-    {{ cos_object_auto(Function0), 0 }, COS_PP_STR(F) }, F })
+    {{{ cos_object_auto(Function0) }, 0 }, COS_PP_STR(F) }, F })
 
 #define atFunctorF(F,...) \
   atFunctorN(COS_PP_NARG(__VA_ARGS__), F, __VA_ARGS__)

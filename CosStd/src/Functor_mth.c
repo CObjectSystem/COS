@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.15 2010/01/12 11:32:01 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.16 2010/01/12 15:25:19 ldeniau Exp $
  |
 */
 
@@ -63,6 +63,21 @@ STATIC_ASSERT(method4_to_message4_compatibility,
 
 STATIC_ASSERT(method5_to_message5_compatibility,
               COS_FIELD_COMPATIBILITY(Message5,MthExpr5,arg));
+
+// ----- automatic ctor (private)
+
+#define aMthExpr(...) ( (OBJ)atMthExpr(__VA_ARGS__) )
+
+#define atMthExpr(S,A,...) \
+  atMthExprN(COS_PP_NARG(__VA_ARGS__), S, A, __VA_ARGS__)
+
+#define atMthExprN(N,S,A,...) \
+  COS_PP_CAT(MthExpr_init,N)( &(struct COS_PP_CAT(MthExpr,N)) { \
+    {{{ cos_object_auto(COS_PP_CAT(MthExpr,N)) }, 0 }, S }, A, \
+    {__VA_ARGS__}, \
+    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
+    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
+    { COS_PP_DUP(COS_PP_SUB(N,1), 0,) 0 }, 0, 0 })
 
 // ----- utils
 
@@ -187,9 +202,22 @@ DEFFUNC(3)
 DEFFUNC(4)
 DEFFUNC(5)
 
-// ----- ctors
+// ----- constructor
 
-// TODO ??
+defalias (OBJ, (ginitWithMth)gnewWithMth, pmFunctor, (SEL)sel, (OBJ*)rcv, (void*)arg);
+defmethod(OBJ,  ginitWithMth            , pmFunctor, (SEL)sel, (OBJ*)rcv, (void*)arg)
+  OBJ mth = Nil;
+
+  switch(COS_GEN_RNK(sel)) {
+  case 1: mth = aMthExpr(sel,arg,rcv[0]); break;
+  case 2: mth = aMthExpr(sel,arg,rcv[0],rcv[1]); break;
+  case 3: mth = aMthExpr(sel,arg,rcv[0],rcv[1],rcv[2]); break;
+  case 4: mth = aMthExpr(sel,arg,rcv[0],rcv[1],rcv[2],rcv[3]); break;
+  case 5: mth = aMthExpr(sel,arg,rcv[0],rcv[1],rcv[2],rcv[3],rcv[4]); break;
+  }
+
+  retmethod( gautoDelete(mth) );
+endmethod
 
 // ----- copy
 
@@ -252,21 +280,6 @@ DEFMETHOD(5)
 defmethod(STR, gstr, MthExpr)
   retmethod(self->sel->str);
 endmethod
-
-// ----- automatic ctor (private)
-
-#define aMthExpr(...) ( (OBJ)atMthExpr(__VA_ARGS__) )
-
-#define atMthExpr(S,A,...) \
-  atMthExprN(COS_PP_NARG(__VA_ARGS__), S, A, __VA_ARGS__)
-
-#define atMthExprN(N,S,A,...) \
-  COS_PP_CAT(MthExpr_init,N)( &(struct COS_PP_CAT(MthExpr,N)) { \
-    {{{ cos_object_auto(COS_PP_CAT(MthExpr,N)) }, 0 }, S }, A, \
-    {__VA_ARGS__}, \
-    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
-    { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
-    { COS_PP_DUP(COS_PP_SUB(N,1), 0,) 0 }, 0, 0 })
 
 // ---- eval (stack-like environment with full evaluation)
 

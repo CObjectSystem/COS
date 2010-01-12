@@ -32,17 +32,41 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.10 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: functor.h,v 1.11 2010/01/12 15:25:19 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
 
-defgeneric(OBJ, gevalEnv, fun, env); // rank 2
-defgeneric(OBJ, gcompose, _1);       // compose Array of functors
-defgeneric(OBJ, giterate, fun, num); // compose num times functor
+defgeneric(OBJ, gnewWithFun0, Functor, (FUN0)fct);
+defgeneric(OBJ, gnewWithFun1, Functor, (FUN1)fct, (OBJ*)arg);
+defgeneric(OBJ, gnewWithFun2, Functor, (FUN2)fct, (OBJ*)arg);
+defgeneric(OBJ, gnewWithFun3, Functor, (FUN3)fct, (OBJ*)arg);
+defgeneric(OBJ, gnewWithFun4, Functor, (FUN4)fct, (OBJ*)arg);
+defgeneric(OBJ, gnewWithFun5, Functor, (FUN5)fct, (OBJ*)arg);
+defgeneric(OBJ, gnewWithFun6, Functor, (FUN6)fct, (OBJ*)arg);
+defgeneric(OBJ, gnewWithFun7, Functor, (FUN7)fct, (OBJ*)arg);
+defgeneric(OBJ, gnewWithFun8, Functor, (FUN8)fct, (OBJ*)arg);
+defgeneric(OBJ, gnewWithFun9, Functor, (FUN9)fct, (OBJ*)arg);
+defgeneric(OBJ, gnewWithMth , Functor, (SEL )sel, (OBJ*)rcv, (void*)arg);
 
-// ----- wrapper
+defgeneric(OBJ, ginitWithFun0, Functor, (FUN0)fct);
+defgeneric(OBJ, ginitWithFun1, Functor, (FUN1)fct, (OBJ*)arg);
+defgeneric(OBJ, ginitWithFun2, Functor, (FUN2)fct, (OBJ*)arg);
+defgeneric(OBJ, ginitWithFun3, Functor, (FUN3)fct, (OBJ*)arg);
+defgeneric(OBJ, ginitWithFun4, Functor, (FUN4)fct, (OBJ*)arg);
+defgeneric(OBJ, ginitWithFun5, Functor, (FUN5)fct, (OBJ*)arg);
+defgeneric(OBJ, ginitWithFun6, Functor, (FUN6)fct, (OBJ*)arg);
+defgeneric(OBJ, ginitWithFun7, Functor, (FUN7)fct, (OBJ*)arg);
+defgeneric(OBJ, ginitWithFun8, Functor, (FUN8)fct, (OBJ*)arg);
+defgeneric(OBJ, ginitWithFun9, Functor, (FUN9)fct, (OBJ*)arg);
+defgeneric(OBJ, ginitWithMth , Functor, (SEL )sel, (OBJ*)rcv, (void*)arg);
+
+defgeneric(OBJ, gevalEnv, fun, env); // functor evaluation (e.g Lisp funcall)
+defgeneric(OBJ, giterate, fun, num); // compose num times functor
+defgeneric(OBJ, gcompose, _1);       // compose Array of functors
+
+// ----- eval wrapper
 
 #define geval(...) \
    COS_PP_IF(COS_PP_2ARGS(__VA_ARGS__)) \
@@ -54,7 +78,7 @@ defgeneric(OBJ, giterate, fun, num); // compose num times functor
 #define gevalEnv_N(fun,...) \
         gevalEnv(fun, aArray(__VA_ARGS__))
 
-// ----- inliners
+// ----- eval inliners
 
 static COS_ALWAYS_INLINE OBJ
 geval0(OBJ fun) {

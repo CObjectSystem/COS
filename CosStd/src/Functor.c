@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.24 2010/01/11 14:22:11 ldeniau Exp $
+ | $Id: Functor.c,v 1.25 2010/01/12 15:25:19 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,15 @@
 
 #include <cos/Functor.h>
 
+#include <cos/gen/object.h>
+
 #include "Functor.h"
+
+// ----- allocator
+
+defmethod(OBJ, galloc, pmFunctor) // lazy alloc
+  retmethod(_1);
+endmethod
 
 // ----- class cluster root classes
 

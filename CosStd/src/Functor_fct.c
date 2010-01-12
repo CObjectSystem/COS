@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.9 2010/01/10 13:13:31 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.10 2010/01/12 15:25:19 ldeniau Exp $
  |
 */
 
@@ -50,6 +50,7 @@ defmethod(OBJ, ginitWith, COS_PP_CAT(Function,N), COS_PP_CAT(Function,N)) \
   retmethod(_1); \
 endmethod
 
+DEFMETHOD(0)
 DEFMETHOD(1)
 DEFMETHOD(2)
 DEFMETHOD(3)

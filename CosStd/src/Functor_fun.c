@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.18 2010/01/12 11:32:01 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.19 2010/01/12 15:25:19 ldeniau Exp $
  |
 */
 
@@ -138,9 +138,34 @@ DEFFUNC(7)
 DEFFUNC(8)
 DEFFUNC(9)
 
-// ----- ctors
+// ----- constructors
 
-// TODO ??
+defalias (OBJ, (ginitWithFun0)gnewWithFun0, pmFunctor, (FUN0)fct);
+defmethod(OBJ,  ginitWithFun0             , pmFunctor, (FUN0)fct)
+  retmethod( gautoDelete(aFun(fct)) );
+endmethod
+
+#undef  DEFMETHOD
+#define DEFMETHOD(N) \
+\
+defalias (OBJ, (COS_PP_CAT(ginitWithFun,N))COS_PP_CAT(gnewWithFun,N), pmFunctor, (COS_PP_CAT(FUN,N))fct, (OBJ*)arg); \
+defmethod(OBJ,  COS_PP_CAT(ginitWithFun,N)                          , pmFunctor, (COS_PP_CAT(FUN,N))fct, (OBJ*)arg) \
+  OBJ fun = aFun(fct, COS_PP_SEQ(COS_PP_MAP(COS_PP_TAKE(N,(COS_PP_NUMSEQ_N())),DEFARG))); \
+  retmethod( gautoDelete(fun) ); \
+endmethod
+
+#undef  DEFARG
+#define DEFARG(i) arg[i-1]
+
+DEFMETHOD(1)
+DEFMETHOD(2)
+DEFMETHOD(3)
+DEFMETHOD(4)
+DEFMETHOD(5)
+DEFMETHOD(6)
+DEFMETHOD(7)
+DEFMETHOD(8)
+DEFMETHOD(9)
 
 // ----- copy
 
