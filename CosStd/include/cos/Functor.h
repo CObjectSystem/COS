@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.30 2010/01/12 15:25:18 ldeniau Exp $
+ | $Id: Functor.h,v 1.31 2010/01/12 16:37:59 ldeniau Exp $
  |
 */
 
@@ -287,7 +287,8 @@ endclass
 // ----- Expression surrogate
 
 #define atExpression(EXPR) \
-  (&(struct ExpressionSurrogate){cos_object_auto(ExpressionSurrogate), (EXPR)})
+  (&(struct ExpressionSurrogate){ \
+    COS_CLS_NAME(ExpressionSurrogate).Behavior.id, COS_RC_AUTO, (EXPR) })
 
 // ----- initializers
 
