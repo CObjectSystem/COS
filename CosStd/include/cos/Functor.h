@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.33 2010/01/12 18:56:24 ldeniau Exp $
+ | $Id: Functor.h,v 1.34 2010/01/12 19:13:04 ldeniau Exp $
  |
 */
 
@@ -210,12 +210,11 @@ endclass
 
 // ----- automatic constructor
 
-#define aFunctor(...)    ( (OBJ)atFunctor   (__VA_ARGS__) )
-#define aFunArg(A)       ( (OBJ)atFunArg    (A)           )
-#define aFunVar(V)       ( (OBJ)atFunVar    (V)           )
-#define aFunLzy(E)       ( (OBJ)atFunLzy    (E)           )
-#define aFunLzyN(N,E)    ( (OBJ)atFunLzyN   (N,E)         )
-#define aExpression(E)   ( (OBJ)atExpression(E)           )
+#define aFunctor(...)              ( (OBJ)atFunctor   (__VA_ARGS__) )
+#define aFunArg(A)      aExpression( (OBJ)atFunArg    (A)           )
+#define aFunVar(V)      aExpression( (OBJ)atFunVar    (V)           )
+#define aFunLzy(E)      aExpression( (OBJ)atFunLzy    (E)           )
+#define aFunLzyN(N,E)   aExpression( (OBJ)atFunLzyN   (N,E)         )
 
 // --- shortcuts
 
@@ -237,15 +236,15 @@ endclass
 // --- placeholders
 
 #ifndef COS_NOPLACEHOLDER
-#define __1  aExpression(aFunArg(0))
-#define __2  aExpression(aFunArg(1))
-#define __3  aExpression(aFunArg(2))
-#define __4  aExpression(aFunArg(3))
-#define __5  aExpression(aFunArg(4))
-#define __6  aExpression(aFunArg(5))
-#define __7  aExpression(aFunArg(6))
-#define __8  aExpression(aFunArg(7))
-#define __9  aExpression(aFunArg(8))
+#define __1  aFunArg(0)
+#define __2  aFunArg(1)
+#define __3  aFunArg(2)
+#define __4  aFunArg(3)
+#define __5  aFunArg(4)
+#define __6  aFunArg(5)
+#define __7  aFunArg(6)
+#define __8  aFunArg(7)
+#define __9  aFunArg(8)
 #endif
 
 /***********************************************************
@@ -286,8 +285,8 @@ endclass
 
 // ----- Expression surrogate
 
-#define atExpression(EXPR) \
-  (&(struct ExpressionSurrogate){ \
+#define aExpression(EXPR) \
+  ((OBJ)&(struct ExpressionSurrogate){ \
     COS_CLS_NAME(ExpressionSurrogate).Behavior.id, COS_RC_AUTO, (EXPR) })
 
 // ----- initializers
