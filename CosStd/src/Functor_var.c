@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_var.c,v 1.1 2010/01/10 13:14:19 ldeniau Exp $
+ | $Id: Functor_var.c,v 1.2 2010/01/12 18:56:25 ldeniau Exp $
  |
 */
 
@@ -40,14 +40,17 @@
 */
  
 #include <cos/Functor.h>
+#include <cos/gen/accessor.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
+
+#include "Functor_utl.h"
 
 // -----
 
 useclass(FunArg, FunVar, FunLzy);
 
-// ----- ctors
+// ----- ctors (for gautoRelease)
 
 defmethod(OBJ, gclone, FunArg)
   OBJ _arg = galloc(FunArg);
@@ -71,6 +74,7 @@ defmethod(OBJ, gclone, FunLzy)
   OBJ _lzy = galloc(FunLzy);
   struct FunLzy *lzy = STATIC_CAST(struct FunLzy*, _lzy);
 
+  removeExprSurr(&self->fun);
   lzy->fun = gretain(self->fun);
   lzy->cnt = self->cnt;
 

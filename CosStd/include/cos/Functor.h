@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.32 2010/01/12 16:41:48 ldeniau Exp $
+ | $Id: Functor.h,v 1.33 2010/01/12 18:56:24 ldeniau Exp $
  |
 */
 
@@ -237,25 +237,15 @@ endclass
 // --- placeholders
 
 #ifndef COS_NOPLACEHOLDER
-#define __1  aFunArg(0)
-#define __2  aFunArg(1)
-#define __3  aFunArg(2)
-#define __4  aFunArg(3)
-#define __5  aFunArg(4)
-#define __6  aFunArg(5)
-#define __7  aFunArg(6)
-#define __8  aFunArg(7)
-#define __9  aFunArg(8)
-
-#define __1E  aExpression(aFunArg(0))
-#define __2E  aExpression(aFunArg(1))
-#define __3E  aExpression(aFunArg(2))
-#define __4E  aExpression(aFunArg(3))
-#define __5E  aExpression(aFunArg(4))
-#define __6E  aExpression(aFunArg(5))
-#define __7E  aExpression(aFunArg(6))
-#define __8E  aExpression(aFunArg(7))
-#define __9E  aExpression(aFunArg(8))
+#define __1  aExpression(aFunArg(0))
+#define __2  aExpression(aFunArg(1))
+#define __3  aExpression(aFunArg(2))
+#define __4  aExpression(aFunArg(3))
+#define __5  aExpression(aFunArg(4))
+#define __6  aExpression(aFunArg(5))
+#define __7  aExpression(aFunArg(6))
+#define __8  aExpression(aFunArg(7))
+#define __9  aExpression(aFunArg(8))
 #endif
 
 /***********************************************************

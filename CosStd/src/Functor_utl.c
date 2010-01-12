@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.14 2010/01/12 11:32:01 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.15 2010/01/12 18:56:25 ldeniau Exp $
  |
 */
 
@@ -79,12 +79,6 @@ getFunMsk(OBJ arg) // unsafe
   return STATIC_CAST(struct Functor*, arg)->msk;
 }
 
-static inline OBJ
-getFunExpr(OBJ arg) // unsafe
-{
-  return STATIC_CAST(struct ExpressionSurrogate*, arg)->expr;
-}
-
 static inline U32
 getFunPar(OBJ arg, OBJ *var)
 {
@@ -130,9 +124,8 @@ Functor_setMask(U32 *msk, U32 i, OBJ *arg)
     return;  
   }
 
-  // expression surrogate (remove it before processing)
-  while (cos_object_isa(*arg, classref(ExpressionSurrogate)))
-    *arg = getFunExpr(*arg);
+  // remove expression surrogate before processing
+  removeExprSurr(arg);
 
   // environment index (placeholder)
   if (cos_object_isa(*arg, classref(FunArg))) {
@@ -152,6 +145,8 @@ Functor_setMask(U32 *msk, U32 i, OBJ *arg)
   if (cos_object_isa(*arg, classref(FunLzy))) {
     OBJ var = Nil;
     U32 cnt = getFunPar(*arg, &var);
+
+    removeExprSurr(&var);
 
     if (cos_object_isKindOf(var, classref(PlaceHolder))) {
       setFunPar(*arg, var, cnt);

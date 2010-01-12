@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.12 2010/01/11 14:22:11 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.13 2010/01/12 18:56:25 ldeniau Exp $
  |
 */
 
@@ -99,6 +99,21 @@ static inline BOOL
 isVar(U32 msk, U32 idx)
 {
   return msk & (4 << 3*idx);
+}
+
+// ----- expression surrogate
+
+static inline OBJ
+getFunExpr(OBJ arg) // unsafe
+{
+  return STATIC_CAST(struct ExpressionSurrogate*, arg)->expr;
+}
+
+static inline void
+removeExprSurr(OBJ *arg)
+{
+  while (cos_object_isa(*arg, classref(ExpressionSurrogate)))
+    *arg = getFunExpr(*arg);
 }
 
 // ----- "array-like" environment
