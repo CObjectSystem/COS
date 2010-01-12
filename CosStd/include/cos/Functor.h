@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.31 2010/01/12 16:37:59 ldeniau Exp $
+ | $Id: Functor.h,v 1.32 2010/01/12 16:41:48 ldeniau Exp $
  |
 */
 
@@ -246,6 +246,16 @@ endclass
 #define __7  aFunArg(6)
 #define __8  aFunArg(7)
 #define __9  aFunArg(8)
+
+#define __1E  aExpression(aFunArg(0))
+#define __2E  aExpression(aFunArg(1))
+#define __3E  aExpression(aFunArg(2))
+#define __4E  aExpression(aFunArg(3))
+#define __5E  aExpression(aFunArg(4))
+#define __6E  aExpression(aFunArg(5))
+#define __7E  aExpression(aFunArg(6))
+#define __8E  aExpression(aFunArg(7))
+#define __9E  aExpression(aFunArg(8))
 #endif
 
 /***********************************************************
