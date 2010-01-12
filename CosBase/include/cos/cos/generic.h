@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.33 2010/01/10 14:49:54 ldeniau Exp $
+ | $Id: generic.h,v 1.34 2010/01/12 11:01:45 ldeniau Exp $
  |
 */
 
@@ -465,27 +465,12 @@ struct Generic COS_GEN_NAME(NAME) = { \
                         COS_TOK_ISOBJ (COS_PRM_TYPE(a)))) \
       ( ""/* void or OBJ */, COS_PP_STR(COS_PRM_TYPE(a)) ), "@"/* receiver */)
 
-// receivers indexes
-#define COS_GEN_RCVI(PS) \
-  COS_PP_FILTER(COS_PP_MAP2( \
-    PS,(COS_PP_NUMSEQ_N()),COS_GEN_RCVI_0), COS_PP_ISNZERO)
-
-#define COS_GEN_RCVI_0(p,i) \
-  COS_PP_IF(COS_PP_ISTUPLE(p))(0,i)
-
-// arguments indexes
-#define COS_GEN_ARGI(PS) \
-  COS_PP_FILTER(COS_PP_MAP2( \
-    PS,(COS_PP_NUMSEQ_N()), COS_GEN_ARGI_0), COS_PP_ISNZERO)
-
-#define COS_GEN_ARGI_0(p,i) \
-  COS_PP_IF(COS_PP_ISTUPLE(p))(i,0)
-
 // receivers infos
 #define COS_GEN_RCV(IS) \
   COS_PP_SEQ(COS_PP_MAP(IS,COS_GEN_RCVINFO))
   
-#define COS_GEN_RCVINFO(i) { i-1 }
+#define COS_GEN_RCVINFO(i) \
+  { COS_PP_3RD(i)-1, COS_PP_2ND(i)-1 }
 
 // arguments infos
 #define COS_GEN_ARG(AS,TS,IS) \
@@ -493,10 +478,37 @@ struct Generic COS_GEN_NAME(NAME) = { \
 
 #define COS_GEN_ARGINFO(a,t,i) \
   { COS_PP_IF(COS_TOK_ISOBJ(COS_PRM_TYPE(a)))(0,sizeof(COS_PRM_TYPE(a))), \
-    offsetof(t, COS_PRM_NAME(a)), i-1 }
+    offsetof(t, COS_PRM_NAME(a)), COS_PP_3RD(i)-1, COS_PP_2ND(i)-1 }
 
-#define COS_GEN_ISOBJ(gen)  ((gen)->retsize == (U16) 0)
-#define COS_GEN_ISVOID(gen) ((gen)->retsize == (U16)-1)
+// receivers indexes
+#define COS_GEN_RCVI(PS) \
+  COS_PP_FILTER(COS_GEN_MKIDX(PS),COS_GEN_RCVI_0)
+
+#define COS_GEN_RCVI_0(p) \
+        COS_GEN_RCVI_1 p
+
+#define COS_GEN_RCVI_1(p,i,o) \
+        COS_PP_ISNTUPLE(p)
+
+// arguments indexes
+#define COS_GEN_ARGI(PS) \
+  COS_PP_FILTER(COS_GEN_MKIDX(PS),COS_GEN_ARGI_0)
+
+#define COS_GEN_ARGI_0(p) \
+        COS_GEN_ARGI_1 p
+
+#define COS_GEN_ARGI_1(p,i,o) \
+        COS_PP_ISTUPLE(p)
+
+// objects and parameters indexes, return (p, p_as_object_i, p_i)
+#define COS_GEN_MKIDX(PS) \
+  COS_PP_MAP3(PS, COS_GEN_MKOBJIDX(PS), (COS_PP_NUMSEQ_N()), COS_PP_TUPLE)
+
+#define COS_GEN_MKOBJIDX(PS) \
+  COS_PP_DROP(1, COS_PP_SCANL(COS_PP_MAP(PS,COS_GEN_MKOBJIDX_0),0,COS_PP_ADD))
+
+#define COS_GEN_MKOBJIDX_0(p) \
+  COS_PP_IF(COS_PP_ISTUPLE(p))(COS_TOK_ISOBJ(COS_PRM_TYPE(p)),1)
 
 // param-type is OBJ
 #define COS_GEN_OBJ(a) \
@@ -511,6 +523,11 @@ struct Generic COS_GEN_NAME(NAME) = { \
  */
 #define COS_GEN_RNK(gen) ((gen)->Behavior.id >> COS_ID_RNKSHT)
 #define COS_GEN_TAG(gen) ((gen)->Behavior.id &  COS_ID_TAGMSK)
+
+/* generic type getters
+ */
+#define COS_GEN_ISOBJ(gen)  ((gen)->retsize == (U16) 0)
+#define COS_GEN_ISVOID(gen) ((gen)->retsize == (U16)-1)
 
 /* generic info encoding and decoding
  */

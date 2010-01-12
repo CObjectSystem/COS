@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.27 2010/01/09 17:29:55 ldeniau Exp $
+ | $Id: cosdef.h,v 1.28 2010/01/12 11:01:45 ldeniau Exp $
  |
 */
 
@@ -193,14 +193,16 @@ struct OBJ { char isOBJ; };
 
 // generic receivers info
 struct cos_generic_rcvinfo {
-  U8 index;
+  U8 index;   // index as parameter
+  U8 objidx;  // index as object
 };
 
 // generic arguments info
 struct cos_generic_arginfo {
-  U16 size; // OBJects have "zero" size
+  U16 size;   // OBJects have "zero" size
   U16 offset;
-  U8  index;
+  U8  index;  // index as parameter
+  U8  objidx; // index as object
 };
 
 // exception context
