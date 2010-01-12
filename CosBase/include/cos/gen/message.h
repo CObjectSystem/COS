@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: message.h,v 1.3 2009/08/07 10:51:03 ldeniau Exp $
+ | $Id: message.h,v 1.4 2010/01/12 15:45:40 ldeniau Exp $
  |
 */
 
@@ -48,17 +48,17 @@ defgeneric(void, gunrecognizedMessage4, _1, _2, _3, _4);
 defgeneric(void, gunrecognizedMessage5, _1, _2, _3, _4, _5);
 
 // behavior, return True or False
-defgeneric(OBJ , gunderstandMessage1, _1, (SEL)msg);
-defgeneric(OBJ , gunderstandMessage2, _1, _2, (SEL)msg);
-defgeneric(OBJ , gunderstandMessage3, _1, _2, _3, (SEL)msg);
-defgeneric(OBJ , gunderstandMessage4, _1, _2, _3, _4, (SEL)msg);
-defgeneric(OBJ , gunderstandMessage5, _1, _2, _3, _4, _5, (SEL)msg);
+defgeneric(OBJ , gunderstandMessage1, _1, (SEL)sel);
+defgeneric(OBJ , gunderstandMessage2, _1, _2, (SEL)sel);
+defgeneric(OBJ , gunderstandMessage3, _1, _2, _3, (SEL)sel);
+defgeneric(OBJ , gunderstandMessage4, _1, _2, _3, _4, (SEL)sel);
+defgeneric(OBJ , gunderstandMessage5, _1, _2, _3, _4, _5, (SEL)sel);
 
 // behavior of instances of, return True or False
-defgeneric(OBJ , ginstancesUnderstandMessage1, _1, (SEL)msg);
-defgeneric(OBJ , ginstancesUnderstandMessage2, _1, _2, (SEL)msg);
-defgeneric(OBJ , ginstancesUnderstandMessage3, _1, _2, _3, (SEL)msg);
-defgeneric(OBJ , ginstancesUnderstandMessage4, _1, _2, _3, _4, (SEL)msg);
-defgeneric(OBJ , ginstancesUnderstandMessage5, _1, _2, _3, _4, _5, (SEL)msg);
+defgeneric(OBJ , ginstancesUnderstandMessage1, _1, (SEL)sel);
+defgeneric(OBJ , ginstancesUnderstandMessage2, _1, _2, (SEL)sel);
+defgeneric(OBJ , ginstancesUnderstandMessage3, _1, _2, _3, (SEL)sel);
+defgeneric(OBJ , ginstancesUnderstandMessage4, _1, _2, _3, _4, (SEL)sel);
+defgeneric(OBJ , ginstancesUnderstandMessage5, _1, _2, _3, _4, _5, (SEL)sel);
 
 #endif // COS_GEN_MESSAGE_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.7 2010/01/03 11:02:39 ldeniau Exp $
+ | $Id: Class.c,v 1.8 2010/01/12 15:45:41 ldeniau Exp $
  |
 */
 
@@ -66,23 +66,23 @@ endmethod
 
 // ----- rank 1
 
-defmethod(OBJ, ginstancesUnderstandMessage1, Class, (SEL)msg)
-  retmethod(cos_method_understand1(msg,
+defmethod(OBJ, ginstancesUnderstandMessage1, Class, (SEL)sel)
+  retmethod(cos_method_understand1(sel,
                                    self1->Behavior.id) ? True : False);
 endmethod
 
 // ----- rank 2
 
-defmethod(OBJ, ginstancesUnderstandMessage2, Class, Class, (SEL)msg)
-  retmethod(cos_method_understand2(msg,
+defmethod(OBJ, ginstancesUnderstandMessage2, Class, Class, (SEL)sel)
+  retmethod(cos_method_understand2(sel,
                                    self1->Behavior.id,
                                    self2->Behavior.id) ? True : False);
 endmethod
 
 // ----- rank 3
 
-defmethod(OBJ, ginstancesUnderstandMessage3, Class, Class, Class, (SEL)msg)
-  retmethod(cos_method_understand3(msg,
+defmethod(OBJ, ginstancesUnderstandMessage3, Class, Class, Class, (SEL)sel)
+  retmethod(cos_method_understand3(sel,
                                    self1->Behavior.id,
                                    self2->Behavior.id,
                                    self3->Behavior.id) ? True : False);
@@ -91,8 +91,8 @@ endmethod
 // ----- rank 4
 
 defmethod(OBJ, ginstancesUnderstandMessage4, Class, Class, Class, Class,
-                                             (SEL)msg)
-  retmethod(cos_method_understand4(msg,
+                                             (SEL)sel)
+  retmethod(cos_method_understand4(sel,
                                    self1->Behavior.id,
                                    self2->Behavior.id,
                                    self3->Behavior.id,
@@ -102,8 +102,8 @@ endmethod
 // ----- rank 5
 
 defmethod(OBJ, ginstancesUnderstandMessage5, Class, Class, Class, Class, Class,
-                                             (SEL)msg)
-  retmethod(cos_method_understand5(msg,
+                                             (SEL)sel)
+  retmethod(cos_method_understand5(sel,
                                    self1->Behavior.id,
                                    self2->Behavior.id,
                                    self3->Behavior.id,

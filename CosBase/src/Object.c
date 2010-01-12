@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.25 2010/01/11 13:41:21 ldeniau Exp $
+ | $Id: Object.c,v 1.26 2010/01/12 15:45:41 ldeniau Exp $
  |
 */
 
@@ -233,30 +233,30 @@ endmethod
 
 // ----- understanding
 
-defmethod(OBJ, gunderstandMessage1, Object, (SEL)msg)
-  retmethod( cos_method_understand1(msg, cos_object_id(_1))
+defmethod(OBJ, gunderstandMessage1, Object, (SEL)sel)
+  retmethod( cos_method_understand1(sel, cos_object_id(_1))
              ? True : False );
 endmethod
 
-defmethod(OBJ, gunderstandMessage2, Object, Object, (SEL)msg)
-  retmethod( cos_method_understand2(msg, cos_object_id(_1), cos_object_id(_2))
+defmethod(OBJ, gunderstandMessage2, Object, Object, (SEL)sel)
+  retmethod( cos_method_understand2(sel, cos_object_id(_1), cos_object_id(_2))
              ? True : False );
 endmethod
 
-defmethod(OBJ, gunderstandMessage3, Object, Object, Object, (SEL)msg)
-  retmethod( cos_method_understand3(msg, cos_object_id(_1), cos_object_id(_2),
+defmethod(OBJ, gunderstandMessage3, Object, Object, Object, (SEL)sel)
+  retmethod( cos_method_understand3(sel, cos_object_id(_1), cos_object_id(_2),
                                          cos_object_id(_3))
              ? True : False );
 endmethod
 
-defmethod(OBJ, gunderstandMessage4, Object, Object, Object, Object, (SEL)msg)
- retmethod( cos_method_understand4(msg, cos_object_id(_1), cos_object_id(_2),
+defmethod(OBJ, gunderstandMessage4, Object, Object, Object, Object, (SEL)sel)
+ retmethod( cos_method_understand4(sel, cos_object_id(_1), cos_object_id(_2),
                                         cos_object_id(_3), cos_object_id(_4))
             ? True : False );
 endmethod
 
-defmethod(OBJ, gunderstandMessage5, Object, Object, Object, Object, Object, (SEL)msg)
- retmethod( cos_method_understand5(msg, cos_object_id(_1), cos_object_id(_2),
+defmethod(OBJ, gunderstandMessage5, Object, Object, Object, Object, Object, (SEL)sel)
+ retmethod( cos_method_understand5(sel, cos_object_id(_1), cos_object_id(_2),
                                         cos_object_id(_3), cos_object_id(_4),
                                         cos_object_id(_5))
             ? True : False );
