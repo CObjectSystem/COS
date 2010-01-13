@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Nil.c,v 1.6 2010/01/13 21:28:27 ldeniau Exp $
+ | $Id: Nil.c,v 1.7 2010/01/13 21:29:04 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,7 @@ makclass(Nil,_);
 
 // -----
 
-defalias (OBJ, (gclone)gdeepClone, mNil)
+defalias (OBJ, (gclone)gdeepClone, mNil);
 defmethod(OBJ,  gclone           , mNil)
   retmethod(_1);
 endmethod

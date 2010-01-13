@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Null.c,v 1.3 2009/09/21 07:56:50 ldeniau Exp $
+ | $Id: Null.c,v 1.4 2010/01/13 21:28:27 ldeniau Exp $
  |
 */
 
@@ -44,7 +44,7 @@ makclass(Null, Predicate);
 
 // -----
 
-defmethod(OBJ, gisNull, mNull)
+defmethod(OBJ, gisNull, pmNull)
   retmethod(True);
 endmethod
 
