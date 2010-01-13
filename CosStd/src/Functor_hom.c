@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_hom.c,v 1.3 2010/01/13 11:07:20 ldeniau Exp $
+ | $Id: Functor_hom.c,v 1.4 2010/01/13 11:14:11 ldeniau Exp $
  |
 */
 
@@ -84,7 +84,7 @@ endmethod
 defmethod(OBJ, gevalEnv, SMthExpr22, Array1)
   SEL  sel = self->SMthExpr2.MthExpr2.MthExpr.sel;
   OBJ *arg = self->SMthExpr2.MthExpr2.rcv;
-  OBJ *var = self2->object;
+  OBJ *var = self2->Array.object;
 
   U32 aid0 = cos_object_id(var[0]);
   U32 aid1 = cos_object_id(arg[1]);
@@ -98,7 +98,7 @@ endmethod
 defmethod(OBJ, gevalEnv, SMthExpr23, Array1)
   SEL  sel = self->SMthExpr2.MthExpr2.MthExpr.sel;
   OBJ *arg = self->SMthExpr2.MthExpr2.rcv;
-  OBJ *var = self2->object;
+  OBJ *var = self2->Array.object;
 
   U32 aid0 = cos_object_id(arg[0]);
   U32 aid1 = cos_object_id(var[0]);

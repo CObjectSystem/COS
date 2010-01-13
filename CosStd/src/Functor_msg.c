@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_msg.c,v 1.4 2010/01/13 11:07:20 ldeniau Exp $
+ | $Id: Functor_msg.c,v 1.5 2010/01/13 11:14:11 ldeniau Exp $
  |
 */
 
@@ -88,7 +88,7 @@ DEFMETHOD(5)
 
 defmethod(OBJ, gevalEnv, Message1, Array1)
   SEL  sel = self->MthExpr.sel;
-  OBJ *var = self2->object;
+  OBJ *var = self2->Array.object;
   
   U32 aid0 = cos_object_id(var[0]);
   IMP1 imp = cos_method_fastLookup1(sel, aid0);
@@ -112,7 +112,7 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Message2, Array2)
   SEL  sel = self->MthExpr.sel;
-  OBJ *var = self2->object;
+  OBJ *var = self2->Array.object;
   
   U32 aid0 = cos_object_id(var[0]);
   U32 aid1 = cos_object_id(var[1]);
@@ -138,7 +138,7 @@ endmethod
 
 defmethod(OBJ, gevalEnv, Message3, Array3)
   SEL  sel = self->MthExpr.sel;
-  OBJ *var = self2->object;
+  OBJ *var = self2->Array.object;
   
   U32 aid0 = cos_object_id(var[0]);
   U32 aid1 = cos_object_id(var[1]);
