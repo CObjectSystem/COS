@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.19 2010/01/12 15:25:19 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.20 2010/01/13 08:21:43 ldeniau Exp $
  |
 */
 
@@ -151,7 +151,7 @@ endmethod
 defalias (OBJ, (COS_PP_CAT(ginitWithFun,N))COS_PP_CAT(gnewWithFun,N), pmFunctor, (COS_PP_CAT(FUN,N))fct, (OBJ*)arg); \
 defmethod(OBJ,  COS_PP_CAT(ginitWithFun,N)                          , pmFunctor, (COS_PP_CAT(FUN,N))fct, (OBJ*)arg) \
   OBJ fun = aFun(fct, COS_PP_SEQ(COS_PP_MAP(COS_PP_TAKE(N,(COS_PP_NUMSEQ_N())),DEFARG))); \
-  retmethod( gautoDelete(fun) ); \
+  retmethod( gclone(fun) ); \
 endmethod
 
 #undef  DEFARG

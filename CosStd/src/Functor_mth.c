@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.17 2010/01/12 19:13:04 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.18 2010/01/13 08:21:43 ldeniau Exp $
  |
 */
 
@@ -216,7 +216,7 @@ defmethod(OBJ,  ginitWithMth            , pmFunctor, (SEL)sel, (OBJ*)rcv, (void*
   case 5: mth = aMthExpr(sel,arg,rcv[0],rcv[1],rcv[2],rcv[3],rcv[4]); break;
   }
 
-  retmethod( gautoDelete(mth) );
+  retmethod( gclone(mth) );
 endmethod
 
 // ----- copy
