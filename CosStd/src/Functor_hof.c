@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_hof.c,v 1.2 2010/01/11 14:22:11 ldeniau Exp $
+ | $Id: Functor_hof.c,v 1.3 2010/01/13 11:07:20 ldeniau Exp $
  |
 */
 
@@ -71,6 +71,24 @@ defmethod(OBJ, gevalEnv, SFunExpr21, Array)
 
   retmethod( fct(arg[0], arg[1]) ); // 011
 endmethod
+
+defmethod(OBJ, gevalEnv, SFunExpr22, Array1)
+  OBJ *arg = self->SFunExpr2.FunExpr2.arg;
+  FUN2 fct = self->SFunExpr2.FunExpr2.fct;
+  OBJ *var = self2->object;
+
+  retmethod( fct(var[0], arg[1]) ); // 012
+endmethod
+
+defmethod(OBJ, gevalEnv, SFunExpr23, Array1)
+  OBJ *arg = self->SFunExpr2.FunExpr2.arg;
+  FUN2 fct = self->SFunExpr2.FunExpr2.fct;
+  OBJ *var = self2->object;
+
+  retmethod( fct(arg[0], var[0]) ); // 021
+endmethod
+
+// ---
 
 defmethod(OBJ, gevalEnv, SFunExpr22, Array)
   OBJ *arg = self->SFunExpr2.FunExpr2.arg;
@@ -115,6 +133,56 @@ defmethod(OBJ, gevalEnv, SFunExpr31, Array)
 
   retmethod( fct(arg[0], arg[1], arg[2]) ); // 0111
 endmethod
+
+defmethod(OBJ, gevalEnv, SFunExpr32, Array1)
+  OBJ *arg = self->SFunExpr3.FunExpr3.arg;
+  FUN3 fct = self->SFunExpr3.FunExpr3.fct;
+  OBJ *var = self2->object;
+
+  retmethod( fct(var[0], arg[1], arg[2]) ); // 0112
+endmethod
+
+defmethod(OBJ, gevalEnv, SFunExpr33, Array1)
+  OBJ *arg = self->SFunExpr3.FunExpr3.arg;
+  FUN3 fct = self->SFunExpr3.FunExpr3.fct;
+  OBJ *var = self2->object;
+
+  retmethod( fct(arg[0], var[0], arg[2]) ); // 0121
+endmethod
+
+defmethod(OBJ, gevalEnv, SFunExpr34, Array2)
+  OBJ *arg = self->SFunExpr3.FunExpr3.arg;
+  FUN3 fct = self->SFunExpr3.FunExpr3.fct;
+  OBJ *var = self2->object;
+
+  retmethod( fct(var[0], var[1], arg[2]) ); // 0122
+endmethod
+
+defmethod(OBJ, gevalEnv, SFunExpr35, Array1)
+  OBJ *arg = self->SFunExpr3.FunExpr3.arg;
+  FUN3 fct = self->SFunExpr3.FunExpr3.fct;
+  OBJ *var = self2->object;
+
+  retmethod( fct(arg[0], arg[1], var[0]) ); // 0211
+endmethod
+
+defmethod(OBJ, gevalEnv, SFunExpr36, Array2)
+  OBJ *arg = self->SFunExpr3.FunExpr3.arg;
+  FUN3 fct = self->SFunExpr3.FunExpr3.fct;
+  OBJ *var = self2->object;
+
+  retmethod( fct(var[0], arg[1], var[1]) ); // 0212
+endmethod
+
+defmethod(OBJ, gevalEnv, SFunExpr37, Array2)
+  OBJ *arg = self->SFunExpr3.FunExpr3.arg;
+  FUN3 fct = self->SFunExpr3.FunExpr3.fct;
+  OBJ *var = self2->object;
+
+  retmethod( fct(arg[0], var[0], var[1]) ); // 0221
+endmethod
+
+// ---
 
 defmethod(OBJ, gevalEnv, SFunExpr32, Array)
   OBJ *arg = self->SFunExpr3.FunExpr3.arg;

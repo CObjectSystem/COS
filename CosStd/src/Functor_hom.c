@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_hom.c,v 1.2 2010/01/11 14:22:11 ldeniau Exp $
+ | $Id: Functor_hom.c,v 1.3 2010/01/13 11:07:20 ldeniau Exp $
  |
 */
 
@@ -80,6 +80,36 @@ defmethod(OBJ, gevalEnv, SMthExpr21, Array)
 
   imp(sel, arg[0], arg[1], mth->arg, _ret); // 011
 endmethod
+
+defmethod(OBJ, gevalEnv, SMthExpr22, Array1)
+  SEL  sel = self->SMthExpr2.MthExpr2.MthExpr.sel;
+  OBJ *arg = self->SMthExpr2.MthExpr2.rcv;
+  OBJ *var = self2->object;
+
+  U32 aid0 = cos_object_id(var[0]);
+  U32 aid1 = cos_object_id(arg[1]);
+  IMP2 imp = cos_method_fastLookup2(sel, aid0, aid1);
+
+  struct MthExpr2 *mth = &self->SMthExpr2.MthExpr2;
+
+  imp(sel, var[0], arg[1], mth->arg, _ret); // 012
+endmethod
+
+defmethod(OBJ, gevalEnv, SMthExpr23, Array1)
+  SEL  sel = self->SMthExpr2.MthExpr2.MthExpr.sel;
+  OBJ *arg = self->SMthExpr2.MthExpr2.rcv;
+  OBJ *var = self2->object;
+
+  U32 aid0 = cos_object_id(arg[0]);
+  U32 aid1 = cos_object_id(var[0]);
+  IMP2 imp = cos_method_fastLookup2(sel, aid0, aid1);
+
+  struct MthExpr2 *mth = &self->SMthExpr2.MthExpr2;
+
+  imp(sel, arg[0], var[0], mth->arg, _ret); // 021
+endmethod
+
+// ---
 
 defmethod(OBJ, gevalEnv, SMthExpr22, Array)
   SEL  sel = self->SMthExpr2.MthExpr2.MthExpr.sel;

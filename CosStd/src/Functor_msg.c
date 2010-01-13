@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_msg.c,v 1.3 2010/01/10 14:24:59 ldeniau Exp $
+ | $Id: Functor_msg.c,v 1.4 2010/01/13 11:07:20 ldeniau Exp $
  |
 */
 
@@ -86,6 +86,16 @@ DEFMETHOD(5)
 
 // ----- 1
 
+defmethod(OBJ, gevalEnv, Message1, Array1)
+  SEL  sel = self->MthExpr.sel;
+  OBJ *var = self2->object;
+  
+  U32 aid0 = cos_object_id(var[0]);
+  IMP1 imp = cos_method_fastLookup1(sel, aid0);
+
+  imp(sel, var[0], self->arg, _ret);
+endmethod
+
 defmethod(OBJ, gevalEnv, Message1, Array)
   SEL  sel = self->MthExpr.sel;
   OBJ *var = self2->object;
@@ -99,6 +109,17 @@ defmethod(OBJ, gevalEnv, Message1, Array)
 endmethod
 
 // ----- 2
+
+defmethod(OBJ, gevalEnv, Message2, Array2)
+  SEL  sel = self->MthExpr.sel;
+  OBJ *var = self2->object;
+  
+  U32 aid0 = cos_object_id(var[0]);
+  U32 aid1 = cos_object_id(var[1]);
+  IMP2 imp = cos_method_fastLookup2(sel, aid0, aid1);
+
+  imp(sel, var[0], var[1], self->arg, _ret);
+endmethod
 
 defmethod(OBJ, gevalEnv, Message2, Array)
   SEL  sel = self->MthExpr.sel;
@@ -114,6 +135,18 @@ defmethod(OBJ, gevalEnv, Message2, Array)
 endmethod
 
 // ----- 3
+
+defmethod(OBJ, gevalEnv, Message3, Array3)
+  SEL  sel = self->MthExpr.sel;
+  OBJ *var = self2->object;
+  
+  U32 aid0 = cos_object_id(var[0]);
+  U32 aid1 = cos_object_id(var[1]);
+  U32 aid2 = cos_object_id(var[2]);
+  IMP3 imp = cos_method_fastLookup3(sel, aid0, aid1, aid2);
+
+  imp(sel, var[0], var[1], var[2], self->arg, _ret);
+endmethod
 
 defmethod(OBJ, gevalEnv, Message3, Array)
   SEL  sel = self->MthExpr.sel;
