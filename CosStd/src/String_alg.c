@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.17 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: String_alg.c,v 1.18 2010/01/13 22:07:18 ldeniau Exp $
  |
 */
 
@@ -205,7 +205,6 @@ defmethod(OBJ, gsplit, String, Object)
     str = gnewWith2(View, _1, aSlice(beg,len));
     gpush(strs, str);
     gdelete(str);
-    str = 0;
 
     if (!end) break;
 
