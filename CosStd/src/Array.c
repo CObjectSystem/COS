@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.50 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: Array.c,v 1.51 2010/01/14 13:17:15 ldeniau Exp $
  |
 */
 
@@ -121,46 +121,25 @@ endmethod
 
 // ----- constructors
 
-static inline OBJ
-clone(const struct Array *arr)
-{
-  struct Array* cpy = Array_alloc(arr->size);
+defmethod(OBJ, gclone, Array) // clone
+  struct Array* cpy = Array_alloc(self->size);
   OBJ _cpy = (OBJ)cpy; PRT(_cpy);
 
-  copy(cpy->object,1,&cpy->size,arr->object,arr->stride,arr->size);
+  clone(cpy->object,1,&cpy->size,self->object,self->stride,self->size);
 
   UNPRT(_cpy);
-  return _cpy;
-}
-
-defmethod(OBJ, gclone, Array) // clone
-  retmethod(clone(self));
-endmethod
-
-defmethod(OBJ, gdeepClone, Array) // deepClone
-  U32  size  = self->size;
-  I32  src_s = self->stride;
-  OBJ *src   = self->object;
-  OBJ *end   = src + src_s*size;
-
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = (OBJ)arr; PRT(_arr);
-
-  OBJ *dst   = arr->object;
-  U32 *dst_n = &arr->size;
-
-  while (src != end) {
-    *dst++ = gdeepClone(*src), ++*dst_n;
-     src += src_s;
-  }
-
-  UNPRT(_arr);
-  retmethod(_arr);
+  retmethod(_cpy);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Array);
-defmethod(OBJ,  ginitWith         , pmArray, Array) // clone
-  retmethod(clone(self2));
+defmethod(OBJ,  ginitWith         , pmArray, Array) // copy
+  struct Array* cpy = Array_alloc(self2->size);
+  OBJ _cpy = (OBJ)cpy; PRT(_cpy);
+
+  copy(cpy->object,1,&cpy->size,self2->object,self2->stride,self2->size);
+
+  UNPRT(_cpy);
+  retmethod(_cpy);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Slice);
@@ -171,7 +150,7 @@ defmethod(OBJ,  ginitWith         , pmArray, Slice) // Int sequence
   OBJ _vec = (OBJ)vec; PRT(_vec);
 
   for (U32 i = 0; i < size; i++) {
-    vec->object[i] = gretain(aInt(Slice_eval(self2,i)));
+    vec->object[i] = gclone(aInt(Slice_eval(self2,i)));
     vec->size++;
   }
 
@@ -188,7 +167,7 @@ defmethod(OBJ,  ginitWith         , pmArray, Range) // Int sequence
     OBJ _vec = (OBJ)vec; PRT(_vec);
   
     for (U32 i = 0; i < size; i++) {
-      vec->object[i] = gretain(aInt(Range_eval(self2,i)));
+      vec->object[i] = gclone(aInt(Range_eval(self2,i)));
       vec->size++;
     }
 
@@ -205,7 +184,7 @@ defmethod(OBJ,  ginitWith         , pmArray, XRange) // Float sequence
     OBJ _vec = (OBJ)vec; PRT(_vec);
   
     for (U32 i = 0; i < size; i++) {
-      vec->object[i] = gretain(aFloat(XRange_eval(self2,i)));
+      vec->object[i] = gclone(aFloat(XRange_eval(self2,i)));
       vec->size++;
     }
     
@@ -291,7 +270,7 @@ defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, Range);
 defmethod(OBJ,  ginitWith2          , pmArray, Array, Range) // sub vector
   struct Range range = Range_normalize(self3,self2->size);
   struct Slice slice = Slice_fromRange(&range);
-  
+
   retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
 endmethod
 

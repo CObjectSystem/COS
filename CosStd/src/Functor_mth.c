@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.18 2010/01/13 08:21:43 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.19 2010/01/14 13:17:15 ldeniau Exp $
  |
 */
 
@@ -304,7 +304,7 @@ endmethod
   } while(0)
 
 #define MAKE_ARG_COPY \
-  cos_alignment_t arg[sel->argsize/sizeof(cos_alignment_t)+1]; \
+  struct cos_mem_alignment arg[sel->argsize/sizeof(struct cos_mem_alignment)+1];\
   memcpy(arg, mth->arg, sel->argsize); \
   for (U32 i = mth->nexp; i-- ;) \
     GETOFFS(mth->idx[i], msk, (OBJ*)((char*)arg+mth->off[i]), var, size, _2)

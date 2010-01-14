@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.13 2010/01/07 00:46:27 ldeniau Exp $
+ | $Id: Vector.c,v 1.14 2010/01/14 13:17:15 ldeniau Exp $
  |
 */
 
@@ -131,8 +131,7 @@ endmethod
 
 // ----- constructors
 
-defalias (OBJ, (gclone)gdeepClone, T);
-defmethod(OBJ,  gclone           , T) // clone
+defmethod(OBJ, gclone, T) // clone
   struct T* vec = T_alloc(self->size);
 
   copy(vec->value,&vec->size,self->value,self->stride,self->size);

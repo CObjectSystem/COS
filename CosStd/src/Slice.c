@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.17 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Slice.c,v 1.18 2010/01/14 13:17:15 ldeniau Exp $
  |
 */
 
@@ -76,10 +76,9 @@ defmethod(OBJ, gnewSlc3, pmSlice, (I32)start, (U32)size, (I32)stride)
   retmethod( (OBJ)Slice_init((void*)galloc(_1), start, size, stride) );
 endmethod
 
-// ----- copy
+// ----- clone
 
-defalias (OBJ, (gclone)gdeepClone, Slice);
-defmethod(OBJ,  gclone           , Slice)
+defmethod(OBJ, gclone, Slice)
   retmethod( (OBJ)Slice_copy((void*)galloc(Slice), self) );
 endmethod
 

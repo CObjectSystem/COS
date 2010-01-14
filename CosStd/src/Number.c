@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.22 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Number.c,v 1.23 2010/01/14 13:17:15 ldeniau Exp $
  |
 */
 
@@ -91,8 +91,7 @@ DEFMETHOD(Complex,     )
 #undef  DEFMETHOD
 #define DEFMETHOD(T,P) \
 \
-defalias (OBJ, (gclone)gdeepClone, T); \
-defmethod(OBJ,  gclone           , T)  \
+defmethod(OBJ, gclone, T)  \
   struct T *new = STATIC_CAST(struct T*, galloc(T)); \
   new->P value = self->P value; \
   retmethod( (OBJ)new ); \

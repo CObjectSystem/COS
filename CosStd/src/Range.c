@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.17 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Range.c,v 1.18 2010/01/14 13:17:15 ldeniau Exp $
  |
 */
 
@@ -68,10 +68,9 @@ defmethod(OBJ, gnewRng3, pmRange, (I32)start, (I32)end, (I32)stride)
   retmethod( (OBJ)Range_init((void*)galloc(_1), start, end, stride) );
 endmethod
 
-// ----- copy
+// ----- clone
 
-defalias (OBJ, (gclone)gdeepClone, Range);
-defmethod(OBJ,  gclone           , Range)
+defmethod(OBJ, gclone, Range)
   retmethod( (OBJ)Range_copy((void*)galloc(Range), self) );
 endmethod
 

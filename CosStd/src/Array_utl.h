@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_utl.h,v 1.3 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Array_utl.h,v 1.4 2010/01/14 13:17:15 ldeniau Exp $
  |
 */
 
@@ -59,6 +59,20 @@ copy(OBJ *dst, I32 dst_s, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
 
   while (src != end) {
     *dst = gretain(*src), ++*dst_n;
+     dst += dst_s;
+     src += src_s;
+  }
+
+  return dst;
+}
+
+static COS_ALWAYS_INLINE OBJ*
+clone(OBJ *dst, I32 dst_s, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
+{
+  OBJ *end = src + src_s*src_n;
+
+  while (src != end) {
+    *dst = gclone(*src), ++*dst_n;
      dst += dst_s;
      src += src_s;
   }

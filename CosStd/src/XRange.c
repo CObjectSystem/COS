@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.11 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: XRange.c,v 1.12 2010/01/14 13:17:15 ldeniau Exp $
  |
 */
 
@@ -82,8 +82,7 @@ endmethod
 
 // ----- clone
 
-defalias (OBJ, (gclone)gdeepClone, XRange);
-defmethod(OBJ,  gclone           , XRange)
+defmethod(OBJ, gclone, XRange)
   retmethod( (OBJ)XRange_copy((void*)galloc(XRange), self) );
 endmethod
 

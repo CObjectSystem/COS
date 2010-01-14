@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.30 2010/01/11 14:52:33 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.31 2010/01/14 13:17:15 ldeniau Exp $
  |
 */
 
@@ -520,7 +520,7 @@ defmethod(OBJ, greduce, Array, Functor)
   I32  val_s = self->stride;
   OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
-  OBJ  res   = gautoDelete(gdeepClone(*val));
+  OBJ  res   = gautoDelete(gclone(*val));
   
   val += val_s;
 
@@ -562,7 +562,7 @@ defmethod(OBJ, grreduce, Array, Functor)
   I32  val_s = self->stride;
   OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
-  OBJ  res   = gautoDelete(gdeepClone(*(end-val_s)));
+  OBJ  res   = gautoDelete(gclone(*(end-val_s)));
 
   end -= val_s;
   
@@ -662,7 +662,7 @@ endmethod
 defmethod(OBJ, gaccumulate, Array, Functor)
   test_assert( self->size > 0, "empty array" );
 
-  OBJ ini = gautoDelete(gdeepClone(self->object[0]));
+  OBJ ini = gautoDelete(gclone(self->object[0]));
   OBJ arr = aArrayView(self, atSlice(1, self->size-1));
   
   retmethod( gaccumulate1(arr, _2, ini) );
@@ -701,7 +701,7 @@ endmethod
 defmethod(OBJ, graccumulate, Array, Functor)
   test_assert( self->size > 0, "empty array" );
 
-  OBJ ini = gautoDelete(gdeepClone(glast(_1)));
+  OBJ ini = gautoDelete(gclone(glast(_1)));
   OBJ arr = aArrayView(self, atSlice(self->size-1));
   
   retmethod( graccumulate1(arr, _2, ini) );
