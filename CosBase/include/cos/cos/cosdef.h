@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.28 2010/01/12 11:01:45 ldeniau Exp $
+ | $Id: cosdef.h,v 1.29 2010/01/14 12:58:33 ldeniau Exp $
  |
 */
 
@@ -140,19 +140,20 @@ typedef void (*cos_exception_handler)(OBJ,STR,STR,int);
 #define U64_MAX ((U64)-1ULL)
 
 // universal alignment
-typedef union {
+struct cos_mem_alignment {
+  union {
   BOOL  u1,   *pu1;
   U8    u8,   *pu8;
   U16   u16,  *pu16;
   U32   u32,  *pu32;
   U64   u64,  *pu64;
   F64   f64,  *pf64;
-  C64   c64,  *pc64;
   STR   str,  *pstr;
   void *ptr, **pptr;
   OBJ   obj,  *pobj;
   FCT   fct,  *pfct;
-} cos_alignment_t;
+  } _;
+};
 
 /***********************************************************
  * Implementation

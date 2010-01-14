@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.26 2010/01/12 15:45:41 ldeniau Exp $
+ | $Id: Object.c,v 1.27 2010/01/14 12:58:33 ldeniau Exp $
  |
 */
 
@@ -95,8 +95,7 @@ endmethod
 
 // ----- clone
 
-defalias (OBJ, (gclone)gdeepClone, Object);
-defmethod(OBJ,  gclone           , Object)
+defmethod(OBJ, gclone, Object)
   retmethod( gnewWith(gclass(_1),_1) );
 endmethod
 

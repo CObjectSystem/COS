@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.34 2010/01/11 13:41:21 ldeniau Exp $
+ | $Id: object.h,v 1.35 2010/01/14 12:58:33 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,6 @@ defgeneric(OBJ , gnewWith2     , _1, _2, _3);
 defgeneric(OBJ , gnewWith3     , _1, _2, _3, _4);
 defgeneric(OBJ , gnewWith4     , _1, _2, _3, _4, _5);
 defgeneric(OBJ , gclone        , _1);
-defgeneric(OBJ , gdeepClone    , _1);
 
 // constructors, copy
 defgeneric(OBJ , ginit         , _1);
@@ -73,10 +72,10 @@ defgeneric(OBJ , gautoRelease  , _1);
 defgeneric(U32 , gretainCount  , _1);
 
 // identity, conversion, coercion
-defgeneric(OBJ , gisNil        , _1);     // returns True or False
-defgeneric(OBJ , gisNull       , _1);     // returns True or False
 defgeneric(OBJ , gisKindOf     , _1, _2); // returns True or False
 defgeneric(OBJ , gisInstanceOf , _1, _2); // returns True or False
+defgeneric(OBJ , gisNil        , _1);     // returns True or False
+defgeneric(OBJ , gisNull       , _1);     // returns True or False
 defgeneric(OBJ , gclass        , _1);
 defgeneric(STR , gclassName    , _1);
 defgeneric(OBJ , gsuperClass   , _1);
