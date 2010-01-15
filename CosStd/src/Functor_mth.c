@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.19 2010/01/14 13:17:15 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.20 2010/01/15 23:54:49 ldeniau Exp $
  |
 */
 
@@ -112,7 +112,7 @@ getOffs(SEL sel, U16 off[], U8 idx[], U8 pos[])
   return j;
 }
 
-static inline U32
+static COS_ALWAYS_INLINE U32
 optArgs(U16 off[], U8 idx[], I32 noff, U32 msk)
 {
   I32 i = 0, j = noff-1;
@@ -131,7 +131,7 @@ optArgs(U16 off[], U8 idx[], I32 noff, U32 msk)
 
 enum { MTH_ISEXPR, MTH_ISCLOSED, MTH_ISMESS };
 
-static inline int
+static COS_ALWAYS_INLINE int
 getMthType(U32 msk, OBJ arg[], U8 pos[], U32 n, U32 nexp)
 {
   if (nexp) return MTH_ISEXPR;

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.14 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: File.c,v 1.15 2010/01/15 23:50:13 ldeniau Exp $
  |
 */
 
@@ -230,7 +230,7 @@ endmethod
 
 defmethod(OBJ, gflush, InFile)
   // no flush on input file
-    retmethod(_1);
+  retmethod(_1);
 endmethod
 
 defmethod(OBJ, gflush, OutFile)

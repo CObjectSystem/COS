@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File_mi.c,v 1.1 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: File_mi.c,v 1.2 2010/01/15 23:50:13 ldeniau Exp $
  |
 */
 
@@ -50,8 +50,8 @@ defmethod(void, gunrecognizedMessage1, InOutFile)
   if (ginstancesUnderstandMessage1(OutInFile, _sel) != True)
     next_method(self);
   
-  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File)),
-              "unable to change from InOutFile to OutInFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File));
+  test_assert(chg, "unable to change from InOutFile to OutInFile");
 
   forward_message(_1);
 endmethod
@@ -60,8 +60,8 @@ defmethod(void, gunrecognizedMessage2, InOutFile, Object)
   if (ginstancesUnderstandMessage2(OutInFile, _2, _sel) != True)
     next_method(self,self2);
   
-  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File)),
-              "unable to change from InOutFile to OutInFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File));
+  test_assert(chg, "unable to change from InOutFile to OutInFile");
 
   forward_message(_1,_2);
 endmethod
@@ -70,8 +70,8 @@ defmethod(void, gunrecognizedMessage3, InOutFile, Object, Object)
   if (ginstancesUnderstandMessage3(OutInFile, _2, _3, _sel) != True)
     next_method(self,self2,self3);
   
-  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File)),
-              "unable to change from InOutFile to OutInFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(OutInFile), classref(File));
+  test_assert(chg, "unable to change from InOutFile to OutInFile");
 
   forward_message(_1,_2,_3);
 endmethod
@@ -84,8 +84,8 @@ defmethod(void, gunrecognizedMessage1, OutInFile)
   
   fflush(self->OutFile.OpenFile.fd);
 
-  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File)),
-              "unable to change from OutInFile to InOutFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File));
+  test_assert(chg, "unable to change from OutInFile to InOutFile");
 
   forward_message(_1);
 endmethod
@@ -94,11 +94,10 @@ defmethod(void, gunrecognizedMessage2, OutInFile, Object)
   if (ginstancesUnderstandMessage2(InOutFile, _2, _sel) != True)
     next_method(self,self2);
   
-  // flush FILE buffer
   fflush(self->OutFile.OpenFile.fd);
 
-  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File)),
-              "unable to change from OutInFile to InOutFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File));
+  test_assert(chg, "unable to change from OutInFile to InOutFile");
 
   forward_message(_1,_2);
 endmethod
@@ -107,11 +106,10 @@ defmethod(void, gunrecognizedMessage3, OutInFile, Object, Object)
   if (ginstancesUnderstandMessage3(InOutFile, _2, _3, _sel) != True)
     next_method(self,self2,self3);
   
-  // flush FILE buffer
   fflush(self->OutFile.OpenFile.fd);
 
-  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File)),
-              "unable to change from OutInFile to InOutFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(InOutFile), classref(File));
+  test_assert(chg, "unable to change from OutInFile to InOutFile");
 
   forward_message(_1,_2,_3);
 endmethod
@@ -124,8 +122,8 @@ defmethod(void, gunrecognizedMessage1, InOutBinFile)
   if (ginstancesUnderstandMessage1(OutInBinFile, _sel) != True)
     next_method(self);
   
-  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInBinFile), classref(File)),
-              "unable to change from InOutBinFile to OutInBinFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(OutInBinFile), classref(File));
+  test_assert(chg, "unable to change from InOutBinFile to OutInBinFile");
 
   forward_message(_1);
 endmethod
@@ -134,8 +132,8 @@ defmethod(void, gunrecognizedMessage2, InOutBinFile, Object)
   if (ginstancesUnderstandMessage2(OutInBinFile, _2, _sel) != True)
     next_method(self,self2);
   
-  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInBinFile), classref(File)),
-              "unable to change from InOutBinFile to OutInBinFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(OutInBinFile), classref(File));
+  test_assert(chg, "unable to change from InOutBinFile to OutInBinFile");
 
   forward_message(_1,_2);
 endmethod
@@ -144,8 +142,8 @@ defmethod(void, gunrecognizedMessage3, InOutBinFile, Object, Object)
   if (ginstancesUnderstandMessage3(OutInBinFile, _2, _3, _sel) != True)
     next_method(self,self2,self3);
   
-  test_assert(cos_object_unsafeChangeClass(_1, classref(OutInBinFile), classref(File)),
-              "unable to change from InOutBinFile to OutInBinFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(OutInBinFile), classref(File));
+  test_assert(chg, "unable to change from InOutBinFile to OutInBinFile");
 
   forward_message(_1,_2,_3);
 endmethod
@@ -158,8 +156,8 @@ defmethod(void, gunrecognizedMessage1, OutInBinFile)
   
   fflush(self->OutBinFile.OutFile.OpenFile.fd);
 
-  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutBinFile), classref(File)),
-              "unable to change from OutInBinFile to InOutBinFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(InOutBinFile), classref(File));
+  test_assert(chg, "unable to change from OutInBinFile to InOutBinFile");
 
   forward_message(_1);
 endmethod
@@ -168,11 +166,10 @@ defmethod(void, gunrecognizedMessage2, OutInBinFile, Object)
   if (ginstancesUnderstandMessage2(InOutBinFile, _2, _sel) != True)
     next_method(self,self2);
   
-  // flush FILE buffer
   fflush(self->OutBinFile.OutFile.OpenFile.fd);
 
-  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutBinFile), classref(File)),
-              "unable to change from OutInBinFile to InOutBinFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(InOutBinFile), classref(File));
+  test_assert(chg, "unable to change from OutInBinFile to InOutBinFile");
 
   forward_message(_1,_2);
 endmethod
@@ -181,11 +178,10 @@ defmethod(void, gunrecognizedMessage3, OutInBinFile, Object, Object)
   if (ginstancesUnderstandMessage3(InOutBinFile, _2, _3, _sel) != True)
     next_method(self,self2,self3);
   
-  // flush FILE buffer
   fflush(self->OutBinFile.OutFile.OpenFile.fd);
 
-  test_assert(cos_object_unsafeChangeClass(_1, classref(InOutBinFile), classref(File)),
-              "unable to change from OutInBinFile to InOutBinFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(InOutBinFile), classref(File));
+  test_assert(chg, "unable to change from OutInBinFile to InOutBinFile");
 
   forward_message(_1,_2,_3);
 endmethod

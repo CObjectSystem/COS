@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: string.h,v 1.2 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: string.h,v 1.3 2010/01/15 23:50:13 ldeniau Exp $
  |
 */
 
@@ -57,6 +57,6 @@ defgeneric(OBJ, gtoLower , _1);
 defgeneric(OBJ, gtoUpper , _1);
 
 // remove heading and trailing white spaces
-defgeneric(OBJ, gtrim, _1);
+defgeneric(OBJ, gstrip   , _1);
 
 #endif // COS_GEN_STRING_H

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.13 2010/01/12 18:56:25 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.14 2010/01/15 23:50:13 ldeniau Exp $
  |
 */
 
@@ -47,55 +47,55 @@
 #define PAR_UNIT ((U32) 1 << 27)
 #define PAR_MASK ((U32)31 << 27)
 
-static inline U32
+static COS_ALWAYS_INLINE U32
 getPar(U32 msk)
 {
   return msk & PAR_MASK;
 }
 
-static inline U32
+static COS_ALWAYS_INLINE U32
 getIdx(OBJ arg)
 {
   return (size_t)arg;
 }
 
-static inline OBJ
+static COS_ALWAYS_INLINE OBJ
 getVar(OBJ arg)
 {
   return arg;
 }
 
-static inline void
+static COS_ALWAYS_INLINE void
 setArg(U32 *msk, U32 idx)
 {
   *msk |= 1 << 3*idx;
 }
 
-static inline void
+static COS_ALWAYS_INLINE void
 setIdx(U32 *msk, U32 idx)
 {
   *msk |= 2 << 3*idx;
 }
 
-static inline void
+static COS_ALWAYS_INLINE void
 setVar(U32 *msk, U32 idx)
 {
   *msk |= 4 << 3*idx;
 }
 
-static inline BOOL
+static COS_ALWAYS_INLINE BOOL
 isArg(U32 msk, U32 idx)
 {
   return msk & (1 << 3*idx);
 }
 
-static inline BOOL
+static COS_ALWAYS_INLINE BOOL
 isIdx(U32 msk, U32 idx)
 {
   return msk & (2 << 3*idx);
 }
 
-static inline BOOL
+static COS_ALWAYS_INLINE BOOL
 isVar(U32 msk, U32 idx)
 {
   return msk & (4 << 3*idx);
@@ -103,13 +103,13 @@ isVar(U32 msk, U32 idx)
 
 // ----- expression surrogate
 
-static inline OBJ
+static COS_ALWAYS_INLINE OBJ
 getFunExpr(OBJ arg) // unsafe
 {
   return STATIC_CAST(struct ExpressionSurrogate*, arg)->expr;
 }
 
-static inline void
+static COS_ALWAYS_INLINE void
 removeExprSurr(OBJ *arg)
 {
   while (cos_object_isa(*arg, classref(ExpressionSurrogate)))

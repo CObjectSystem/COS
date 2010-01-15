@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.h,v 1.4 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: File.h,v 1.5 2010/01/15 23:50:12 ldeniau Exp $
  |
 */
 
@@ -49,7 +49,7 @@ endclass
 
 // ----- File state machine
 
-defclass(ClosedFile,File)
+defclass(ClosedFile, File)
   FILE *fd;
   OBJ   name;
   BOOL  own;
@@ -66,18 +66,34 @@ endclass
 
 // ----- text file
 
-defclass(InFile , OpenFile) endclass
-defclass(OutFile, OpenFile) endclass
+defclass(InFile , OpenFile)
+endclass
 
-defclass(InOutFile, InFile ) char file_buf[]; endclass
-defclass(OutInFile, OutFile) char file_buf[]; endclass
+defclass(OutFile, OpenFile)
+endclass
+
+defclass(InOutFile, InFile)
+  char file_buf[];
+endclass
+
+defclass(OutInFile, OutFile)
+  char file_buf[];
+endclass
 
 // ----- binary file
 
-defclass(InBinFile , InFile) endclass
-defclass(OutBinFile, OutFile) endclass
+defclass(InBinFile , InFile)
+endclass
 
-defclass(InOutBinFile, InBinFile ) char file_buf[]; endclass
-defclass(OutInBinFile, OutBinFile) char file_buf[]; endclass
+defclass(OutBinFile, OutFile)
+endclass
+
+defclass(InOutBinFile, InBinFile)
+  char file_buf[];
+endclass
+
+defclass(OutInBinFile, OutBinFile)
+  char file_buf[];
+endclass
 
 #endif // COS_FILE_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_io.c,v 1.6 2009/09/30 12:09:58 ldeniau Exp $
+ | $Id: String_io.c,v 1.7 2010/01/15 23:50:13 ldeniau Exp $
  |
 */
 
@@ -66,100 +66,101 @@ endmethod
 
 defmethod(OBJ, gget, InFile, StringDyn)
   PRE POST BODY
-    struct StringFix *strf = &self2->StringFix;
-    struct String    *str  = &strf->String;
+  struct StringFix *strf = &self2->StringFix;
+  struct String    *str  = &strf->String;
 
-    FILE *fd    = self->OpenFile.fd;
-    U32  *val_n = &str->size;
-    int   c;
+  FILE *fd    = self->OpenFile.fd;
+  U32  *val_n = &str->size;
+  int   c;
 
-    // clear
-    str->size  = 0;
-    str->value = strf->_value;
+  gclear(_2);
 
-    // skip heading white spaces
-    while ((c = getc(fd)) != EOF && isspace(c))
-      ;
+  // skip heading white spaces
+  while ((c = getc(fd)) != EOF && isspace(c))
+    ;
 
-    while(1) {
-      U8* val = str->value + str->size;
-      U8* end = strf->_value + strf->capacity;
-    
-      while (val != end && (c = getc(fd)) != EOF && !isspace(c))
-        *val++ = (unsigned)c, ++*val_n;
+  while(1) {
+    U8* val = str->value + str->size;
+    U8* end = strf->_value + strf->capacity;
+  
+    while (val != end && (c = getc(fd)) != EOF && !isspace(c))
+      *val++ = (unsigned)c, ++*val_n;
 
-      if (c == EOF || isspace(c))
-        retmethod(c == EOF ? False : True);
+    if (c == EOF || isspace(c)) break;
 
-      genlarge(_2, aInt(1));
-    }
+    genlarge(_2, aInt(1));
+  }
+
+  retmethod(c == EOF ? False : True);
 endmethod
 
 // ----- getLine
 
 defmethod(OBJ, ggetLine, InFile, StringDyn)
   PRE POST BODY
-    struct StringFix *strf = &self2->StringFix;
-    struct String    *str  = &strf->String;
+  struct StringFix *strf = &self2->StringFix;
+  struct String    *str  = &strf->String;
 
-    FILE *fd    = self->OpenFile.fd;
-    U32  *val_n = &str->size;
-    int   c     = 0;
+  FILE *fd    = self->OpenFile.fd;
+  U32  *val_n = &str->size;
+  int   c     = 0;
 
-    // clear
-    str->size  = 0;
-    str->value = strf->_value;
+  // clear
+  str->size  = 0;
+  str->value = strf->_value;
 
-    while(1) {
-      U8* val = str->value + str->size;
-      U8* end = strf->_value + strf->capacity;
-      int c2;
-    
-      while (val != end && (c = getc(fd)) != EOF) {
-        if (c == '\n') {
-          if ((c2 = getc(fd)) != EOF && c2 != '\r') ungetc(c2, fd);
-          break;
-        }
-        if (c == '\r') {
-          if ((c2 = getc(fd)) != EOF && c2 != '\n') ungetc(c2, fd);
-          break;
-        }
-        *val++ = (unsigned)c, ++*val_n;
+  while(1) {
+    U8* val = str->value + str->size;
+    U8* end = strf->_value + strf->capacity;
+    int c2;
+  
+    while (val != end && (c = getc(fd)) != EOF) {
+      if (c == '\n') {
+        if ((c2 = getc(fd)) != EOF && c2 != '\r') ungetc(c2, fd);
+        break;
       }
-      
-      if (c == EOF || c == '\n' || c == '\r')
-        retmethod(c == EOF ? False : True);
-
-      genlarge(_2, aInt(1));
+      if (c == '\r') {
+        if ((c2 = getc(fd)) != EOF && c2 != '\n') ungetc(c2, fd);
+        break;
+      }
+      *val++ = (unsigned)c, ++*val_n;
     }
+    
+    if (c == EOF || c == '\n' || c == '\r') break;
+
+    genlarge(_2, aInt(1));
+  }
+
+  retmethod(c == EOF ? False : True);
 endmethod
 
 // ----- dynamic size getData
 
 defmethod(OBJ, ggetData, InFile, StringDyn)
   PRE POST BODY
-    struct StringFix *strf = &self2->StringFix;
-    struct String    *str  = &strf->String;
+  struct StringFix *strf = &self2->StringFix;
+  struct String    *str  = &strf->String;
 
-    // clear
-    str->size  = 0;
-    str->value = strf->_value;
+  // clear
+  str->size  = 0;
+  str->value = strf->_value;
 
-    // NOTE-TODO: check if stream is seekable and precompute the result size
+  // NOTE-TODO: check if stream is seekable and precompute the result size
 
-    while(1) {
-      U8* val = str->value + str->size;
-      U8* end = strf->_value + strf->capacity;
+  while(1) {
+    U8* val = str->value + str->size;
+    U8* end = strf->_value + strf->capacity;
 
-      size_t n = fread(val, 1, end-val, self->OpenFile.fd);
-          
-      str->size += n;
-      
-      if (val + n < end)
-        retmethod(False);
+    size_t n = fread(val, 1, end-val, self->OpenFile.fd);
+        
+    str->size += n;
+    
+    if (val + n < end) break;
 
-      genlarge(_2, aInt(1));
-    }
+    genlarge(_2, aInt(1));
+  }
+
+  retmethod(False);
 endmethod
 
 // ----- fixed size getData

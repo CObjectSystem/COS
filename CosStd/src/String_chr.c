@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_chr.c,v 1.2 2009/09/25 08:58:59 ldeniau Exp $
+ | $Id: String_chr.c,v 1.3 2010/01/15 23:50:13 ldeniau Exp $
  |
 */
 
@@ -104,38 +104,38 @@ defmethod(OBJ, gtoUpper, Char)
   retmethod(_1);
 endmethod
 
-// ----- trim (remove white spaces)
+// ----- strip (remove white spaces)
 
 useclass(View);
 
-defmethod(OBJ, gtrim, String)
+defmethod(OBJ, gstrip, String)
   U32 size = self->size;
 
   if (!size) retmethod(_1);
   
   U8* val  = self->value;
-  U8* end  = val + size-1;
+  U8* end  = val + size;
 
-  while (val != end && isspace(*val)) ++val;
-  while (val != end && isspace(*end)) --end;
+  while (val != end && isspace(* val   )) val++;
+  while (val != end && isspace(*(end-1))) end--;
 
-  retmethod( gautoDelete(gnewWith2(View, _1, aSlice(val-self->value,end-val+1))) );
+  retmethod( gautoDelete(gnewWith2(View, _1, aSlice(val-self->value,end-val))) );
 endmethod
 
-defmethod(OBJ, gtrim, StringDyn)
+defmethod(OBJ, gstrip, StringDyn)
   struct String *str = &self->StringFix.String;
   U32 size = str->size;
 
   if (!size) retmethod(_1);
   
   U8* val  = str->value;
-  U8* end  = val + size-1;
+  U8* end  = val + size;
 
-  while (val != end && isspace(*val)) ++val;
-  while (val != end && isspace(*end)) --end;
+  while (val != end && isspace(* val   )) val++;
+  while (val != end && isspace(*(end-1))) end--;
 
   str->value = val;
-  str->size  = end-val+1;
+  str->size  = end-val;
 
   retmethod(_1);
 endmethod
