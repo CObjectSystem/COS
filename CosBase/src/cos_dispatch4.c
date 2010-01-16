@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch4.c,v 1.9 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: cos_dispatch4.c,v 1.10 2010/01/16 13:58:41 ldeniau Exp $
  |
 */
 
@@ -61,7 +61,7 @@ static struct cos_method_slot4 *cache_empty = &sentinel;
 
 #if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
 
-__thread struct cos_method_cache4 cos_method_cache4_ = { &cache_empty, 0 };
+__thread struct cos_method_cache4 cos_method_cache4_ = { &cache_empty, 0, 0, 0 };
 
 #else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
@@ -76,6 +76,8 @@ cos_method_cache4_init(void)
 
 	cache->slot = &cache_empty;
 	cache->msk  = 0;
+	cache->mis  = 0;
+	cache->mis2 = 0;
 
   if ( pthread_setspecific(cos_method_cache4_key, cache) )
 	  cos_abort("unable to initialize dispatcher cache4");
@@ -203,6 +205,7 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, BOOL load)
       // 3rd cell exists and may be used (then forget)
       struct cos_method_slot4 *tmp = *slot;
       *slot = tmp->nxt->nxt, tmp->nxt->nxt = (*slot)->nxt, (*slot)->nxt = tmp;
+      if (!++cache->mis) cache->mis2++;
 
     } else
       // allocate one more cell
@@ -315,5 +318,7 @@ cos_method_clearCache4(void)
     free(cache->slot);
     cache->slot = &cache_empty;
     cache->msk  = 0;
+    cache->mis  = 0;
+    cache->mis2 = 0;
   }
 }

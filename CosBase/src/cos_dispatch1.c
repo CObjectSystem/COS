@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch1.c,v 1.9 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: cos_dispatch1.c,v 1.10 2010/01/16 13:58:41 ldeniau Exp $
  |
 */
 
@@ -61,7 +61,7 @@ static struct cos_method_slot1 *cache_empty = &sentinel;
 
 #if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
 
-__thread struct cos_method_cache1 cos_method_cache1_ = { &cache_empty, 0 };
+__thread struct cos_method_cache1 cos_method_cache1_ = { &cache_empty, 0, 0, 0 };
 
 #else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
@@ -74,8 +74,10 @@ cos_method_cache1_init(void)
   if (!cache)
 	  cos_abort("out of memory while creating dispatcher cache1");
 
-	cache->slot = &cache_empty;
+  cache->slot = &cache_empty;
 	cache->msk  = 0;
+	cache->mis  = 0;
+	cache->mis2 = 0;
 
   if ( pthread_setspecific(cos_method_cache1_key, cache) )
 	  cos_abort("unable to initialize dispatcher cache1");
@@ -139,7 +141,7 @@ enlarge_slot(struct cos_method_slot1 **slot)
 static void
 enlarge_cache(void)
 {
-	struct cos_method_cache1 *cache = cos_method_cache1();
+  struct cos_method_cache1 *cache = cos_method_cache1();
   U32 i, n;
 
   n = cache->msk ? (cache->msk+1)*2 : 512;
@@ -199,6 +201,7 @@ load_method(SEL _sel, U32 id1, BOOL load)
       // 3rd cell exists and may be used (previous is forgotten)
       struct cos_method_slot1 *tmp = *slot;
       *slot = tmp->nxt->nxt, tmp->nxt->nxt = (*slot)->nxt, (*slot)->nxt = tmp;
+      if (!++cache->mis) cache->mis2++;
 
     } else
       // allocate one more cell
@@ -299,5 +302,7 @@ cos_method_clearCache1(void)
     free(cache->slot);
     cache->slot = &cache_empty;
     cache->msk  = 0;
+    cache->mis  = 0;
+    cache->mis2 = 0;
   }
 }

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.29 2010/01/14 12:58:33 ldeniau Exp $
+ | $Id: cosdef.h,v 1.30 2010/01/16 13:58:40 ldeniau Exp $
  |
 */
 
@@ -235,27 +235,27 @@ struct cos_exception_extendedProtect {
 // dispatch caches
 struct cos_method_cache1 {
   struct cos_method_slot1 **slot;
-  U32 msk;
+  U32 msk, mis, mis2;
 };
 
 struct cos_method_cache2 {
   struct cos_method_slot2 **slot;
-  U32 msk;
+  U32 msk, mis, mis2;
 };
 
 struct cos_method_cache3 {
   struct cos_method_slot3 **slot;
-  U32 msk;
+  U32 msk, mis, mis2;
 };
 
 struct cos_method_cache4 {
   struct cos_method_slot4 **slot;
-  U32 msk;
+  U32 msk, mis, mis2;
 };
 
 struct cos_method_cache5 {
   struct cos_method_slot5 **slot;
-  U32 msk;
+  U32 msk, mis, mis2;
 };
 
 // dispatch slots

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch.c,v 1.5 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: cos_dispatch.c,v 1.6 2010/01/16 13:58:41 ldeniau Exp $
  |
 */
 
@@ -52,12 +52,15 @@ void cos_method_clearCaches(void)
 
 #include <cos/debug.h>
 
+static const double shift32 = 4294967296.0;
+
 // ----- cache stats
 
 void
 cos_method_statCache1(FILE *fp)
 {
   struct cos_method_cache1 *cache = cos_method_cache1();
+  F64 miss = cache->mis2*shift32 + cache->mis;
   U32 i, n, n1=0, n2=0, n3=0;
 
   if (!fp) fp = stderr;
@@ -75,14 +78,15 @@ cos_method_statCache1(FILE *fp)
   }
 
   n = n1+n2+n3;
-  fprintf(fp,"cache1: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
-          i,n,(double)n/i,n1,n2,n3);
+  fprintf(fp,"cache1: slots=%6u, cells=%4u, miss=%g, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,miss,(double)n/i,n1,n2,n3);
 }
 
 void
 cos_method_statCache2(FILE *fp)
 {
   struct cos_method_cache2 *cache = cos_method_cache2();
+  F64 miss = cache->mis2*shift32 + cache->mis;
   U32 i, n, n1=0, n2=0, n3=0;
 
   if (!fp) fp = stderr;
@@ -100,14 +104,15 @@ cos_method_statCache2(FILE *fp)
   }
 
   n = n1+n2+n3;
-  fprintf(fp,"cache2: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
-          i,n,(double)n/i,n1,n2,n3);
+  fprintf(fp,"cache2: slots=%6u, cells=%4u, miss=%g, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,miss,(double)n/i,n1,n2,n3);
 }
 
 void
 cos_method_statCache3(FILE *fp)
 {
   struct cos_method_cache3 *cache = cos_method_cache3();
+  F64 miss = cache->mis2*shift32 + cache->mis;
   U32 i, n, n1=0, n2=0, n3=0;
 
   if (!fp) fp = stderr;
@@ -125,14 +130,15 @@ cos_method_statCache3(FILE *fp)
   }
 
   n = n1+n2+n3;
-  fprintf(fp,"cache3: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
-          i,n,(double)n/i,n1,n2,n3);
+  fprintf(fp,"cache3: slots=%6u, cells=%4u, miss=%g, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,miss,(double)n/i,n1,n2,n3);
 }
 
 void
 cos_method_statCache4(FILE *fp)
 {
   struct cos_method_cache4 *cache = cos_method_cache4();
+  F64 miss = cache->mis2*shift32 + cache->mis;
   U32 i, n, n1=0, n2=0, n3=0;
 
   if (!fp) fp = stderr;
@@ -150,14 +156,15 @@ cos_method_statCache4(FILE *fp)
   }
 
   n = n1+n2+n3;
-  fprintf(fp,"cache4: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
-          i,n,(double)n/i,n1,n2,n3);
+  fprintf(fp,"cache4: slots=%6u, cells=%4u, miss=%g, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,miss,(double)n/i,n1,n2,n3);
 }
 
 void
 cos_method_statCache5(FILE *fp)
 {
   struct cos_method_cache5 *cache = cos_method_cache5();
+  F64 miss = cache->mis2*shift32 + cache->mis;
   U32 i, n, n1=0, n2=0, n3=0;
 
   if (!fp) fp = stderr;
@@ -175,8 +182,8 @@ cos_method_statCache5(FILE *fp)
   }
 
   n = n1+n2+n3;
-  fprintf(fp,"cache5: slots=%6u, cells=%4u, load=%.2f, depth=[%u,%u,%u]\n",
-          i,n,(double)n/i,n1,n2,n3);
+  fprintf(fp,"cache5: slots=%6u, cells=%4u, miss=%g, load=%.2f, depth=[%u,%u,%u]\n",
+          i,n,miss,(double)n/i,n1,n2,n3);
 }
 
 // ----- cache content

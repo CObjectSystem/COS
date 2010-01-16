@@ -61,7 +61,7 @@ static struct cos_method_slot5 *cache_empty = &sentinel;
 
 #if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
 
-__thread struct cos_method_cache5 cos_method_cache5_ = { &cache_empty, 0 };
+__thread struct cos_method_cache5 cos_method_cache5_ = { &cache_empty, 0, 0, 0 };
 
 #else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
@@ -76,6 +76,8 @@ cos_method_cache5_init(void)
 
 	cache->slot = &cache_empty;
 	cache->msk  = 0;
+	cache->mis  = 0;
+	cache->mis2 = 0;
 
   if ( pthread_setspecific(cos_method_cache5_key, cache) )
 	  cos_abort("unable to initialize dispatcher cache5");
@@ -206,6 +208,7 @@ load_method(SEL _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5, BOOL load)
       // 3rd cell exists and may be used (then forget)
       struct cos_method_slot5 *tmp = *slot;
       *slot = tmp->nxt->nxt, tmp->nxt->nxt = (*slot)->nxt, (*slot)->nxt = tmp;
+      if (!++cache->mis) cache->mis2++;
 
     } else
       // allocate one more cell
@@ -323,5 +326,7 @@ cos_method_clearCache5(void)
     free(cache->slot);
     cache->slot = &cache_empty;
     cache->msk  = 0;
+    cache->mis  = 0;
+    cache->mis2 = 0;
   }
 }
