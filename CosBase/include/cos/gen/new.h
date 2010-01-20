@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: new.h,v 1.4 2010/01/20 22:24:22 ldeniau Exp $
+ | $Id: new.h,v 1.5 2010/01/20 22:27:34 ldeniau Exp $
  |
 */
 
@@ -47,9 +47,9 @@ defgeneric (OBJ, gnewWithObj2   , _1, (OBJ)obj, (OBJ)obj2);
 defgeneric (OBJ, gnewWithObj3   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3);
 defgeneric (OBJ, gnewWithObj4   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4);
 defgeneric (OBJ, gnewWithObj5   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5);
-defgenericv(OBJ, gnewWithObjs   , _1, ...); // Nil terminated
-defgeneric (OBJ, gnewWithObjVa  , _1, (va_list)va); // Nil terminated
 defgeneric (OBJ, gnewWithObjStr , _1, (OBJ)obj, (STR)str);
+defgeneric (OBJ, gnewWithObjVa  , _1, (va_list)va);
+defgenericv(OBJ, gnewWithObjs   , _1, ...);
 
 defgeneric (OBJ, gnewWithChr    , _1, (I32)val);
 defgeneric (OBJ, gnewWithSht    , _1, (I32)val);

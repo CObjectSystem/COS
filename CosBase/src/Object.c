@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.27 2010/01/14 12:58:33 ldeniau Exp $
+ | $Id: Object.c,v 1.28 2010/01/20 22:24:23 ldeniau Exp $
  |
 */
 
@@ -173,36 +173,36 @@ defmethod(OBJ, gnewWithCpx, mObject, (C64)val)
   retmethod( ginitWithCpx(galloc(_1),val) );
 endmethod
 
-defmethod(OBJ, gnewWithChrPtr, mObject, (I8*)ref, (U32)n, (I32)s)
-  retmethod( ginitWithChrPtr(galloc(_1),ref,n,s) );
+defmethod(OBJ, gnewWithChrPtr, mObject, (I8*)ref, (U32)size, (I32)stride)
+  retmethod( ginitWithChrPtr(galloc(_1),ref,size,stride) );
 endmethod
 
-defmethod(OBJ, gnewWithShtPtr, mObject, (I16*)ref, (U32)n, (I32)s)
-  retmethod( ginitWithShtPtr(galloc(_1),ref,n,s) );
+defmethod(OBJ, gnewWithShtPtr, mObject, (I16*)ref, (U32)size, (I32)stride)
+  retmethod( ginitWithShtPtr(galloc(_1),ref,size,stride) );
 endmethod
 
-defmethod(OBJ, gnewWithIntPtr, mObject, (I32*)ref, (U32)n, (I32)s)
-  retmethod( ginitWithIntPtr(galloc(_1),ref,n,s) );
+defmethod(OBJ, gnewWithIntPtr, mObject, (I32*)ref, (U32)size, (I32)stride)
+  retmethod( ginitWithIntPtr(galloc(_1),ref,size,stride) );
 endmethod
 
-defmethod(OBJ, gnewWithLngPtr, mObject, (I64*)ref, (U32)n, (I32)s)
-  retmethod( ginitWithLngPtr(galloc(_1),ref,n,s) );
+defmethod(OBJ, gnewWithLngPtr, mObject, (I64*)ref, (U32)size, (I32)stride)
+  retmethod( ginitWithLngPtr(galloc(_1),ref,size,stride) );
 endmethod
 
-defmethod(OBJ, gnewWithFltPtr, mObject, (F64*)ref, (U32)n, (I32)s)
-  retmethod( ginitWithFltPtr(galloc(_1),ref,n,s) );
+defmethod(OBJ, gnewWithFltPtr, mObject, (F64*)ref, (U32)size, (I32)stride)
+  retmethod( ginitWithFltPtr(galloc(_1),ref,size,stride) );
 endmethod
 
-defmethod(OBJ, gnewWithCpxPtr, mObject, (C64*)ref, (U32)n, (I32)s)
-  retmethod( ginitWithCpxPtr(galloc(_1),ref,n,s) );
+defmethod(OBJ, gnewWithCpxPtr, mObject, (C64*)ref, (U32)size, (I32)stride)
+  retmethod( ginitWithCpxPtr(galloc(_1),ref,size,stride) );
 endmethod
 
-defmethod(OBJ, gnewWithObjPtr, mObject, (OBJ*)ref, (U32)n, (I32)s)
-  retmethod( ginitWithObjPtr(galloc(_1),ref,n,s) );
+defmethod(OBJ, gnewWithObjPtr, mObject, (OBJ*)ref, (U32)size, (I32)stride)
+  retmethod( ginitWithObjPtr(galloc(_1),ref,size,stride) );
 endmethod
 
-defmethod(OBJ, gnewWithVoidPtr, mObject, (void*)ref, (U32)n, (I32)s, (size_t)esize)
-  retmethod( ginitWithVoidPtr(galloc(_1),ref,n,s,esize) );
+defmethod(OBJ, gnewWithVoidPtr, mObject, (void*)ref, (U32)size, (I32)stride, (size_t)esize)
+  retmethod( ginitWithVoidPtr(galloc(_1),ref,size,stride,esize) );
 endmethod
 
 // ----- ownership
