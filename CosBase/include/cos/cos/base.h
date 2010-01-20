@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.23 2010/01/08 18:01:25 ldeniau Exp $
+ | $Id: base.h,v 1.24 2010/01/20 22:24:18 ldeniau Exp $
  |
 */
 
@@ -245,7 +245,7 @@
 
 // signature generators
 #define COS_SIG_GEN(a) \
-        COS_PP_IF(COS_PP_ISTUPLE(a))(COS_PRM_TYPE(a),OBJ_as_SEL)
+        COS_PP_IF(COS_PP_ISTUPLE(a))(COS_PRM_TYPE(a),OBJ_as_RCV)
 #define COS_SIG_GENF(a,n) \
         COS_PP_IF(COS_PP_ISTUPLE(a))(COS_PRM_DECL(a),OBJ COS_PP_CAT(_,n))
 #define COS_SIG_NXT(a) \

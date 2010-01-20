@@ -32,37 +32,39 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.16 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: init.h,v 1.17 2010/01/20 22:24:22 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
 // constructors
-defgeneric(OBJ, ginitWithStr    , _1, (STR)str);
-defgeneric(OBJ, ginitWithLoc    , _1, _2, (STR)func, (STR)file, (int)line);
+defgeneric (OBJ, ginitWithStr    , _1, (STR)str);
+defgeneric (OBJ, ginitWithLoc    , _1, _2, (STR)func, (STR)file, (int)line);
 
-defgeneric(OBJ, ginitWithObj    , _1, (OBJ)obj);
-defgeneric(OBJ, ginitWithObj2   , _1, (OBJ)obj, (OBJ)obj2);
-defgeneric(OBJ, ginitWithObj3   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3);
-defgeneric(OBJ, ginitWithObj4   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4);
-defgeneric(OBJ, ginitWithObj5   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5);
-defgeneric(OBJ, ginitWithObjStr , _1, (OBJ)obj, (STR)str);
+defgeneric (OBJ, ginitWithObj    , _1, (OBJ)obj);
+defgeneric (OBJ, ginitWithObj2   , _1, (OBJ)obj, (OBJ)obj2);
+defgeneric (OBJ, ginitWithObj3   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3);
+defgeneric (OBJ, ginitWithObj4   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4);
+defgeneric (OBJ, ginitWithObj5   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5);
+defgenericv(OBJ, ginitWithObjs   , _1, ...); // Nil terminated
+defgeneric (OBJ, ginitWithObjVa  , _1, (va_list)va); // Nil terminated
+defgeneric (OBJ, ginitWithObjStr , _1, (OBJ)obj, (STR)str);
 
-defgeneric(OBJ, ginitWithChr    , _1, (I32)val);
-defgeneric(OBJ, ginitWithSht    , _1, (I32)val);
-defgeneric(OBJ, ginitWithInt    , _1, (I32)val);
-defgeneric(OBJ, ginitWithLng    , _1, (I64)val);
-defgeneric(OBJ, ginitWithFlt    , _1, (F64)val);
-defgeneric(OBJ, ginitWithCpx    , _1, (C64)val);
+defgeneric (OBJ, ginitWithChr    , _1, (I32)val);
+defgeneric (OBJ, ginitWithSht    , _1, (I32)val);
+defgeneric (OBJ, ginitWithInt    , _1, (I32)val);
+defgeneric (OBJ, ginitWithLng    , _1, (I64)val);
+defgeneric (OBJ, ginitWithFlt    , _1, (F64)val);
+defgeneric (OBJ, ginitWithCpx    , _1, (C64)val);
 
-defgeneric(OBJ, ginitWithChrPtr , _1, (I8  *)ref, (U32)n, (I32)s);
-defgeneric(OBJ, ginitWithShtPtr , _1, (I16 *)ref, (U32)n, (I32)s);
-defgeneric(OBJ, ginitWithIntPtr , _1, (I32 *)ref, (U32)n, (I32)s);
-defgeneric(OBJ, ginitWithLngPtr , _1, (I64 *)ref, (U32)n, (I32)s);
-defgeneric(OBJ, ginitWithFltPtr , _1, (F64 *)ref, (U32)n, (I32)s);
-defgeneric(OBJ, ginitWithCpxPtr , _1, (C64 *)ref, (U32)n, (I32)s);
-defgeneric(OBJ, ginitWithObjPtr , _1, (OBJ *)ref, (U32)n, (I32)s);
-defgeneric(OBJ, ginitWithVoidPtr, _1, (void*)ref, (U32)n, (I32)s, (size_t)esize);
+defgeneric (OBJ, ginitWithChrPtr , _1, (I8  *)ref, (U32)size, (I32)stride);
+defgeneric (OBJ, ginitWithShtPtr , _1, (I16 *)ref, (U32)size, (I32)stride);
+defgeneric (OBJ, ginitWithIntPtr , _1, (I32 *)ref, (U32)size, (I32)stride);
+defgeneric (OBJ, ginitWithLngPtr , _1, (I64 *)ref, (U32)size, (I32)stride);
+defgeneric (OBJ, ginitWithFltPtr , _1, (F64 *)ref, (U32)size, (I32)stride);
+defgeneric (OBJ, ginitWithCpxPtr , _1, (C64 *)ref, (U32)size, (I32)stride);
+defgeneric (OBJ, ginitWithObjPtr , _1, (OBJ *)ref, (U32)size, (I32)stride);
+defgeneric (OBJ, ginitWithVoidPtr, _1, (void*)ref, (U32)size, (I32)stride, (size_t)esize);
 
 #endif // COS_GEN_INIT_H

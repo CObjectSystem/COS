@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.34 2010/01/12 11:01:45 ldeniau Exp $
+ | $Id: generic.h,v 1.35 2010/01/20 22:24:18 ldeniau Exp $
  |
 */
 
@@ -366,7 +366,7 @@ RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
   COS_PP_IF(R)(RET _ret;,/* no ret */) \
   COS_ARG_TYPE(NAME) _arg; \
   /* arguments initialization (if any) */ \
-  COS_PP_IF(A)(COS_PP_SEQ(COS_PP_MAP(COS_PP_RDROP(1,AS),COS_ARG_INI));,/* no arg */) \
+  COS_PP_IF(A)(COS_PP_SEQ(COS_PP_MAP(COS_PP_RDROP(1,AS),COS_ARG_INI));,/**/) \
   /* va_list initialization */ \
   va_start(_arg.va,COS_ARG_VINI(PS,IS)); \
   /* method lookup */ \
@@ -377,7 +377,7 @@ RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
   (&COS_GEN_NAME(NAME),COS_PP_SEQ(COS_SEL_NAME(C)), \
    &_arg,COS_PP_IF(R)(&_ret,0)); \
   /* arguments deinitialization (if any) */ \
-  COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(COS_PP_RDROP(1,AS),COS_ARG_DEINI)),/* no arg */) \
+  COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(COS_PP_RDROP(1,AS),COS_ARG_DEINI)),/**/) \
   /* va_list deinitialization */ \
   va_end(_arg.va); \
   /* return result */ \
@@ -391,13 +391,17 @@ void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
                          SEL _sel, RET* _ret, COS_PP_CAT(IMP,C) _nxt) \
 { \
   /* local arguments (if any) */ \
-  COS_PP_IF(A)(COS_ARG_TYPE(NAME) _arg;,/* no arg */) \
+  COS_PP_IF(COS_PP_OR(A,V))(COS_ARG_TYPE(NAME) _arg;,/* no arg */) \
   /* arguments initialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEQ(COS_PP_MAP(AS,COS_ARG_INI));,/* no arg */) \
+  /* va_list initialization */ \
+  COS_PP_IF(V)(va_copy(_arg.va,va);,/* no va */) \
   /* method invocation */ \
-  _nxt(_sel,COS_PP_SEQ(COS_SEL_NAME(C)),COS_PP_IF(A)(&_arg,0),_ret); \
+  _nxt(_sel,COS_PP_SEQ(COS_SEL_NAME(C)),COS_PP_IF(COS_PP_OR(A,V))(&_arg,0),_ret);\
   /* arguments deinitialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_ARG_DEINI)),/* no arg */) \
+  /* va_list deinitialization */ \
+  COS_PP_IF(V)(va_end(_arg.va);,/* no va */) \
   /* for C89 mode */ \
   COS_UNUSED(COS_NXT_NAME(NAME)); \
 }
@@ -425,7 +429,8 @@ struct Generic COS_GEN_NAME(NAME) = { \
   /* name (STR) */ \
   COS_PP_STR(NAME) "\0" \
   /* signature (STR) */ \
-  COS_PP_SEPWITH(COS_PP_MAP(((RET),COS_PP_SEQ(PS)),COS_GEN_STR),"\0"), \
+  COS_PP_SEPWITH(COS_PP_MAP(((RET), \
+    COS_PP_SEQ(COS_PP_IF(V)(COS_PP_RDROP(1,PS),PS))),COS_GEN_STR),"\0"), \
   /* link to generic class */ \
   (void*)&COS_CLS_NAME(CLS), \
   /* receivers info, 0 if no monomorphic arguments */ \

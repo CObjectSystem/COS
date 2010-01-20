@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.30 2010/01/16 13:58:40 ldeniau Exp $
+ | $Id: cosdef.h,v 1.31 2010/01/20 22:24:18 ldeniau Exp $
  |
 */
 
@@ -186,8 +186,8 @@ enum {
   cos_tag_post = 2
 };
 
-// compile-time checks of OBJ as selectors
-typedef struct OBJ_as_SEL* OBJ_as_SEL;
+// compile-time checks of OBJ as receivers
+typedef struct OBJ_as_RCV* OBJ_as_RCV;
 
 // compile-time checks of OBJ vs void*
 struct OBJ { char isOBJ; };
