@@ -32,13 +32,25 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.h,v 1.5 2010/01/15 23:50:12 ldeniau Exp $
+ | $Id: File.h,v 1.6 2010/01/21 14:12:36 ldeniau Exp $
  |
 */
 
 #include <cos/Stream.h>
 
-defclass(File, Stream)
+/* NOTE-USER: File subclasses
+
+<- InputStream
+  <- InputFile
+
+<- OutputStream
+  <- OutputFile
+*/
+
+defclass(InputFile, InputStream)
+endclass
+
+defclass(OutputFile, OutputStream)
 endclass
 
 /***********************************************************
@@ -77,22 +89,6 @@ defclass(InOutFile, InFile)
 endclass
 
 defclass(OutInFile, OutFile)
-  char file_buf[];
-endclass
-
-// ----- binary file
-
-defclass(InBinFile , InFile)
-endclass
-
-defclass(OutBinFile, OutFile)
-endclass
-
-defclass(InOutBinFile, InBinFile)
-  char file_buf[];
-endclass
-
-defclass(OutInBinFile, OutBinFile)
   char file_buf[];
 endclass
 

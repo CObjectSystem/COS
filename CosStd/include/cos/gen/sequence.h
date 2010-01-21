@@ -32,26 +32,20 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.6 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: sequence.h,v 1.7 2010/01/21 14:12:36 ldeniau Exp $
  |
 */
 
-#include <cos/Slice.h>
+#include <cos/XRange.h>
 
-// slice
-defgeneric(struct Slice, gslice, _1);
+// value getters
+defgeneric(struct Slice , gslice , _1);
+defgeneric(struct Range , grange , _1);
+defgeneric(struct XRange, gxrange, _1);
 
-// new
-defgeneric(OBJ, gnewSlc1, _1, (U32)size);
-defgeneric(OBJ, gnewSlc2, _1, (I32)start, (U32)size);
-defgeneric(OBJ, gnewSlc3, _1, (I32)start, (U32)size, (I32)stride);
+// new (no 'init' for final classes)
+defgeneric(OBJ, gnewSlc , _1, (I32)start, (U32)size, (I32)stride);
+defgeneric(OBJ, gnewRng , _1, (I32)start, (I32)end , (I32)stride);
+defgeneric(OBJ, gnewXRng, _1, (F64)start, (F64)end , (F64)stride);
 
-defgeneric(OBJ, gnewRng1, _1, (I32)end);
-defgeneric(OBJ, gnewRng2, _1, (I32)start, (I32)end);
-defgeneric(OBJ, gnewRng3, _1, (I32)start, (I32)end, (I32)stride);
-
-defgeneric(OBJ, gnewXRng1, _1, (F64)end);
-defgeneric(OBJ, gnewXRng2, _1, (F64)start, (F64)end);
-defgeneric(OBJ, gnewXRng3, _1, (F64)start, (F64)end, (F64)stride);
-
-#endif // COS_GEN_CONTAINER_H
+#endif // COS_GEN_SEQUENCE_H

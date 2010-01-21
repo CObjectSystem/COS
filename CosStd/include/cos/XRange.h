@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.h,v 1.4 2009/12/11 13:15:42 ldeniau Exp $
+ | $Id: XRange.h,v 1.5 2010/01/21 14:12:36 ldeniau Exp $
  |
 */
 
@@ -155,7 +155,6 @@ XRange_isClosed(const struct XRange *r) {
 }
 
 // conversion
-#include <cos/Slice.h>
 #include <cos/Range.h>
 
 static inline struct XRange

@@ -32,13 +32,42 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Collection.h,v 1.4 2009/02/27 20:14:25 ldeniau Exp $
+ | $Id: Collection.h,v 1.5 2010/01/21 14:12:35 ldeniau Exp $
  |
 */
 
-#include <cos/Container.h>
+#include <cos/Object.h>
 
-defclass(Collection, Container)
+/* NOTE-USER: Collection subclasses
+
+<- Collection
+  <- Map    (hash+equal keys  )
+  <- OrdMap (compare    keys  )
+  <- Set    (hash+equal values)
+  <- OrdSet (compare    values)
+  <- Sequence
+    <- Array
+    <- Deque
+    <- List
+    <- ValueSequence (elements are values)
+      <- Slice
+      <- Range
+      <- XRange
+      <- String
+      <- Vector
+        <- BitVector // TODO
+        <- ShtVector
+        <- IntVector
+        <- LngVector
+        <- FltVector
+        <- CpxVector
+
+  - All collections provide maps (high-level) and iterators (low-level)
+  - All collections own (gretain) their elements (and keys if any)
+  - All collections do swallow copy (map/apply gclone for deep copy)
+*/
+
+defclass(Collection)
 endclass
 
 #endif // COS_COLLECTION_H

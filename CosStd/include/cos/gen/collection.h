@@ -1,10 +1,10 @@
-#ifndef COS_GEN_CONTAINER_H
-#define COS_GEN_CONTAINER_H
+#ifndef COS_GEN_COLLECTION_H
+#define COS_GEN_COLLECTION_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS generics for containers
+ | COS generics for collections
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: container.h,v 1.19 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: collection.h,v 1.1 2010/01/21 14:12:36 ldeniau Exp $
  |
 */
 
@@ -68,10 +68,10 @@ defgeneric(OBJ, glast     , _1);
 // check for elements
 defgeneric(OBJ, gisEmpty  , _1);
 
-// adjust container (e.g. capacity to size)
+// adjust collection (e.g. capacity to size)
 defgeneric(OBJ, gadjust   , _1);
 
-// englarge container memory (e.g. front if by<0)
+// englarge collection memory (e.g. front if by<0)
 defgeneric(OBJ, genlarge  , _1, by);
 
-#endif // COS_GEN_CONTAINER_H
+#endif // COS_GEN_COLLECTION_H

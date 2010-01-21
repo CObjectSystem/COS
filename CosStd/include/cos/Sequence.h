@@ -32,13 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.11 2009/09/18 16:42:30 ldeniau Exp $
+ | $Id: Sequence.h,v 1.12 2010/01/21 14:12:36 ldeniau Exp $
  |
 */
 
-#include <cos/Container.h>
+#include <cos/Collection.h>
 
-defclass(Sequence, Container)
+defclass(Sequence, Collection)
 endclass
 
 defclass(ValueSequence, Sequence)

@@ -32,33 +32,32 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stream.h,v 1.5 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: stream.h,v 1.6 2010/01/21 14:12:36 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
-#include <stdio.h>
 
 defgeneric(OBJ, gopen  , _1, name, mode);
 defgeneric(OBJ, gclose , _1);
 defgeneric(OBJ, gflush , _1);
-defgeneric(OBJ, gremove, _1);
 
-// primitives
+// low-level character primitives (required)
 defgeneric(I32, ggetChr  , _1);
 defgeneric(I32, gputChr  , _1, (I32)chr);
 defgeneric(I32, gungetChr, _1, (I32)chr);
 
-// return True (success) or False (failure)
-defgeneric(OBJ, gget    , _1, _2);
-defgeneric(OBJ, ggetLine, _1, _2);
-defgeneric(OBJ, ggetData, _1, _2);
+// low-level buffer primitives (optional, return number of bytes read/written)
+defgeneric(size_t, gputData, _1, (U8*)buf, (size_t)len);
+defgeneric(size_t, ggetData, _1, (U8*)buf, (size_t)len);
 
-defgeneric(OBJ, gput    , _1, _2);
-defgeneric(OBJ, gputLn  , _1, _2);
+// high-level line primitives (optional)
+defgeneric(size_t, ggetLine , _1, (U8*)buf, (size_t)len);
+defgeneric(size_t, ggetDelim, _1, (U8*)buf, (size_t)len, (I32)delim);
 
-// low-level FILE access (may be removed in the future)
-defgeneric(FILE*, ggetFILE, _1);
-defgeneric(OBJ  , gsetFILE, _1, (FILE*)fd, (STR)mode, (STR)name);
+// high-level object primitives (optional for back-end)
+defgeneric(OBJ, gget  , _1, _2); // (return Object or Nil on error)
+defgeneric(OBJ, gput  , _1, _2); // (return Stream or Nil on error)
+defgeneric(OBJ, gputLn, _1, _2); // (return Stream or Nil on error)
 
 #endif // COS_GEN_STREAM_H

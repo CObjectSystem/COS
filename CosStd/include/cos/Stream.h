@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.h,v 1.2 2009/09/16 17:02:56 ldeniau Exp $
+ | $Id: Stream.h,v 1.3 2010/01/21 14:12:36 ldeniau Exp $
  |
 */
 
@@ -41,13 +41,24 @@
 /* NOTE-USER: Stream subclasses
 
 <- Stream
-  <- File
-  <- Socket
-  <- FullDuplexStream
-    <- Process
+  <- InputStream
+  <- OutputStream
+  <- ClosedStream
+    
+  Streams are buffer-oriented serial channels
 */
 
 defclass(Stream)
+  OBJ delegate;
+endclass
+
+defclass(InputStream, Stream)
+endclass
+
+defclass(OutputStream, Stream)
+endclass
+
+defclass(ClosedStream, Stream)
 endclass
 
 // ----- standard streams
