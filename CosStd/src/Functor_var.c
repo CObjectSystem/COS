@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_var.c,v 1.2 2010/01/12 18:56:25 ldeniau Exp $
+ | $Id: Functor_var.c,v 1.3 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -99,12 +99,12 @@ endmethod
 
 // ----- eval
 
-defmethod(OBJ, gevalEnv, PlaceHolder, Container)
+defmethod(OBJ, gevalEnv, PlaceHolder, Collection)
   test_assert(0, "invalid placeholder evaluation (geval)");
   retmethod(Nil);
 endmethod
 
-defmethod(OBJ, gevalEnv, FunLzy, Container)
+defmethod(OBJ, gevalEnv, FunLzy, Collection)
   retmethod ( self->cnt == 1 ? self->fun
                              : gautoDelete(aFunLzyN(self->cnt-1, self->fun)) );
 endmethod

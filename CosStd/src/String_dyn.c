@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.8 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.9 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -37,7 +37,7 @@
 #include <cos/Number.h>
 #include <cos/Range.h>
 
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/message.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>

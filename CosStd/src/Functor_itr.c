@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_itr.c,v 1.7 2010/01/11 14:22:11 ldeniau Exp $
+ | $Id: Functor_itr.c,v 1.8 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -89,7 +89,7 @@ endmethod
 
 // ----- eval
 
-defmethod(OBJ, gevalEnv, IterateFun, Container)
+defmethod(OBJ, gevalEnv, IterateFun, Collection)
   forward_message(self->fun, _2);
 
   if (self->fct) {

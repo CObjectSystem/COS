@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.19 2010/01/10 21:23:04 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.20 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -815,7 +815,7 @@ endmethod
 
 // ----- intersect (asymetric intersect, self1 - (self1 - self2))
 
-defmethod(OBJ, gintersect, T, Container, Functor)
+defmethod(OBJ, gintersect, T, Collection, Functor)
   U32 size = self->size;
   OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);

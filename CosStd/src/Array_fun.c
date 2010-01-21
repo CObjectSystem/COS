@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.31 2010/01/14 13:17:15 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.32 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,7 @@
 #include <cos/Number.h>
 
 #include <cos/gen/algorithm.h>
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 
@@ -979,7 +979,7 @@ endmethod
 
 // ----- diff (asymmetric diff, self1 - self2)
 
-defmethod(OBJ, gdiff, Array, Container, Functor)
+defmethod(OBJ, gdiff, Array, Collection, Functor)
   U32 size = self->size;
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
@@ -1002,7 +1002,7 @@ endmethod
 
 // ----- match (asymmetric match, self2 - (self2 - self1))
 
-defmethod(OBJ, gmatch, Array, Container, Functor)
+defmethod(OBJ, gmatch, Array, Collection, Functor)
   U32 size = self->size;
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);
@@ -1027,7 +1027,7 @@ endmethod
 
 // ----- intersect (asymmetric intersect, self1 - (self1 - self2))
 
-defmethod(OBJ, gintersect, Array, Container, Functor)
+defmethod(OBJ, gintersect, Array, Collection, Functor)
   U32 size = self->size;
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
   struct Array* arr = STATIC_CAST(struct Array*, _arr);

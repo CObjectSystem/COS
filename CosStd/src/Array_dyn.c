@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.18 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.19 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -37,7 +37,7 @@
 #include <cos/IntVector.h>
 #include <cos/Number.h>
 
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/object.h>
 
 #include <cos/carray.h>

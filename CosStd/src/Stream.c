@@ -29,15 +29,80 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.2 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: Stream.c,v 1.3 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
 #include <cos/Stream.h>
 
+#include <cos/gen/stream.h>
+
 // -----
 
 makclass(Stream);
+makclass(InputStream , Stream);
+makclass(OutputStream, Stream);
+
 makclass(ExBadStream, Exception);
 
+// ----- stream generic methods
+
+defmethod(OBJ, gflush, Stream)
+  if (!self->delegate)
+    retmethod(_1);
+
+  forward_message(self->delegate);
+  if (RETVAL == self->delegate)
+    retmethod(_1);
+endmethod
+
+defmethod(size_t, gputData, OutputStream, (U8*)buf, (size_t)len)
+  size_t n = 0;
+
+  while (n < len && gputChr(_1, buf[n++]) != EOF)
+    ;
+
+  retmethod( n );
+endmethod
+
+defmethod(size_t, ggetData, InputStream, (U8*)buf, (size_t)len)
+  size_t n = 0;
+  I32 c;
+  
+  while (n < len && (c = ggetChr(_1)) != EOF)
+    buf[n++] = (U32)c;
+
+  retmethod( n );
+endmethod
+
+defmethod(size_t, ggetDelim, InputStream, (U8*)buf, (size_t)len, (I32)delim)
+  U32 n = 0;
+  I32 c;
+  
+  while (n < len && (c = ggetChr(_1)) != EOF && c != delim)
+    buf[n++] = (U32)c;
+
+  retmethod( n );
+endmethod
+
+defmethod(size_t, ggetLine, InputStream, (U8*)buf, (size_t)len)
+  U32 n = 0;
+  I32 c, c2;
+  
+  while (n < len && (c = getChr(_1)) != EOF) {
+    if (c == '\n') {
+      if ((c2 = getChr(_1)) != EOF && c2 != '\r') gungetChr(_1, c2);
+      break;
+    }
+    
+    if (c == '\r') {
+      if ((c2 = getChr(_1)) != EOF && c2 != '\n') gungetChr(_1, c2);
+      break;
+    }
+
+    buf[n++] = (U32)c;
+  }
+
+  retmethod( n );
+endmethod
 

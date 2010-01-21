@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.10 2010/01/12 15:25:19 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.11 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -63,7 +63,7 @@ DEFMETHOD(9)
 
 // ---- eval
 
-defmethod(OBJ, gevalEnv, Function0, Container)
+defmethod(OBJ, gevalEnv, Function0, Collection)
   retmethod( self->fct() );
 endmethod
 

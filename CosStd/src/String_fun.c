@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.14 2010/01/10 21:23:04 ldeniau Exp $
+ | $Id: String_fun.c,v 1.15 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,7 @@
 #include <cos/Number.h>
 
 #include <cos/gen/algorithm.h>
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>

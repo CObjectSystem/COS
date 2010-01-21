@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.12 2010/01/14 13:17:15 ldeniau Exp $
+ | $Id: XRange.c,v 1.13 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -68,15 +68,7 @@ XRange_isEqual(const struct XRange *r1, const struct XRange *r2)
 
 // ----- new
 
-defmethod(OBJ, gnewXRng1, pmXRange, (F64)end)
-  retmethod( (OBJ)XRange_init((void*)galloc(_1), 0, end, 1) );
-endmethod
-
-defmethod(OBJ, gnewXRng2, pmXRange, (F64)start, (F64)end)
-  retmethod( (OBJ)XRange_init((void*)galloc(_1), start, end, 1) );
-endmethod
-
-defmethod(OBJ, gnewXRng3, pmXRange, (F64)start, (F64)end, (F64)stride)
+defmethod(OBJ, gnewXRng, pmXRange, (F64)start, (F64)end, (F64)stride)
   retmethod( (OBJ)XRange_init((void*)galloc(_1), start, end, stride) );
 endmethod
 

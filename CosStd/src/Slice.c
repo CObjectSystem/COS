@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.18 2010/01/14 13:17:15 ldeniau Exp $
+ | $Id: Slice.c,v 1.19 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -64,15 +64,7 @@ endmethod
 
 // ----- new
 
-defmethod(OBJ, gnewSlc1, pmSlice, (U32)size)
-  retmethod( (OBJ)Slice_init((void*)galloc(_1), 0, size, 1) );
-endmethod
-
-defmethod(OBJ, gnewSlc2, pmSlice, (I32)start, (U32)size)
-  retmethod( (OBJ)Slice_init((void*)galloc(_1), start, size, 1) );
-endmethod
-
-defmethod(OBJ, gnewSlc3, pmSlice, (I32)start, (U32)size, (I32)stride)
+defmethod(OBJ, gnewSlc, pmSlice, (I32)start, (U32)size, (I32)stride)
   retmethod( (OBJ)Slice_init((void*)galloc(_1), start, size, stride) );
 endmethod
 

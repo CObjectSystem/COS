@@ -1,7 +1,10 @@
+#ifndef COS_GEN_ITERATOR_H
+#define COS_GEN_ITERATOR_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Sequence
+ | COS generics for iterators
  |
  o---------------------------------------------------------------------o
  |
@@ -29,25 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.15 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: iterator.h,v 1.1 2010/01/21 14:52:53 ldeniau Exp $
  |
 */
 
-#include <cos/Sequence.h>
-#include <cos/Slice.h>
+#include <cos/Object.h>
 
-#include <cos/gen/accessor.h>
-#include <cos/gen/object.h>
-#include <cos/gen/value.h>
+defgeneric(OBJ, giterator , _1);
+defgeneric(OBJ, griterator, _1); // reverse iterator
+defgeneric(OBJ, gnext     , _1);
+defgeneric(OBJ, gallNext  , _1);
 
-// -----
-
-makclass(Sequence     , Collection);
-makclass(ValueSequence, Sequence );
-
-// -----
-
-defmethod(OBJ, gdeinit, ValueSequence)
-  retmethod(_1);
-endmethod
-
+#endif // COS_GEN_ITERATOR_H

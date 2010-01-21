@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_lzy.c,v 1.6 2010/01/07 00:46:27 ldeniau Exp $
+ | $Id: String_lzy.c,v 1.7 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,7 @@
 #include <cos/Slice.h>
 
 #include <cos/gen/accessor.h>
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/new.h>

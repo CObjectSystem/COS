@@ -29,13 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_str.c,v 1.1 2009/09/26 09:02:41 ldeniau Exp $
+ | $Id: String_str.c,v 1.2 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
 #include <cos/String.h>
 
-// #include <cos/gen/container.h>
+// #include <cos/gen/collection.h>
 #include <cos/gen/stream.h>
 #include <cos/gen/value.h>
 

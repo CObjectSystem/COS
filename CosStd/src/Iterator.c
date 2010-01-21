@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Sequence
+ | COS Iterator
  |
  o---------------------------------------------------------------------o
  |
@@ -29,25 +29,32 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.15 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Iterator.c,v 1.1 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
-#include <cos/Sequence.h>
-#include <cos/Slice.h>
 
-#include <cos/gen/accessor.h>
-#include <cos/gen/object.h>
-#include <cos/gen/value.h>
+#include <cos/Iterator.h>
+
+#include <cos/gen/iterator.h>
 
 // -----
 
-makclass(Sequence     , Collection);
-makclass(ValueSequence, Sequence );
+makclass(Iterator);
 
 // -----
 
-defmethod(OBJ, gdeinit, ValueSequence)
-  retmethod(_1);
+useclass(Array);
+
+// -----
+
+defmethod(OBJ, gallNext, Iterator)
+  OBJ arr = gautoDelete(gnew(Array));
+  OBJ obj;
+
+  while ((obj = gnext(_1)) != Nil)
+    gpush(arr, obj);
+
+  retmethod( gadjust(arr) );
 endmethod
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.20 2010/01/15 23:54:49 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.21 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -513,7 +513,7 @@ endmethod
 #undef  GETOFFS
 #define GETOFFS(a,b,c,d,e,f) getArgVarOff(a,b,c,f)
 
-defmethod(OBJ, gevalEnv, MthExpr1, Container)
+defmethod(OBJ, gevalEnv, MthExpr1, Collection)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
   OBJ *arg = self->rcv;
@@ -529,7 +529,7 @@ defmethod(OBJ, gevalEnv, MthExpr1, Container)
   CALL_METHOD(arg0);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthExpr2, Container)
+defmethod(OBJ, gevalEnv, MthExpr2, Collection)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
   OBJ *arg = self->rcv;
@@ -547,7 +547,7 @@ defmethod(OBJ, gevalEnv, MthExpr2, Container)
   CALL_METHOD(arg0, arg1);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthExpr3, Container)
+defmethod(OBJ, gevalEnv, MthExpr3, Collection)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
   OBJ *arg = self->rcv;
@@ -567,7 +567,7 @@ defmethod(OBJ, gevalEnv, MthExpr3, Container)
   CALL_METHOD(arg0, arg1, arg2);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthExpr4, Container)
+defmethod(OBJ, gevalEnv, MthExpr4, Collection)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
   OBJ *arg = self->rcv;
@@ -589,7 +589,7 @@ defmethod(OBJ, gevalEnv, MthExpr4, Container)
   CALL_METHOD(arg0, arg1, arg2, arg3);
 endmethod
 
-defmethod(OBJ, gevalEnv, MthExpr5, Container)
+defmethod(OBJ, gevalEnv, MthExpr5, Collection)
   U32  msk = self->MthExpr.Functor.msk;
   SEL  sel = self->MthExpr.sel;
   OBJ *arg = self->rcv;
@@ -615,7 +615,7 @@ endmethod
 
 // ---- eval (generic environement with partial evaluation)
 
-defmethod(OBJ, gevalEnv, PMthExpr1, Container)
+defmethod(OBJ, gevalEnv, PMthExpr1, Collection)
   U32  msk = self->MthExpr1.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr1.MthExpr.sel;
   OBJ *arg = self->MthExpr1.rcv;
@@ -628,7 +628,7 @@ defmethod(OBJ, gevalEnv, PMthExpr1, Container)
   RETURN_METHOD(arg0);
 endmethod
 
-defmethod(OBJ, gevalEnv, PMthExpr2, Container)
+defmethod(OBJ, gevalEnv, PMthExpr2, Collection)
   U32  msk = self->MthExpr2.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr2.MthExpr.sel;
   OBJ *arg = self->MthExpr2.rcv;
@@ -642,7 +642,7 @@ defmethod(OBJ, gevalEnv, PMthExpr2, Container)
   RETURN_METHOD(arg0,arg1);
 endmethod
 
-defmethod(OBJ, gevalEnv, PMthExpr3, Container)
+defmethod(OBJ, gevalEnv, PMthExpr3, Collection)
   U32  msk = self->MthExpr3.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr3.MthExpr.sel;
   OBJ *arg = self->MthExpr3.rcv;
@@ -657,7 +657,7 @@ defmethod(OBJ, gevalEnv, PMthExpr3, Container)
   RETURN_METHOD(arg0,arg1,arg2);
 endmethod
 
-defmethod(OBJ, gevalEnv, PMthExpr4, Container)
+defmethod(OBJ, gevalEnv, PMthExpr4, Collection)
   U32  msk = self->MthExpr4.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr4.MthExpr.sel;
   OBJ *arg = self->MthExpr4.rcv;
@@ -673,7 +673,7 @@ defmethod(OBJ, gevalEnv, PMthExpr4, Container)
   RETURN_METHOD(arg0,arg1,arg2,arg3);
 endmethod
 
-defmethod(OBJ, gevalEnv, PMthExpr5, Container)
+defmethod(OBJ, gevalEnv, PMthExpr5, Collection)
   U32  msk = self->MthExpr5.MthExpr.Functor.msk;
   SEL  sel = self->MthExpr5.MthExpr.sel;
   OBJ *arg = self->MthExpr5.rcv;

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.12 2010/01/14 13:17:15 ldeniau Exp $
+ | $Id: String.c,v 1.13 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -38,7 +38,7 @@
 #include <cos/IntVector.h>
 #include <cos/Number.h>
 
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/init.h>
 #include <cos/gen/new.h>

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.21 2010/01/15 23:54:49 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.22 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -465,7 +465,7 @@ endmethod
 
 // ----- eval (generic environment)
 
-defmethod(OBJ, gevalEnv, FunExpr1, Container)
+defmethod(OBJ, gevalEnv, FunExpr1, Collection)
   U32  msk = self->FunExpr.Functor.msk;
   FUN1 fct = self->fct;
   OBJ *arg = self->arg;
@@ -475,7 +475,7 @@ defmethod(OBJ, gevalEnv, FunExpr1, Container)
   retmethod( fct(arg0) );
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr1, Container) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr1, Collection) // partial evaluation
   U32  msk = self->FunExpr1.FunExpr.Functor.msk;
   FUN1 fct = self->FunExpr1.fct;
   OBJ *arg = self->FunExpr1.arg;
@@ -485,7 +485,7 @@ defmethod(OBJ, gevalEnv, PFunExpr1, Container) // partial evaluation
   retmethod( gautoDelete(aFun(fct, arg0)) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr2, Container)
+defmethod(OBJ, gevalEnv, FunExpr2, Collection)
   U32  msk = self->FunExpr.Functor.msk;
   FUN2 fct = self->fct;
   OBJ *arg = self->arg;
@@ -496,7 +496,7 @@ defmethod(OBJ, gevalEnv, FunExpr2, Container)
   retmethod( fct(arg0, arg1) );
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr2, Container) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr2, Collection) // partial evaluation
   U32  msk = self->FunExpr2.FunExpr.Functor.msk;
   FUN2 fct = self->FunExpr2.fct;
   OBJ *arg = self->FunExpr2.arg;
@@ -507,7 +507,7 @@ defmethod(OBJ, gevalEnv, PFunExpr2, Container) // partial evaluation
   retmethod( gautoDelete(aFun(fct, arg0, arg1)) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr3, Container)
+defmethod(OBJ, gevalEnv, FunExpr3, Collection)
   U32  msk = self->FunExpr.Functor.msk;
   FUN3 fct = self->fct;
   OBJ *arg = self->arg;
@@ -519,7 +519,7 @@ defmethod(OBJ, gevalEnv, FunExpr3, Container)
   retmethod( fct(arg0, arg1, arg2) );
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr3, Container) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr3, Collection) // partial evaluation
   U32  msk = self->FunExpr3.FunExpr.Functor.msk;
   FUN3 fct = self->FunExpr3.fct;
   OBJ *arg = self->FunExpr3.arg;
@@ -531,7 +531,7 @@ defmethod(OBJ, gevalEnv, PFunExpr3, Container) // partial evaluation
   retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2)) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr4, Container)
+defmethod(OBJ, gevalEnv, FunExpr4, Collection)
   U32  msk = self->FunExpr.Functor.msk;
   FUN4 fct = self->fct;
   OBJ *arg = self->arg;
@@ -544,7 +544,7 @@ defmethod(OBJ, gevalEnv, FunExpr4, Container)
   retmethod( fct(arg0, arg1, arg2, arg3) );
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr4, Container) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr4, Collection) // partial evaluation
   U32  msk = self->FunExpr4.FunExpr.Functor.msk;
   FUN4 fct = self->FunExpr4.fct;
   OBJ *arg = self->FunExpr4.arg;
@@ -557,7 +557,7 @@ defmethod(OBJ, gevalEnv, PFunExpr4, Container) // partial evaluation
   retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3)) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr5, Container)
+defmethod(OBJ, gevalEnv, FunExpr5, Collection)
   U32  msk = self->FunExpr.Functor.msk;
   FUN5 fct = self->fct;
   OBJ *arg = self->arg;
@@ -571,7 +571,7 @@ defmethod(OBJ, gevalEnv, FunExpr5, Container)
   retmethod( fct(arg0, arg1, arg2, arg3, arg4) );
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr5, Container) // partial evaluation
+defmethod(OBJ, gevalEnv, PFunExpr5, Collection) // partial evaluation
   U32  msk = self->FunExpr5.FunExpr.Functor.msk;
   FUN5 fct = self->FunExpr5.fct;
   OBJ *arg = self->FunExpr5.arg;
@@ -585,7 +585,7 @@ defmethod(OBJ, gevalEnv, PFunExpr5, Container) // partial evaluation
   retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4)) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr6, Container)
+defmethod(OBJ, gevalEnv, FunExpr6, Collection)
   U32  msk = self->FunExpr.Functor.msk;
   FUN6 fct = self->fct;
   OBJ *arg = self->arg;
@@ -604,7 +604,7 @@ defmethod(OBJ, gevalEnv, FunExpr6, Container)
   retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5)) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr7, Container)
+defmethod(OBJ, gevalEnv, FunExpr7, Collection)
   U32  msk = self->FunExpr.Functor.msk;
   FUN7 fct = self->fct;
   OBJ *arg = self->arg;
@@ -624,7 +624,7 @@ defmethod(OBJ, gevalEnv, FunExpr7, Container)
   retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6)) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr8, Container)
+defmethod(OBJ, gevalEnv, FunExpr8, Collection)
   U32  msk = self->FunExpr.Functor.msk;
   FUN8 fct = self->fct;
   OBJ *arg = self->arg;
@@ -645,7 +645,7 @@ defmethod(OBJ, gevalEnv, FunExpr8, Container)
   retmethod( gautoDelete(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7)) );
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr9, Container)
+defmethod(OBJ, gevalEnv, FunExpr9, Collection)
   U32  msk = self->FunExpr.Functor.msk;
   FUN9 fct = self->fct;
   OBJ *arg = self->arg;

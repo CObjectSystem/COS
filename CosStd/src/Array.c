@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.51 2010/01/14 13:17:15 ldeniau Exp $
+ | $Id: Array.c,v 1.52 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -38,7 +38,7 @@
 #include <cos/IntVector.h>
 #include <cos/XRange.h>
 
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>

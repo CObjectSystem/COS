@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.18 2010/01/14 13:17:15 ldeniau Exp $
+ | $Id: Range.c,v 1.19 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -56,15 +56,7 @@ useclass(Range);
 
 // ----- new
 
-defmethod(OBJ, gnewRng1, pmRange, (I32)end)
-  retmethod( (OBJ)Range_init((void*)galloc(_1), 0, end, 1) );
-endmethod
-
-defmethod(OBJ, gnewRng2, pmRange, (I32)start, (I32)end)
-  retmethod( (OBJ)Range_init((void*)galloc(_1), start, end, 1) );
-endmethod
-
-defmethod(OBJ, gnewRng3, pmRange, (I32)start, (I32)end, (I32)stride)
+defmethod(OBJ, gnewRng, pmRange, (I32)start, (I32)end, (I32)stride)
   retmethod( (OBJ)Range_init((void*)galloc(_1), start, end, stride) );
 endmethod
 

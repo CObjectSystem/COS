@@ -10,7 +10,7 @@
  |
  | C Object System
  |
- | Copyright (c) 2006+ Laurent Deniau, laurent.deniau*cern.ch
+ | Copyright (c) 2006+ Laurent Deniau, laurent.deniau@cern.ch
  |
  | For more information, see:
  | http://cern.ch/laurent.deniau/cos.html
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: collection.h,v 1.1 2010/01/21 14:12:36 ldeniau Exp $
+ | $Id: collection.h,v 1.2 2010/01/21 14:52:53 ldeniau Exp $
  |
 */
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.7 2010/01/11 14:22:11 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.8 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -119,7 +119,7 @@ endmethod
 
 // ----- eval
 
-defmethod(OBJ, gevalEnv, ComposeFun, Container)
+defmethod(OBJ, gevalEnv, ComposeFun, Collection)
   OBJ *fun = self->fun;
   OBJ *end = self->fun + self->size;
   struct Array *env = atArray(0);

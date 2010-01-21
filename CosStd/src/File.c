@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.15 2010/01/15 23:50:13 ldeniau Exp $
+ | $Id: File.c,v 1.16 2010/01/21 14:52:54 ldeniau Exp $
  |
 */
 
@@ -39,40 +39,35 @@
 #include <cos/String.h>
 
 #include <cos/gen/algorithm.h>
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
+#include <cos/gen/file.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/message.h>
 #include <cos/gen/new.h>
 #include <cos/gen/object.h>
-#include <cos/gen/stream.h>
 #include <cos/gen/value.h>
 
 #include <cos/prp/object.h>
 
 // -----
 
-makclass(File, Stream);
+// closed files
 
-makclass(ClosedFile,     File);
-makclass(  OpenFile,     File);
+makclass(ClosedFile, ClosedStream);
 
-// text file
+// directional files
 
-makclass(    InFile, OpenFile);
-makclass(   OutFile, OpenFile);
-makclass( InOutFile,   InFile);
-makclass( OutInFile,  OutFile);
+makclass(InputFile , InputStream);
+makclass(OutputFile, OutputStream);
 
-// binary file
+// bi-directional files
 
-makclass(    InBinFile,     InFile);
-makclass(   OutBinFile,    OutFile);
-makclass( InOutBinFile,  InBinFile);
-makclass( OutInBinFile, OutBinFile);
+makclass(InputOutputFile, InputFile);
+makclass(OutputInputFile, OutputFile);
 
 // -----
 
-useclass(File, ClosedFile, InOutFile, OutInFile, InOutBinFile, OutInBinFile);
+useclass(File, ClosedFile, InputOutputFile, OutputInputFile);
 useclass(ExBadStream, AutoRelease, Array, String);
 
 // -----
@@ -82,8 +77,8 @@ STATIC_ASSERT(OpenFile_vs_ClosedFile__invalid_layout_compatibility,
   && COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, own)
   && COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, name)
   && COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, buf_size)
-  && COS_FIELD_ALIGNMENT    (InOutFile   , ClosedFile, file_buf)
-  && COS_FIELD_ALIGNMENT    (OutInFile   , ClosedFile, file_buf)
+  && COS_FIELD_ALIGNMENT    (InputOutputFile   , ClosedFile, file_buf)
+  && COS_FIELD_ALIGNMENT    (OutputInputFile   , ClosedFile, file_buf)
   && COS_FIELD_ALIGNMENT    (InOutBinFile, ClosedFile, file_buf)
   && COS_FIELD_ALIGNMENT    (OutInBinFile, ClosedFile, file_buf)
 );
@@ -178,14 +173,14 @@ mode2class(STR str)
     }
 
   switch(m) {
-  case READ:                 return classref(InFile);
+  case READ:                 return classref(InputFile);
   case READ | BINARY:        return classref(InBinFile);
-  case READ | BOTH:          return classref(InOutFile);
+  case READ | BOTH:          return classref(InputOutputFile);
   case READ | BOTH | BINARY: return classref(InOutBinFile);
 
-  case WRITE:                 return classref(OutFile);
+  case WRITE:                 return classref(OutputFile);
   case WRITE | BINARY:        return classref(OutBinFile);
-  case WRITE | BOTH:          return classref(OutInFile);
+  case WRITE | BOTH:          return classref(OutputInputFile);
   case WRITE | BOTH | BINARY: return classref(OutInBinFile);
 
   default : test_assert(0, "invalid file mode"); return 0;
@@ -228,12 +223,12 @@ endmethod
 
 // ----- flush
 
-defmethod(OBJ, gflush, InFile)
+defmethod(OBJ, gflush, InputFile)
   // no flush on input file
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gflush, OutFile)
+defmethod(OBJ, gflush, OutputFile)
   struct OpenFile *file = &self->OpenFile;
 
   if (fflush(file->fd))
@@ -268,39 +263,74 @@ defmethod(STR, gstr, OpenFile)
   retmethod(gstr(self->name));
 endmethod
 
-// ----- primitives
+// ----- read primitives
 
-defmethod(I32, ggetChr, InFile)
+defmethod(I32, ggetChr, InputFile)
   retmethod( getc(self->OpenFile.fd) );
 endmethod
 
-defmethod(I32, gputChr, OutFile, (I32)chr)
+defmethod(I32, gputChr, OutputFile, (I32)chr)
   retmethod( putc(chr, self->OpenFile.fd) );
 endmethod
 
-defmethod(I32, gungetChr, OutFile, (I32)chr)
+defmethod(I32, gungetChr, OutputFile, (I32)chr)
   retmethod( ungetc(chr, self->OpenFile.fd) );
 endmethod
 
-// ----- generic get, getLine, getData
+defmethod(size_t, ggetData, InputFile, (U8*)buf, (size_t)len)
+  retmethod( fread(buf, 1, len, self->OpenFile.fd) );
+endmethod
 
-defalias (OBJ, (gget)ggetLine, InFile, Class);
-defalias (OBJ, (gget)ggetData, InFile, Class);
-defmethod(OBJ,  gget         , InFile, Class)
-  OBJ obj = gautoDelete(gnew(_2));
+defmethod(size_t, gputData, OutputFile, (U8*)buf, (size_t)len)
+  retmethod( fwrite(buf, 1, len, self->OpenFile.fd) );
+endmethod
+
+defmethod(size_t, ggetDelim, InputFile, (U8*)buf, (size_t)len, (I32)delim)
+  FILE *fd = self->OpenFile.fd;
+  U32 n = 0;
+  I32 c;
   
-  forward_message(_1, obj);
+  while (n < len && (c = getc(fd)) != EOF && c != delim)
+    buf[n++] = (U32)c;
 
-  if (gunderstandMessage1(obj, genericref(gadjust)) == True)
-    gadjust(obj);
+  retmethod( n );
+endmethod
 
-  retmethod(RETVAL == True ? obj : Nil);
+defmethod(size_t, ggetLine, InputFile, (U8*)buf, (size_t)len)
+  FILE *fd = self->OpenFile.fd;
+  U32 n = 0;
+  I32 c, c2;
+  
+  while (n < len && (c = getc(fd)) != EOF) {
+    if (c == '\n') {
+      if ((c2 = getc(fd)) != EOF && c2 != '\r') ungetc(c2, fd);
+      break;
+    }
+    
+    if (c == '\r') {
+      if ((c2 = getc(fd)) != EOF && c2 != '\n') ungetc(c2, fd);
+      break;
+    }
+
+    buf[n++] = (U32)c;
+  }
+
+  retmethod( n );
+endmethod
+
+// ----- generic get type
+
+defmethod(OBJ, gget, InputFile, Class)
+  forward_message(_1, gautoDelete(gnew(_2)));
 endmethod
 
 // ----- generic putLn
 
-defmethod(OBJ, gputLn, OutFile, Object)
-  int err = gput(_1,_2) != True || putc('\n', self->OpenFile.fd) == EOF;
+defmethod(OBJ, gputLn, OutputFile, Object)
+  FILE *fd = self->OpenFile.fd;
+  int err;
+
+  err = gput(_1,_2) != True || putc('\n', fd) == EOF;
   
   retmethod(err ? False : True);
 endmethod

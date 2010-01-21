@@ -1,13 +1,16 @@
+#ifndef COS_GEN_FILE_H
+#define COS_GEN_FILE_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Sequence
+ | COS generics for files
  |
  o---------------------------------------------------------------------o
  |
  | C Object System
  |
- | Copyright (c) 2006+ Laurent Deniau, laurent.deniau@cern.ch
+ | Copyright (c) 2006+ Laurent Deniau, laurent.deniau*cern.ch
  |
  | For more information, see:
  | http://cern.ch/laurent.deniau/cos.html
@@ -29,25 +32,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.15 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: file.h,v 1.1 2010/01/21 14:52:53 ldeniau Exp $
  |
 */
 
-#include <cos/Sequence.h>
-#include <cos/Slice.h>
+#include <cos/gen/stream.h>
+#include <stdio.h>
 
-#include <cos/gen/accessor.h>
-#include <cos/gen/object.h>
-#include <cos/gen/value.h>
+// handle
+defgeneric(OBJ, gremove, _1);
 
-// -----
+// low-level FILE access (may be removed in the future)
+defgeneric(FILE*, ggetFILE, _1);
+defgeneric(OBJ  , gsetFILE, _1, (FILE*)fd, (STR)mode, (STR)name);
 
-makclass(Sequence     , Collection);
-makclass(ValueSequence, Sequence );
-
-// -----
-
-defmethod(OBJ, gdeinit, ValueSequence)
-  retmethod(_1);
-endmethod
-
+#endif // COS_GEN_FILE_H

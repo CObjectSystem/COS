@@ -1,7 +1,10 @@
+#ifndef COS_ITERATOR_H
+#define COS_ITERATOR_H
+
 /*
  o---------------------------------------------------------------------o
  |
- | COS Container
+ | COS Iterator
  |
  o---------------------------------------------------------------------o
  |
@@ -29,25 +32,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Container.c,v 1.4 2009/12/30 01:00:45 ldeniau Exp $
+ | $Id: Iterator.h,v 1.1 2010/01/21 14:52:53 ldeniau Exp $
  |
 */
 
-#include <cos/Container.h>
-#include <cos/Number.h>
+#include <cos/Object.h>
 
-#include <cos/gen/object.h>
-#include <cos/gen/value.h>
+/* NOTE-USER: Iterator subclasses
 
-#include <cos/prp/object.h>
+  - Iterators are low-level abstract classes used to traverse collections.
+  - All iterators support gnext which returns the next object or Nil.
+  - All iterators support gallNext which returns the an array of
+    remaining objects (possibly empty). The Iterator class provides a default
+    implementation based on gnext.
+*/
 
-// -----
+defclass(Iterator)
+endclass
 
-makclass(Container);
-
-// ----- properties
-
-defmethod(OBJ, ggetAt, Object, mP_size)
-  retmethod( gautoDelete(aInt(gsize(_1))) );
-endmethod
+#endif // COS_COLLECTION_H
 
