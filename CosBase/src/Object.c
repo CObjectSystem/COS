@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.29 2010/01/21 22:09:03 ldeniau Exp $
+ | $Id: Object.c,v 1.30 2010/01/21 22:11:02 ldeniau Exp $
  |
 */
 
@@ -147,6 +147,10 @@ endmethod
 
 defmethod(OBJ, gnewWithObj5, mObject, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5)
   retmethod( ginitWithObj5(galloc(_1),obj,obj2,obj3,obj4,obj5) );
+endmethod
+
+defmethod(OBJ, gnewWithObjsVa, mObject, (va_list)va)
+  retmethod( ginitWithObjsVa(galloc(_1),va) );
 endmethod
 
 defmethod(OBJ, gnewWithObjs, mObject, (va_list)va)

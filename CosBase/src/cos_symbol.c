@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.48 2010/01/11 13:41:21 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.49 2010/01/21 22:09:03 ldeniau Exp $
  |
 */
 
@@ -85,6 +85,14 @@ bhv_msk(U32 sz)
   return toPow2(sz)-1;
 }
 
+/* NOTE-INFO: COS_ID_INVALID
+
+   COS_ID_INVALID appears only after 1371141289 iterations of the generator
+   while only 134217727 ids are available (~10x less), before applying the mask.
+   The limit of 10000000 static ids = 2500000 defclasses+defgeneric is far beyond
+   any project size (and anyway it's easy to rise it).
+*/
+
 static inline U32
 bhv_tag(void)
 {
@@ -92,10 +100,10 @@ bhv_tag(void)
 
   x = x * 2621124293u + 1;  // group generator for any \frac{\setN}{2^k\setN}, k=1..32
 
-  if (x == 3722792833u)
+  if (x == COS_ID_TENMEGA) // keep the rest for dynamic behaviors (dynamic classes)
     cos_abort("too many static behaviors (>10000000)");
 
-  return x & COS_ID_TAGMSK;  // use only the 27 lower bits (134217728 ids)
+  return x & COS_ID_TAGMSK;  // use only the 27 lower bits (134217727 ids)
 }
 
 static void
