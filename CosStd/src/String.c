@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.13 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: String.c,v 1.14 2010/01/21 22:48:34 ldeniau Exp $
  |
 */
 
@@ -226,9 +226,9 @@ endmethod
 
 // ----- constructors from C array
 
-defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, pmString, (I8*)ref, (U32)n, (I32)s);
-defmethod(OBJ,  ginitWithChrPtr               , pmString, (I8*)ref, (U32)n, (I32)s)
-  test_assert(s == 1, "strings are not strided");
-  retmethod( gclone(aStringRef((U8*)ref,n)) );
+defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, pmString, (I8*)ref, (U32)size, (I32)stride);
+defmethod(OBJ,  ginitWithChrPtr               , pmString, (I8*)ref, (U32)size, (I32)stride)
+  test_assert( stride == 1, "strings are not strided" );
+  retmethod( gclone(aStringRef((U8*)ref, size)) );
 endmethod
 

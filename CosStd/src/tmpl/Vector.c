@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.15 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Vector.c,v 1.16 2010/01/21 22:44:20 ldeniau Exp $
  |
 */
 
@@ -291,44 +291,44 @@ endmethod
 // ----- constructors from C array
 
 #ifdef CHRVECTOR_ONLY
-defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, TP, (I8*)ref, (U32)n, (I32)s);
-defmethod(OBJ,  ginitWithChrPtr               , TP, (I8*)ref, (U32)n, (I32)s)
-  retmethod( gclone(aChrVectorRef(ref,n,s)) );
+defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, TP, (I8*)ref, (U32)size, (I32)stride);
+defmethod(OBJ,  ginitWithChrPtr               , TP, (I8*)ref, (U32)size, (I32)stride)
+  retmethod( gclone(aChrVectorRef(ref, size, stride)) );
 endmethod
 #endif
 
 #ifdef SHTVECTOR_ONLY
-defalias (OBJ, (ginitWithShtPtr)gnewWithShtPtr, TP, (I16*)ref, (U32)n, (I32)s);
-defmethod(OBJ,  ginitWithShtPtr               , TP, (I16*)ref, (U32)n, (I32)s)
-  retmethod( gclone(aShtVectorRef(ref,n,s)) );
+defalias (OBJ, (ginitWithShtPtr)gnewWithShtPtr, TP, (I16*)ref, (U32)size, (I32)stride);
+defmethod(OBJ,  ginitWithShtPtr               , TP, (I16*)ref, (U32)size, (I32)stride)
+  retmethod( gclone(aShtVectorRef(ref, size, stride)) );
 endmethod
 #endif
 
 #ifdef INTVECTOR_ONLY
-defalias (OBJ, (ginitWithIntPtr)gnewWithIntPtr, TP, (I32*)ref, (U32)n, (I32)s);
-defmethod(OBJ,  ginitWithIntPtr               , TP, (I32*)ref, (U32)n, (I32)s)
-  retmethod( gclone(aIntVectorRef(ref,n,s)) );
+defalias (OBJ, (ginitWithIntPtr)gnewWithIntPtr, TP, (I32*)ref, (U32)size, (I32)stride);
+defmethod(OBJ,  ginitWithIntPtr               , TP, (I32*)ref, (U32)size, (I32)stride)
+  retmethod( gclone(aIntVectorRef(ref, size, stride)) );
 endmethod
 #endif
 
 #ifdef LNGVECTOR_ONLY
-defalias (OBJ, (ginitWithLngPtr)gnewWithLngPtr, TP, (I64*)ref, (U32)n, (I32)s);
-defmethod(OBJ,  ginitWithLngPtr               , TP, (I64*)ref, (U32)n, (I32)s)
-  retmethod( gclone(aLngVectorRef(ref,n,s)) );
+defalias (OBJ, (ginitWithLngPtr)gnewWithLngPtr, TP, (I64*)ref, (U32)size, (I32)stride);
+defmethod(OBJ,  ginitWithLngPtr               , TP, (I64*)ref, (U32)size, (I32)stride)
+  retmethod( gclone(aLngVectorRef(ref, size, stride)) );
 endmethod
 #endif
 
 #ifdef FLTVECTOR_ONLY
-defalias (OBJ, (ginitWithFltPtr)gnewWithFltPtr, TP, (F64*)ref, (U32)n, (I32)s);
-defmethod(OBJ,  ginitWithFltPtr               , TP, (F64*)ref, (U32)n, (I32)s)
-  retmethod( gclone(aFltVectorRef(ref,n,s)) );
+defalias (OBJ, (ginitWithFltPtr)gnewWithFltPtr, TP, (F64*)ref, (U32)size, (I32)stride);
+defmethod(OBJ,  ginitWithFltPtr               , TP, (F64*)ref, (U32)size, (I32)stride)
+  retmethod( gclone(aFltVectorRef(ref, size, stride)) );
 endmethod
 #endif
 
 #ifdef CPXVECTOR_ONLY
-defalias (OBJ, (ginitWithCpxPtr)gnewWithCpxPtr, TP, (C64*)ref, (U32)n, (I32)s);
-defmethod(OBJ,  ginitWithCpxPtr               , TP, (C64*)ref, (U32)n, (I32)s)
-  retmethod( gclone(aCpxVectorRef(ref,n,s)) );
+defalias (OBJ, (ginitWithCpxPtr)gnewWithCpxPtr, TP, (C64*)ref, (U32)size, (I32)stride);
+defmethod(OBJ,  ginitWithCpxPtr               , TP, (C64*)ref, (U32)size, (I32)stride)
+  retmethod( gclone(aCpxVectorRef(ref, size, stride)) );
 endmethod
 #endif
 
