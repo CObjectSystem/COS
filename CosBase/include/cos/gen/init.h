@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.18 2010/01/20 22:27:34 ldeniau Exp $
+ | $Id: init.h,v 1.19 2010/01/21 22:09:02 ldeniau Exp $
  |
 */
 
@@ -48,7 +48,7 @@ defgeneric (OBJ, ginitWithObj3   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3);
 defgeneric (OBJ, ginitWithObj4   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4);
 defgeneric (OBJ, ginitWithObj5   , _1, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5);
 defgeneric (OBJ, ginitWithObjStr , _1, (OBJ)obj, (STR)str);
-defgeneric (OBJ, ginitWithObjVa  , _1, (va_list)va);
+defgeneric (OBJ, ginitWithObjsVa , _1, (va_list)va);
 defgenericv(OBJ, ginitWithObjs   , _1, ...);
 
 defgeneric (OBJ, ginitWithChr    , _1, (I32)val);

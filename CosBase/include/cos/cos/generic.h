@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.35 2010/01/20 22:24:18 ldeniau Exp $
+ | $Id: generic.h,v 1.36 2010/01/21 22:09:01 ldeniau Exp $
  |
 */
 
@@ -155,10 +155,12 @@
    CS = class-parameters (selectors)
    AS = arg-parameters (non-selectors)
    IS = class-indexes
-   C  = number of class-parameters (1..5)
-   A  = number of arguments > 0    (bool)
-   O  = all arguments are objects  (bool)
-   R  = return-type is not void    (bool)
+   C  = number of class-parameters   (1..5)
+   A  = number of arguments > 0      (bool)
+   O  = all arguments are objects    (bool)
+   R  = return-type is not void      (bool)
+   U  = generic has va_list argument (bool)
+   V  = generic is variadic          (bool)
 */
 
 /* generic reference
@@ -193,13 +195,18 @@
           COS_PP_DROP(1,COS_PP_SCANL(PS,0,COS_PRM_IDX)), \
           COS_PP_LEN(CS), \
           COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
-          COS_PP_NOT(COS_TOK_ISVOID(RET)) )
+          COS_PP_NOT(COS_TOK_ISVOID(RET)), \
+          COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_VALIST),COS_NO,COS_PP_OR) )
 
-#define COS_GEN_DEF_1(RET,NAME,PS,AS,IS,C,A,R) \
+#define COS_GEN_DEF_1(RET,NAME,PS,AS,IS,C,A,R,U) \
 extern struct Generic COS_GEN_NAME(NAME); \
-COS_GEN_TYPEDEF(RET,NAME,PS,AS,   C,A    ) \
-COS_GEN_FUNCDEF(RET,NAME,PS,AS,IS,C,A,R  ) \
-COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,0) \
+COS_GEN_TYPEDEF(RET,NAME,   PS,AS,   C,A           ) \
+COS_PP_IF(U)( \
+COS_GEN_FUNCDCL(RET,NAME,PS,PS   ,IS,C             ) \
+, \
+COS_GEN_FUNCDEF(RET,NAME,   PS,AS,IS,C,A,R,U,COS_NO) \
+COS_GEN_NEXTDEF(RET,NAME,   PS,AS,IS,C,A,R,U,COS_NO) \
+) \
 COS_SCP_END
 
 /* generic instantiation
@@ -211,18 +218,25 @@ COS_SCP_END
           COS_PP_FILTER((__VA_ARGS__),COS_PP_ISTUPLE ) )
 
 #define COS_GEN_MAK_0(RET,NAME,CLS,PS,CS,AS) \
-        COS_GEN_MAK_1(RET,NAME,CLS,PS,AS,COS_PP_LEN(CS), \
+        COS_GEN_MAK_1(RET,NAME,CLS,PS,   AS, \
+          COS_PP_DROP(1,COS_PP_SCANL(PS,0,COS_PRM_IDX)), \
+          COS_PP_LEN(CS), \
           COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
           COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_OBJ),COS_YES,COS_PP_AND), \
-          COS_PP_NOT(COS_TOK_ISVOID(RET)))
+          COS_PP_NOT(COS_TOK_ISVOID(RET)), \
+          COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_VALIST),COS_NO,COS_PP_OR) )
 
-#define COS_GEN_MAK_1(RET,NAME,CLS,PS,AS,C,A,O,R) \
-COS_GEN_TYPECHK(RET,NAME,    PS                  ) \
-COS_GEN_GCLSCHK(    NAME,CLS                     ) \
-COS_GEN_RANKCHK(    NAME,          C             ) \
-COS_GEN_NAMECHK(    NAME                         ) \
-COS_GEN_SIZECHK(    NAME,            A,  R       ) \
-COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,C,A,O,R,COS_NO)
+#define COS_GEN_MAK_1(RET,NAME,CLS,PS,AS,IS,C,A,O,R,U) \
+COS_GEN_TYPECHK(RET,NAME,    PS                       ) \
+COS_GEN_GCLSCHK(    NAME,CLS                          ) \
+COS_GEN_RANKCHK(    NAME,             C               ) \
+COS_GEN_NAMECHK(    NAME                              ) \
+COS_GEN_SIZECHK(    NAME,               A,  R         ) \
+COS_PP_IF(U)( \
+COS_GEN_FUNCDEF(RET,NAME,    PS,AS,IS,C,A,  R,U,COS_NO) \
+COS_GEN_NEXTDEF(RET,NAME,    PS,AS,IS,C,A,  R,U,COS_NO) \
+,) \
+COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,   C,A,O,R,  COS_NO)
 
 /* variadic generic definition
  */
@@ -263,21 +277,22 @@ COS_SCP_END
 
 #define COS_GEN_MAKV_1(RET,NAME,CLS,VPS,PS,CS,AS) \
         COS_GEN_MAKV_2(RET,NAME,CLS,VPS,PS,   AS, \
+          COS_PP_IF(COS_PP_GE(COS_PP_LEN(AS),2))(COS_PP_RDROP(1,AS),AS), \
           COS_PP_DROP(1,COS_PP_SCANL(PS,0,COS_PRM_IDX)), \
           COS_PP_LEN(CS), \
           COS_PP_GE(COS_PP_LEN(AS),2), \
           COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_OBJ),COS_YES,COS_PP_AND), \
           COS_PP_NOT(COS_TOK_ISVOID(RET)) )
 
-#define COS_GEN_MAKV_2(RET,NAME,CLS,VPS,PS,AS,IS,C,A,O,R) \
-COS_GEN_TYPECHK(RET,NAME,    PS                      ) \
-COS_GEN_GCLSCHK(    NAME,CLS                         ) \
-COS_GEN_RANKCHK(    NAME,             C              ) \
-COS_GEN_NAMECHK(    NAME                             ) \
-COS_GEN_SIZECHK(    NAME,               A,  R        ) \
-COS_GEN_VFUNDEF(RET,NAME,   VPS,AS,IS,C,A,  R        ) \
-COS_GEN_NEXTDEF(RET,NAME,    PS,AS,IS,C,A,  R,COS_YES) \
-COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,   C,A,O,R,COS_YES)
+#define COS_GEN_MAKV_2(RET,NAME,CLS,VPS,PS,AS,RS,IS,C,A,O,R) \
+COS_GEN_TYPECHK(RET,NAME,    PS                             ) \
+COS_GEN_GCLSCHK(    NAME,CLS                                ) \
+COS_GEN_RANKCHK(    NAME,             C                     ) \
+COS_GEN_NAMECHK(    NAME                                    ) \
+COS_GEN_SIZECHK(    NAME,               A,  R               ) \
+COS_GEN_FUNCDEF(RET,NAME,   VPS,RS,IS,C,A,  R,COS_NO,COS_YES) \
+COS_GEN_NEXTDEF(RET,NAME,    PS,AS,IS,C,A,  R,COS_NO,COS_YES) \
+COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,   C,A,O,R,       COS_YES)
 
 /*
  * Low-level implementation
@@ -333,60 +348,37 @@ extern void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
                                 SEL _sel, RET* _ret, COS_PP_CAT(IMP,C) _nxt);
 
 // generic function definition
-#define COS_GEN_FUNCDEF(RET,NAME,PS,AS,IS,C,A,R) \
-static COS_ALWAYS_INLINE \
+#define COS_GEN_FUNCDEF(RET,NAME,PS,AS,IS,C,A,R,U,V) \
+COS_PP_IF(COS_PP_OR(U,V))(,static COS_ALWAYS_INLINE) \
 RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
 { \
   /* local result and arguments (if any) */ \
   COS_PP_IF(R)(RET _ret;,/* no ret */) \
-  COS_PP_IF(A)(COS_ARG_TYPE(NAME) _arg;,/* no arg */) \
+  COS_PP_IF(COS_PP_OR(A,V))(COS_ARG_TYPE(NAME) _arg;,/* no arg|va */) \
   /* arguments initialization (if any) */ \
   COS_PP_IF(A)(COS_PP_SEQ(COS_PP_MAP(AS,COS_ARG_INI));,/* no arg */) \
-  /* method lookup */ \
-  COS_PP_CAT3(cos_method_, \
-    COS_PP_IF(COS_PP_GE(COS_FAST_MESSAGE,C))(fastLookup,lookup),C) \
-  /* lookup selectors */ \
-  (&COS_GEN_NAME(NAME),COS_PP_SEQ(COS_SEL_ID(C))) \
-  /* method invocation */ \
-  (&COS_GEN_NAME(NAME),COS_PP_SEQ(COS_SEL_NAME(C)), \
-   COS_PP_IF(A)(&_arg,0),COS_PP_IF(R)(&_ret,0)); \
-  /* arguments deinitialization (if any) */ \
-  COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_ARG_DEINI)),/* no arg */) \
-  /* return result */ \
-  COS_PP_IF(R)(return _ret;,/* no ret */) \
-  /* for C89 mode */ \
-  COS_UNUSED(NAME); \
-}
-
-// variadic generic function definition
-#define COS_GEN_VFUNDEF(RET,NAME,PS,AS,IS,C,A,R) \
-RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
-{ \
-  /* local result and arguments (if any) */ \
-  COS_PP_IF(R)(RET _ret;,/* no ret */) \
-  COS_ARG_TYPE(NAME) _arg; \
-  /* arguments initialization (if any) */ \
-  COS_PP_IF(A)(COS_PP_SEQ(COS_PP_MAP(COS_PP_RDROP(1,AS),COS_ARG_INI));,/**/) \
   /* va_list initialization */ \
-  va_start(_arg.va,COS_ARG_VINI(PS,IS)); \
+  COS_PP_IF(V)(va_start(_arg.va,COS_ARG_VINI(PS,IS));,/* no va */) \
   /* method lookup */ \
   COS_PP_CAT(cos_method_fastLookup,C) \
   /* lookup selectors */ \
   (&COS_GEN_NAME(NAME),COS_PP_SEQ(COS_SEL_ID(C))) \
   /* method invocation */ \
   (&COS_GEN_NAME(NAME),COS_PP_SEQ(COS_SEL_NAME(C)), \
-   &_arg,COS_PP_IF(R)(&_ret,0)); \
+   COS_PP_IF(COS_PP_OR(A,V))(&_arg,0),COS_PP_IF(R)(&_ret,0)); \
   /* arguments deinitialization (if any) */ \
-  COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(COS_PP_RDROP(1,AS),COS_ARG_DEINI)),/**/) \
+  COS_PP_IF(A)(COS_PP_SEP(COS_PP_MAP(AS,COS_ARG_DEINI)),/* no arg */) \
   /* va_list deinitialization */ \
-  va_end(_arg.va); \
+  COS_PP_IF(V)(va_end(_arg.va);,/* no va */) \
   /* return result */ \
   COS_PP_IF(R)(return _ret;,/* no ret */) \
+  /* for C89 mode */ \
+  COS_UNUSED(NAME); \
 }
 
 // generic next function definition
-#define COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,V) \
-COS_PP_IF(V)(,static COS_ALWAYS_INLINE) \
+#define COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,U,V) \
+COS_PP_IF(COS_PP_OR(U,V))(,static COS_ALWAYS_INLINE) \
 void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
                          SEL _sel, RET* _ret, COS_PP_CAT(IMP,C) _nxt) \
 { \
@@ -518,6 +510,10 @@ struct Generic COS_GEN_NAME(NAME) = { \
 // param-type is OBJ
 #define COS_GEN_OBJ(a) \
   COS_PP_IF(COS_PP_ISTUPLE(a))(COS_TOK_ISOBJ(COS_PRM_TYPE(a)),COS_YES)
+
+// param-type is va_list
+#define COS_GEN_VALIST(a) \
+  COS_PP_IF(COS_PP_ISTUPLE(a))(COS_TOK_ISVALIST(COS_PRM_TYPE(a)),COS_NO)
 
 // return-type is void or OBJ
 #define COS_GEN_RET(RET) \

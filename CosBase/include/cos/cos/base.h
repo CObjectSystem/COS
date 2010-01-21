@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.24 2010/01/20 22:24:18 ldeniau Exp $
+ | $Id: base.h,v 1.25 2010/01/21 22:09:01 ldeniau Exp $
  |
 */
 
@@ -188,12 +188,14 @@
 #define COS_ID_TAG(id)  ((U32)(id) &  COS_ID_TAGMSK)
 #define COS_ID_TAGMSK   ((U32)0x07FFFFFF) // 2^(32-5)-1
 #define COS_ID_RNKSHT   27                //    32-5
+#define COS_ID_TENMEGA  ((U32)0xDDE54F81)
+#define COS_ID_INVALID  ((U32)0xDEADC0DE)
 
 // reference counting
 #define COS_RC_STATIC   ((I32)-1)
 #define COS_RC_AUTO     ((I32) 0)
 #define COS_RC_UNIT     ((I32) 1)
-#define COS_RC_INVALID  ((I32) 0xDEADC0DE)
+#define COS_RC_INVALID  ((I32)0xDEADC0DE)
 
 // mangled names: <sym-name>_<cls1-name>[_..._<cls5-name>]
 #define COS_SYM_NAME(NAME,CS) \

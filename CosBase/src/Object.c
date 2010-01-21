@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.28 2010/01/20 22:24:23 ldeniau Exp $
+ | $Id: Object.c,v 1.29 2010/01/21 22:09:03 ldeniau Exp $
  |
 */
 
@@ -85,10 +85,10 @@ endmethod
 
 defmethod(void, gdealloc, Object)
   PRE
-    test_assert(cos_object_id(_1) != 0 &&
+    test_assert(cos_object_id(_1) != COS_ID_INVALID &&
                 cos_object_rc(_1) != COS_RC_INVALID, "object already destroyed");
   BODY
-    cos_object_setId(_1, 0);
+    cos_object_setId(_1, COS_ID_INVALID);
     cos_object_setRc(_1, COS_RC_INVALID);
     free(_1);
 endmethod
@@ -147,6 +147,10 @@ endmethod
 
 defmethod(OBJ, gnewWithObj5, mObject, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5)
   retmethod( ginitWithObj5(galloc(_1),obj,obj2,obj3,obj4,obj5) );
+endmethod
+
+defmethod(OBJ, gnewWithObjs, mObject, (va_list)va)
+  retmethod( ginitWithObjsVa(galloc(_1),va) );
 endmethod
 
 defmethod(OBJ, gnewWithChr, mObject, (I32)val)
