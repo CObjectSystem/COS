@@ -29,13 +29,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.3 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Stream.c,v 1.4 2010/01/21 22:48:52 ldeniau Exp $
  |
 */
 
 #include <cos/Stream.h>
 
 #include <cos/gen/stream.h>
+
+#include <stdio.h>
+#include <string.h>
 
 // -----
 
@@ -75,32 +78,60 @@ defmethod(size_t, ggetData, InputStream, (U8*)buf, (size_t)len)
   retmethod( n );
 endmethod
 
-defmethod(size_t, ggetDelim, InputStream, (U8*)buf, (size_t)len, (I32)delim)
-  U32 n = 0;
-  I32 c;
+defmethod(size_t, gungetData, InputStream, (U8*)buf, (size_t)len)
+  size_t n = len;
+  I32 c = EOF;
   
-  while (n < len && (c = ggetChr(_1)) != EOF && c != delim)
-    buf[n++] = (U32)c;
+  while (n > 0 && (c = gungetChr(_1, buf[--n])) != EOF)
+    ;
 
-  retmethod( n );
+  retmethod( len - n + (c != EOF) );
 endmethod
 
 defmethod(size_t, ggetLine, InputStream, (U8*)buf, (size_t)len)
   U32 n = 0;
   I32 c, c2;
   
-  while (n < len && (c = getChr(_1)) != EOF) {
+  while (n < len && (c = ggetChr(_1)) != EOF) {
     if (c == '\n') {
-      if ((c2 = getChr(_1)) != EOF && c2 != '\r') gungetChr(_1, c2);
+      if ((c2 = ggetChr(_1)) != EOF && c2 != '\r') gungetChr(_1, c2);
       break;
     }
     
     if (c == '\r') {
-      if ((c2 = getChr(_1)) != EOF && c2 != '\n') gungetChr(_1, c2);
+      if ((c2 = ggetChr(_1)) != EOF && c2 != '\n') gungetChr(_1, c2);
       break;
     }
 
     buf[n++] = (U32)c;
+  }
+
+  retmethod( n );
+endmethod
+
+defmethod(size_t, ggetDelim, InputStream, (U8*)buf, (size_t)len, (I32)delim)
+  U32 n = 0;
+  I32 c;
+  
+  while (n < len && (c = ggetChr(_1)) != EOF) {
+    buf[n++] = (U32)c;
+    if (c == delim) break;
+  }
+
+  retmethod( n );
+endmethod
+
+defmethod(size_t, ggetDelims, InputStream, (U8*)buf, (size_t)len, (STR)delims)
+PRE
+  test_assert( delims, "invalid set of delimiters" );
+
+BODY
+  U32 n = 0;
+  I32 c;
+  
+  while (n < len && (c = ggetChr(_1)) != EOF) {
+    buf[n++] = (U32)c;
+    if (strchr(delims, c)) break;
   }
 
   retmethod( n );
