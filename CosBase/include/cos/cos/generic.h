@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.36 2010/01/21 22:09:01 ldeniau Exp $
+ | $Id: generic.h,v 1.37 2010/01/21 22:38:32 ldeniau Exp $
  |
 */
 
@@ -196,7 +196,8 @@
           COS_PP_LEN(CS), \
           COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
           COS_PP_NOT(COS_TOK_ISVOID(RET)), \
-          COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_VALIST),COS_NO,COS_PP_OR) )
+          COS_PP_IF(COS_VALIST_INLINE)(COS_NO, \
+          COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_VALIST),COS_NO,COS_PP_OR)) )
 
 #define COS_GEN_DEF_1(RET,NAME,PS,AS,IS,C,A,R,U) \
 extern struct Generic COS_GEN_NAME(NAME); \
@@ -224,7 +225,8 @@ COS_SCP_END
           COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
           COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_OBJ),COS_YES,COS_PP_AND), \
           COS_PP_NOT(COS_TOK_ISVOID(RET)), \
-          COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_VALIST),COS_NO,COS_PP_OR) )
+          COS_PP_IF(COS_VALIST_INLINE)(COS_NO, \
+          COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_VALIST),COS_NO,COS_PP_OR)) )
 
 #define COS_GEN_MAK_1(RET,NAME,CLS,PS,AS,IS,C,A,O,R,U) \
 COS_GEN_TYPECHK(RET,NAME,    PS                       ) \

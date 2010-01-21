@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.18 2009/08/19 10:14:22 ldeniau Exp $
+ | $Id: config.h,v 1.19 2010/01/21 22:38:32 ldeniau Exp $
  |
 */
 
@@ -133,6 +133,7 @@
 #else
 
 #define COS_ALWAYS_INLINE inline __attribute__((__always_inline__))
+#define COS_VALIST_INLINE COS_NO // gcc doesn't know how to inline va_list arg
 
 #endif
 
