@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.31 2010/01/20 22:24:18 ldeniau Exp $
+ | $Id: cosdef.h,v 1.32 2010/01/29 12:08:53 ldeniau Exp $
  |
 */
 
@@ -127,17 +127,33 @@ typedef void (*cos_exception_handler)(OBJ,STR,STR,int);
 
 // limits
 
-#define I8_MAX (U8_MAX/2)
-#define U8_MAX ((U8)-1U)
+#define I8_MIN SCHAR_MIN
+#define I8_MAX SCHAR_MAX
+#define U8_MAX UCHAR_MAX
 
-#define I16_MAX (U16_MAX/2)
-#define U16_MAX ((U16)-1U)
+#define I16_MIN  SHRT_MIN
+#define I16_MAX  SHRT_MAX
+#define U16_MAX USHRT_MAX
 
-#define I32_MAX (U32_MAX/2)
-#define U32_MAX ((U32)-1UL)
+#if UINT_MAX >= 4294967295UL
+#define I32_MIN INT_MIN
+#define I32_MAX INT_MAX
+#define U32_MAX UINT_MAX
+#else
+#define I32_MIN LONG_MIN
+#define I32_MAX LONG_MAX
+#define U32_MAX ULONG_MAX
+#endif
 
-#define I64_MAX (U64_MAX/2)
-#define U64_MAX ((U64)-1ULL)
+#if ULONG_MAX >= 18446744073709551615ULL
+#define I64_MIN LONG_MIN
+#define I64_MAX LONG_MAX
+#define U64_MAX ULONG_MAX
+#else
+#define I64_MIN LLONG_MIN
+#define I64_MAX LLONG_MAX
+#define U64_MAX ULLONG_MAX
+#endif
 
 // universal alignment
 struct cos_mem_alignment {
