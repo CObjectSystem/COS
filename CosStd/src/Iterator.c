@@ -29,13 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Iterator.c,v 1.1 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Iterator.c,v 1.2 2010/01/29 12:36:34 ldeniau Exp $
  |
 */
 
 
 #include <cos/Iterator.h>
 
+#include <cos/gen/collection.h>
+#include <cos/gen/object.h>
 #include <cos/gen/iterator.h>
 
 // -----

@@ -32,11 +32,10 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: file.h,v 1.1 2010/01/21 14:52:53 ldeniau Exp $
+ | $Id: file.h,v 1.2 2010/01/29 12:36:34 ldeniau Exp $
  |
 */
 
-#include <cos/gen/stream.h>
 #include <stdio.h>
 
 // handle
@@ -44,6 +43,6 @@ defgeneric(OBJ, gremove, _1);
 
 // low-level FILE access (may be removed in the future)
 defgeneric(FILE*, ggetFILE, _1);
-defgeneric(OBJ  , gsetFILE, _1, (FILE*)fd, (STR)mode, (STR)name);
+defgeneric(OBJ  , gsetFILE, _1, (FILE*)fp, (STR)mode, (STR)name);
 
 #endif // COS_GEN_FILE_H

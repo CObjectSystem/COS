@@ -29,12 +29,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.4 2010/01/21 22:48:52 ldeniau Exp $
+ | $Id: Stream.c,v 1.5 2010/01/29 12:36:34 ldeniau Exp $
  |
 */
 
 #include <cos/Stream.h>
 
+#include <cos/gen/delegate.h>
+#include <cos/gen/object.h>
 #include <cos/gen/stream.h>
 
 #include <stdio.h>
@@ -48,74 +50,215 @@ makclass(OutputStream, Stream);
 
 makclass(ExBadStream, Exception);
 
-// ----- stream generic methods
+// ----- constructors, destructor
 
-defmethod(OBJ, gflush, Stream)
-  if (!self->delegate)
-    retmethod(_1);
-
-  forward_message(self->delegate);
-  if (RETVAL == self->delegate)
-    retmethod(_1);
+defmethod(OBJ, ginit, Stream)
+  self->delegate = 0;
+  retmethod(_1);
 endmethod
 
-defmethod(size_t, gputData, OutputStream, (U8*)buf, (size_t)len)
+defmethod(OBJ, ginitWith, Stream, Stream)
+  self->delegate = gretain(_2);
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gdeinit, Stream)
+  if (self->delegate)
+    grelease(self->delegate);
+
+  retmethod(_1);
+endmethod
+
+// ----- delegate
+
+defmethod(OBJ, gdelegate, Stream)
+  retmethod(self->delegate);
+endmethod
+
+defmethod(OBJ, gsetDelegate, Stream, Stream)
+  OBJ old = self->delegate;
+  self->delegate = gretain(_2);
+  if (old) grelease(old);
+
+  retmethod(_1);
+endmethod
+
+// ----- stream generic methods
+
+defmethod(size_t, gputnChr, OutputStream, (I32)chr, (size_t)len)
   size_t n = 0;
 
-  while (n < len && gputChr(_1, buf[n++]) != EOF)
-    ;
+  if (len) {
+    SEL  sel = genericref(gputChr);
+    IMP1 put = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  ret;
+    gputChr_arg_t arg = { chr };
 
+    for (; n < len; n++) {
+      put(sel, _1, &arg, &ret);
+      if (ret == EndOfStream) break;
+    }
+  }
+  
   retmethod( n );
 endmethod
 
-defmethod(size_t, ggetData, InputStream, (U8*)buf, (size_t)len)
+defmethod(size_t, gputStr, OutputStream, (STR)str)
   size_t n = 0;
-  I32 c;
-  
-  while (n < len && (c = ggetChr(_1)) != EOF)
-    buf[n++] = (U32)c;
 
+  if (str) {
+    SEL  sel = genericref(gputChr);
+    IMP1 put = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  ret;
+
+    while (str[n]) {
+      gputChr_arg_t arg = { str[n++] };
+      put(sel, _1, &arg, &ret);
+      if (ret == EndOfStream) break;
+    }
+  }
+    
+  retmethod( n );
+endmethod
+
+defmethod(size_t, gputStrLn, OutputStream, (STR)str)
+  size_t n = 0;
+  SEL  sel = genericref(gputChr);
+  IMP1 put = cos_method_fastLookup1(sel, cos_object_id(_1));
+  I32  ret;
+
+  if (str) {
+    while (str[n]) {
+      gputChr_arg_t arg = { str[n++] };
+      put(sel, _1, &arg, &ret);
+      if (ret == EndOfStream) break;
+    }
+  }
+    
+  put(sel, _1, &(gputChr_arg_t){ '\n' }, &ret);
+
+  retmethod( n+1 );
+endmethod
+
+defmethod(size_t, gputData, OutputStream, (U8*)buf, (size_t)len)
+PRE
+  test_assert( buf || !len, "invalid buffer" );
+
+BODY
+  size_t n = 0;
+
+  if (len) {
+    SEL  sel = genericref(gputChr);
+    IMP1 put = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  ret;
+
+    for (; n < len; n++) {
+      gputChr_arg_t arg = { buf[n] };
+      put(sel, _1, &arg, &ret);
+      if (ret == EndOfStream) break;
+    }
+  }
+  
   retmethod( n );
 endmethod
 
 defmethod(size_t, gungetData, InputStream, (U8*)buf, (size_t)len)
-  size_t n = len;
-  I32 c = EOF;
-  
-  while (n > 0 && (c = gungetChr(_1, buf[--n])) != EOF)
-    ;
+PRE
+  test_assert( buf || !len, "invalid buffer" );
 
-  retmethod( len - n + (c != EOF) );
+BODY
+  size_t n = len;
+
+  if (len) {
+    SEL  sel = genericref(gungetChr);
+    IMP1 unget = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  ret;
+
+    for (; n > 0; n--) {
+      gungetChr_arg_t arg = { buf[n-1] };
+      unget(sel, _1, &arg, &ret);
+      if (ret == EndOfStream) break;
+    }
+  }
+
+  retmethod( len - n );
 endmethod
 
-defmethod(size_t, ggetLine, InputStream, (U8*)buf, (size_t)len)
-  U32 n = 0;
-  I32 c, c2;
-  
-  while (n < len && (c = ggetChr(_1)) != EOF) {
-    if (c == '\n') {
-      if ((c2 = ggetChr(_1)) != EOF && c2 != '\r') gungetChr(_1, c2);
-      break;
-    }
-    
-    if (c == '\r') {
-      if ((c2 = ggetChr(_1)) != EOF && c2 != '\n') gungetChr(_1, c2);
-      break;
-    }
+defmethod(size_t, ggetData, InputStream, (U8*)buf, (size_t)len)
+PRE
+  test_assert( buf || !len, "invalid buffer" );
 
-    buf[n++] = (U32)c;
+BODY
+  size_t n = 0;
+  
+  if (len) {
+    SEL  sel = genericref(ggetChr);
+    IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  c;
+
+    for (; n < len; n++) {
+      get(sel, _1, 0, &c);
+      if (c == EndOfStream) break;
+      buf[n] = (U32)c;
+    }  
   }
 
   retmethod( n );
 endmethod
 
-defmethod(size_t, ggetDelim, InputStream, (U8*)buf, (size_t)len, (I32)delim)
-  U32 n = 0;
-  I32 c;
+defmethod(size_t, ggetLine, InputStream, (U8*)buf, (size_t)len)
+PRE
+  test_assert( buf || !len, "invalid buffer" );
+
+BODY
+  size_t n = 0;
   
-  while (n < len && (c = ggetChr(_1)) != EOF) {
-    buf[n++] = (U32)c;
-    if (c == delim) break;
+  if (len) {
+    SEL  sel = genericref(ggetChr);
+    IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  c, c2;
+
+    for (; n < len; n++) {
+      get(sel, _1, 0, &c);
+      if (c == EndOfStream) break;
+
+      if (c == '\n') {
+        get(sel, _1, 0, &c2);
+        if (c2 != EndOfStream && c2 != '\r') gungetChr(_1, c2);
+        break;
+      }
+
+      if (c == '\r') {
+        get(sel, _1, 0, &c2);
+        if (c2 != EndOfStream && c2 != '\n') gungetChr(_1, c2);
+        break;
+      }
+
+      buf[n] = (U32)c;
+    }
+  }
+  
+  retmethod( n );
+endmethod
+
+defmethod(size_t, ggetDelim, InputStream, (U8*)buf, (size_t)len, (I32)delim)
+PRE
+  test_assert( buf || !len, "invalid buffer" );
+
+BODY
+  size_t n = 0;
+  
+  if (len) {
+    SEL  sel = genericref(ggetChr);
+    IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  c;
+
+    while (n < len) {
+      get(sel, _1, 0, &c);
+      if (c == EndOfStream) break;
+      buf[n++] = (U32)c;
+      if (c == delim) break;
+    }
   }
 
   retmethod( n );
@@ -123,15 +266,23 @@ endmethod
 
 defmethod(size_t, ggetDelims, InputStream, (U8*)buf, (size_t)len, (STR)delims)
 PRE
-  test_assert( delims, "invalid set of delimiters" );
+  test_assert( buf || !len, "invalid buffer" );
+  test_assert( delims || !len, "invalid delimiters" );
 
 BODY
-  U32 n = 0;
-  I32 c;
+  size_t n = 0;
   
-  while (n < len && (c = ggetChr(_1)) != EOF) {
-    buf[n++] = (U32)c;
-    if (strchr(delims, c)) break;
+  if (len) {
+    SEL  sel = genericref(ggetChr);
+    IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  c;
+
+    while (n < len) {
+      get(sel, _1, 0, &c);
+      if (c == EndOfStream) break;
+      buf[n++] = (U32)c;
+      if (strchr(delims, c)) break;
+    }
   }
 
   retmethod( n );

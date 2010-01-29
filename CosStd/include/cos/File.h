@@ -32,64 +32,44 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.h,v 1.6 2010/01/21 14:12:36 ldeniau Exp $
+ | $Id: File.h,v 1.7 2010/01/29 12:36:34 ldeniau Exp $
  |
 */
 
 #include <cos/Stream.h>
 
-/* NOTE-USER: File subclasses
-
-<- InputStream
-  <- InputFile
-
-<- OutputStream
-  <- OutputFile
-*/
-
-defclass(InputFile, InputStream)
-endclass
-
-defclass(OutputFile, OutputStream)
-endclass
-
-/***********************************************************
- * Implementation (private)
- */
-
 #include <stdio.h>
+
+// ----- private shared data structure
+
+struct File_Descriptor_ {
+  FILE *fp;
+  OBJ   name;
+  BOOL  own;
+  U32   size;
+  U32   pos;
+  U32   max;
+  U8   *buf;
+};
 
 // ----- File state machine
 
-defclass(ClosedFile, File)
-  FILE *fd;
-  OBJ   name;
-  BOOL  own;
-  U32   buf_size;
-  char  file_buf[];
+defclass(File, Stream)
+  struct File_Descriptor_ fd;
 endclass
 
-defclass(OpenFile, File)
-  FILE *fd;
-  OBJ   name;
-  BOOL  own;
-  U32   buf_size;
+defclass(InputFile, InputStream)
+  struct File_Descriptor_ fd;
 endclass
 
-// ----- text file
-
-defclass(InFile , OpenFile)
+defclass(OutputFile, OutputStream)
+  struct File_Descriptor_ fd;
 endclass
 
-defclass(OutFile, OpenFile)
+defclass(InputOutputFile, InputFile)
 endclass
 
-defclass(InOutFile, InFile)
-  char file_buf[];
-endclass
-
-defclass(OutInFile, OutFile)
-  char file_buf[];
+defclass(OutputInputFile, OutputFile)
 endclass
 
 #endif // COS_FILE_H

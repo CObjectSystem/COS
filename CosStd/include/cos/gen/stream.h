@@ -32,30 +32,47 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stream.h,v 1.6 2010/01/21 14:12:36 ldeniau Exp $
+ | $Id: stream.h,v 1.7 2010/01/29 12:36:34 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-defgeneric(OBJ, gopen  , _1, name, mode);
-defgeneric(OBJ, gclose , _1);
-defgeneric(OBJ, gflush , _1);
+// ----- standard errors
+
+enum { EndOfStream = -1 /* EOF */ };
+
+// ----- standard streams
+
+extern OBJ StdIn, StdOut, StdErr, StdLog;
+
+// -----
+
+defgeneric(OBJ, gopen , _1, name, mode);
+defgeneric(OBJ, gclose, _1);
+defgeneric(OBJ, gflush, _1);
 
 // low-level character primitives (required)
-defgeneric(I32, ggetChr  , _1);
-defgeneric(I32, gputChr  , _1, (I32)chr);
-defgeneric(I32, gungetChr, _1, (I32)chr);
+defgeneric(I32, ggetChr  , _1);           // return EndOfStream or chr
+defgeneric(I32, gputChr  , _1, (I32)chr); // return EndOfStream on error
+defgeneric(I32, gungetChr, _1, (I32)chr); // must be unlimited!
 
-// low-level buffer primitives (optional, return number of bytes read/written)
-defgeneric(size_t, gputData, _1, (U8*)buf, (size_t)len);
-defgeneric(size_t, ggetData, _1, (U8*)buf, (size_t)len);
+// low-level string primitives (optional, default provided by Stream)
+defgeneric(size_t, gputStr  , _1, (STR)str);
+defgeneric(size_t, gputStrLn, _1, (STR)str);
 
-// high-level line primitives (optional)
-defgeneric(size_t, ggetLine , _1, (U8*)buf, (size_t)len);
-defgeneric(size_t, ggetDelim, _1, (U8*)buf, (size_t)len, (I32)delim);
+// low-level buffer primitives (optional, default provided by Stream)
+defgeneric(size_t, gputnChr  , _1, (I32)chr, (size_t)len);
+defgeneric(size_t, gputData  , _1, (U8*)buf, (size_t)len);
+defgeneric(size_t, ggetData  , _1, (U8*)buf, (size_t)len);
+defgeneric(size_t, gungetData, _1, (U8*)buf, (size_t)len);
 
-// high-level object primitives (optional for back-end)
+// low-level line primitives (optional, default provided by Stream)
+defgeneric(size_t, ggetLine  , _1, (U8*)buf, (size_t)len);
+defgeneric(size_t, ggetDelim , _1, (U8*)buf, (size_t)len, (I32)delim);
+defgeneric(size_t, ggetDelims, _1, (U8*)buf, (size_t)len, (STR)delims);
+
+// high-level object primitives (provided by non-streams)
 defgeneric(OBJ, gget  , _1, _2); // (return Object or Nil on error)
 defgeneric(OBJ, gput  , _1, _2); // (return Stream or Nil on error)
 defgeneric(OBJ, gputLn, _1, _2); // (return Stream or Nil on error)

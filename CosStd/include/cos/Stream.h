@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.h,v 1.3 2010/01/21 14:12:36 ldeniau Exp $
+ | $Id: Stream.h,v 1.4 2010/01/29 12:36:34 ldeniau Exp $
  |
 */
 
@@ -43,13 +43,12 @@
 <- Stream
   <- InputStream
   <- OutputStream
-  <- ClosedStream
     
   Streams are buffer-oriented serial channels
 */
 
 defclass(Stream)
-  OBJ delegate;
+  OBJ delegate; // can be null
 endclass
 
 defclass(InputStream, Stream)
@@ -57,13 +56,6 @@ endclass
 
 defclass(OutputStream, Stream)
 endclass
-
-defclass(ClosedStream, Stream)
-endclass
-
-// ----- standard streams
-
-extern OBJ StdIn, StdOut, StdErr;
 
 // ----- exception for streams
 

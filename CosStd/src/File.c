@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.16 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: File.c,v 1.17 2010/01/29 12:36:34 ldeniau Exp $
  |
 */
 
@@ -45,15 +45,16 @@
 #include <cos/gen/message.h>
 #include <cos/gen/new.h>
 #include <cos/gen/object.h>
+#include <cos/gen/stream.h>
 #include <cos/gen/value.h>
 
 #include <cos/prp/object.h>
 
-// -----
+// ----- front-end / state machine
 
-// closed files
+// 'closed' files
 
-makclass(ClosedFile, ClosedStream);
+makclass(File, Stream);
 
 // directional files
 
@@ -67,186 +68,198 @@ makclass(OutputInputFile, OutputFile);
 
 // -----
 
-useclass(File, ClosedFile, InputOutputFile, OutputInputFile);
-useclass(ExBadStream, AutoRelease, Array, String);
+useclass(File, InputFile, OutputFile, InputOutputFile, OutputInputFile);
+useclass(ExBadStream, ExBadAlloc, AutoRelease, Array, String);
 
 // -----
 
-STATIC_ASSERT(OpenFile_vs_ClosedFile__invalid_layout_compatibility,
-     COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, fd)
-  && COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, own)
-  && COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, name)
-  && COS_FIELD_COMPATIBILITY(OpenFile    , ClosedFile, buf_size)
-  && COS_FIELD_ALIGNMENT    (InputOutputFile   , ClosedFile, file_buf)
-  && COS_FIELD_ALIGNMENT    (OutputInputFile   , ClosedFile, file_buf)
-  && COS_FIELD_ALIGNMENT    (InOutBinFile, ClosedFile, file_buf)
-  && COS_FIELD_ALIGNMENT    (OutInBinFile, ClosedFile, file_buf)
-);
+STATIC_ASSERT(EndOfStream_value_differs_from_EOF, EndOfStream == EOF);
 
-// ----- some constant
+STATIC_ASSERT(IntputFile_vs_File__invalid_layout_compatibility,
+              COS_FIELD_COMPATIBILITY(InputFile, File, fd));
 
-#ifndef FILE_BUFSIZ
-#define FILE_BUFSIZ (64*1024)
-#endif
-
-STATIC_ASSERT(FILE_BUFSIZ_is_too_small, FILE_BUFSIZ >= BUFSIZ);
+STATIC_ASSERT(OutputFile_vs_File__invalid_layout_compatibility,
+              COS_FIELD_COMPATIBILITY(OutputFile, File, fd));
 
 // ----- properties
 
-defproperty(OpenFile, name, );
+defproperty(InputFile , (fd.name)name, );
+defproperty(OutputFile, (fd.name)name, );
 
-// ----- allocator
+// ----- constructors
 
-defmethod(OBJ, galloc, pmFile)
-  retmethod(_1); // lazy alloc
+defmethod(OBJ, ginit, File)
+  retmethod( ginitWith(_1, aInt(BUFSIZ)) );
 endmethod
 
-// ----- cluster constructors
+defmethod(OBJ, ginitWith, File, Int)
+PRE
+  test_assert(self2->value >= 0, "negative file buffer size");
+POST
+BODY
+  defnext(OBJ, ginit, File);
 
-defalias (OBJ, (ginit)gnew, pmFile);
-defmethod(OBJ,  ginit     , pmFile)
-  retmethod( ginitWith(gallocWithSize(ClosedFile, FILE_BUFSIZ), aInt(FILE_BUFSIZ)) );
-endmethod
+  self->fd.fp   = 0;
+  self->fd.name = 0;
+  self->fd.own  = NO;
+  self->fd.size = self2->value;
+  self->fd.pos  = 0;
+  self->fd.max  = 0;
+  self->fd.buf  = 0;
 
-defalias (OBJ, (ginitWith)gnewWith, pmFile, Int);
-defmethod(OBJ,  ginitWith         , pmFile, Int)
-  PRE
-    test_assert(self2->value >= 0, "negative file buffer size");
-  BODY
-    retmethod( ginitWith(gallocWithSize(ClosedFile, self2->value), _2) );
-endmethod
-
-// ----- initializers
-
-defmethod(OBJ, ginitWith, ClosedFile, Int)
-  self->fd = 0;
-  self->own = NO;
-  self->name = 0;
-  self->buf_size = self2->value;
-  retmethod(_1);
+  next_method(self);
 endmethod
 
 // ----- destructors
 
-defmethod(OBJ, gdeinit, ClosedFile)
-  retmethod(_1);
+defmethod(OBJ, gdeinit, File)
+  if (self->fd.buf)
+    free(self->fd.buf);
+  
+  next_method(self);
 endmethod
 
-defmethod(OBJ, gdeinit, OpenFile)
-  if (self->fd && self->own)
-    fclose(self->fd);
+defmethod(OBJ, gdeinit, InputFile)
+  gclose(_1);
+  next_method(self); // gdeinit(File)
+endmethod
 
-  if (self->name)
-    grelease(self->name);
-
-  retmethod(_1);
+defmethod(OBJ, gdeinit, OutputFile)
+  gclose(_1);
+  next_method(self); // gdeinit(File)
 endmethod
 
 // ----- invariants
 
-defmethod(void, ginvariant, ClosedFile, (STR)func, (STR)file, (int)line)
-  test_assert(!self->fd  , "ClosedFile has a file descriptor", func, file, line);
-  test_assert(!self->own , "ClosedFile own a file descriptor", func, file, line);
-  test_assert(!self->name, "ClosedFile has a file name"      , func, file, line);
+defmethod(void, ginvariant, InputFile, (STR)func, (STR)file, (int)line)
+  test_assert(self->fd.fp  , "InputFile hasn't a FILE descriptor", func, file, line);
+  test_assert(self->fd.name, "InputFile hasn't a file name"      , func, file, line);
+  test_assert(self->InputStream.Stream.delegate == 0,
+                             "InputFile has a delegate (ignored)", func, file, line);
 endmethod
 
-defmethod(void, ginvariant, OpenFile, (STR)func, (STR)file, (int)line)
-  test_assert(self->fd  , "OpenFile hasn't a file descriptor", func, file, line);
-  test_assert(self->name, "OpenFile hasn't a file name"      , func, file, line);
+defmethod(void, ginvariant, OutputFile, (STR)func, (STR)file, (int)line)
+  test_assert(self->fd.fp  , "OutputFile hasn't a FILE descriptor", func, file, line);
+  test_assert(self->fd.name, "OutputFile hasn't a file name"      , func, file, line);
+  test_assert(self->OutputStream.Stream.delegate == 0,
+                             "OutputFile has a delegate (ignored)", func, file, line);
 endmethod
 
 // ----- open, close, flush, gisEmpty, remove
 
 static struct Class*
-mode2class(STR str)
+mode2class(STR str, U32 *mode, STR file, int line)
 {
-  enum { INVALID=0, READ=1, WRITE=2, BOTH=4, BINARY=8 };
-  unsigned m = INVALID;
+  enum { INVALID=0, READ=1, WRITE=2, BOTH=4, BINARY=8, APPEND=16 };
+  struct Class *cls = 0;
+  U32 m = 0;
 
   while (*str)
     switch (*str++) {
-    case 'r': m |= READ;   break;
-    case 'a':
-    case 'w': m |= WRITE;  break;
+    case 'a': m |= APPEND; break;
     case 'b': m |= BINARY; break;
+    case 'r': m |= READ;   break;
+    case 'w': m |= WRITE;  break;
     case '+': m |= BOTH;   break;
+    default : test_assert(0, "invalid file mode", file, line);
     }
 
-  switch(m) {
-  case READ:                 return classref(InputFile);
-  case READ | BINARY:        return classref(InBinFile);
-  case READ | BOTH:          return classref(InputOutputFile);
-  case READ | BOTH | BINARY: return classref(InOutBinFile);
+  if (mode) *mode = m;
 
-  case WRITE:                 return classref(OutputFile);
-  case WRITE | BINARY:        return classref(OutBinFile);
-  case WRITE | BOTH:          return classref(OutputInputFile);
-  case WRITE | BOTH | BINARY: return classref(OutInBinFile);
-
-  default : test_assert(0, "invalid file mode"); return 0;
+  switch(m & (READ|WRITE|BOTH)) {
+  case READ:         cls = classref(InputFile);       break;
+  case WRITE:        cls = classref(OutputFile);      break;
+  case READ  | BOTH: cls = classref(InputOutputFile); break;
+  case WRITE | BOTH: cls = classref(OutputInputFile); break;
   }
+  
+  return cls;
 }
 
-defmethod(OBJ, gopen, ClosedFile, String, String)
-  STR mode = gstr(_3);
-  self->fd = fopen(gstr(_2), mode);
-  if (!self->fd)
+defmethod(OBJ, gopen, File, String, String)
+  struct File_Descriptor_ *fd = &self->fd;
+  STR mode_str = gstr(_3);
+  U32 mode;
+
+  struct Class *cls = mode2class(mode_str, &mode, __FILE__, __LINE__);
+
+  fd->fp = fopen(gstr(_2), mode_str);
+  if (!fd->fp)
     THROW( gnewWith(ExBadStream, gconcat(aStr("unable to open file "), _2)) );
 
-  self->own = YES;
-  self->name = gretain(_2);
-  BOOL ch_buf = !setvbuf(self->fd, self->file_buf, _IOFBF, self->buf_size);
-  test_assert(ch_buf, "unable to set file buffer");
+  fd->own  = YES;
+  fd->name = gretain(_2);
+
+  if (fd->size != BUFSIZ) {
+    BOOL chg = !setvbuf(fd->fp, 0, _IOFBF, fd->size);
+    test_assert(chg, "unable to set file buffer");
+  }
   
-  struct Class *cls = mode2class(mode);
-  BOOL ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
-  test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
+  BOOL chg = cos_object_unsafeChangeClass(_1, cls, classref(Stream));
+  test_assert(chg, "unable to change from 'closed' File to InputFile/OutputFile");
 
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gclose, OpenFile)
-  BOOL ch_cls = cos_object_unsafeChangeClass(_1, classref(ClosedFile), classref(File));
-  test_assert(ch_cls, "unable to change from OpenFile to ClosedFile");
+static void
+close_fd(struct File_Descriptor_ *fd) {
+  if (fd->fp && fd->own)
+    fclose(fd->fp), fd->fp = 0, fd->own = NO;
 
-  if (fclose(self->fd))
-    THROW( gnewWith(ExBadStream, gconcat(aStr("unable to close file "), self->name)) );
+  if (fd->name)
+    grelease(fd->name), fd->name = 0;
+    
+  fd->own = NO;
+}
 
-  grelease(self->name);
-
-  self->fd = 0;
-  self->own = NO;
-  self->name = 0;
+defmethod(OBJ, gclose, InputFile)
+  gflush(_1);
+  close_fd(&self->fd);
   
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(File), classref(Stream));
+  test_assert(chg, "unable to change from InputFile to 'closed' File");
+
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gclose, OutputFile)
+  gflush(_1);
+  close_fd(&self->fd);
+  
+  BOOL chg = cos_object_unsafeChangeClass(_1, classref(File), classref(Stream));
+  test_assert(chg, "unable to change from OutputFile to 'closed' File");
+
   retmethod(_1);
 endmethod
 
 // ----- flush
 
 defmethod(OBJ, gflush, InputFile)
-  // no flush on input file
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gflush, OutputFile)
-  struct OpenFile *file = &self->OpenFile;
-
-  if (fflush(file->fd))
-    THROW( gnewWith(ExBadStream, gconcat(aStr("unable to flush file "), file->name)) );
+  if (fflush(self->fd.fp))
+    THROW( gnewWith(ExBadStream,
+             gconcat(aStr("unable to flush file "), self->fd.name)) );
 
   retmethod(_1);
 endmethod
 
 // ----- empty
 
-defmethod(OBJ, gisEmpty, OpenFile)
-  retmethod(feof(self->fd) ? True : False);
+defmethod(OBJ, gisEmpty, InputFile)
+  retmethod(feof(self->fd.fp) ? True : False);
+endmethod
+
+defmethod(OBJ, gisEmpty, OutputFile)
+  retmethod(feof(self->fd.fp) ? True : False);
 endmethod
 
 // ----- remove
 
-defmethod(OBJ, gremove, OpenFile)
-  OBJ name = gretain(self->name); PRT(name);
+defmethod(OBJ, gremove, File)
+  OBJ name = gretain(self->fd.name); PRT(name);
   gclose(_1);
 
   if (remove(gstr(name)))
@@ -259,131 +272,82 @@ endmethod
 
 // ----- name
 
-defmethod(STR, gstr, OpenFile)
-  retmethod(gstr(self->name));
+defmethod(STR, gstr, OutputFile)
+  retmethod(gstr(self->fd.name));
+endmethod
+
+defmethod(STR, gstr, InputFile)
+  retmethod(gstr(self->fd.name));
 endmethod
 
 // ----- read primitives
 
 defmethod(I32, ggetChr, InputFile)
-  retmethod( getc(self->OpenFile.fd) );
+  struct File_Descriptor_ *fd = &self->fd;
+
+  retmethod( fd->pos ? fd->buf[--fd->pos] : getc(fd->fp) );
+endmethod
+
+defmethod(I32, gungetChr, InputFile, (I32)chr)
+  if (chr == EndOfStream)
+    retmethod(chr);
+
+  struct File_Descriptor_ *fd = &self->fd;
+
+  if (fd->pos == fd->max) {
+    U32 max = fd->max ? fd->max*2 : 64;
+    U8 *buf = realloc(fd->buf, max);
+    if (!buf) THROW(ExBadAlloc); 
+    fd->buf = buf;
+    fd->max = max;
+  }
+
+  retmethod( fd->buf[fd->pos++] = (U32)chr );
 endmethod
 
 defmethod(I32, gputChr, OutputFile, (I32)chr)
-  retmethod( putc(chr, self->OpenFile.fd) );
-endmethod
-
-defmethod(I32, gungetChr, OutputFile, (I32)chr)
-  retmethod( ungetc(chr, self->OpenFile.fd) );
-endmethod
-
-defmethod(size_t, ggetData, InputFile, (U8*)buf, (size_t)len)
-  retmethod( fread(buf, 1, len, self->OpenFile.fd) );
-endmethod
-
-defmethod(size_t, gputData, OutputFile, (U8*)buf, (size_t)len)
-  retmethod( fwrite(buf, 1, len, self->OpenFile.fd) );
-endmethod
-
-defmethod(size_t, ggetDelim, InputFile, (U8*)buf, (size_t)len, (I32)delim)
-  FILE *fd = self->OpenFile.fd;
-  U32 n = 0;
-  I32 c;
-  
-  while (n < len && (c = getc(fd)) != EOF && c != delim)
-    buf[n++] = (U32)c;
-
-  retmethod( n );
-endmethod
-
-defmethod(size_t, ggetLine, InputFile, (U8*)buf, (size_t)len)
-  FILE *fd = self->OpenFile.fd;
-  U32 n = 0;
-  I32 c, c2;
-  
-  while (n < len && (c = getc(fd)) != EOF) {
-    if (c == '\n') {
-      if ((c2 = getc(fd)) != EOF && c2 != '\r') ungetc(c2, fd);
-      break;
-    }
-    
-    if (c == '\r') {
-      if ((c2 = getc(fd)) != EOF && c2 != '\n') ungetc(c2, fd);
-      break;
-    }
-
-    buf[n++] = (U32)c;
-  }
-
-  retmethod( n );
-endmethod
-
-// ----- generic get type
-
-defmethod(OBJ, gget, InputFile, Class)
-  forward_message(_1, gautoDelete(gnew(_2)));
-endmethod
-
-// ----- generic putLn
-
-defmethod(OBJ, gputLn, OutputFile, Object)
-  FILE *fd = self->OpenFile.fd;
-  int err;
-
-  err = gput(_1,_2) != True || putc('\n', fd) == EOF;
-  
-  retmethod(err ? False : True);
-endmethod
-
-// ----- generic mapWhile
-
-defmethod(void, gforeachWhile, OpenFile, Functor)
-  while (!feof(self->fd) && geval(_2,_1) != Nil) ;
-endmethod
-
-defmethod(OBJ, gmapWhile, Functor, OpenFile)
-  OBJ recs = gautoDelete(gnew(Array));
-  OBJ res;
-
-  while (!feof(self2->fd) && (res = geval(_1,_2)) != Nil)
-    gpush(recs, res);
-
-  retmethod(gadjust(recs));
+  retmethod( putc(chr, self->fd.fp) );
 endmethod
 
 // ----- get/set file (low-level)
 
-defmethod(FILE*, ggetFILE, OpenFile)
-  retmethod(self->fd);
+defmethod(FILE*, ggetFILE, OutputFile)
+  retmethod(self->fd.fp);
 endmethod
 
-defmethod(OBJ, gsetFILE, ClosedFile, (FILE*)fd, (STR)mode, (STR)name)
-  PRE
-    test_assert(fd  , "null file descriptor");
-    test_assert(name, "null file name");
-    test_assert(mode, "null file mode");
-
-  BODY
-    self->fd   = fd;
-    self->own  = NO;
-    self->name = gretain(gautoDelete(gnewWithStr(String, name)));
-
-    struct Class *cls = mode2class(mode);
-    BOOL ch_cls = cos_object_unsafeChangeClass(_1, cls, classref(File));
-    test_assert(ch_cls, "unable to change from ClosedFile to OpenFile");
-
-    retmethod(_1);
+defmethod(FILE*, ggetFILE, InputFile)
+  retmethod(self->fd.fp);
 endmethod
 
-// ----- StdIn, StdOut, StdErr
+defmethod(OBJ, gsetFILE, File, (FILE*)fp, (STR)mode, (STR)name)
+PRE
+  test_assert(fp  , "null file descriptor");
+  test_assert(name, "null file name");
+  test_assert(mode, "null file mode");
 
-OBJ StdIn, StdOut, StdErr;
+BODY
+  struct Class *cls = mode2class(mode, 0, __FILE__, __LINE__);
+
+  self->fd.fp   = fp;
+  self->fd.own  = NO;
+  self->fd.name = gretain(gautoDelete(gnewWithStr(String, name)));
+
+  BOOL chg = cos_object_unsafeChangeClass(_1, cls, classref(Stream));
+  test_assert(chg, "unable to change from 'closed' File to InputFile/OutputFile");
+
+  retmethod(_1);
+endmethod
+
+// ----- StdIn, StdOut, StdErr, StdLog
+
+OBJ StdIn=0, StdOut=0, StdErr=0, StdLog=0;
 
 defmethod(void, ginitialize, pmFile)
   if (!StdIn) {
-    gsetFILE(StdIn  = gnew(File), stdin , "r", "stdin" );
-    gsetFILE(StdOut = gnew(File), stdout, "w", "stdout");
-    gsetFILE(StdErr = gnew(File), stderr, "w", "stderr");
+    gsetFILE(StdIn  = gnew( InputFile), stdin , "r", "stdin" );
+    gsetFILE(StdOut = gnew(OutputFile), stdout, "w", "stdout");
+    gsetFILE(StdErr = gnew(OutputFile), stderr, "w", "stderr");
+    gsetFILE(StdLog = gnew(OutputFile), stderr, "w", "stdlog");
   }
 endmethod
 
@@ -392,6 +356,7 @@ defmethod(void, gdeinitialize, pmFile)
     gdelete(StdIn);
     gdelete(StdOut);
     gdelete(StdErr);
+    gdelete(StdLog);
   }
 endmethod
 
