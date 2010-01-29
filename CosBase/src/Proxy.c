@@ -29,14 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.16 2010/01/29 12:08:54 ldeniau Exp $
+ | $Id: Proxy.c,v 1.17 2010/01/29 12:10:10 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Proxy.h>
 
-#include <cos/gen/delegate.h>
 #include <cos/gen/message.h>
 #include <cos/gen/object.h>
 
