@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stream.h,v 1.7 2010/01/29 12:36:34 ldeniau Exp $
+ | $Id: stream.h,v 1.8 2010/01/29 13:38:40 ldeniau Exp $
  |
 */
 
@@ -52,7 +52,7 @@ defgeneric(OBJ, gopen , _1, name, mode);
 defgeneric(OBJ, gclose, _1);
 defgeneric(OBJ, gflush, _1);
 
-// low-level character primitives (required)
+// low-level character primitives (!REQUIRED!)
 defgeneric(I32, ggetChr  , _1);           // return EndOfStream or chr
 defgeneric(I32, gputChr  , _1, (I32)chr); // return EndOfStream on error
 defgeneric(I32, gungetChr, _1, (I32)chr); // must be unlimited!
@@ -66,15 +66,21 @@ defgeneric(size_t, gputnChr  , _1, (I32)chr, (size_t)len);
 defgeneric(size_t, gputData  , _1, (U8*)buf, (size_t)len);
 defgeneric(size_t, ggetData  , _1, (U8*)buf, (size_t)len);
 defgeneric(size_t, gungetData, _1, (U8*)buf, (size_t)len);
+defgeneric(size_t, gskipnChr , _1,           (size_t)len);
 
-// low-level line primitives (optional, default provided by Stream)
+// low-level line primitives I (optional, default provided by Stream)
 defgeneric(size_t, ggetLine  , _1, (U8*)buf, (size_t)len);
 defgeneric(size_t, ggetDelim , _1, (U8*)buf, (size_t)len, (I32)delim);
 defgeneric(size_t, ggetDelims, _1, (U8*)buf, (size_t)len, (STR)delims);
 
+// low-level line primitives II (optional, default provided by Stream)
+defgeneric(size_t, gskipLine  , _1);
+defgeneric(size_t, gskipDelim , _1, (I32)delim);
+defgeneric(size_t, gskipDelims, _1, (STR)delims);
+
 // high-level object primitives (provided by non-streams)
-defgeneric(OBJ, gget  , _1, _2); // (return Object or Nil on error)
-defgeneric(OBJ, gput  , _1, _2); // (return Stream or Nil on error)
-defgeneric(OBJ, gputLn, _1, _2); // (return Stream or Nil on error)
+defgeneric(OBJ, gget  , _1, _2); // (return object or Nil on error)
+defgeneric(OBJ, gput  , _1, _2); // (return stream or Nil on error)
+defgeneric(OBJ, gputLn, _1, _2); // (return stream or Nil on error)
 
 #endif // COS_GEN_STREAM_H

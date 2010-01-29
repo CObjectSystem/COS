@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_par.c,v 1.1 2010/01/29 12:36:34 ldeniau Exp $
+ | $Id: Number_par.c,v 1.2 2010/01/29 13:38:40 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,65 @@
 #include <errno.h>
 
 U32 // integer: [+-]?[0-9]+
+Number_parseI16(OBJ _1, I32 *val)
+{
+  test_assert( val, "invalid argument" );
+
+  char  b[7];                   // buffer
+  char* p = b;                  // cursor
+  char* e = b + sizeof b - 1;   // marker
+  U32   i = 0;                  // counter
+  I32   c;                      // character
+
+  SEL  sel = genericref(ggetChr);
+  IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
+
+  // skip white spaces (nothing else)
+  while (get(sel, _1, 0, &c), c == ' ') ;
+
+  // sign (optional)
+  if (c == '-' || c == '+') {
+    *p++ = (U32)c;
+    get(sel, _1, 0, &c);
+  }
+
+  // significant digits
+  while (isdigit(c) && p != e) {
+    *p++ = (U32)c;
+    get(sel, _1, 0, &c);
+  }
+  
+  // extra digits (discarded)
+  while (isdigit(c))
+    get(sel, _1, 0, &c), i++;
+
+  // convert
+  *p = 0;
+  long num = strtol(b, &e, 10);
+  
+  // overflow
+  if (num < I16_MIN) {
+    *val = I16_MIN;
+    errno = ERANGE;
+  } else
+  if (num > I16_MAX) {
+    *val = I16_MAX;    
+    errno = ERANGE;
+  } else
+    *val = num;
+
+  // restore lookahead
+  if (p != e) {
+    *p++ = (U32)c;
+    gungetData(_1, (U8*)e, p-e);
+  } else
+    gungetChr(_1, c);
+
+  // return number char read
+  return i + (e-b);
+}
+
+U32 // integer: [+-]?[0-9]+
 Number_parseI32(OBJ _1, I32 *val)
 {
   test_assert( val, "invalid argument" );
@@ -47,14 +106,14 @@ Number_parseI32(OBJ _1, I32 *val)
   char  b[12];                  // buffer
   char* p = b;                  // cursor
   char* e = b + sizeof b - 1;   // marker
-  U32   i;                      // counter
+  U32   i = 0;                  // counter
   I32   c;                      // character
 
   SEL  sel = genericref(ggetChr);
   IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
 
   // skip white spaces (nothing else)
-  for (i = 0; get(sel, _1, 0, &c), c == ' '; i++) ;
+  while (get(sel, _1, 0, &c), c == ' ') ;
 
   // sign (optional)
   if (c == '-' || c == '+') {
@@ -109,14 +168,14 @@ Number_parseI64(OBJ _1, I64 *val)
   char  b[22];                  // buffer
   char* p = b;                  // cursor
   char* e = b + sizeof b - 1;   // marker
-  U32   i;                      // counter
+  U32   i = 0;                  // counter
   I32   c;                      // character
 
   SEL  sel = genericref(ggetChr);
   IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
 
   // skip white spaces (nothing else)
-  for (i = 0; get(sel, _1, 0, &c), c == ' '; i++) ;
+  while (get(sel, _1, 0, &c), c == ' ') ;
 
   // sign (optional)
   if (c == '-' || c == '+') {
@@ -157,14 +216,14 @@ Number_parseF64(OBJ _1, F64 *val)
   char  b[512];                 // buffer
   char* p = b;                  // cursor
   char* e = b + sizeof b - 12;  // marker
-  U32   i;                      // counter
+  U32   i = 0;                  // counter
   I32   c;                      // character
 
   SEL  sel = genericref(ggetChr);
   IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
 
   // skip white spaces (nothing else)
-  for (i = 0; get(sel, _1, 0, &c), c == ' '; i++) ;
+  while (get(sel, _1, 0, &c), c == ' ') ;
 
   // sign
   if (c == '-' || c == '+') {

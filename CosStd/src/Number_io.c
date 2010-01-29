@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_io.c,v 1.4 2009/09/26 09:02:07 ldeniau Exp $
+ | $Id: Number_io.c,v 1.5 2010/01/29 13:38:40 ldeniau Exp $
  |
 */
 
@@ -37,76 +37,73 @@
 #include <cos/File.h>
 #include <cos/String.h>
 
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>
 #include <cos/gen/value.h>
 
-// ----- Binary File
-
 // ----- get
 
-defmethod(OBJ, gget, InBinFile, Char)
-  retmethod((self2->Int.value = getc(self->InFile.OpenFile.fd)) == EOF ? False : True);
+defmethod(OBJ, gget, InputStream, Char)
+  I32 c = ggetChr(_1);
+  
+  if (c == EndOfStream)
+    retmethod(Nil);
+
+  self2->Int.value = c;
+
+  retmethod(_2);
 endmethod
 
-defmethod(OBJ, gget, InBinFile, Int)
-  int res = fread(&self2->value, 1, sizeof self2->value, self->InFile.OpenFile.fd) != 1;
-  retmethod(res ? False : True);
+defmethod(OBJ, gget, InputStream, Short)
+  U32 n = Number_parseI16(_1, &self2->Int.value);
+  retmethod(n ? _2 : Nil);
 endmethod
 
-defmethod(OBJ, gget, InBinFile, Long)
-  int res = fread(&self2->value, 1, sizeof self2->value, self->InFile.OpenFile.fd) != 1;
-  retmethod(res ? False : True);
+defmethod(OBJ, gget, InputStream, Int)
+  U32 n = Number_parseI32(_1, &self2->value);
+  retmethod(n ? _2 : Nil);
 endmethod
 
-defmethod(OBJ, gget, InBinFile, Float)
-  int res = fread(&self2->value, 1, sizeof self2->value, self->InFile.OpenFile.fd) != 1;
-  retmethod(res ? False : True);
+defmethod(OBJ, gget, InputStream, Long)
+  U32 n = Number_parseI64(_1, &self2->value);
+  retmethod(n ? _2 : Nil);
 endmethod
 
-defmethod(OBJ, gget, InBinFile, Complex)
-  int res = fread(&self2->value, 1, sizeof self2->value, self->InFile.OpenFile.fd) != 1;
-  retmethod(res ? False : True);
+defmethod(OBJ, gget, InputStream, Float)
+  U32 n = Number_parseF64(_1, &self2->value);
+  retmethod(n ? _2 : Nil);
 endmethod
 
 // ----- put
 
-defmethod(OBJ, gput, OutBinFile, Char)
-  retmethod(putc(self2->Int.value, self->OutFile.OpenFile.fd) == EOF ? False : True);
+defmethod(OBJ, gput, OutputStream, Char)
+  retmethod(gputChr(_1, self2->Int.value) != EndOfStream ? _1 : Nil);
 endmethod
 
-defmethod(OBJ, gput, OutBinFile, Int)
-  int res = fwrite(&self2->value, 1, sizeof self2->value, self->OutFile.OpenFile.fd) != 1;
-  retmethod(res ? False : True);
+defmethod(OBJ, gput, OutputStream, Int)
+  U8  b[32];
+  I32 n = snprintf((char*)b, sizeof b, "%ld", (long)self2->value);
+  I32 m = gputData(_1, b, n);
+  retmethod(m == n ? _1 : Nil);
 endmethod
 
-defmethod(OBJ, gput, OutBinFile, Long)
-  int res = fwrite(&self2->value, 1, sizeof self2->value, self->OutFile.OpenFile.fd) != 1;
-  retmethod(res ? False : True);
+defmethod(OBJ, gput, OutputStream, Long)
+  U8  b[32];
+  I32 n = snprintf((char*)b, sizeof b, "%lld", (long long)self2->value);
+  I32 m = gputData(_1, b, n);
+  retmethod(m == n ? _1 : Nil);
 endmethod
 
-defmethod(OBJ, gput, OutBinFile, Float)
-  int res = fwrite(&self2->value, 1, sizeof self2->value, self->OutFile.OpenFile.fd) != 1;
-  retmethod(res ? False : True);
+defmethod(OBJ, gput, OutputStream, Float)
+  U8  b[64];
+  I32 n = snprintf((char*)b, sizeof b, "%g", self2->value);
+  I32 m = gputData(_1, b, n);
+  retmethod(m == n ? _1 : Nil);
 endmethod
 
-defmethod(OBJ, gput, OutBinFile, Complex)
-  int res = fwrite(&self2->value, 1, sizeof self2->value, self->OutFile.OpenFile.fd) != 1;
-  retmethod(res ? False : True);
-endmethod
-
-// ----- Text File
-
-// ----- get
-
-defmethod(OBJ, gget, InFile, Char)
-  retmethod((self2->Int.value = getc(self->OpenFile.fd)) == EOF ? False : True);
-endmethod
-
-defmethod(OBJ, gget, InFile, Int)
-  retmethod(fscanf(self->OpenFile.fd, "%d", &self2->value) != 1 ? False : True);
-endmethod
+#if 0
+// ----- specialization for File
 
 defmethod(OBJ, gget, InFile, Long)
   long long val;
@@ -327,4 +324,4 @@ retry:
     }
     retmethod(False);
 endmethod
-
+#endif
