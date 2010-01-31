@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.37 2010/01/21 22:38:32 ldeniau Exp $
+ | $Id: generic.h,v 1.38 2010/01/31 12:03:53 ldeniau Exp $
  |
 */
 
@@ -115,6 +115,7 @@
  */
 #ifdef  COS_DISABLE_ALL
 #define COS_DISABLE_genericref
+#define COS_DISABLE_dclgeneric
 #define COS_DISABLE_usegeneric
 #define COS_DISABLE_defgeneric
 #define COS_DISABLE_makgeneric
@@ -124,6 +125,10 @@
 
 #ifndef COS_DISABLE_genericref
 #define genericref(...) COS_GEN_REF(__VA_ARGS__)
+#endif
+
+#ifndef COS_DISABLE_dclgeneric
+#define dclgeneric(...) COS_GEN_DCL(__VA_ARGS__)
 #endif
 
 #ifndef COS_DISABLE_usegeneric
@@ -173,6 +178,14 @@
 
 /* generic declaration
  */
+#define COS_GEN_DCL(...) \
+        COS_PP_SEPWITH(COS_PP_MAP((__VA_ARGS__),COS_GEN_DCL_1),;)
+
+#define COS_GEN_DCL_1(NAME) \
+        extern struct Generic COS_GEN_NAME(NAME)
+ 
+/* generic use
+ */
 #define COS_GEN_USE(...) \
         COS_PP_SEPWITH(COS_PP_MAP((__VA_ARGS__),COS_GEN_USE_0),;)
 
@@ -200,7 +213,7 @@
           COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_VALIST),COS_NO,COS_PP_OR)) )
 
 #define COS_GEN_DEF_1(RET,NAME,PS,AS,IS,C,A,R,U) \
-extern struct Generic COS_GEN_NAME(NAME); \
+COS_GEN_DEF_DCL(NAME); \
 COS_GEN_TYPEDEF(RET,NAME,   PS,AS,   C,A           ) \
 COS_PP_IF(U)( \
 COS_GEN_FUNCDCL(RET,NAME,PS,PS   ,IS,C             ) \
@@ -209,6 +222,11 @@ COS_GEN_FUNCDEF(RET,NAME,   PS,AS,IS,C,A,R,U,COS_NO) \
 COS_GEN_NEXTDEF(RET,NAME,   PS,AS,IS,C,A,R,U,COS_NO) \
 ) \
 COS_SCP_END
+
+#define COS_GEN_DEF_DCL(NAME) \
+  extern struct Generic COS_GEN_NAME(NAME); \
+  enum { COS_GEN_LINE(NAME) = __LINE__ }; \
+  static const STR COS_GEN_FILE(NAME) = __FILE__
 
 /* generic instantiation
  */
@@ -260,7 +278,7 @@ COS_GEN_COMPMAK(RET,NAME,CLS,PS,AS,   C,A,O,R,  COS_NO)
           COS_PP_NOT(COS_TOK_ISVOID(RET)) )
 
 #define COS_GEN_DEFV_2(RET,NAME,VPS,PS,AS,IS,C,A,R) \
-extern struct Generic COS_GEN_NAME(NAME); \
+COS_GEN_DEF_DCL(NAME); \
 COS_GEN_TYPEDEF(RET,NAME,    PS,AS,   C,A    ) \
 COS_GEN_FUNCDCL(RET,NAME,VPS,PS   ,IS,C      ) \
 COS_SCP_END
@@ -418,6 +436,8 @@ struct Generic COS_GEN_NAME(NAME) = { \
   {{ (U32)C << COS_ID_RNKSHT, cos_tag_generic }, \
   /* id must be zero (init) */ \
    0 }, \
+  /* location */ \
+  (STR)(const void*)&COS_GEN_FILE(NAME), COS_GEN_LINE(NAME), \
   /* index for array of methods */ \
   0, \
   /* name (STR) */ \

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.17 2010/01/11 13:41:20 ldeniau Exp $
+ | $Id: class.h,v 1.18 2010/01/31 12:03:53 ldeniau Exp $
  |
 */
 
@@ -199,6 +199,8 @@
           struct SUPER SUPER;
 
 #define COS_CLS_DEF_DCL(NAME) \
+        enum { COS_CLS_LINE(NAME) = __LINE__ }; \
+        static const STR COS_CLS_FILE(NAME) = __FILE__; \
         extern struct Class COS_CLS_NAME(NAME); \
         extern struct Class COS_MCL_NAME(NAME); \
         extern struct Class COS_PCL_NAME(NAME); \
@@ -244,6 +246,9 @@ struct Class COS_MCL_NAME(NAME) = { /* metaclass */ \
   {{ 0, cos_tag_mclass }, \
   /* encode rank into id */ \
    (U32)COS_MCL_RANK(NAME) << COS_ID_RNKSHT }, \
+  /* location */ \
+  (STR)(const void*)&COS_CLS_FILE(NAME), COS_CLS_LINE(NAME), \
+  /* class size */ \
   sizeof(struct Class), \
   /* classes' names share the same string (STR) */ \
   0, \
@@ -259,6 +264,9 @@ struct Class COS_PCL_NAME(NAME) = { /* property metaclass */ \
   {{ 0, cos_tag_pclass }, \
   /* encode rank into id */ \
    (U32)COS_PCL_RANK(NAME) << COS_ID_RNKSHT }, \
+  /* location */ \
+  (STR)(const void*)&COS_CLS_FILE(NAME), COS_CLS_LINE(NAME), \
+  /* class size */ \
   sizeof(struct Class), \
   /* classes' names share the same string (STR) */ \
   "pm" COS_PP_STR(NAME), \
@@ -274,6 +282,8 @@ struct Class COS_CLS_NAME(NAME) = { /* class */ \
   {{ 0, cos_tag_class }, \
   /* encode rank into id */ \
    (U32)COS_CLS_RANK(NAME) << COS_ID_RNKSHT }, \
+  /* location */ \
+  (STR)(const void*)&COS_CLS_FILE(NAME), COS_CLS_LINE(NAME), \
   /* instances size */ \
   sizeof(struct NAME), \
   /* hack: pre-init link to property metaclasses */ \

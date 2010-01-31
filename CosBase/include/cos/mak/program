@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.14 2009/09/05 21:13:38 ldeniau Exp $
+# | $Id: program,v 1.15 2010/01/31 12:03:53 ldeniau Exp $
 # |
 #
 
@@ -43,6 +43,7 @@ $(TARGET).%: TARGET    := $(TARGET)
 $(TARGET).%: TARGETEXT := $(TARGETEXT)
 $(TARGET).%: BINNAME   := $(BINNAME)
 $(TARGET).%: SBINNAME  := $(SBINNAME)
+$(TARGET).%: COSSYM    := $(COSSYM) --prj=$(program)
 
 #
 # build targets

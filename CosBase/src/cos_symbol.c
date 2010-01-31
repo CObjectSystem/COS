@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.49 2010/01/21 22:09:03 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.50 2010/01/31 12:03:53 ldeniau Exp $
  |
 */
 
@@ -54,15 +54,17 @@ enum { MAX_TBL = 100 }; // maximum number of modules (& plug-in)
 static U32             tbl_ini = 0; // index of first table not yet initialized
 static struct Object **tbl_sym[MAX_TBL];
 static void           *tbl_mod[MAX_TBL];
+static STR             tbl_tag[MAX_TBL];
 
 static struct {
-  struct Behavior **bhv; // indexed by id % msk
-  struct Class    **cls; // sorted  by name
-  struct Class    **prp; // sorted  by name
-  struct Generic  **gen; // sorted  by name
-  struct Method   **mth; // sorted  by gen-name,mth-rank,rnd-rank,cls-name
-  FCT            **nxt; // not sorted
-  U32 msk, n_cls, n_prp, n_gen, n_mth, n_nxt, m_nxt;
+  struct Behavior   **bhv; // indexed by id % msk
+  struct Class      **cls; // sorted  by name
+  struct Class      **prp; // sorted  by name
+  struct Generic    **gen; // sorted  by name
+  struct Method     **mth; // sorted  by gen-name,mth-rank,rnd-rank,cls-name
+  struct MetaDocStr **doc; // sorted  by obj-type,obj-name,name,fct address
+  FCT               **nxt; // not sorted
+  U32 msk, n_cls, n_prp, n_gen, n_mth, n_doc, n_nxt, m_nxt;
 } sym;
 
 // forward decl
@@ -179,6 +181,15 @@ mth_cmp(const void *_mth1, const void *_mth2)
   // descending around rank order
   return (mth1->Method.arnd < mth2->Method.arnd) -
          (mth1->Method.arnd > mth2->Method.arnd);
+}
+
+static int // qsort
+doc_cmp(const void *_doc1, const void *_doc2)
+{
+  struct MetaDocStr *doc1 = *(struct MetaDocStr* const*)_doc1;
+  struct MetaDocStr *doc2 = *(struct MetaDocStr* const*)_doc2;
+
+  return doc1-doc2;
 }
 
 static int // qsort
@@ -532,15 +543,17 @@ nxt_init(SEL gen, U32 info, U32 arnd, struct Class *const *cls)
 }
 
 static void
-sym_prepStorage(U32 n_cls, U32 n_gen, U32 n_mth)
+sym_prepStorage(U32 n_cls, U32 n_gen, U32 n_mth, U32 n_doc)
 {
   U32 n_bhv, msk;
 
   if (n_cls) sym.cls = realloc(sym.cls, (n_cls+=sym.n_cls) * sizeof *sym.cls);
   if (n_gen) sym.gen = realloc(sym.gen, (n_gen+=sym.n_gen) * sizeof *sym.gen);
   if (n_mth) sym.mth = realloc(sym.mth, (n_mth+=sym.n_mth) * sizeof *sym.mth);
+  if (n_doc) sym.doc = realloc(sym.doc, (n_doc+=sym.n_doc) * sizeof *sym.doc);
 
-  if ((!sym.cls && n_cls) || (!sym.gen && n_gen) || (!sym.mth && n_mth))
+  if ((!sym.cls && n_cls) || (!sym.gen && n_gen) ||
+      (!sym.mth && n_mth) || (!sym.doc && n_doc))
     cos_abort("out of memory while storing symbols");
 
   n_bhv = n_gen + 3*n_cls;
@@ -556,7 +569,7 @@ static void
 sym_init(void)
 {
   static U32 arnd = 0;
-  U32 n_cls=0, n_mcl=0, n_pcl=0, n_gen=0, n_mth=0;
+  U32 n_cls=0, n_mcl=0, n_pcl=0, n_gen=0, n_mth=0, n_doc=0;
   U32 t, s;
 
   // count symbols
@@ -571,11 +584,12 @@ sym_init(void)
       case cos_tag_generic: ++n_gen; break;
       case cos_tag_alias  : mth_initAlias(STATIC_CAST(struct Method1*, tbl_sym[t][s]));
       case cos_tag_method : ++n_mth; break;
+      case cos_tag_docstr : ++n_doc; break;
       default: cos_abort("invalid COS symbol");
       }
 
       // set behavior tag
-      if (tbl_sym[t][s]->_rc != cos_tag_method) {
+      if (tbl_sym[t][s]->_rc & 0x1) {
         struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl_sym[t][s]);
         bhv_setTag(bhv);
       }
@@ -587,22 +601,26 @@ sym_init(void)
     cos_abort("invalid number of (property) meta classes vs classes");
 
   // prepare storage for new symbols
-  sym_prepStorage(n_cls,n_gen,n_mth);
+  sym_prepStorage(n_cls,n_gen,n_mth,n_doc);
 
   // copy & prepare symbols
   for (t = tbl_ini; t < MAX_TBL && tbl_sym[t]; t++) {
     for (s = 0; tbl_sym[t][s]; s++) {
 
       // add behavior symbol to behavior table
-      if (tbl_sym[t][s]->_rc != cos_tag_method) {
+      if (tbl_sym[t][s]->_rc & 0x1) {
         struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl_sym[t][s]);
         U32 i = bhv->id & sym.msk;
 
         if (sym.bhv[i]) {
           switch (bhv->Object._rc) {
+          case cos_tag_pclass: {
+            struct Class *pcl = STATIC_CAST(struct Class*, bhv);
+            pcl->file = *(const STR*)pcl->file;
+          }
           case cos_tag_class :
           case cos_tag_mclass:
-          case cos_tag_pclass: {
+           {
             struct Class *cls = STATIC_CAST(struct Class*, bhv);
             cos_abort("class '%s' slot %u already assigned", cls->str ? cls->str : "?", i);
           }
@@ -622,6 +640,7 @@ sym_init(void)
         const struct Class *pcl = STATIC_CAST(const struct Class*, cls->str);
         sym.cls[sym.n_cls++] = cls; // hack: meta-link
         cls->str = pcl->str+2;      // hack: name is shared
+        cls->file = pcl->file;      // hack: file is shared
         cls->Behavior.Object._id = cos_class_id(pcl);
         cls->Behavior.Object._rc = COS_RC_STATIC;
       } break;
@@ -629,6 +648,7 @@ sym_init(void)
       case cos_tag_pclass: {
         struct Class *pcl = STATIC_CAST(struct Class*, tbl_sym[t][s]);
         pcl->spr->str = pcl->str+1; // hack: name is shared
+        pcl->spr->file = pcl->file; // hack: file is shared
         pcl->Behavior.Object._id = cos_class_id(classref(PropMetaClass));
         pcl->Behavior.Object._rc = COS_RC_STATIC;
       } break;
@@ -644,6 +664,7 @@ sym_init(void)
         const struct Class *cls = STATIC_CAST(const struct Class*, gen->sig);
         sym.gen[sym.n_gen++] = gen;
         gen->sig = gen->str + strlen(gen->str) + 1;
+        gen->file = *(const STR*)gen->file;
         gen->Behavior.Object._id = cos_class_id(cls);
         gen->Behavior.Object._rc = COS_RC_STATIC;
       } break;
@@ -661,14 +682,22 @@ sym_init(void)
         case 4: mth->Object._id = cos_class_id(classref(Method4)); break;
         case 5: mth->Object._id = cos_class_id(classref(Method5)); break;
         }
-      }}
-    }
+      } break;
+      
+      case cos_tag_docstr: {
+        struct MetaDocStr *doc = STATIC_CAST(struct MetaDocStr*, tbl_sym[t][s]);
+        sym.doc[sym.n_doc++] = doc;
+        doc->Object._id = cos_class_id(classref(MetaDocStr));
+        doc->Object._rc = COS_RC_STATIC;
+      } break;
+    }}
   }
 
   // sort symbols
   qsort(sym.cls, sym.n_cls, sizeof *sym.cls, cls_cmp);
   qsort(sym.gen, sym.n_gen, sizeof *sym.gen, gen_cmp);
   qsort(sym.mth, sym.n_mth, sizeof *sym.mth, mth_cmp);
+  qsort(sym.doc, sym.n_doc, sizeof *sym.doc, doc_cmp);
 
   // set generics' methods indexes
   gen_setMth();
@@ -698,6 +727,7 @@ sym_deinit(void)
                               sym.prp = 0, sym.n_prp = 0;
   if (sym.gen) free(sym.gen), sym.gen = 0, sym.n_gen = 0;
   if (sym.mth) free(sym.mth), sym.mth = 0, sym.n_mth = 0;
+  if (sym.doc) free(sym.doc), sym.doc = 0, sym.n_doc = 0;
   if (sym.nxt) free(sym.nxt), sym.nxt = 0, sym.n_nxt = 0, sym.m_nxt = 0;
   
   tbl_ini = 0;
@@ -802,21 +832,28 @@ cos_deinitDuration(void)
 //  ----- symbol
 
 void
-cos_symbol_register(struct Object* sym[])
+cos_symbol_register(struct Object* sym[], STR tag)
 {
   U32 i;
 
   if (!sym)
     cos_abort("null symbol table");
 
-  for (i = 0; i < MAX_TBL && tbl_sym[i]; i++)
+  if (!tag || !*tag)
+    cos_abort("null module/project name");
+
+  for (i = 0; i < MAX_TBL && tbl_sym[i]; i++) {
     if (tbl_sym[i] == sym)
       return;
+    if (!strcmp(tbl_tag[i], tag))
+      cos_abort("module/project name already in use");
+  }
 
   if (i == MAX_TBL)
     cos_abort("too many COS symbols tables registered (%u tables)", i);
-  else
-    tbl_sym[i] = sym;
+
+  tbl_sym[i] = sym;
+  tbl_tag[i] = tag;
 }
 
 // ----- generic
@@ -1192,7 +1229,7 @@ cos_module_load(STR *mod)
 {
   void (*symbol)(void);
   void **tmp, *handle;
-  char   buf[250];
+  char   buf[256];
   STR    ext, err;
   int    i, j;
 

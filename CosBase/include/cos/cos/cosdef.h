@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.32 2010/01/29 12:08:53 ldeniau Exp $
+ | $Id: cosdef.h,v 1.33 2010/01/31 12:03:53 ldeniau Exp $
  |
 */
 
@@ -177,13 +177,16 @@ struct cos_mem_alignment {
 
 // components tags
 enum {
-  cos_tag_invalid = 0,
-  cos_tag_class,
-  cos_tag_mclass,
-  cos_tag_pclass,
-  cos_tag_generic,
-  cos_tag_method,
-  cos_tag_alias,
+  cos_tag_invalid,
+  // must be odd (behavior)
+  cos_tag_class   = 0x11,
+  cos_tag_mclass  = 0x21,
+  cos_tag_pclass  = 0x31,
+  cos_tag_generic = 0x41,
+  // must be even (non-behavior)
+  cos_tag_method  = 0x50,
+  cos_tag_alias   = 0x60,
+  cos_tag_docstr  = 0x70,
   cos_tag_last
 };
 

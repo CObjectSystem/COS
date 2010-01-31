@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.25 2010/01/21 22:09:01 ldeniau Exp $
+ | $Id: base.h,v 1.26 2010/01/31 12:03:53 ldeniau Exp $
  |
 */
 
@@ -148,6 +148,7 @@
 #define COS_CLS_NAME(NAME)    COS_PP_CAT(cos_c_  ,NAME)
 #define COS_MCL_NAME(NAME)    COS_PP_CAT(cos_c_m ,NAME)
 #define COS_PCL_NAME(NAME)    COS_PP_CAT(cos_c_pm,NAME)
+#define COS_DOC_NAME(NAME)    COS_PP_CAT(cos_d_  ,NAME)
 #define COS_GEN_NAME(NAME)    COS_PP_CAT(cos_g_  ,NAME)
 #define COS_NXT_NAME(NAME)    COS_PP_CAT(cos_n_  ,NAME)
 #define COS_LNK_NAME(NAME,C)  COS_PP_CAT(cos_l_  ,COS_SUB_NAME(NAME,C))
@@ -176,6 +177,12 @@
 #define COS_ARG_TYPE(NAME)    COS_PP_CAT(NAME,_arg_t)
 #define COS_ARG_INFO(NAME)    COS_PP_CAT(NAME,_arg_i)
 #define COS_RCV_INFO(NAME)    COS_PP_CAT(NAME,_rcv_i)
+
+// symbols location
+#define COS_CLS_FILE(NAME)    COS_PP_CAT(NAME,_file_i)
+#define COS_CLS_LINE(NAME)    COS_PP_CAT(NAME,_line_i)
+#define COS_GEN_FILE(NAME)    COS_PP_CAT(NAME,_file_i)
+#define COS_GEN_LINE(NAME)    COS_PP_CAT(NAME,_line_i)
 
 // behavior max ranks
 #define COS_CLS_RNKMAX  31

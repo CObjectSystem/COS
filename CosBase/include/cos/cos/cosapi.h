@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.41 2010/01/11 13:41:20 ldeniau Exp $
+ | $Id: cosapi.h,v 1.42 2010/01/31 12:03:53 ldeniau Exp $
  |
 */
 
@@ -187,7 +187,7 @@ U32   cos_mem_nfree  (void); // number of free  modulo 2^32
 
 // COS symbols init
 void cos_symbol_init(void);
-void cos_symbol_register(struct Object**);
+void cos_symbol_register(struct Object**, STR tag);
 
 // next-method
 void cos_method_nextClear(void);

@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cossym,v 1.4 2009/05/13 14:54:00 ldeniau Exp $
+# | $Id: cossym,v 1.5 2010/01/31 12:03:51 ldeniau Exp $
 # |
 #
 
@@ -40,8 +40,10 @@ nm="nm -P -g"
 filelist=
 modlist=
 modname=
+prjname=
 rmgen=
 rmcls=
+rmdoc=
 rmtrc=
 out="_cossym.c"
 datestr=`date`
@@ -69,13 +71,17 @@ cat <<END-OF-TEXT
       Put the result in file_name
       Default is: $out
 
+    --prj=<project_name>
+      Specify the name of this COS project (program)
+
     --mod=<module_name>
-      Specify the name of this COS module (shared library) to
-      be used for future symbols dependencies (--dep)
+      Specify the name of this COS module (library) to be used for
+      future symbols dependencies (--dep). Set the project name but it
+      can be overridden with --prj.
 
     --dep=<module_name>
-      The COS modules (shared library) on which your library or
-      program depends on for registration of table of symbols.
+      The COS modules (library) on which your library or program
+      depends on for registration of table of symbols.
       Multiple modules can be provided with multiple --dep
 
     --rmgen=<generic-list>
@@ -88,6 +94,9 @@ cat <<END-OF-TEXT
       Remove all methods specialized by these classes and subclasses
       Multiple lists can be provided with multiple --rmcls
       It is applied after the rmgen option
+
+    --rmdoc
+      Remove documentation (defdoc)
 
     --rmtrc
       Trace removed generics and classes on stderr
@@ -120,9 +129,16 @@ while [ "$1" != "" ] ; do
 		shift; continue;
 	fi
 
+	val=`expr "$1" : '--prj=\(.*\)'`
+	if [ "$val" != "" ] ; then
+		prjname="$val";
+		shift; continue;
+	fi
+
 	val=`expr "$1" : '--mod=\(.*\)'`
 	if [ "$val" != "" ] ; then
 		modname="$val";
+		prjname="$val";
 		shift; continue;
 	fi
 
@@ -150,6 +166,11 @@ while [ "$1" != "" ] ; do
 		shift; continue;
 	fi
 
+	if [ "$1" = "--rmdoc" ] ; then
+		rmdoc="Y"
+		shift; continue;
+	fi
+
 	if [ "$1" = "--rmtrc" ] ; then
 		rmtrc="Y"
 		shift; continue;
@@ -172,17 +193,22 @@ while [ "$1" != "" ] ; do
 done
 
 token='[A-Za-z_][A-Za-z0-9_]*'
+prefix='[cdgm]'
+
+if [ "$rmdoc" != "" ] ; then
+  prefix='[cgm]'
+fi
 
 # retrieve symbols
 if [ "$filelist" != "" ] ; then
     sym=`$nm $filelist \
-       | grep -E -e "^_?cos_[cgm]_$token D " \
+       | grep -E -e "^_?cos_($prefix)_($token) D " \
    	   | cut  -f 1 -d ' ' \
 			 | sed  -e 's/^_cos/cos/g' \
        | sort -u`
     if [ "$rmcls" != "" ] ; then
 		lnk=`$nm $filelist \
-       | grep -E -e "^_?cos_l_$token B " \
+       | grep -E -e "^_?cos_l_($token) B " \
        | cut  -f 1 -d ' ' \
 			 | sed  -e 's/^_cos/cos/g' \
        | sort -u`
@@ -325,7 +351,7 @@ cat >> $out <<END-OF-TEXT
   0
 };
 
-void cos_symbol_register(struct Object**);
+void cos_symbol_register(struct Object**, const char*);
 
 END-OF-TEXT
 
@@ -349,7 +375,7 @@ for m in $modlist ; do
 done
 
 cat >> $out <<END-OF-TEXT
-     cos_symbol_register(symtbl);
+     cos_symbol_register(symtbl,"$prjname");
    }
 }
 END-OF-TEXT

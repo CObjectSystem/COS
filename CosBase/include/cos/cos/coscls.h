@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.13 2010/01/11 13:41:20 ldeniau Exp $
+ | $Id: coscls.h,v 1.14 2010/01/31 12:03:53 ldeniau Exp $
  |
 */
 
@@ -127,6 +127,8 @@ COS_CLS_DEF(Behavior,Object)
 COS_CLS_END
 
 COS_CLS_DEF(Generic,Behavior)
+  STR file;
+  U32 line;
   U32 mth;
   STR str;
   STR sig;
@@ -138,6 +140,8 @@ COS_CLS_DEF(Generic,Behavior)
 COS_CLS_END
 
 COS_CLS_DEF(Class,Behavior)
+  STR file;
+  U32 line;
   U32 isz;
   STR str;
   struct Class* spr;
@@ -146,6 +150,8 @@ COS_CLS_DEF(Class,Behavior)
 COS_CLS_END
 
 COS_CLS_DEF(Method,Object)
+  STR file;
+  U32 line;
   struct Generic* gen;
   U32 info; // store cryptic information, see cos/cos/method.h
   U32 arnd;
@@ -174,6 +180,13 @@ COS_CLS_END
 COS_CLS_DEF(Method5,Method)
   IMP5 fct;
   struct Class* cls[5];
+COS_CLS_END
+
+COS_CLS_DEF(MetaDocStr,Object)
+  OBJ obj; // component
+  FCT fct; // function
+  STR mod; // module
+  STR doc; // doc
 COS_CLS_END
 
 // standard precicates

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.36 2010/01/09 10:03:47 ldeniau Exp $
+ | $Id: method.h,v 1.37 2010/01/31 12:03:53 ldeniau Exp $
  |
 */
 
@@ -81,6 +81,8 @@
 /* method keywords:
  */
 #ifdef  COS_DISABLE_ALL
+#define COS_DISABLE_methodref
+#define COS_DISABLE_dclmethod
 #define COS_DISABLE_defmethod
 #define COS_DISABLE_endmethod
 #define COS_DISABLE_retmethod
@@ -89,6 +91,14 @@
 #define COS_DISABLE_next_method_p
 #define COS_DISABLE_forward_message
 #define COS_DISABLE_RETVAL
+#endif
+
+#ifndef COS_DISABLE_methodref
+#define methodref(...) COS_MTH_REF(__VA_ARGS__)
+#endif
+
+#ifndef COS_DISABLE_dclmethod
+#define dclmethod(...) COS_MTH_DCL(__VA_ARGS__)
 #endif
 
 #ifndef COS_DISABLE_defmethod
@@ -126,6 +136,16 @@
 /***********************************************************
  * Implementation
  */
+
+/* method reference
+ */
+#define COS_MTH_REF(NAME,...) \
+        (&COS_MTH_NAME(NAME,(__VA_ARGS__)))
+        
+/* method declaration
+ */
+#define COS_MTH_DCL(NAME,...) \
+        extern struct Method COS_MTH_NAME(NAME,(__VA_ARGS__))
 
 /* method definition and instantiation
  */
@@ -236,6 +256,8 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 struct COS_PP_CAT(Method,C) COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T) = { \
    /* encode tag into rc */ \
   {{ 0, cos_tag_method }, \
+   /* location */ \
+   __FILE__, __LINE__, \
    /* reference to generic */ \
    &COS_GEN_NAME(NAME), \
    /* method rank */ \
