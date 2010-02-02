@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.17 2010/01/29 12:36:34 ldeniau Exp $
+ | $Id: File.c,v 1.18 2010/02/02 16:27:42 ldeniau Exp $
  |
 */
 
@@ -344,10 +344,10 @@ OBJ StdIn=0, StdOut=0, StdErr=0, StdLog=0;
 
 defmethod(void, ginitialize, pmFile)
   if (!StdIn) {
-    gsetFILE(StdIn  = gnew( InputFile), stdin , "r", "stdin" );
-    gsetFILE(StdOut = gnew(OutputFile), stdout, "w", "stdout");
-    gsetFILE(StdErr = gnew(OutputFile), stderr, "w", "stderr");
-    gsetFILE(StdLog = gnew(OutputFile), stderr, "w", "stdlog");
+    gsetFILE(StdIn  = gnew(File), stdin , "r", "stdin" );
+    gsetFILE(StdOut = gnew(File), stdout, "w", "stdout");
+    gsetFILE(StdErr = gnew(File), stderr, "w", "stderr");
+    gsetFILE(StdLog = gnew(File), stderr, "w", "stdlog");
   }
 endmethod
 

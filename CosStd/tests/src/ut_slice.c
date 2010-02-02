@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_slice.c,v 1.6 2010/01/03 15:00:01 ldeniau Exp $
+ | $Id: ut_slice.c,v 1.7 2010/02/02 16:27:42 ldeniau Exp $
  |
 */
 
@@ -73,10 +73,8 @@ ut_slice(void)
     UTEST( gisEqual(aSlice(0,10), aSlice(0,10,-1)) == False );
 
     // new vs auto
-    UTEST( isEq(gnewSlc1(Slice, 10), aSlice(0,10,1)) );
-    UTEST( isEq(gnewSlc2(Slice, 0, 10), aSlice(0,10,1)) );
-    UTEST( isEq(gnewSlc3(Slice, 0, 10, 1), aSlice(0,10,1)) );
-    UTEST(!isEq(gnewSlc1(Slice, 10), aSlice(0,10,-1)) );
+    UTEST( isEq(gnewSlc(Slice, 0, 10, 1), aSlice(0,10,1)) );
+    UTEST(!isEq(gnewSlc(Slice, 0, 10, 1), aSlice(0,10,-1)) );
 
     // clone vs auto
     UTEST( isEq(gclone(aSlice(10)), aSlice(10)) );

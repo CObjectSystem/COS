@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_range.c,v 1.6 2010/01/03 15:00:01 ldeniau Exp $
+ | $Id: ut_range.c,v 1.7 2010/02/02 16:27:42 ldeniau Exp $
  |
 */
 
@@ -73,10 +73,8 @@ ut_range(void)
     UTEST( gisEqual(aRange(0,10), aRange(0,10,-1)) == False );
 
     // new vs auto
-    UTEST( isEq(gnewRng1(Range, 10), aRange(0,10,1)) );
-    UTEST( isEq(gnewRng2(Range, 0, 10), aRange(0,10,1)) );
-    UTEST( isEq(gnewRng3(Range, 0, 10, 1), aRange(0,10,1)) );
-    UTEST(!isEq(gnewRng1(Range, 10), aRange(0,10,-1)) );
+    UTEST( isEq(gnewRng(Range, 0, 10, 1), aRange(0,10,1)) );
+    UTEST(!isEq(gnewRng(Range, 0, 10, 1), aRange(0,10,-1)) );
 
     // clone vs auto
     UTEST( isEq(gclone(aRange(10)), aRange(10)) );

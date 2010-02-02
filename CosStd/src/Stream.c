@@ -29,14 +29,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.6 2010/01/29 13:38:40 ldeniau Exp $
+ | $Id: Stream.c,v 1.7 2010/02/02 16:27:42 ldeniau Exp $
  |
 */
 
-#include <cos/Stream.h>
+#include <cos/Functor.h>
 #include <cos/Number.h>
+#include <cos/Stream.h>
 
+#include <cos/gen/algorithm.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/delegate.h>
+#include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>
 
@@ -84,7 +88,11 @@ defmethod(OBJ, gsetDelegate, Stream, Stream)
   retmethod(_1);
 endmethod
 
-// ----- low-level default stream generic methods
+/* NOTE-USER: default Stream generic methods
+   rely on ggetChr, gputChr and gungetChr
+*/
+
+// low-level string primitives
 
 defmethod(size_t, gputStr, OutputStream, (STR)str)
   size_t n = 0;
@@ -120,8 +128,10 @@ defmethod(size_t, gputStrLn, OutputStream, (STR)str)
     
   put(sel, _1, &(gputChr_arg_t){ '\n' }, &ret);
 
-  retmethod( n+1 );
+  retmethod( n + ret == '\n' );
 endmethod
+
+// low-level buffer primitives
 
 defmethod(size_t, gputnChr, OutputStream, (I32)chr, (size_t)len)
   size_t n = 0;
@@ -163,6 +173,28 @@ BODY
   retmethod( n );
 endmethod
 
+defmethod(size_t, ggetData, InputStream, (U8*)buf, (size_t)len)
+PRE
+  test_assert( buf || !len, "invalid buffer" );
+
+BODY
+  size_t n = 0;
+  
+  if (len) {
+    SEL  sel = genericref(ggetChr);
+    IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  c;
+
+    while (n < len) {
+      get(sel, _1, 0, &c);
+      if (c == EndOfStream) break;
+      buf[n++] = (U32)c;
+    }  
+  }
+
+  retmethod( n );
+endmethod
+
 defmethod(size_t, gungetData, InputStream, (U8*)buf, (size_t)len)
 PRE
   test_assert( buf || !len, "invalid buffer" );
@@ -185,27 +217,22 @@ BODY
   retmethod( len - n );
 endmethod
 
-defmethod(size_t, ggetData, InputStream, (U8*)buf, (size_t)len)
-PRE
-  test_assert( buf || !len, "invalid buffer" );
-
-BODY
+defmethod(size_t, gskipnChr, InputStream, (size_t)len)
   size_t n = 0;
-  
-  if (len) {
-    SEL  sel = genericref(ggetChr);
-    IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
-    I32  c;
 
-    for (; n < len; n++) {
-      get(sel, _1, 0, &c);
-      if (c == EndOfStream) break;
-      buf[n] = (U32)c;
-    }  
+  SEL  sel = genericref(ggetChr);
+  IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
+  I32  c;
+
+  for (; n < len; n++) {
+    get(sel, _1, 0, &c);
+    if (c == EndOfStream) break;
   }
 
   retmethod( n );
 endmethod
+
+// low-level line primitives I
 
 defmethod(size_t, ggetLine, InputStream, (U8*)buf, (size_t)len)
 PRE
@@ -219,23 +246,23 @@ BODY
     IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
     I32  c, c2;
 
-    for (; n < len; n++) {
+    while (n < len) {
       get(sel, _1, 0, &c);
       if (c == EndOfStream) break;
+      buf[n++] = (U32)c;
 
       if (c == '\n') {
         get(sel, _1, 0, &c2);
-        if (c2 != EndOfStream && c2 != '\r') gungetChr(_1, c2);
+        if (c2 != '\r') gungetChr(_1, c2);
         break;
       }
 
       if (c == '\r') {
+        buf[n-1] = '\n';
         get(sel, _1, 0, &c2);
-        if (c2 != EndOfStream && c2 != '\n') gungetChr(_1, c2);
+        if (c2 != '\n') gungetChr(_1, c2);
         break;
       }
-
-      buf[n] = (U32)c;
     }
   }
   
@@ -256,8 +283,9 @@ BODY
 
     while (n < len) {
       get(sel, _1, 0, &c);
-      if (c == EndOfStream || c == delim) break;
+      if (c == EndOfStream) break;
       buf[n++] = (U32)c;
+      if (c == delim) break;
     }
   }
 
@@ -280,30 +308,15 @@ BODY
     while (n < len) {
       get(sel, _1, 0, &c);
       if (c == EndOfStream) break;
-      buf[n] = (U32)c;
+      buf[n++] = (U32)c;
       if (strchr(delims, c)) break;
-      n++;
     }
   }
 
   retmethod( n );
 endmethod
 
-defmethod(size_t, gskipnChr, InputStream, (size_t)len)
-  size_t n = 0;
-
-  SEL  sel = genericref(ggetChr);
-  IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
-  I32  c;
-
-  while (n < len) {
-    get(sel, _1, 0, &c);
-    if (c == EndOfStream) break;
-    n++;
-  }
-
-  retmethod( n );
-endmethod
+// low-level line primitives II
 
 defmethod(size_t, gskipLine, InputStream)
   size_t n = 0;
@@ -315,20 +328,19 @@ defmethod(size_t, gskipLine, InputStream)
   while (1) {
     get(sel, _1, 0, &c);
     if (c == EndOfStream) break;
-
+    n++;
+    
     if (c == '\n') {
       get(sel, _1, 0, &c2);
-      if (c2 != EndOfStream && c2 != '\r') gungetChr(_1, c2);
+      if (c2 != '\r') gungetChr(_1, c2);
       break;
     }
 
     if (c == '\r') {
       get(sel, _1, 0, &c2);
-      if (c2 != EndOfStream && c2 != '\n') gungetChr(_1, c2);
+      if (c2 != '\n') gungetChr(_1, c2);
       break;
     }
-
-    n++;
   }
   
   retmethod( n );
@@ -343,8 +355,9 @@ defmethod(size_t, gskipDelim, InputStream, (I32)delim)
 
   while (1) {
     get(sel, _1, 0, &c);
-    if (c == EndOfStream || c == delim) break;
+    if (c == EndOfStream) break;
     n++;
+    if (c == delim) break;
   }
 
   retmethod( n );
@@ -363,10 +376,90 @@ BODY
 
   while (1) {
     get(sel, _1, 0, &c);
-    if (c == EndOfStream || strchr(delims, c)) break;
+    if (c == EndOfStream) break;
+    n++;
+    if (strchr(delims, c)) break;
+  }
+
+  retmethod( n );
+endmethod
+
+// low-level predicate primitives 
+
+defmethod(size_t, ggetWhile, InputStream, (U8*)buf, (size_t)len, Functor)
+PRE
+  test_assert( buf || !len, "invalid buffer" );
+
+BODY
+  size_t n = 0;
+  
+  if (len) {
+    SEL  sel = genericref(ggetChr);
+    IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
+    I32  c;
+
+    while (n < len) {
+      get(sel, _1, 0, &c);
+      if (c == EndOfStream || geval(_2, aChar(c)) == Nil) break;
+      buf[n++] = (U32)c;
+    }
+  }
+
+  retmethod( n );
+endmethod
+
+defmethod(size_t, gskipWhile, InputStream, Functor)
+  size_t n = 0;
+  
+  SEL  sel = genericref(ggetChr);
+  IMP1 get = cos_method_fastLookup1(sel, cos_object_id(_1));
+  I32  c;
+
+  while (1) {
+    get(sel, _1, 0, &c);
+    if (c == EndOfStream || geval(_2, aChar(c)) == Nil) break;
     n++;
   }
 
   retmethod( n );
 endmethod
+
+// low-level stream primitives
+
+defmethod(OBJ, ggetLines, InputStream)
+  useclass(Array, String);
+  
+  OBJ fun = gget(_1, aExpr(String));  // line generator
+  OBJ str = gnewWith(Array, fun);     // lazy array
+
+  retmethod( gautoDelete(str) );
+endmethod
+
+defmethod(OBJ, ggetContent, InputStream)
+  useclass(String);
+  
+  OBJ fun = gget(_1, aExpr(String));  // line generator
+  OBJ str = gnewWith(String, fun);    // lazy string
+
+  retmethod( gautoDelete(str) );
+endmethod
+
+// high level stream primitives
+
+defmethod(void, gforeachWhile, InputStream, Functor)
+  while (geval(_2,_1) != Nil) ;
+endmethod
+
+defmethod(OBJ, gmapWhile, Functor, InputStream)
+  useclass(Array);
+
+  OBJ rec = gautoDelete(gnew(Array));
+  OBJ res;
+
+  while ((res = geval(_1,_2)) != Nil)
+    gpush(rec, res);
+
+  retmethod(gadjust(rec));
+endmethod
+
 

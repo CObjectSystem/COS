@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_xrange.c,v 1.6 2010/01/03 15:00:01 ldeniau Exp $
+ | $Id: ut_xrange.c,v 1.7 2010/02/02 16:27:42 ldeniau Exp $
  |
 */
 
@@ -74,10 +74,8 @@ ut_xrange(void)
     UTEST( gisEqual(aXRange(0,10), aXRange(0,10,-1)) == False );
 
     // new vs auto
-    UTEST( isEq(gnewXRng1(XRange, 10), aXRange(0,10,1)) );
-    UTEST( isEq(gnewXRng2(XRange, 0, 10), aXRange(0,10,1)) );
-    UTEST( isEq(gnewXRng3(XRange, 0, 10, 1), aXRange(0,10,1)) );
-    UTEST(!isEq(gnewXRng1(XRange, 10), aXRange(0,10,-1)) );
+    UTEST( isEq(gnewXRng(XRange, 0, 10, 1), aXRange(0,10,1)) );
+    UTEST(!isEq(gnewXRng(XRange, 0, 10, 1), aXRange(0,10,-1)) );
 
     // clone vs auto
     UTEST( isEq(gclone(aXRange(10)), aXRange(10)) );

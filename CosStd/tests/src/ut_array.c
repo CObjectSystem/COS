@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.13 2010/01/10 21:23:04 ldeniau Exp $
+ | $Id: ut_array.c,v 1.14 2010/02/02 16:27:42 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,7 @@
 #include <cos/XRange.h>
 
 #include <cos/gen/algorithm.h>
-#include <cos/gen/container.h>
+#include <cos/gen/collection.h>
 #include <cos/gen/numop.h>
 #include <cos/gen/object.h>
 #include <cos/gen/relop.h>

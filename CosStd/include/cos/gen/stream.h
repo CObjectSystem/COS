@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stream.h,v 1.8 2010/01/29 13:38:40 ldeniau Exp $
+ | $Id: stream.h,v 1.9 2010/02/02 16:27:42 ldeniau Exp $
  |
 */
 
@@ -54,8 +54,8 @@ defgeneric(OBJ, gflush, _1);
 
 // low-level character primitives (!REQUIRED!)
 defgeneric(I32, ggetChr  , _1);           // return EndOfStream or chr
-defgeneric(I32, gputChr  , _1, (I32)chr); // return EndOfStream on error
-defgeneric(I32, gungetChr, _1, (I32)chr); // must be unlimited!
+defgeneric(I32, gputChr  , _1, (I32)chr); // return EndOfStream or chr
+defgeneric(I32, gungetChr, _1, (I32)chr); // return EndOfStream or chr, unlimited
 
 // low-level string primitives (optional, default provided by Stream)
 defgeneric(size_t, gputStr  , _1, (STR)str);
@@ -78,9 +78,16 @@ defgeneric(size_t, gskipLine  , _1);
 defgeneric(size_t, gskipDelim , _1, (I32)delim);
 defgeneric(size_t, gskipDelims, _1, (STR)delims);
 
+// low-level predicate primitives (optional, default provided by Stream)
+defgeneric(size_t, ggetWhile , _1, (U8*)buf, (size_t)len, fun);
+defgeneric(size_t, gskipWhile, _1,                        fun);
+
+// high-level stream primitives (optional, default provided by Stream)
+defgeneric(OBJ, ggetLines  , _1); // (return a lazy array of strings or Nil on error)
+defgeneric(OBJ, ggetContent, _1); // (return a lazy string or Nil on error)
+
 // high-level object primitives (provided by non-streams)
-defgeneric(OBJ, gget  , _1, _2); // (return object or Nil on error)
-defgeneric(OBJ, gput  , _1, _2); // (return stream or Nil on error)
-defgeneric(OBJ, gputLn, _1, _2); // (return stream or Nil on error)
+defgeneric(OBJ, gget, _1, _2);  // (return object or Nil on error)
+defgeneric(OBJ, gput, _1, _2);  // (return stream or Nil on error)
 
 #endif // COS_GEN_STREAM_H
