@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.16 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: Exception.c,v 1.17 2010/02/03 15:06:42 ldeniau Exp $
  |
 */
 
@@ -75,43 +75,57 @@ makclass(ExUnderflow     ,Exception);
 
 // ----- exception
 
+static inline char*
+str_dup(STR str)
+{
+  useclass(ExBadAlloc);
+  
+  char *cpy = malloc(strlen(str)+1);
+  if (!cpy) THROW(ExBadAlloc);
+  return strcpy(cpy, str);
+}
+
 defmethod(OBJ, ginit, Exception)
-  self->str = 0;
   self->obj = Nil;
+  self->str = 0;
   retmethod(_1);
 endmethod
  
 defmethod(OBJ, ginitWithObj, Exception, (OBJ)obj)
-  self->str = 0;
   self->obj = gretain(obj);
+  self->str = 0;
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWithStr, Exception, (STR)str)
-  self->str = str;
   self->obj = Nil;
+  self->str = str_dup(str);
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, ginitWithObjStr, Exception, (OBJ)obj, (STR)str)
-  self->str = str;
   self->obj = gretain(obj);
+  self->str = str_dup(str);
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gdeinit, Exception)
-  self->str = 0;
-  grelease(self->obj);
+  if (self->str != 0)
+    free(self->str);
+
+  if (self->obj != Nil)
+    grelease(self->obj);
+
   retmethod(_1);
 endmethod
 
 defmethod(STR, gstr, Exception)
-  if (self->str)
-    retmethod(self->str);
-
   if (self->obj != Nil && gunderstandMessage1(_1, genericref(gstr)) == True)
     retmethod( gstr(self->obj) );
     
+  if (self->str)
+    retmethod(self->str);
+
   retmethod( "" );
 endmethod
 

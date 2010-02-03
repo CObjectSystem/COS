@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.30 2010/01/21 22:11:02 ldeniau Exp $
+ | $Id: Object.c,v 1.31 2010/02/03 15:06:42 ldeniau Exp $
  |
 */
 
@@ -271,46 +271,38 @@ endmethod
 
 // ----- unrecognized
 
-static void
-trace(SEL sel, OBJ obj[])
-{
-  char buf[128];
-  cos_debug("<Object> unrecognized message %s",
-            cos_method_call(sel, obj, buf, sizeof buf));
-}
-
 defmethod(void, gunrecognizedMessage1, Object)
   OBJ obj[1]; obj[0]=_1;
-  trace(_sel,obj);
+  char buf[128];
 
-  THROW( gnewWithStr(ExBadMessage, _sel->str) );
+  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod
 
 defmethod(void, gunrecognizedMessage2, Object, Object)
   OBJ obj[2]; obj[0]=_1, obj[1]=_2;
-  trace(_sel,obj);
+  char buf[128];
 
-  THROW( gnewWithStr(ExBadMessage, _sel->str) );
+  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Object, Object, Object)
   OBJ obj[3]; obj[0]=_1, obj[1]=_2, obj[2]=_3;
-  trace(_sel,obj);
+  char buf[128];
 
-  THROW( gnewWithStr(ExBadMessage, _sel->str) );
+  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Object, Object, Object, Object)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4;
-  trace(_sel,obj);
+  char buf[128];
 
-  THROW( gnewWithStr(ExBadMessage, _sel->str) );
+  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Object)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
-  trace(_sel,obj);
+  char buf[128];
 
-  THROW( gnewWithStr(ExBadMessage, _sel->str) );
+  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.25 2009/12/27 14:43:30 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.26 2010/02/03 15:06:42 ldeniau Exp $
  |
 */
 
@@ -120,7 +120,7 @@ terminate_default(OBJ ex, STR func, STR file, int line)
               "leading to an undefined behavior",
               cos_object_className(ex), reason, file, line, func);
   else
-    cos_info ("exiting with uncaught exception %s (%s) thrown at (%s:%d:%s)",
+    cos_info ("exiting with uncaught exception %s '%s' thrown at (%s:%d:%s)",
               cos_object_className(ex), reason, file, line, func);
 
 #ifdef __GLIBC__

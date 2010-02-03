@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.h,v 1.7 2009/09/16 14:51:38 ldeniau Exp $
+ | $Id: Exception.h,v 1.8 2010/02/03 15:06:36 ldeniau Exp $
  |
 */
 
@@ -45,8 +45,8 @@
 */
 
 defclass(Exception)
-  STR str;
-  OBJ obj;
+  OBJ   obj;
+  char *str;
 endclass
 
 defclass(ExErrno,Exception)
