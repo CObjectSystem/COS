@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.43 2010/02/20 23:38:51 ldeniau Exp $
+ | $Id: cosapi.h,v 1.44 2010/02/20 23:44:23 ldeniau Exp $
  |
 */
 
@@ -173,9 +173,10 @@ U32   cos_mem_nfree  (void); // number of free  modulo 2^32
 
 /* NOTE-INFO: auto ctor
    the following function-like macro is useful to define automatic ctor
+   for classes deriving from Object (or equivalent)
 */
 #define cos_object_auto(cls) \
-  { COS_CLS_NAME(cls).Behavior.id, COS_RC_AUTO }
+  {{ COS_CLS_NAME(cls).Behavior.id, COS_RC_AUTO }}
 
 /***********************************************************
  * Implementation
