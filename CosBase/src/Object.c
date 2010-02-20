@@ -29,13 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.31 2010/02/03 15:06:42 ldeniau Exp $
+ | $Id: Object.c,v 1.32 2010/02/20 23:38:51 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
-#include <cos/gen/message.h>
 #include <cos/gen/init.h>
 #include <cos/gen/new.h>
 
@@ -43,13 +42,13 @@
 
 #include <stdlib.h>
 
-// ----- root class
+// ----- root of most common classes
 
-makclass(Object,_);
+makclass(Object,Any);
 
 // ----- exceptions
 
-useclass(ExBadAlloc, ExBadMessage);
+useclass(ExBadAlloc);
 
 // ----- properties (read-only)
 
@@ -62,13 +61,13 @@ endmethod
 static COS_ALWAYS_INLINE void*
 object_alloc(OBJ _cls, size_t extra)
 {
-  struct Class *cls = STATIC_CAST(struct Class*, _cls);
+  struct Class  *cls = STATIC_CAST(struct Class*, _cls);
   struct Object *obj = malloc(cls->isz + extra);
 
   if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
 
-  obj->_id = cos_class_id(cls);
-  obj->_rc = COS_RC_UNIT;
+  obj->Any._id = cos_class_id(cls);
+  obj->Any._rc = COS_RC_UNIT;
 
   return obj;
 }
@@ -213,96 +212,4 @@ defmethod(OBJ, gnewWithVoidPtr, mObject, (void*)ref, (U32)size, (I32)stride, (si
   retmethod( ginitWithVoidPtr(galloc(_1),ref,size,stride,esize) );
 endmethod
 
-// ----- ownership
-
-defmethod(U32, gretainCount, Object)
-  retmethod( cos_object_rc(_1) );
-endmethod
-
-// ----- identity
-
-defmethod(OBJ, gisInstanceOf, Object, Class)
-  retmethod( cos_object_id(_1) == self2->Behavior.id ? True : False );
-endmethod
-
-defmethod(OBJ, gisKindOf, Object, Class)
-  retmethod( cos_object_id(_1) == self2->Behavior.id ||
-             cos_object_isKindOf(_1, self2) ? True : False );
-endmethod
-
-defmethod(OBJ, gclass, Object)
-  retmethod( (OBJ)cos_class_get(cos_object_id(_1)) );
-endmethod
-
-defmethod(STR, gclassName, Object)
-  retmethod( cos_class_get(cos_object_id(_1))->str );
-endmethod
-
-// ----- understanding
-
-defmethod(OBJ, gunderstandMessage1, Object, (SEL)sel)
-  retmethod( cos_method_understand1(sel, cos_object_id(_1))
-             ? True : False );
-endmethod
-
-defmethod(OBJ, gunderstandMessage2, Object, Object, (SEL)sel)
-  retmethod( cos_method_understand2(sel, cos_object_id(_1), cos_object_id(_2))
-             ? True : False );
-endmethod
-
-defmethod(OBJ, gunderstandMessage3, Object, Object, Object, (SEL)sel)
-  retmethod( cos_method_understand3(sel, cos_object_id(_1), cos_object_id(_2),
-                                         cos_object_id(_3))
-             ? True : False );
-endmethod
-
-defmethod(OBJ, gunderstandMessage4, Object, Object, Object, Object, (SEL)sel)
- retmethod( cos_method_understand4(sel, cos_object_id(_1), cos_object_id(_2),
-                                        cos_object_id(_3), cos_object_id(_4))
-            ? True : False );
-endmethod
-
-defmethod(OBJ, gunderstandMessage5, Object, Object, Object, Object, Object, (SEL)sel)
- retmethod( cos_method_understand5(sel, cos_object_id(_1), cos_object_id(_2),
-                                        cos_object_id(_3), cos_object_id(_4),
-                                        cos_object_id(_5))
-            ? True : False );
-endmethod
-
-// ----- unrecognized
-
-defmethod(void, gunrecognizedMessage1, Object)
-  OBJ obj[1]; obj[0]=_1;
-  char buf[128];
-
-  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
-endmethod
-
-defmethod(void, gunrecognizedMessage2, Object, Object)
-  OBJ obj[2]; obj[0]=_1, obj[1]=_2;
-  char buf[128];
-
-  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
-endmethod
-
-defmethod(void, gunrecognizedMessage3, Object, Object, Object)
-  OBJ obj[3]; obj[0]=_1, obj[1]=_2, obj[2]=_3;
-  char buf[128];
-
-  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
-endmethod
-
-defmethod(void, gunrecognizedMessage4, Object, Object, Object, Object)
-  OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4;
-  char buf[128];
-
-  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
-endmethod
-
-defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Object)
-  OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
-  char buf[128];
-
-  THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
-endmethod
 

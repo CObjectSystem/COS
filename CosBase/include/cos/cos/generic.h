@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.38 2010/01/31 12:03:53 ldeniau Exp $
+ | $Id: generic.h,v 1.39 2010/02/20 23:38:51 ldeniau Exp $
  |
 */
 
@@ -433,7 +433,7 @@ static struct cos_generic_arginfo COS_ARG_INFO(NAME)[] = { \
 \
 struct Generic COS_GEN_NAME(NAME) = { \
   /* encode rank into id (temporally) and tag into rc */ \
-  {{ (U32)C << COS_ID_RNKSHT, cos_tag_generic }, \
+  {{{ (U32)C << COS_ID_RNKSHT, cos_tag_generic }}, \
   /* id must be zero (init) */ \
    0 }, \
   /* location */ \

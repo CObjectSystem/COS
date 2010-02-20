@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.18 2010/01/31 12:03:53 ldeniau Exp $
+ | $Id: class.h,v 1.19 2010/02/20 23:38:51 ldeniau Exp $
  |
 */
 
@@ -175,7 +175,7 @@
 #define COS_CLS_DEF_R(NAME) \
         COS_CLS_DEF_DCL(NAME); \
         enum { COS_CLS_RANK(NAME) = 0, \
-               COS_MCL_RANK(NAME) = 3, /* 1+rankOf Class */ \
+               COS_MCL_RANK(NAME) = 4, /* 1+rankOf Class */ \
                COS_PCL_RANK(NAME) = 1+COS_MCL_RANK(NAME) }; \
         enum { COS_CLS_MSPE(NAME) = \
                  COS_PP_IF(COS_TOK_ISNIL(NAME))(1,0), \
@@ -243,7 +243,7 @@ COS_CLS_COMPMAK(NAME,&COS_CLS_NAME(SUPER),&COS_MCL_NAME(SUPER))
 #define COS_CLS_COMPMAK(NAME,SUPER_REF,META_SUPER_REF) \
 struct Class COS_MCL_NAME(NAME) = { /* metaclass */ \
   /* Object id must be zero (init) => encode tag into rc */ \
-  {{ 0, cos_tag_mclass }, \
+  {{{ 0, cos_tag_mclass }}, \
   /* encode rank into id */ \
    (U32)COS_MCL_RANK(NAME) << COS_ID_RNKSHT }, \
   /* location */ \
@@ -261,7 +261,7 @@ struct Class COS_MCL_NAME(NAME) = { /* metaclass */ \
 }; \
 struct Class COS_PCL_NAME(NAME) = { /* property metaclass */ \
   /* Object id must be zero (init) => encode tag into rc */ \
-  {{ 0, cos_tag_pclass }, \
+  {{{ 0, cos_tag_pclass }}, \
   /* encode rank into id */ \
    (U32)COS_PCL_RANK(NAME) << COS_ID_RNKSHT }, \
   /* location */ \
@@ -279,7 +279,7 @@ struct Class COS_PCL_NAME(NAME) = { /* property metaclass */ \
 }; \
 struct Class COS_CLS_NAME(NAME) = { /* class */ \
   /* Object id must be zero (init) => encode tag into rc */ \
-  {{ 0, cos_tag_class }, \
+  {{{ 0, cos_tag_class }}, \
   /* encode rank into id */ \
    (U32)COS_CLS_RANK(NAME) << COS_ID_RNKSHT }, \
   /* location */ \

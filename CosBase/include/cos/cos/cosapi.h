@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.42 2010/01/31 12:03:53 ldeniau Exp $
+ | $Id: cosapi.h,v 1.43 2010/02/20 23:38:51 ldeniau Exp $
  |
 */
 
@@ -187,7 +187,7 @@ U32   cos_mem_nfree  (void); // number of free  modulo 2^32
 
 // COS symbols init
 void cos_symbol_init(void);
-void cos_symbol_register(struct Object**, STR tag);
+void cos_symbol_register(struct Any**, STR tag);
 
 // next-method
 void cos_method_nextClear(void);
@@ -332,14 +332,14 @@ cos_ident(OBJ obj)
 static COS_ALWAYS_INLINE U32
 cos_object_id(OBJ obj)
 {
-  return COS_STATIC_CAST(struct Object*, obj)->_id;
+  return COS_STATIC_CAST(struct Any*, obj)->_id;
   COS_UNUSED(cos_object_id);
 }
 
 static COS_ALWAYS_INLINE OBJ
 cos_object_setId(OBJ obj, U32 id)
 {
-  COS_STATIC_CAST(struct Object*, obj)->_id = id;
+  COS_STATIC_CAST(struct Any*, obj)->_id = id;
   return obj;
   COS_UNUSED(cos_object_setId);
 }
@@ -347,14 +347,14 @@ cos_object_setId(OBJ obj, U32 id)
 static COS_ALWAYS_INLINE I32
 cos_object_rc(OBJ obj)
 {
-  return COS_STATIC_CAST(struct Object*, obj)->_rc;
+  return COS_STATIC_CAST(struct Any*, obj)->_rc;
   COS_UNUSED(cos_object_rc);
 }
 
 static COS_ALWAYS_INLINE OBJ
 cos_object_setRc(OBJ obj, I32 rc)
 {
-  COS_STATIC_CAST(struct Object*, obj)->_rc = rc;
+  COS_STATIC_CAST(struct Any*, obj)->_rc = rc;
   return obj;
   COS_UNUSED(cos_object_setRc);
 }
@@ -362,7 +362,7 @@ cos_object_setRc(OBJ obj, I32 rc)
 static COS_ALWAYS_INLINE OBJ
 cos_object_incRc(OBJ obj)
 {
-  COS_STATIC_CAST(struct Object*, obj)->_rc++;
+  COS_STATIC_CAST(struct Any*, obj)->_rc++;
   return obj;
   COS_UNUSED(cos_object_incRc);
 }
@@ -370,7 +370,7 @@ cos_object_incRc(OBJ obj)
 static COS_ALWAYS_INLINE OBJ
 cos_object_decRc(OBJ obj)
 {
-  COS_STATIC_CAST(struct Object*, obj)->_rc--;
+  COS_STATIC_CAST(struct Any*, obj)->_rc--;
   return obj;
   COS_UNUSED(cos_object_decRc);
 }

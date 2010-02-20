@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.48 2010/01/11 13:41:21 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.49 2010/02/20 23:38:51 ldeniau Exp $
  |
 */
 
@@ -189,9 +189,9 @@ push(OBJ obj)
   return *pool->top++ = obj;
 }
 
-// ----- Object ownership
+// ----- Any ownership
 
-defmethod(OBJ, gretain, Object)
+defmethod(OBJ, gretain, Any)
   if (cos_object_rc(_1) >= COS_RC_UNIT)
     retmethod( cos_object_incRc(_1) );
 
@@ -205,8 +205,8 @@ defmethod(OBJ, gretain, Object)
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
-defalias (OBJ, (gautoRelease)gautoDelete, Object);
-defmethod(OBJ,  gautoRelease            , Object)
+defalias (OBJ, (gautoRelease)gautoDelete, Any);
+defmethod(OBJ,  gautoRelease            , Any)
   if (cos_object_rc(_1) >= COS_RC_UNIT)
     retmethod(push(_1));
 
@@ -220,8 +220,8 @@ defmethod(OBJ,  gautoRelease            , Object)
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
-defalias (void, (grelease)gdelete, Object);
-defmethod(void,  grelease        , Object)
+defalias (void, (grelease)gdelete, Any);
+defmethod(void,  grelease        , Any)
   if (cos_object_rc(_1) > COS_RC_UNIT)
     cos_object_decRc(_1);
   

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: alias.h,v 1.6 2010/01/31 12:03:53 ldeniau Exp $
+ | $Id: alias.h,v 1.7 2010/02/20 23:38:51 ldeniau Exp $
  |
 */
 
@@ -127,7 +127,7 @@ COS_PP_SEP(COS_PP_MAP(CS,COS_ALS_CLS)) \
 extern struct COS_PP_CAT(Method,C) COS_MTH_NAME(NAME,CS); \
 struct COS_PP_CAT(Method,C) COS_MTH_NAME(ALIAS,CS) = { \
    /* encode tag into rc */ \
-  {{ 0, cos_tag_alias }, \
+  {{{ 0, cos_tag_alias }}, \
    /* location */ \
    __FILE__, __LINE__, \
    /* reference to generic */ \

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.37 2010/01/31 12:03:53 ldeniau Exp $
+ | $Id: method.h,v 1.38 2010/02/20 23:38:51 ldeniau Exp $
  |
 */
 
@@ -255,7 +255,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
  \
 struct COS_PP_CAT(Method,C) COS_MTH_MNAME(COS_MTH_NAME(NAME,CS),TAG,T) = { \
    /* encode tag into rc */ \
-  {{ 0, cos_tag_method }, \
+  {{{ 0, cos_tag_method }}, \
    /* location */ \
    __FILE__, __LINE__, \
    /* reference to generic */ \

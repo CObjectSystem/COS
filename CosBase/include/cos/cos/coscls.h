@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.14 2010/01/31 12:03:53 ldeniau Exp $
+ | $Id: coscls.h,v 1.15 2010/02/20 23:38:51 ldeniau Exp $
  |
 */
 
@@ -55,11 +55,18 @@
      -> means 'subclass of'                          Class
      => means 'instance of'                            ^
                                                        |
-                                                  o---------o
-                NIL                   +---------->| mObject |=========>v
-                 ^                    |           o---------o          v
+                                                   o------o
+                NIL                   +----------->| mAny |===========>v
+                 ^                    |            o------o            v
                  |                    |                ^               v
-             o--------o         o----------o           |               v
+              o-----o             o-------o            |               v
+              | Any |============>| pmAny |============|==========>v   v
+              o-----o             o-------o            |           v   v
+                 ^                                o---------o      v   v
+                 |                    +---------->| mObject |======v==>v
+                 |                    |           o---------o      v   v
+                 |                    |                ^           v   v
+             o--------o         o----------o           |           v   v
              | Object |========>| pmObject |===========|==========>v   v
              o--------o         o----------o           |           v   v
                  ^                               o-----------o     v   v
@@ -115,7 +122,11 @@
 
 */
 
-COS_CLS_DEF(Object,_)
+COS_CLS_DEF(Any,_)
+COS_CLS_END
+
+COS_CLS_DEF(Object,Any)
+// root of most objects
 COS_CLS_END
 
 COS_CLS_DEF(Behavior,Object)

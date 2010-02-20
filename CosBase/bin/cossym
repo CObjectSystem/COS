@@ -30,7 +30,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: cossym,v 1.5 2010/01/31 12:03:51 ldeniau Exp $
+# | $Id: cossym,v 1.6 2010/02/20 23:38:50 ldeniau Exp $
 # |
 #
 
@@ -336,22 +336,22 @@ END-OF-TEXT
 
 # output extern declarations
 for s in $sym ; do
-    echo "extern struct Object $s;"       >> $out
+    echo "extern struct Any $s;"       >> $out
 done
-echo                                      >> $out
+echo                                   >> $out
 
 # output table definition
-echo 'static struct Object* symtbl[] = {' >> $out
+echo 'static struct Any* symtbl[] = {' >> $out
 
 for s in $sym ; do
-    echo "  &$s,"                         >> $out
+    echo "  &$s,"                      >> $out
 done
 
 cat >> $out <<END-OF-TEXT
   0
 };
 
-void cos_symbol_register(struct Object**, const char*);
+void cos_symbol_register(struct Any**, const char*);
 
 END-OF-TEXT
 
