@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: alias.h,v 1.7 2010/02/20 23:38:51 ldeniau Exp $
+ | $Id: alias.h,v 1.8 2010/02/21 15:54:14 ldeniau Exp $
  |
 */
 
@@ -139,7 +139,7 @@ struct COS_PP_CAT(Method,C) COS_MTH_NAME(ALIAS,CS) = { \
    /* reference to function */ \
    0, \
    /* hack: reference to method aliased */ \
-   { COS_STATIC_CAST(struct Class*, (void*)&COS_MTH_NAME(NAME,CS)) \
+   { (struct Class*)(void*)&COS_MTH_NAME(NAME,CS) \
      COS_PP_IF(COS_PP_LT(C,2))(, \
        ,COS_PP_SEQ(COS_PP_MAP(COS_PP_DROP(1,CS),COS_CLS_REF_1))) } \
 }

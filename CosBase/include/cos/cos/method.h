@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.39 2010/02/21 14:56:26 ldeniau Exp $
+ | $Id: method.h,v 1.40 2010/02/21 15:54:14 ldeniau Exp $
  |
 */
 
@@ -350,7 +350,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 
 // selfs
 #define COS_MTH_SLF_DEF(C,T) \
-  typedef struct C T;
+  typedef COS_RCV_TYPE(C) T;
 
 // argument initialization
 #define COS_MTH_ARG(a) \
@@ -378,9 +378,8 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 
 // method_retval
 #define COS_MTH_RETVAL(T) \
-    COS_PP_IF(COS_PP_NOARG(T)) ( (*(_ret_t)_ret), \
-      COS_PP_IF(COS_PP_GT(COS_LOGMSG, COS_LOGMSG_DEBUG)) ( \
-        ((struct T*)*(_ret_t)_ret), COS_OBJECT_EDYNCAST(T, *(_ret_t)_ret)) )
+  COS_PP_IF(COS_PP_NOARG(T)) \
+    ( (*(_ret_t)_ret), COS_STATIC_DOCAST(T, *(_ret_t)_ret) )
 
 // next_method
 #define COS_MTH_NXT(...) \

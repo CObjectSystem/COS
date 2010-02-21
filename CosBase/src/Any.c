@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.19 2010/02/21 14:56:27 ldeniau Exp $
+ | $Id: Any.c,v 1.20 2010/02/21 15:54:15 ldeniau Exp $
  |
 */
 
@@ -57,26 +57,26 @@ endmethod
 
 // ----- allocator
 
-static COS_ALWAYS_INLINE void*
-object_alloc(OBJ _cls, size_t extra)
-{
-  struct Class *cls = STATIC_CAST(struct Class*, _cls);
-  struct Any   *obj = malloc(cls->isz + extra);
+defmethod(OBJ, galloc, mAny)
+  struct Any *obj = malloc(self->isz);
 
   if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
 
-  obj->_id = cos_class_id(cls);
+  obj->_id = cos_class_id(self);
   obj->_rc = COS_RC_UNIT;
 
-  return obj;
-}
-
-defmethod(OBJ, galloc, mAny)
-  retmethod( object_alloc(_1, 0) );
+  retmethod( (OBJ)obj );
 endmethod
 
 defmethod(OBJ, gallocWithSize, mAny, (size_t)extra)
-  retmethod( object_alloc(_1, extra) );
+  struct Any *obj = malloc(self->isz + extra);
+
+  if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
+
+  obj->_id = cos_class_id(self);
+  obj->_rc = COS_RC_UNIT;
+
+  retmethod( (OBJ)obj );
 endmethod
 
 // ----- deallocator

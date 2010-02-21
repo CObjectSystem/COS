@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.19 2010/02/20 23:38:51 ldeniau Exp $
+ | $Id: class.h,v 1.20 2010/02/21 15:54:14 ldeniau Exp $
  |
 */
 
@@ -204,8 +204,11 @@
         extern struct Class COS_CLS_NAME(NAME); \
         extern struct Class COS_MCL_NAME(NAME); \
         extern struct Class COS_PCL_NAME(NAME); \
-        struct COS_PP_CAT( m,NAME); /* ADT */ \
-        struct COS_PP_CAT(pm,NAME)  /* ADT */
+        typedef struct NAME  COS_RCV_TYPE(              NAME) ; \
+        typedef struct Class COS_RCV_TYPE(COS_PP_CAT( m,NAME)); \
+        typedef struct Class COS_RCV_TYPE(COS_PP_CAT(pm,NAME)); \
+        struct COS_PP_CAT( m,NAME); \
+        struct COS_PP_CAT(pm,NAME)
 
 #define COS_CLS_END };
 
