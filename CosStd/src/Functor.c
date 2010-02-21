@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.25 2010/01/12 15:25:19 ldeniau Exp $
+ | $Id: Functor.c,v 1.26 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
@@ -53,14 +53,8 @@ endmethod
 
 // ----- class cluster root classes
 
-makclass(Expression);
-
 makclass(Functor    , Expression);
 makclass(PlaceHolder, Expression);
-
-// ----- special root class
-
-makclass(ExpressionSurrogate, _);
 
 // ----- placeholder
 

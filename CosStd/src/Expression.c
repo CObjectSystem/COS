@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS String - strings IO
+ | COS Expression (root class)
  |
  o---------------------------------------------------------------------o
  |
@@ -22,42 +22,31 @@
  | the License, or (at your option) any later version.
  |
  | The C Object System is distributed in the hope that it will be
- | useful, but WITHOUT ANY WARRANTY; without even the implied wstranty
+ | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
  | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  |
  | See <http://www.gnu.org/licenses> for more details.
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_io.c,v 1.9 2010/02/21 00:46:24 ldeniau Exp $
+ | $Id: Expression.c,v 1.1 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
-#include <cos/Stream.h>
-#include <cos/String.h>
+#include <cos/Functor.h>
+#include <cos/gen/object.h>
 
-#include <cos/gen/collection.h>
-#include <cos/gen/stream.h>
+// ----- root of most common classes
 
-// ----- get
+makclass(Expression, Any);
 
-defmethod(OBJ, gget, InputStream, StringDyn)
-  U8 buf[4096];
-  size_t n, sum = 0;
-  
-  do {
-    n = ggetLine(_1, buf, sizeof buf);
-    gappend(_2, aStringRef(buf, n-1));
-    sum += n;
-  } while (n && buf[n-1] != '\n');
+// ----- new, clone
 
-  retmethod(sum ? _2 : Nil);
+defmethod(OBJ, gclone, Expression)
+  retmethod( ginitWith(galloc(gclass(_1)),_1) );
 endmethod
 
-// ----- put
-
-defmethod(OBJ, gput, OutputStream, String)
-  U32 n = gputData(_1, self2->value, self2->size);
-  retmethod(n == self2->size ? _1 : Nil);
+defmethod(OBJ, gnewWith, mExpression, Expression)
+  retmethod( ginitWith(galloc(_1),_2) );
 endmethod
 

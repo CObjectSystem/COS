@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.15 2010/01/12 18:56:25 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.16 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
@@ -124,9 +124,6 @@ Functor_setMask(U32 *msk, U32 i, OBJ *arg)
     return;  
   }
 
-  // remove expression surrogate before processing
-  removeExprSurr(arg);
-
   // environment index (placeholder)
   if (cos_object_isa(*arg, classref(FunArg))) {
     setIdx(msk, i);
@@ -145,8 +142,6 @@ Functor_setMask(U32 *msk, U32 i, OBJ *arg)
   if (cos_object_isa(*arg, classref(FunLzy))) {
     OBJ var = Nil;
     U32 cnt = getFunPar(*arg, &var);
-
-    removeExprSurr(&var);
 
     if (cos_object_isKindOf(var, classref(PlaceHolder))) {
       setFunPar(*arg, var, cnt);

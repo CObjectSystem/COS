@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.18 2010/02/02 16:27:42 ldeniau Exp $
+ | $Id: File.c,v 1.19 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
@@ -150,7 +150,7 @@ endmethod
 static struct Class*
 mode2class(STR str, U32 *mode, STR file, int line)
 {
-  enum { INVALID=0, READ=1, WRITE=2, BOTH=4, BINARY=8, APPEND=16 };
+  enum { INVALID=0, READ=1, WRITE=2, BOTH=4, BINARY=8, TEXT=16, APPEND=32 };
   struct Class *cls = 0;
   U32 m = 0;
 
@@ -158,6 +158,7 @@ mode2class(STR str, U32 *mode, STR file, int line)
     switch (*str++) {
     case 'a': m |= APPEND; break;
     case 'b': m |= BINARY; break;
+    case 't': m |= TEXT;   break;
     case 'r': m |= READ;   break;
     case 'w': m |= WRITE;  break;
     case '+': m |= BOTH;   break;

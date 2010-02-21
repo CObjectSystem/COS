@@ -29,40 +29,21 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_str.c,v 1.2 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: String_str.c,v 1.3 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
 #include <cos/String.h>
 
-// #include <cos/gen/collection.h>
+#include <cos/gen/collection.h>
+#include <cos/gen/object.h>
 #include <cos/gen/stream.h>
-#include <cos/gen/value.h>
 
 defmethod(OBJ, gget, String, pmString)
-  retmethod(_1);
+  retmethod(gclone(_1));
 endmethod
 
-#if 0
-defmethod(OBJ, gget, String, StringDyn)
-  gappend(_2,_1);
-  retmethod(True);
+defmethod(OBJ, gget, String, Class)
+  forward_message(_1, gautoDelete(gnew(_2)));
 endmethod
-
-defmethod(OBJ, gget, StringDyn, String)
-  U32 size = self2->size;
-
-  if (!size) retmethod(True);
-
-  struct StringFix *strf = &self->StringFix;
-  struct String    *str  = &strf->String;
-
-  if (str->size >= size) {
-    memcpy(self2->value, str->value, size * sizeof *self2->value);
-    str->value += size, str->size -= size;
-    retmethod(True);
-  }
-  retmethod(False);
-endmethod
-#endif
 

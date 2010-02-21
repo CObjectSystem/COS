@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.7 2010/02/02 16:27:42 ldeniau Exp $
+ | $Id: Stream.c,v 1.8 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
@@ -429,7 +429,7 @@ endmethod
 defmethod(OBJ, ggetLines, InputStream)
   useclass(Array, String);
   
-  OBJ fun = gget(_1, aExpr(String));  // line generator
+  OBJ fun = gget(_1, aLzy(String));  // line generator
   OBJ str = gnewWith(Array, fun);     // lazy array
 
   retmethod( gautoDelete(str) );
@@ -438,7 +438,7 @@ endmethod
 defmethod(OBJ, ggetContent, InputStream)
   useclass(String);
   
-  OBJ fun = gget(_1, aExpr(String));  // line generator
+  OBJ fun = gget(_1, aLzy(String));  // line generator
   OBJ str = gnewWith(String, fun);    // lazy string
 
   retmethod( gautoDelete(str) );
@@ -462,4 +462,19 @@ defmethod(OBJ, gmapWhile, Functor, InputStream)
   retmethod(gadjust(rec));
 endmethod
 
+// high-level object primitives (from class)
+
+defmethod(OBJ, gget, InputStream, Class)
+  forward_message(_1, gautoDelete(gnew(_2)));
+endmethod
+
+defmethod(OBJ, gput, OutputStream, Class)
+  retmethod(gputStr(_1, self2->str) > 0 ? _1 : Nil);
+endmethod
+
+defmethod(OBJ, gputLn, OutputStream, Object)
+  BOOL res = gput(_1,_2) == Nil || gputChr(_1, '\n') == EndOfStream;
+  
+  retmethod(res ? Nil : _1);
+endmethod
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.21 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.22 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
@@ -73,7 +73,7 @@ STATIC_ASSERT(method5_to_message5_compatibility,
 
 #define atMthExprN(N,S,A,...) \
   COS_PP_CAT(MthExpr_init,N)( &(struct COS_PP_CAT(MthExpr,N)) { \
-    {{{ cos_object_auto(COS_PP_CAT(MthExpr,N)) }, 0 }, S }, A, \
+    {{ cos_object_auto(COS_PP_CAT(MthExpr,N)), 0 }, S }, A, \
     {__VA_ARGS__}, \
     { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
     { COS_PP_DUP(COS_PP_SUB(8,N), 0,) 0 }, \
@@ -692,271 +692,199 @@ endmethod
 
 // ---- unrecognizedMessage (Expression ctors)
 
+#define EX Expression
+
 // ---- 1
 
-defmethod(void, gunrecognizedMessage1, Expression)
+defmethod(void, gunrecognizedMessage1, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1));
 endmethod
 
 // ---- 2
 
-defmethod(void, gunrecognizedMessage2, Expression, Object)
+defmethod(void, gunrecognizedMessage2, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2));
 endmethod
 
-defmethod(void, gunrecognizedMessage2, Object, Expression)
+defmethod(void, gunrecognizedMessage2, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2));
 endmethod
 
-// ---- 3
-
-defmethod(void, gunrecognizedMessage3, Expression, Object, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
-endmethod
-
-defmethod(void, gunrecognizedMessage3, Object, Expression, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
-endmethod
-
-defmethod(void, gunrecognizedMessage3, Object, Object, Expression)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
-endmethod
-
-// ---- 4
-
-defmethod(void, gunrecognizedMessage4, Expression, Object, Object, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
-endmethod
-
-defmethod(void, gunrecognizedMessage4, Object, Expression, Object, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
-endmethod
-
-defmethod(void, gunrecognizedMessage4, Object, Object, Expression, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
-endmethod
-
-defmethod(void, gunrecognizedMessage4, Object, Object, Object, Expression)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
-endmethod
-
-// ---- 5
-
-defmethod(void, gunrecognizedMessage5, Expression, Object, Object, Object, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
-endmethod
-
-defmethod(void, gunrecognizedMessage5, Object, Expression, Object, Object, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
-endmethod
-
-defmethod(void, gunrecognizedMessage5, Object, Object, Expression, Object, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
-endmethod
-
-defmethod(void, gunrecognizedMessage5, Object, Object, Object, Expression, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
-endmethod
-
-defmethod(void, gunrecognizedMessage5, Object, Object, Object, Object, Expression)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
-endmethod
-
-// ---- unrecognizedMessage (ExpressionSurrogate ctors)
-
-#define ES ExpressionSurrogate
-
-// ---- 1
-
-defmethod(void, gunrecognizedMessage1, ES)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1));
-endmethod
-
-// ---- 2
-
-defmethod(void, gunrecognizedMessage2, ES, Object)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2));
-endmethod
-
-defmethod(void, gunrecognizedMessage2, Object, ES)
-  *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2));
-endmethod
-
-defmethod(void, gunrecognizedMessage2, ES, ES)
+defmethod(void, gunrecognizedMessage2, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2));
 endmethod
 
 // ---- 3
 
-defmethod(void, gunrecognizedMessage3, ES, Object, Object)
+defmethod(void, gunrecognizedMessage3, EX, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
 endmethod
 
-defmethod(void, gunrecognizedMessage3, Object, ES, Object)
+defmethod(void, gunrecognizedMessage3, Object, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
 endmethod
 
-defmethod(void, gunrecognizedMessage3, ES, ES, Object)
+defmethod(void, gunrecognizedMessage3, EX, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
 endmethod
 
-defmethod(void, gunrecognizedMessage3, ES, Object, ES)
+defmethod(void, gunrecognizedMessage3, EX, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
 endmethod
 
-defmethod(void, gunrecognizedMessage3, Object, ES, ES)
+defmethod(void, gunrecognizedMessage3, Object, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
 endmethod
 
-defmethod(void, gunrecognizedMessage3, ES, ES, ES)
+defmethod(void, gunrecognizedMessage3, EX, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3));
 endmethod
 
 // ---- 4
 
-defmethod(void, gunrecognizedMessage4, ES, Object, Object, Object)
+defmethod(void, gunrecognizedMessage4, EX, Object, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, Object, ES, Object, Object)
+defmethod(void, gunrecognizedMessage4, Object, EX, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, ES, ES, Object, Object)
+defmethod(void, gunrecognizedMessage4, EX, EX, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, ES, Object, ES, Object)
+defmethod(void, gunrecognizedMessage4, EX, Object, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, Object, ES, ES, Object)
+defmethod(void, gunrecognizedMessage4, Object, EX, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, ES, ES, ES, Object)
+defmethod(void, gunrecognizedMessage4, EX, EX, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, ES, Object, Object, ES)
+defmethod(void, gunrecognizedMessage4, EX, Object, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, Object, ES, Object, ES)
+defmethod(void, gunrecognizedMessage4, Object, EX, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, ES, ES, Object, ES)
+defmethod(void, gunrecognizedMessage4, EX, EX, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, ES, Object, ES, ES)
+defmethod(void, gunrecognizedMessage4, EX, Object, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, Object, ES, ES, ES)
+defmethod(void, gunrecognizedMessage4, Object, EX, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
-defmethod(void, gunrecognizedMessage4, ES, ES, ES, ES)
+defmethod(void, gunrecognizedMessage4, EX, EX, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4));
 endmethod
 
 // ---- 5
 
-defmethod(void, gunrecognizedMessage5, ES, Object, Object, Object, Object)
+defmethod(void, gunrecognizedMessage5, EX, Object, Object, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Object, ES, Object, Object, Object)
+defmethod(void, gunrecognizedMessage5, Object, EX, Object, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, ES, Object, Object, Object)
+defmethod(void, gunrecognizedMessage5, EX, EX, Object, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, Object, ES, Object, Object)
+defmethod(void, gunrecognizedMessage5, EX, Object, EX, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Object, ES, ES, Object, Object)
+defmethod(void, gunrecognizedMessage5, Object, EX, EX, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, ES, ES, Object, Object)
+defmethod(void, gunrecognizedMessage5, EX, EX, EX, Object, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, Object, Object, ES, Object)
+defmethod(void, gunrecognizedMessage5, EX, Object, Object, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Object, ES, Object, ES, Object)
+defmethod(void, gunrecognizedMessage5, Object, EX, Object, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, ES, Object, ES, Object)
+defmethod(void, gunrecognizedMessage5, EX, EX, Object, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, Object, ES, ES, Object)
+defmethod(void, gunrecognizedMessage5, EX, Object, EX, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Object, ES, ES, ES, Object)
+defmethod(void, gunrecognizedMessage5, Object, EX, EX, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, ES, ES, ES, Object)
+defmethod(void, gunrecognizedMessage5, EX, EX, EX, EX, Object)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, Object, Object, Object, ES)
+defmethod(void, gunrecognizedMessage5, EX, Object, Object, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Object, ES, Object, Object, ES)
+defmethod(void, gunrecognizedMessage5, Object, EX, Object, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, ES, Object, Object, ES)
+defmethod(void, gunrecognizedMessage5, EX, EX, Object, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, Object, ES, Object, ES)
+defmethod(void, gunrecognizedMessage5, EX, Object, EX, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Object, ES, ES, Object, ES)
+defmethod(void, gunrecognizedMessage5, Object, EX, EX, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, ES, ES, Object, ES)
+defmethod(void, gunrecognizedMessage5, EX, EX, EX, Object, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, Object, Object, ES, ES)
+defmethod(void, gunrecognizedMessage5, EX, Object, Object, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Object, ES, Object, ES, ES)
+defmethod(void, gunrecognizedMessage5, Object, EX, Object, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, ES, Object, ES, ES)
+defmethod(void, gunrecognizedMessage5, EX, EX, Object, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, Object, ES, ES, ES)
+defmethod(void, gunrecognizedMessage5, EX, Object, EX, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, Object, ES, ES, ES, ES)
+defmethod(void, gunrecognizedMessage5, Object, EX, EX, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 
-defmethod(void, gunrecognizedMessage5, ES, ES, ES, ES, ES)
+defmethod(void, gunrecognizedMessage5, EX, EX, EX, EX, EX)
   *(OBJ*)_ret = gautoDelete(aMthExpr(_sel, _arg, _1, _2, _3, _4, _5));
 endmethod
 

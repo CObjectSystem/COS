@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.8 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: String_vw.c,v 1.9 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
@@ -91,17 +91,18 @@ defmethod(OBJ,  ginitWith2          , mView, String, Range) // string view
 endmethod
 
 defmethod(OBJ, ginitWith2, StringView, String, Slice)
-  PRE POST BODY
-    PRT(_1);
-    test_assert( !cos_object_isKindOf(_2, classref(StringDyn)),
-                 "string views accept only non-dynamic string" );
+  PRT(_1);
+  self->ref = 0;
+  
+  test_assert( !cos_object_isKindOf(_2, classref(StringDyn)),
+               "string views accept only non-dynamic string" );
 
-    OBJ ref = gretain(_2); PRT(ref);
-    
-    StringView_init(self, STATIC_CAST(struct String*, ref), self3);
+  OBJ ref = gretain(_2); PRT(ref);
+  
+  StringView_init(self, STATIC_CAST(struct String*, ref), self3);
 
-    UNPRT(_1);
-    retmethod(_1);
+  UNPRT(_1);
+  retmethod(_1);
 endmethod
 
 // ----- destructor

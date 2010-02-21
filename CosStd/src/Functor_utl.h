@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.14 2010/01/15 23:50:13 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.15 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
@@ -99,21 +99,6 @@ static COS_ALWAYS_INLINE BOOL
 isVar(U32 msk, U32 idx)
 {
   return msk & (4 << 3*idx);
-}
-
-// ----- expression surrogate
-
-static COS_ALWAYS_INLINE OBJ
-getFunExpr(OBJ arg) // unsafe
-{
-  return STATIC_CAST(struct ExpressionSurrogate*, arg)->expr;
-}
-
-static COS_ALWAYS_INLINE void
-removeExprSurr(OBJ *arg)
-{
-  while (cos_object_isa(*arg, classref(ExpressionSurrogate)))
-    *arg = getFunExpr(*arg);
 }
 
 // ----- "array-like" environment

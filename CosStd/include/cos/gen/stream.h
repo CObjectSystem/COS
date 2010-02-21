@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stream.h,v 1.9 2010/02/02 16:27:42 ldeniau Exp $
+ | $Id: stream.h,v 1.10 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
@@ -87,7 +87,8 @@ defgeneric(OBJ, ggetLines  , _1); // (return a lazy array of strings or Nil on e
 defgeneric(OBJ, ggetContent, _1); // (return a lazy string or Nil on error)
 
 // high-level object primitives (provided by non-streams)
-defgeneric(OBJ, gget, _1, _2);  // (return object or Nil on error)
-defgeneric(OBJ, gput, _1, _2);  // (return stream or Nil on error)
+defgeneric(OBJ, gget  , _1, _2);  // (return object or Nil on error)
+defgeneric(OBJ, gput  , _1, _2);  // (return stream or Nil on error)
+defgeneric(OBJ, gputLn, _1, _2);  // (return stream or Nil on error)
 
 #endif // COS_GEN_STREAM_H

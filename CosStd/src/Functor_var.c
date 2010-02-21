@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_var.c,v 1.3 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Functor_var.c,v 1.4 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
@@ -74,7 +74,6 @@ defmethod(OBJ, gclone, FunLzy)
   OBJ _lzy = galloc(FunLzy);
   struct FunLzy *lzy = STATIC_CAST(struct FunLzy*, _lzy);
 
-  removeExprSurr(&self->fun);
   lzy->fun = gretain(self->fun);
   lzy->cnt = self->cnt;
 

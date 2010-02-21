@@ -32,15 +32,21 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.34 2010/01/12 19:13:04 ldeniau Exp $
+ | $Id: Functor.h,v 1.35 2010/02/21 00:46:24 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-// ----- Functor/Expression class cluster
+/* NOTE-USER: Functor/Expression (root class)
+   Expression makes the difference between
+   PlaceHolder (variables) and Functor (functions).
+   An important point is that Expressions are not Objects.
+*/
 
-defclass(Expression)
+// ----- Expression
+
+defclass(Expression, Any)
 endclass
 
 defclass(PlaceHolder, Expression)
@@ -50,6 +56,8 @@ defclass(Functor, Expression)
   U32 msk;
 endclass
 
+// ----- Functor
+
 defclass(FunExpr, Functor)
   STR str;
 endclass
@@ -58,7 +66,7 @@ defclass(MthExpr, Functor)
   SEL sel;
 endclass
 
-// ----- Functor placeholder
+// ----- Placeholder
 
 defclass(FunArg, PlaceHolder)
   U32 idx;
@@ -202,19 +210,13 @@ defclass(IterateFun, Functor)
   FUN1 fct;
 endclass
 
-// ----- Special Expression Surrogate
-
-defclass(ExpressionSurrogate,_)
-  OBJ expr;
-endclass
-
 // ----- automatic constructor
 
-#define aFunctor(...)              ( (OBJ)atFunctor   (__VA_ARGS__) )
-#define aFunArg(A)      aExpression( (OBJ)atFunArg    (A)           )
-#define aFunVar(V)      aExpression( (OBJ)atFunVar    (V)           )
-#define aFunLzy(E)      aExpression( (OBJ)atFunLzy    (E)           )
-#define aFunLzyN(N,E)   aExpression( (OBJ)atFunLzyN   (N,E)         )
+#define aFunctor(...)   ( (OBJ)atFunctor   (__VA_ARGS__) )
+#define aFunArg(A)      ( (OBJ)atFunArg    (A)           )
+#define aFunVar(V)      ( (OBJ)atFunVar    (V)           )
+#define aFunLzy(E)      ( (OBJ)atFunLzy    (E)           )
+#define aFunLzyN(N,E)   ( (OBJ)atFunLzyN   (N,E)         )
 
 // --- shortcuts
 
@@ -230,7 +232,6 @@ endclass
 #define aLzy5(E)    aFunLzyN(5,E)
 #define aLzyN(N,E)  aFunLzyN(N,E)
 
-#define aExpr(E)    aExpression(E)
 #endif
 
 // --- placeholders
@@ -259,35 +260,29 @@ endclass
 
 #define atFunctor0(F) \
   ( (struct Functor*)&(struct Function0) { \
-    {{{ cos_object_auto(Function0) }, 0 }, COS_PP_STR(F) }, F })
+    {{ cos_object_auto(Function0), 0 }, COS_PP_STR(F) }, F })
 
 #define atFunctorF(F,...) \
   atFunctorN(COS_PP_NARG(__VA_ARGS__), F, __VA_ARGS__)
 
 #define atFunctorN(N,F,...) \
   COS_PP_CAT(FunExpr_init,N)( &(struct COS_PP_CAT(FunExpr,N)) { \
-    {{{ cos_object_auto(COS_PP_CAT(FunExpr,N)) }, 0 }, COS_PP_STR(F) }, \
+    {{ cos_object_auto(COS_PP_CAT(FunExpr,N)), 0 }, COS_PP_STR(F) }, \
     F, {__VA_ARGS__} })
 
 // ----- PlaceHolders
 
 #define atFunArg(IDX) \
-  ( &(struct FunArg){ {{ cos_object_auto(FunArg) }}, (IDX) } )
+  ( &(struct FunArg){ { cos_object_auto(FunArg) }, (IDX) } )
 
 #define atFunVar(VAR) \
-  ( &(struct FunVar){ {{ cos_object_auto(FunVar) }}, (VAR) } )
+  ( &(struct FunVar){ { cos_object_auto(FunVar) }, (VAR) } )
 
 #define atFunLzy(FUN) \
         atFunLzyN(1,FUN)
 
 #define atFunLzyN(N,FUN) \
-  ( &(struct FunLzy){ {{ cos_object_auto(FunLzy) }}, (FUN), (N) } )
-
-// ----- Expression surrogate
-
-#define aExpression(EXPR) \
-  ((OBJ)&(struct ExpressionSurrogate){ \
-    COS_CLS_NAME(ExpressionSurrogate).Behavior.id, COS_RC_AUTO, (EXPR) })
+  ( &(struct FunLzy){ { cos_object_auto(FunLzy) }, (FUN), (N) } )
 
 // ----- initializers
 
