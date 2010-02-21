@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.17 2010/02/20 23:39:20 ldeniau Exp $
+ | $Id: Any.c,v 1.18 2010/02/21 00:45:37 ldeniau Exp $
  |
 */
 
@@ -38,13 +38,60 @@
 #include <cos/gen/message.h>
 #include <cos/gen/new.h>
 
+#include <cos/prp/object.h>
+
+#include <stdlib.h>
+
 // ----- root class
 
 makclass(Any,_);
 
 // ----- exceptions
 
-useclass(ExBadMessage);
+useclass(ExBadAlloc, ExBadMessage);
+
+// ----- properties (read-only)
+
+defmethod(OBJ, ggetAt, Object, mP_class)
+  retmethod(gclass(_1));
+endmethod
+
+// ----- allocator
+
+static COS_ALWAYS_INLINE void*
+object_alloc(OBJ _cls, size_t extra)
+{
+  struct Class *cls = STATIC_CAST(struct Class*, _cls);
+  struct Any   *obj = malloc(cls->isz + extra);
+
+  if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
+
+  obj->_id = cos_class_id(cls);
+  obj->_rc = COS_RC_UNIT;
+
+  return obj;
+}
+
+defmethod(OBJ, galloc, mAny)
+  retmethod( object_alloc(_1, 0) );
+endmethod
+
+defmethod(OBJ, gallocWithSize, mAny, (size_t)extra)
+  retmethod( object_alloc(_1, extra) );
+endmethod
+
+// ----- deallocator
+
+defmethod(void, gdealloc, Any)
+  PRE
+    test_assert(cos_object_id(_1) != COS_ID_INVALID &&
+                cos_object_rc(_1) != COS_RC_INVALID, "object already destroyed");
+  BODY
+    cos_object_setId(_1, COS_ID_INVALID);
+    cos_object_setRc(_1, COS_RC_INVALID);
+    
+    free(_1);
+endmethod
 
 // ----- ownership
 
