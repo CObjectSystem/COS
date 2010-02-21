@@ -29,14 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.18 2010/02/21 00:45:37 ldeniau Exp $
+ | $Id: Any.c,v 1.19 2010/02/21 14:56:27 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
 #include <cos/gen/message.h>
-#include <cos/gen/new.h>
 
 #include <cos/prp/object.h>
 

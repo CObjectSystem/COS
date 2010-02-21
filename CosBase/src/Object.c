@@ -29,14 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.33 2010/02/21 00:45:37 ldeniau Exp $
+ | $Id: Object.c,v 1.34 2010/02/21 14:56:27 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
+
 #include <cos/gen/object.h>
-#include <cos/gen/init.h>
-#include <cos/gen/new.h>
 
 // ----- root of most common classes
 
@@ -70,96 +69,7 @@ defmethod(OBJ, gnewWith4, mObject, Object, Object, Object, Object)
   retmethod( ginitWith4(galloc(_1),_2,_3,_4,_5) );
 endmethod
 
-defmethod(OBJ, gnewWithLoc, mObject, Object, (STR)func, (STR)file, (int)line)
-  retmethod( ginitWithLoc(galloc(_1),_2,func,file,line) );
-endmethod
-
 defmethod(OBJ, gnewWithStr, mObject, (STR)str)
   retmethod( ginitWithStr(galloc(_1),str) );
 endmethod
-
-defmethod(OBJ, gnewWithObj, mObject, (OBJ)obj)
-  retmethod( ginitWithObj(galloc(_1),obj) );
-endmethod
-
-defmethod(OBJ, gnewWithObj2, mObject, (OBJ)obj, (OBJ)obj2)
-  retmethod( ginitWithObj2(galloc(_1),obj,obj2) );
-endmethod
-
-defmethod(OBJ, gnewWithObj3, mObject, (OBJ)obj, (OBJ)obj2, (OBJ)obj3)
-  retmethod( ginitWithObj3(galloc(_1),obj,obj2,obj3) );
-endmethod
-
-defmethod(OBJ, gnewWithObj4, mObject, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4)
-  retmethod( ginitWithObj4(galloc(_1),obj,obj2,obj3,obj4) );
-endmethod
-
-defmethod(OBJ, gnewWithObj5, mObject, (OBJ)obj, (OBJ)obj2, (OBJ)obj3, (OBJ)obj4, (OBJ)obj5)
-  retmethod( ginitWithObj5(galloc(_1),obj,obj2,obj3,obj4,obj5) );
-endmethod
-
-defmethod(OBJ, gnewWithObjsVa, mObject, (va_list)va)
-  retmethod( ginitWithObjsVa(galloc(_1),va) );
-endmethod
-
-defmethod(OBJ, gnewWithObjs, mObject, (va_list)va)
-  retmethod( ginitWithObjsVa(galloc(_1),va) );
-endmethod
-
-defmethod(OBJ, gnewWithChr, mObject, (I32)val)
-  retmethod( ginitWithChr(galloc(_1),val) );
-endmethod
-
-defmethod(OBJ, gnewWithSht, mObject, (I32)val)
-  retmethod( ginitWithSht(galloc(_1),val) );
-endmethod
-
-defmethod(OBJ, gnewWithInt, mObject, (I32)val)
-  retmethod( ginitWithInt(galloc(_1),val) );
-endmethod
-
-defmethod(OBJ, gnewWithLng, mObject, (I64)val)
-  retmethod( ginitWithLng(galloc(_1),val) );
-endmethod
-
-defmethod(OBJ, gnewWithFlt, mObject, (F64)val)
-  retmethod( ginitWithFlt(galloc(_1),val) );
-endmethod
-
-defmethod(OBJ, gnewWithCpx, mObject, (C64)val)
-  retmethod( ginitWithCpx(galloc(_1),val) );
-endmethod
-
-defmethod(OBJ, gnewWithChrPtr, mObject, (I8*)ref, (U32)size, (I32)stride)
-  retmethod( ginitWithChrPtr(galloc(_1),ref,size,stride) );
-endmethod
-
-defmethod(OBJ, gnewWithShtPtr, mObject, (I16*)ref, (U32)size, (I32)stride)
-  retmethod( ginitWithShtPtr(galloc(_1),ref,size,stride) );
-endmethod
-
-defmethod(OBJ, gnewWithIntPtr, mObject, (I32*)ref, (U32)size, (I32)stride)
-  retmethod( ginitWithIntPtr(galloc(_1),ref,size,stride) );
-endmethod
-
-defmethod(OBJ, gnewWithLngPtr, mObject, (I64*)ref, (U32)size, (I32)stride)
-  retmethod( ginitWithLngPtr(galloc(_1),ref,size,stride) );
-endmethod
-
-defmethod(OBJ, gnewWithFltPtr, mObject, (F64*)ref, (U32)size, (I32)stride)
-  retmethod( ginitWithFltPtr(galloc(_1),ref,size,stride) );
-endmethod
-
-defmethod(OBJ, gnewWithCpxPtr, mObject, (C64*)ref, (U32)size, (I32)stride)
-  retmethod( ginitWithCpxPtr(galloc(_1),ref,size,stride) );
-endmethod
-
-defmethod(OBJ, gnewWithObjPtr, mObject, (OBJ*)ref, (U32)size, (I32)stride)
-  retmethod( ginitWithObjPtr(galloc(_1),ref,size,stride) );
-endmethod
-
-defmethod(OBJ, gnewWithVoidPtr, mObject, (void*)ref, (U32)size, (I32)stride, (size_t)esize)
-  retmethod( ginitWithVoidPtr(galloc(_1),ref,size,stride,esize) );
-endmethod
-
 

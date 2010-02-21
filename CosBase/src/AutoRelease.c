@@ -29,14 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.49 2010/02/20 23:38:51 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.50 2010/02/21 14:56:27 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
-#include <cos/gen/new.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -253,12 +252,12 @@ endmethod
 
 defmethod(OBJ, gretain, AutoRelease)
   THROW( gnewWithStr(ExBadMessage, "AutoRelease pool cannot be retained") );
-  COS_UNUSED(RETVAL);
+  COS_UNUSED(_ret);
 endmethod
 
 defalias (OBJ, (gautoRelease)gautoDelete, AutoRelease);
 defmethod(OBJ,  gautoRelease            , AutoRelease)
-  COS_UNUSED(RETVAL); // insensitive, already chained
+  COS_UNUSED(_ret); // insensitive, already chained
 endmethod
 
 defalias (void, (grelease)gdelete, AutoRelease);

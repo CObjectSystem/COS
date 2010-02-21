@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.38 2010/02/20 23:38:51 ldeniau Exp $
+ | $Id: method.h,v 1.39 2010/02/21 14:56:26 ldeniau Exp $
  |
 */
 
@@ -90,7 +90,7 @@
 #define COS_DISABLE_next_method
 #define COS_DISABLE_next_method_p
 #define COS_DISABLE_forward_message
-#define COS_DISABLE_RETVAL
+#define COS_DISABLE_method_retval
 #endif
 
 #ifndef COS_DISABLE_methodref
@@ -129,8 +129,8 @@
 #define forward_message(...) COS_MTH_FWD(__VA_ARGS__)
 #endif
 
-#ifndef COS_DISABLE_RETVAL
-#define RETVAL COS_MTH_RETVAL
+#ifndef COS_DISABLE_method_retval
+#define method_retval(...) COS_MTH_RETVAL(__VA_ARGS__)
 #endif
 
 /***********************************************************
@@ -371,12 +371,16 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   do { \
     COS_PP_IF(COS_PP_NOARG(__VA_ARGS__))( \
     COS_STATIC_ASSERT(method_return_value_is_not_void, _cos_mth_ret_void);, \
-    COS_MTH_RETVAL = (__VA_ARGS__);) \
+    (*(_ret_t)_ret) = (__VA_ARGS__);) \
     COS_PP_IFNDEF(COS_METHOD_TRACE)(_cos_mth_line = __LINE__;,/* no trace */) \
     goto _cos_ctr_end; \
   } while (0)
 
-#define COS_MTH_RETVAL (*(_ret_t)_ret)
+// method_retval
+#define COS_MTH_RETVAL(T) \
+    COS_PP_IF(COS_PP_NOARG(T)) ( (*(_ret_t)_ret), \
+      COS_PP_IF(COS_PP_GT(COS_LOGMSG, COS_LOGMSG_DEBUG)) ( \
+        ((struct T*)*(_ret_t)_ret), COS_OBJECT_EDYNCAST(T, *(_ret_t)_ret)) )
 
 // next_method
 #define COS_MTH_NXT(...) \

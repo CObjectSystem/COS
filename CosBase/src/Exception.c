@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.17 2010/02/03 15:06:42 ldeniau Exp $
+ | $Id: Exception.c,v 1.18 2010/02/21 14:56:27 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,6 @@
 
 #include <cos/gen/init.h>
 #include <cos/gen/message.h>
-#include <cos/gen/new.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 
@@ -142,7 +141,7 @@ void cos_exception_assert(STR reason, STR func, STR file, int line)
   if (cos_object_id(ExBadAssert) == 0)
     cos_logmsg(COS_LOGMSG_ABORT,func,file,line,"%s",reason);
 
-  THROW(gnewWithStr(ExBadAssert,reason),func,file,line);
+  THROW( gnewWithStr(ExBadAssert,reason), func,file,line);
 }
 
 // ----- badcast
@@ -155,7 +154,7 @@ void cos_exception_badcast(OBJ obj, const struct Class *cls,
   if (cos_object_id(ExBadCast) == 0)
     cos_logmsg(COS_LOGMSG_ABORT,func,file,line,"invalid cast %s", cls->str);
 
-  THROW(gnewWithObjStr(ExBadCast,obj,cls->str),func,file,line);
+  THROW( ginitWithObjStr(galloc(ExBadCast),obj,cls->str), func,file,line);
 }
 
 // ----- errno
@@ -167,7 +166,7 @@ void cos_exception_errno(int err, STR func, STR file, int line)
   if (cos_object_id(ExErrno) == 0)
     cos_logmsg(COS_LOGMSG_ABORT,func,file,line, "[%d] %s", err, strerror(err));
 
-  THROW(gnewWithInt(ExErrno,err),func,file,line);
+  THROW( ginitWithInt(galloc(ExErrno),err), func,file,line);
 }
 
 defmethod(OBJ, ginitWithInt, ExErrno, (int)val)
@@ -234,7 +233,7 @@ ex_signal(int sig)
     cos_abort("[%d] %s", sig, strsignal(sig));
   }
 
-  THROW(gnewWithInt(ExSignal,sig));
+  THROW( ginitWithInt(galloc(ExSignal),sig) );
 }
 
 void (*cos_signal(int sig))(int)

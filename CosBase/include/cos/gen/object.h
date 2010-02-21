@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.35 2010/01/14 12:58:33 ldeniau Exp $
+ | $Id: object.h,v 1.36 2010/02/21 14:56:27 ldeniau Exp $
  |
 */
 
@@ -44,41 +44,43 @@ defgeneric(OBJ , gallocWithSize, _1, (size_t)extra);
 defgeneric(void, gdealloc      , _1);
 
 // new, clone
-defgeneric(OBJ , gnew          , _1);
-defgeneric(OBJ , gnewWith      , _1, _2);
-defgeneric(OBJ , gnewWith2     , _1, _2, _3);
-defgeneric(OBJ , gnewWith3     , _1, _2, _3, _4);
-defgeneric(OBJ , gnewWith4     , _1, _2, _3, _4, _5);
-defgeneric(OBJ , gclone        , _1);
+defgeneric(OBJ, gnew       , _1);
+defgeneric(OBJ, gnewWith   , _1, _2);
+defgeneric(OBJ, gnewWith2  , _1, _2, _3);
+defgeneric(OBJ, gnewWith3  , _1, _2, _3, _4);
+defgeneric(OBJ, gnewWith4  , _1, _2, _3, _4, _5);
+defgeneric(OBJ, gnewWithStr, _1, (STR)str);
+defgeneric(OBJ, gclone     , _1);
 
 // constructors, copy
-defgeneric(OBJ , ginit         , _1);
-defgeneric(OBJ , ginitWith     , _1, _2); // includes copy ctor: ginitWith(T,T)
-defgeneric(OBJ , ginitWith2    , _1, _2, _3);
-defgeneric(OBJ , ginitWith3    , _1, _2, _3, _4);
-defgeneric(OBJ , ginitWith4    , _1, _2, _3, _4, _5);
-defgeneric(OBJ , gcopy         , _1, _2);
+defgeneric(OBJ, ginit       , _1);
+defgeneric(OBJ, ginitWith   , _1, _2); // includes copy ctor: ginitWith(T,T)
+defgeneric(OBJ, ginitWith2  , _1, _2, _3);
+defgeneric(OBJ, ginitWith3  , _1, _2, _3, _4);
+defgeneric(OBJ, ginitWith4  , _1, _2, _3, _4, _5);
+defgeneric(OBJ, ginitWithStr, _1, (STR)str);
+defgeneric(OBJ, gcopy       , _1, _2);
 
 // destructor, clearing
-defgeneric(OBJ , gdeinit       , _1);
-defgeneric(OBJ , gclear        , _1);
+defgeneric(OBJ, gdeinit, _1);
+defgeneric(OBJ, gclear , _1);
 
 // ownership
-defgeneric(OBJ , gretain       , _1);
-defgeneric(void, gdelete       , _1);
-defgeneric(void, grelease      , _1);
-defgeneric(OBJ , gautoDelete   , _1);
-defgeneric(OBJ , gautoRelease  , _1);
-defgeneric(U32 , gretainCount  , _1);
+defgeneric(OBJ , gretain     , _1);
+defgeneric(void, gdelete     , _1);
+defgeneric(void, grelease    , _1);
+defgeneric(OBJ , gautoDelete , _1);
+defgeneric(OBJ , gautoRelease, _1);
+defgeneric(U32 , gretainCount, _1);
 
 // identity, conversion, coercion
-defgeneric(OBJ , gisKindOf     , _1, _2); // returns True or False
-defgeneric(OBJ , gisInstanceOf , _1, _2); // returns True or False
-defgeneric(OBJ , gisNil        , _1);     // returns True or False
-defgeneric(OBJ , gisNull       , _1);     // returns True or False
-defgeneric(OBJ , gclass        , _1);
-defgeneric(STR , gclassName    , _1);
-defgeneric(OBJ , gsuperClass   , _1);
+defgeneric(OBJ, gisKindOf    , _1, _2); // returns True or False
+defgeneric(OBJ, gisInstanceOf, _1, _2); // returns True or False
+defgeneric(OBJ, gisNil       , _1);     // returns True or False
+defgeneric(OBJ, gisNull      , _1);     // returns True or False
+defgeneric(OBJ, gclass       , _1);
+defgeneric(STR, gclassName   , _1);
+defgeneric(OBJ, gsuperClass  , _1);
 
 // initialization
 defgeneric(void, ginitialize   , _1);

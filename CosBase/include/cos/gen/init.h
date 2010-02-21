@@ -32,14 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: init.h,v 1.19 2010/01/21 22:09:02 ldeniau Exp $
+ | $Id: init.h,v 1.20 2010/02/21 14:56:27 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
 // constructors
-defgeneric (OBJ, ginitWithStr    , _1, (STR)str);
 defgeneric (OBJ, ginitWithLoc    , _1, _2, (STR)func, (STR)file, (int)line);
 
 defgeneric (OBJ, ginitWithObj    , _1, (OBJ)obj);
