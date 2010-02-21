@@ -241,7 +241,7 @@
                     <keyword>forward_message</keyword>
                     <keyword>next_method</keyword>
                     <keyword>next_method_p</keyword>
-                    <keyword>method_retval</keyword>
+                    <keyword>method_retval_as</keyword>
                     <keyword>defcontract</keyword>
                     <keyword>endcontract</keyword>
                     <keyword>retcontract</keyword>
@@ -369,6 +369,7 @@
                     <keyword>OBJECT_EDYNCAST</keyword>
                     <keyword>test_assert</keyword>
                     <keyword>test_invariant</keyword>
+                    <keyword>method_retval</keyword>
                     <keyword>__FUNC__</keyword>
                     <keyword>__1</keyword>
                     <keyword>__2</keyword>
