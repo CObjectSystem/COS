@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.14 2010/01/21 22:48:34 ldeniau Exp $
+ | $Id: String.c,v 1.15 2010/02/21 16:36:10 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,6 @@
 #include <cos/gen/collection.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/init.h>
-#include <cos/gen/new.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
@@ -226,8 +225,7 @@ endmethod
 
 // ----- constructors from C array
 
-defalias (OBJ, (ginitWithChrPtr)gnewWithChrPtr, pmString, (I8*)ref, (U32)size, (I32)stride);
-defmethod(OBJ,  ginitWithChrPtr               , pmString, (I8*)ref, (U32)size, (I32)stride)
+defmethod(OBJ, ginitWithChrPtr, pmString, (I8*)ref, (U32)size, (I32)stride)
   test_assert( stride == 1, "strings are not strided" );
   retmethod( gclone(aStringRef((U8*)ref, size)) );
 endmethod

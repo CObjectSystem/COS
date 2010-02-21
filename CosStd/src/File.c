@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.19 2010/02/21 00:46:24 ldeniau Exp $
+ | $Id: File.c,v 1.20 2010/02/21 16:36:10 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,6 @@
 #include <cos/gen/file.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/message.h>
-#include <cos/gen/new.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>
 #include <cos/gen/value.h>

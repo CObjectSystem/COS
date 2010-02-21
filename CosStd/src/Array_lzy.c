@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_lzy.c,v 1.7 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Array_lzy.c,v 1.8 2010/02/21 16:36:10 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,6 @@
 #include <cos/gen/accessor.h>
 #include <cos/gen/collection.h>
 #include <cos/gen/functor.h>
-#include <cos/gen/new.h>
 #include <cos/gen/object.h>
 
 // -----

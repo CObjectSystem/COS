@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.23 2010/01/14 13:17:15 ldeniau Exp $
+ | $Id: Number.c,v 1.24 2010/02/21 16:36:10 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,6 @@
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/init.h>
-#include <cos/gen/new.h>
 #include <cos/gen/numop.h>
 #include <cos/gen/object.h>
 #include <cos/gen/relop.h>

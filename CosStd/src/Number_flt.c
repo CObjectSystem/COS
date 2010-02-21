@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.10 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Number_flt.c,v 1.11 2010/02/21 16:36:10 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,6 @@
 #include <cos/gen/object.h>
 #include <cos/gen/floatop.h>
 #include <cos/gen/numop.h>
-#include <cos/gen/new.h>
 
 #include <math.h>
 #include <float.h>
@@ -277,7 +276,7 @@ endmethod
 
 // avoid addTo(Float,Complex)
 defmethod(OBJ, gmulAdd, Float, Float, Complex)
-  retmethod(gaddTo(gmulBy(gautoDelete(gnewWithCpx(Complex,self->value)),_2),_3));
+  retmethod(gaddTo(gmulBy(gautoDelete(gnewWith(Complex,_1)),_2),_3));
 endmethod
 
 // use C99 fma

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.8 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.9 2010/02/21 16:36:10 ldeniau Exp $
  |
 */
 
@@ -128,8 +128,8 @@ defmethod(OBJ, gevalEnv, ComposeFun, Collection)
   forward_message(*fun++, _2);
 
   while (fun != end) {
-    *arg = RETVAL;
-    RETVAL = gevalEnv(*fun++, (OBJ)env);
+    *arg = method_retval;
+    method_retval = gevalEnv(*fun++, (OBJ)env);
   }
 
 endmethod

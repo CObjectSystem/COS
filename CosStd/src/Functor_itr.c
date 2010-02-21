@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_itr.c,v 1.8 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Functor_itr.c,v 1.9 2010/02/21 16:36:10 ldeniau Exp $
  |
 */
 
@@ -95,7 +95,7 @@ defmethod(OBJ, gevalEnv, IterateFun, Collection)
   if (self->fct) {
     FUN1 fct = self->fct;
     for (U32 i = self->num-1; i; i--)
-      RETVAL = fct(RETVAL);
+      method_retval = fct(method_retval);
   }
   else {
     OBJ fun = self->fun;
@@ -103,8 +103,8 @@ defmethod(OBJ, gevalEnv, IterateFun, Collection)
     OBJ *arg = env->object;
 
     for (U32 i = self->num-1; i; i--) {
-      *arg = RETVAL;
-      RETVAL = gevalEnv(fun, (OBJ)env);
+      *arg = method_retval;
+      method_retval = gevalEnv(fun, (OBJ)env);
     }
   }
 endmethod
