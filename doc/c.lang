@@ -241,6 +241,7 @@
                     <keyword>forward_message</keyword>
                     <keyword>next_method</keyword>
                     <keyword>next_method_p</keyword>
+                    <keyword>method_retval</keyword>
                     <keyword>defcontract</keyword>
                     <keyword>endcontract</keyword>
                     <keyword>retcontract</keyword>
@@ -359,7 +360,6 @@
                     <keyword>PRE</keyword>
                     <keyword>POST</keyword>
                     <keyword>BODY</keyword>
-                    <keyword>RETVAL</keyword>
                     <keyword>FINAL_CLASS</keyword>
                     <keyword>STATIC_CAST</keyword>
                     <keyword>STATIC_ASSERT</keyword>
