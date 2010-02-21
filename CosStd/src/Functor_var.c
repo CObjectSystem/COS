@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_var.c,v 1.4 2010/02/21 00:46:24 ldeniau Exp $
+ | $Id: Functor_var.c,v 1.5 2010/02/21 22:07:45 ldeniau Exp $
  |
 */
 
@@ -54,7 +54,7 @@ useclass(FunArg, FunVar, FunLzy);
 
 defmethod(OBJ, gclone, FunArg)
   OBJ _arg = galloc(FunArg);
-  struct FunArg *arg = STATIC_CAST(struct FunArg*, _arg);
+  struct FunArg *arg = STATIC_DOCAST(FunArg, _arg);
 
   arg->idx = self->idx;
   
@@ -63,7 +63,7 @@ endmethod
 
 defmethod(OBJ, gclone, FunVar)
   OBJ _var = galloc(FunVar);
-  struct FunVar *var = STATIC_CAST(struct FunVar*, _var);
+  struct FunVar *var = STATIC_DOCAST(FunVar, _var);
 
   var->var = gretain(self->var);
 
@@ -72,7 +72,7 @@ endmethod
 
 defmethod(OBJ, gclone, FunLzy)
   OBJ _lzy = galloc(FunLzy);
-  struct FunLzy *lzy = STATIC_CAST(struct FunLzy*, _lzy);
+  struct FunLzy *lzy = STATIC_DOCAST(FunLzy, _lzy);
 
   lzy->fun = gretain(self->fun);
   lzy->cnt = self->cnt;
@@ -104,7 +104,7 @@ defmethod(OBJ, gevalEnv, PlaceHolder, Collection)
 endmethod
 
 defmethod(OBJ, gevalEnv, FunLzy, Collection)
-  retmethod ( self->cnt == 1 ? self->fun
-                             : gautoDelete(aFunLzyN(self->cnt-1, self->fun)) );
+  retmethod ( self->cnt == 1 ? self->fun :
+              gautoDelete(aFunLzyN(self->cnt-1, self->fun)) );
 endmethod
 

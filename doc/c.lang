@@ -361,8 +361,9 @@
                     <keyword>POST</keyword>
                     <keyword>BODY</keyword>
                     <keyword>FINAL_CLASS</keyword>
-                    <keyword>STATIC_CAST</keyword>
                     <keyword>STATIC_ASSERT</keyword>
+                    <keyword>STATIC_CAST</keyword>
+                    <keyword>STATIC_DOCAST</keyword>
                     <keyword>OBJECT_CAST</keyword>
                     <keyword>OBJECT_ECAST</keyword>
                     <keyword>OBJECT_DYNCAST</keyword>
