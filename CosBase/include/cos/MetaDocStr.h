@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: MetaDocStr.h,v 1.1 2010/01/31 12:03:53 ldeniau Exp $
+ | $Id: MetaDocStr.h,v 1.2 2010/03/13 15:16:22 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,6 @@
 #include <cos/Object.h>
 #endif
 
-// MetaDocStr is a core class, see cos/cos/coscls.h
+// MetaDocStr is a core class, see cos/cos/docstr.h
 
 #endif // COS_METADOCSTR_H

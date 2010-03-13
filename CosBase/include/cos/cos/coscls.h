@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.15 2010/02/20 23:38:51 ldeniau Exp $
+ | $Id: coscls.h,v 1.16 2010/03/13 15:16:22 ldeniau Exp $
  |
 */
 
@@ -191,13 +191,6 @@ COS_CLS_END
 COS_CLS_DEF(Method5,Method)
   IMP5 fct;
   struct Class* cls[5];
-COS_CLS_END
-
-COS_CLS_DEF(MetaDocStr,Object)
-  OBJ obj; // component
-  FCT fct; // function
-  STR mod; // module
-  STR doc; // doc
 COS_CLS_END
 
 // standard precicates

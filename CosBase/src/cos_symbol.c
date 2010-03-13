@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.51 2010/02/20 23:38:51 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.52 2010/03/13 15:16:22 ldeniau Exp $
  |
 */
 
@@ -62,7 +62,7 @@ static struct {
   struct Class      **prp; // sorted  by name
   struct Generic    **gen; // sorted  by name
   struct Method     **mth; // sorted  by gen-name,mth-rank,rnd-rank,cls-name
-  struct MetaDocStr **doc; // sorted  by obj-type,obj-name,name,fct address
+  struct MetaDocStr **doc; // sorted  by obj-type,obj-name,name
   FCT               **nxt; // not sorted
   U32 msk, n_cls, n_prp, n_gen, n_mth, n_doc, n_nxt, m_nxt;
 } sym;

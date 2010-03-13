@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.45 2010/02/21 15:54:14 ldeniau Exp $
+ | $Id: cosapi.h,v 1.46 2010/03/13 15:16:22 ldeniau Exp $
  |
 */
 
@@ -173,7 +173,7 @@ U32   cos_mem_nfree  (void); // number of free  modulo 2^32
 
 /* NOTE-INFO: auto ctor
    the following function-like macro is useful to define automatic ctor
-   for classes deriving from Object (or equivalent)
+   for classes deriving from Object (or at equivalent level)
 */
 #define cos_object_auto(cls) \
   {{ COS_CLS_NAME(cls).Behavior.id, COS_RC_AUTO }}
@@ -422,7 +422,7 @@ cos_object_cast(OBJ obj, const struct Class *cls)
 }
 
 static COS_ALWAYS_INLINE void*
-cos_object_ecast(OBJ obj, const struct Class *cls,STR func,STR file,int line)
+cos_object_ecast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
 {
   if (cos_object_isa(obj, cls))
     return obj;
@@ -432,20 +432,22 @@ cos_object_ecast(OBJ obj, const struct Class *cls,STR func,STR file,int line)
 }
 
 static COS_ALWAYS_INLINE void*
-cos_object_dyncast(OBJ obj, const struct Class *cls)
+cos_object_dcast(OBJ obj, const struct Class *cls)
 {
-  return cos_object_isKindOf(obj, cls) ? obj : 0;
-  COS_UNUSED(cos_object_dyncast);
+  return cos_object_isa     (obj, cls) ||
+         cos_object_isKindOf(obj, cls) ? obj : 0;
+  COS_UNUSED(cos_object_dcast);
 }
 
 static COS_ALWAYS_INLINE void*
-cos_object_edyncast(OBJ obj, const struct Class *cls,STR func,STR file,int line)
+cos_object_decast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
 {
-  if (cos_object_isKindOf(obj, cls))
+  if (cos_object_isa     (obj, cls) ||
+      cos_object_isKindOf(obj, cls))
     return obj;
 
   cos_exception_badcast(obj, cls, func, file, line);
-  COS_UNUSED(cos_object_edyncast);
+  COS_UNUSED(cos_object_decast);
 }
 
 static COS_ALWAYS_INLINE BOOL

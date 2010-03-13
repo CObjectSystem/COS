@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.14 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: cos.h,v 1.15 2010/03/13 15:16:22 ldeniau Exp $
  |
 */
 
@@ -104,6 +104,10 @@ extern "C" {
 /* NOTE-USER: COS inlined dispatch
  */
 #include <cos/cos/dispatch.h>
+
+/* NOTE-USER: COS docstr system
+ */
+#include <cos/cos/docstr.h>
 
 #endif // COS_NOCOS
 
