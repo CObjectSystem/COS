@@ -363,11 +363,9 @@
                     <keyword>FINAL_CLASS</keyword>
                     <keyword>STATIC_ASSERT</keyword>
                     <keyword>STATIC_CAST</keyword>
-                    <keyword>STATIC_DOCAST</keyword>
+                    <keyword>STATIC_DCAST</keyword>
                     <keyword>OBJECT_CAST</keyword>
-                    <keyword>OBJECT_ECAST</keyword>
-                    <keyword>OBJECT_DYNCAST</keyword>
-                    <keyword>OBJECT_EDYNCAST</keyword>
+                    <keyword>OBJECT_DCAST</keyword>
                     <keyword>test_assert</keyword>
                     <keyword>test_invariant</keyword>
                     <keyword>method_retval</keyword>

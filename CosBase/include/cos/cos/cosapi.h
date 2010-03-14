@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.46 2010/03/13 15:16:22 ldeniau Exp $
+ | $Id: cosapi.h,v 1.47 2010/03/14 09:09:54 ldeniau Exp $
  |
 */
 
@@ -415,39 +415,24 @@ cos_object_isa(OBJ obj, const struct Class *cls)
 }
 
 static COS_ALWAYS_INLINE void*
-cos_object_cast(OBJ obj, const struct Class *cls)
-{
-  return cos_object_isa(obj, cls) ? obj : 0;
-  COS_UNUSED(cos_object_cast);
-}
-
-static COS_ALWAYS_INLINE void*
-cos_object_ecast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
+cos_object_cast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
 {
   if (cos_object_isa(obj, cls))
     return obj;
 
   cos_exception_badcast(obj, cls, func, file, line);
-  COS_UNUSED(cos_object_ecast);
+  COS_UNUSED(cos_object_cast);
 }
 
 static COS_ALWAYS_INLINE void*
-cos_object_dcast(OBJ obj, const struct Class *cls)
-{
-  return cos_object_isa     (obj, cls) ||
-         cos_object_isKindOf(obj, cls) ? obj : 0;
-  COS_UNUSED(cos_object_dcast);
-}
-
-static COS_ALWAYS_INLINE void*
-cos_object_decast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
+cos_object_dcast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
 {
   if (cos_object_isa     (obj, cls) ||
       cos_object_isKindOf(obj, cls))
     return obj;
 
   cos_exception_badcast(obj, cls, func, file, line);
-  COS_UNUSED(cos_object_decast);
+  COS_UNUSED(cos_object_dcast);
 }
 
 static COS_ALWAYS_INLINE BOOL

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.9 2010/02/21 16:36:10 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.10 2010/03/14 09:09:54 ldeniau Exp $
  |
 */
 
@@ -81,7 +81,7 @@ defmethod(OBJ,  ginitWith         , pmComposeFun, Array) // copy
 
   test_assert( self2->size > 0, "zero length array");
   
-  cpy->Functor.msk = OBJECT_EDYNCAST(Functor, self2->object[0])->msk;  
+  cpy->Functor.msk = OBJECT_DCAST(Functor, self2->object[0])->msk;  
   copy(cpy->fun,1,&cpy->size,self2->object,self2->stride,self2->size);
 
   UNPRT(_cpy);
