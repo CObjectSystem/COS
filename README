@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.11 2009/06/14 19:02:51 ldeniau Exp $
+# | $Id: README,v 1.12 2010/03/14 08:58:11 ldeniau Exp $
 # |
 #
 
@@ -43,6 +43,8 @@ path-to-cos/doc/
 
 or after installation to
 $(PREFIX)/$(DOCDIR)/cos/
+
+or on arXiv.org
 
 Project information:
 --------------------
@@ -98,10 +100,10 @@ Tested platforms:
 -----------------
 
 # Systems & Architectures
-Linux Ubuntu 8.04 and 8.10 (Debian) on i386   (32-bit) Core2 Duo
-Linux Ubuntu 8.04 and 8.10 (Debian) on x86_64 (64-bit) Core2 Duo
-Linux SLC 4.0              (RedHat) on x86_64 (64-bit) Quad Xeon
-Mac OS X Leopard           (Darwin) on x86_64 (64-bit) Core2 Duo
+Linux Ubuntu 8.04, 8.10, 9.04, 9.10 (Debian) on i386   (32-bit) Core2 Duo
+Linux Ubuntu 8.04, 8.10, 9.04, 9.10 (Debian) on x86_64 (64-bit) Core2 Duo
+Linux SLC 4.0, 5.0 (RedHat) on x86_64 (64-bit) Quad Xeon
+Mac OS X Leopard (Darwin) on x86_64 (64-bit) Core2 Duo
 
 # Compilers
 gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2, 4.3.3

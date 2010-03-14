@@ -29,27 +29,34 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: TODO,v 1.3 2009/12/11 13:15:41 ldeniau Exp $
+# | $Id: TODO,v 1.4 2010/03/14 08:58:11 ldeniau Exp $
 # |
 #
 
 TODO-CosBase
-  - more OO (interface) and classes for introspection
-  - more platform support (Cygwin)
-  - refactoring of cos_symbols.c (hugly code)
-  - region-based allocator (?)
+  - Windows support (Cygwin)
+  - refactoring of cos_symbols.c (?)
   - much more unit tests
-  - manuals (still looking for a web-complian media: LaTeX or not LaTeX)
+  - manuals (once docstr is finalized)
   - icc support on Linux and MacOSX x86 and x86_64
-  - libunwind support if TRY is too slow (check portability outside gcc or gcc option)
-  - libtcmalloc support if malloc is too slow (check portability of google-perftools)
+  - more OO (interface) and classes for introspection (after CosStd is stable)
+  - libunwind support (check portability outside gcc or gcc option) (?)
   - libpthread support for coroutine (check portability on Cygwin) (?)
 
-TODO-CosStd (and other modules?)
+TODO-CosStd (and other modules)
+  - much more unit tests
+  - stabilize the code and the interface (generics)
+  - complete review and cleanup of the code
+  - check COS completeness vs other dynamic language (Io, Cecil, Slate, ...)
+  
+TODO-CosExt
+  - support for libavl for ordered containers
   - support for libpcre or posix regex (?)
+  - support for libsqlite3 for "local" database support
+  - support for libodbc (Oracle)
+  - support for libzip for compressed streams
   - support for libgmp and BigInt, BigFloat and Rational classes
   - support JSON(-RPC) and/or YAML serialization based on class properties 
   - support for libOpenGL or alternatives for plot and data visualization (?)
-  - support for libodbc (Oracle)
-  - check COS vs Io (language) interfaces
+  - support for libgsl, libfftw, libnfft, liblevmar
 

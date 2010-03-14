@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.32 2010/03/13 15:16:20 ldeniau Exp $
+# | $Id: Makefile,v 1.33 2010/03/14 08:58:12 ldeniau Exp $
 # |
 #
 
@@ -44,8 +44,8 @@ include $(cos)/prologue
 
 # project
 library := CosBase
-version := 0.9
-release := 201002
+version := 0.98
+release := 201003
 package := $(library)-$(version)_$(release)
 
 # targets

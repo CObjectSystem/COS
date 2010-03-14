@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Null.h,v 1.1 2009/09/18 16:17:46 ldeniau Exp $
+ | $Id: Null.h,v 1.2 2010/03/14 08:58:12 ldeniau Exp $
  |
 */
 
@@ -42,10 +42,10 @@
 
    Null and classes deriving from Null are insentive to message (by default).
 
-   Use Null (instead of Nil or 0) if you mean "no-data" object (predicate).
+   Use Null (instead of Nil or (OBJ)0) if you mean "no-data" object (predicate).
    Remember, message cannot be sent to (OBJ)0, but it can to Null.
 
-   Use Nil (instead of Null) if you mean "no-object".
+   Use Nil (instead of Null) if you mean "no-object" "or not-an-object".
 */
 
 defclass(Null, Predicate)

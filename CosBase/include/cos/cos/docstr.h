@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: docstr.h,v 1.1 2010/03/13 15:16:22 ldeniau Exp $
+ | $Id: docstr.h,v 1.2 2010/03/14 08:58:12 ldeniau Exp $
  |
 */
 
@@ -42,21 +42,22 @@
 
 /* NOTE-USER: source code documentation system
 
-  DocStr syntax aim to preserve line and tabulation formatting after macro
-  expansion. It is removed/expanded by the COS document generator to
-  generate properly indented reStructuredText format:
-  
-  '' simple quote
-  "" simple double quote
-  "  literal text keeping source code formatting (closed by another ").
-     it is useful to insert complex reST formatted text like tables. The
-     quote will be removed by the doc generator.
-  \  simple newline (insert \n)
+  DocStr markers aim to preserve line and tabulation formatting after macro
+  expansion. They are removed/expanded by the COS document generator to
+  generate properly indented reStructuredText format. The DocStr markers are:
+
+  '' simple quote (expand to ')
+  "" simple double quote (expand to ")
+  "  literal text keeping its formatting (closed by another "). It is useful
+     to insert complex reST formatted text like tables. The enclosing quotes
+     will be removed by the doc generator.
+  \\ simple backslash (expand to \)
+  \  simple newline (expand to \n)
   \> increment current indentation
   \< decrement current indentation
   \^ reset     current indentation
   \p alias for . (dot) when the later doesn't work
-  .  (dot) start a paragraph at current indentation (insert \n\n\t{n})
+  .  (dot) start a paragraph at current indentation (expand to \n\n\t{n})
   .. idem . but automatically increment the current indentation if
         the next character (after the space) is not _
         the next marker is not ..
@@ -71,10 +72,12 @@
     . Nil and classes deriving from Nil cannot have instance, also called
       class-objects from which properties and predicates derive.
    
-    . Use Nil (instead of 0) if you mean "no-object". Remember, message
-      cannot be sent to (OBJ)0, but it can to Nil.
+    . Use Nil (instead of (OBJ)0) if you mean "no-object" or "not-an-object".
+      Remember, messages cannot be sent to (OBJ)0, but they can be sent (and
+      traced) when sent to Nil.
    
-    . Use Null (instead of Nil or 0) if you mean "no-data" object.
+    . Use Null (instead of Nil or (OBJ)0) if you mean "no-data" object.
+      Messages can be sent (and traced) to Null and will be ignored.
   );
  
   defdoc(DocStrFmt, "DocStr.Format", 0,

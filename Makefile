@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.17 2009/06/19 23:57:27 ldeniau Exp $
+# | $Id: Makefile,v 1.18 2010/03/14 08:58:11 ldeniau Exp $
 # |
 #
 
@@ -44,8 +44,8 @@ include $(cos)/prologue
 
 # project
 distrib := cos
-version := 0.8
-release := 200906
+version := 0.98
+release := 201003
 
 # modules
 modules := CosBase CosStd
