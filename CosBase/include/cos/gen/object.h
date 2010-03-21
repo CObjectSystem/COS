@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.36 2010/02/21 14:56:27 ldeniau Exp $
+ | $Id: object.h,v 1.37 2010/03/21 20:34:46 ldeniau Exp $
  |
 */
 
@@ -43,23 +43,23 @@ defgeneric(OBJ , galloc        , _1);
 defgeneric(OBJ , gallocWithSize, _1, (size_t)extra);
 defgeneric(void, gdealloc      , _1);
 
-// new, clone
+// new, copy, clone
 defgeneric(OBJ, gnew       , _1);
 defgeneric(OBJ, gnewWith   , _1, _2);
 defgeneric(OBJ, gnewWith2  , _1, _2, _3);
 defgeneric(OBJ, gnewWith3  , _1, _2, _3, _4);
 defgeneric(OBJ, gnewWith4  , _1, _2, _3, _4, _5);
 defgeneric(OBJ, gnewWithStr, _1, (STR)str);
-defgeneric(OBJ, gclone     , _1);
+defgeneric(OBJ, gcopy      , _1); // shallow copy
+defgeneric(OBJ, gclone     , _1); // deep copy
 
-// constructors, copy
+// constructors, copy ctor
 defgeneric(OBJ, ginit       , _1);
 defgeneric(OBJ, ginitWith   , _1, _2); // includes copy ctor: ginitWith(T,T)
 defgeneric(OBJ, ginitWith2  , _1, _2, _3);
 defgeneric(OBJ, ginitWith3  , _1, _2, _3, _4);
 defgeneric(OBJ, ginitWith4  , _1, _2, _3, _4, _5);
 defgeneric(OBJ, ginitWithStr, _1, (STR)str);
-defgeneric(OBJ, gcopy       , _1, _2);
 
 // destructor, clearing
 defgeneric(OBJ, gdeinit, _1);

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.20 2010/02/21 15:54:15 ldeniau Exp $
+ | $Id: Any.c,v 1.21 2010/03/21 20:34:48 ldeniau Exp $
  |
 */
 
@@ -69,14 +69,17 @@ defmethod(OBJ, galloc, mAny)
 endmethod
 
 defmethod(OBJ, gallocWithSize, mAny, (size_t)extra)
-  struct Any *obj = malloc(self->isz + extra);
+  PRE
+    test_assert(self->isz+extra > extra, "size overflow");
+  BODY
+    struct Any *obj = malloc(self->isz + extra);
 
-  if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
+    if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
 
-  obj->_id = cos_class_id(self);
-  obj->_rc = COS_RC_UNIT;
+    obj->_id = cos_class_id(self);
+    obj->_rc = COS_RC_UNIT;
 
-  retmethod( (OBJ)obj );
+    retmethod( (OBJ)obj );
 endmethod
 
 // ----- deallocator
@@ -152,35 +155,35 @@ endmethod
 
 defmethod(void, gunrecognizedMessage1, Any)
   OBJ obj[1]; obj[0]=_1;
-  char buf[128];
+  char buf[256];
 
   THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod
 
 defmethod(void, gunrecognizedMessage2, Any, Any)
   OBJ obj[2]; obj[0]=_1, obj[1]=_2;
-  char buf[128];
+  char buf[256];
 
   THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod
 
 defmethod(void, gunrecognizedMessage3, Any, Any, Any)
   OBJ obj[3]; obj[0]=_1, obj[1]=_2, obj[2]=_3;
-  char buf[128];
+  char buf[256];
 
   THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod
 
 defmethod(void, gunrecognizedMessage4, Any, Any, Any, Any)
   OBJ obj[4]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4;
-  char buf[128];
+  char buf[256];
 
   THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod
 
 defmethod(void, gunrecognizedMessage5, Any, Any, Any, Any, Any)
   OBJ obj[5]; obj[0]=_1, obj[1]=_2, obj[2]=_3, obj[3]=_4, obj[4]=_5;
-  char buf[128];
+  char buf[256];
 
   THROW( gnewWithStr(ExBadMessage, cos_method_call(_sel, obj, buf, sizeof buf)) );
 endmethod

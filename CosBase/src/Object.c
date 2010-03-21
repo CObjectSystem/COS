@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Object.c,v 1.34 2010/02/21 14:56:27 ldeniau Exp $
+ | $Id: Object.c,v 1.35 2010/03/21 20:34:48 ldeniau Exp $
  |
 */
 
@@ -43,7 +43,8 @@ makclass(Object, Any);
 
 // ----- clone
 
-defmethod(OBJ, gclone, Object)
+defalias (OBJ, (gcopy)gclone, Object);
+defmethod(OBJ,  gcopy       , Object)
   retmethod( gnewWith(gclass(_1), _1) );
 endmethod
 

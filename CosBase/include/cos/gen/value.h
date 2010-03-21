@@ -32,17 +32,18 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.15 2009/12/26 15:02:45 ldeniau Exp $
+ | $Id: value.h,v 1.16 2010/03/21 20:34:46 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-defgeneric(STR  , gstr , _1);
-defgeneric(U32  , gsize, _1);
-defgeneric(BOOL , gbool, _1);     
-defgeneric(void*, gptr , _1);
-defgeneric(FCT  , gfct , _1);
+defgeneric(STR  , gstr ,  _1);
+defgeneric(U32  , gsize,  _1);
+defgeneric(I32  , gindex, _1);
+defgeneric(BOOL , gbool,  _1);     
+defgeneric(void*, gptr ,  _1);
+defgeneric(FCT  , gfct ,  _1);
 
 defgeneric(I32  , gchr , _1);
 defgeneric(I32  , gsht , _1);
