@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: main.c,v 1.3 2009/12/27 23:57:44 ldeniau Exp $
+ | $Id: main.c,v 1.4 2010/03/22 20:53:24 ldeniau Exp $
  |
 */
 
@@ -45,23 +45,24 @@ useclass(String, AutoRelease);
   NOTE-USER: Garbage Collector
   Modifications to allow AutoRelease pools to behave like manual
   garbage collector, see the paper for OOPSLA'09
+  Note: the class Any has been added (resurrected) after the paper
 */
-defmethod(OBJ, (galloc), mObject)   // around method
-  next_method(self);                // allocate
-  gautoRelease(RETVAL);             // auto-release
+defmethod(OBJ, (galloc), mAny)   // around method
+  next_method(self);             // allocate
+  gautoRelease(method_retval);   // auto-release
 endmethod
 
-defmethod(void, (gdelete), Object)
+defmethod(void, (gdelete), Any)
 endmethod
 
-defmethod(OBJ, (gautoDelete), Object)
-  retmethod( self->rc == COS_RC_AUTO ? gclone(_1) : _1 );
+defmethod(OBJ, (gautoDelete), Any)
+  retmethod( self->_rc == COS_RC_AUTO ? gclone(_1) : _1 );
 endmethod
 
-defmethod(OBJ, (gretain), Object)
+defmethod(OBJ, (gretain), Any)
   next_method(self);
-  if (self->rc == COS_RC_AUTO)
-    RETVAL = gretain(RETVAL); // once more for auto objects
+  if (self->_rc == COS_RC_AUTO)
+    method_retval = gretain(method_retval); // once more for auto objects
 endmethod
 
 /*

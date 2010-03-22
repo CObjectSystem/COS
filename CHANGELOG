@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: CHANGELOG,v 1.4 2010/03/14 08:58:11 ldeniau Exp $
+# | $Id: CHANGELOG,v 1.5 2010/03/22 20:53:23 ldeniau Exp $
 # |
 #
 
@@ -60,7 +60,7 @@
   - makefile simplified and compliant with gmake 3.80 (and maybe earlier)
   - plug-in support (not really tested but there)
   - rpath added, replaces LD_LIBRARY_PATH settings for run targets in makefile
-  - SunOS and FreeDSB makefile added (for gcc), but not tested.
+  - SunOS and FreeBSD makefile added (for gcc), but not tested.
   - Nil and derivates method specialization trig compile time errors
   - examples added
   - tarball + tests + install + uninstall

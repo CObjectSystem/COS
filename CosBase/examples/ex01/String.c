@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.2 2009/04/02 23:33:13 ldeniau Exp $
+ | $Id: String.c,v 1.3 2010/03/22 20:53:24 ldeniau Exp $
  |
 */
 
@@ -41,10 +41,18 @@
 
 makclass(String);
 
+static char* str_dup(STR str)
+{
+  size_t len = strlen(str);
+  char *s = malloc(len+1);
+  if (s) memcpy(s, str, len+1);
+  return s;
+}
+
 defmethod(OBJ, ginitWithStr, String, (STR)str)
   useclass(ExBadAlloc);
 
-  self->str = strdup(str);
+  self->str = str_dup(str);
   if (!self->str)
     THROW(ExBadAlloc);
   

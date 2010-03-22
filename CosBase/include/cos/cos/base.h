@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.29 2010/03/14 09:09:54 ldeniau Exp $
+ | $Id: base.h,v 1.30 2010/03/22 20:53:24 ldeniau Exp $
  |
 */
 
@@ -256,7 +256,7 @@ COS_PP_IFNDEF(COS_DEBUG) \
 #define COS_SIG_NXTF(a,n) \
         COS_PP_IF(COS_PP_ISTUPLE(a))(COS_PRM_DECL(a),void* COS_PP_CAT(_,n))
 #define COS_SIG_NXTM(a) \
-        COS_PP_IF(COS_PP_ISTUPLE(a))(COS_PRM_TYPE(a),struct a*)
+        COS_PP_IF(COS_PP_ISTUPLE(a))(COS_PRM_TYPE(a),COS_RCV_TYPE(a)*)
 
 // selector-list generators
 #define COS_SEL_DECL(N) /* */ COS_PP_TAKE(N, \

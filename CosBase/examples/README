@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: README,v 1.4 2009/05/08 17:03:20 ldeniau Exp $
+# | $Id: README,v 1.5 2010/03/22 20:53:24 ldeniau Exp $
 # |
 #
 
@@ -54,10 +54,11 @@ ex01:
   Show how to create classes and extend a class cluster (i.e. Stream)
 
 ex02:
-  Show how to use multiple ineritance (i.e. IOStream)
+  Show how to use multiple inheritance (i.e. File)
   
 ex03:
-  Show how to implement a "manual" garbage collector in few lines
+  Show how to implement a "manual" garbage collector in few lines on top of
+  ownership retain and release.
 
 Debugging makefiles:
 --------------------

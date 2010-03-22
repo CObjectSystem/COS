@@ -29,24 +29,27 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: TODO,v 1.4 2010/03/14 08:58:11 ldeniau Exp $
+# | $Id: TODO,v 1.5 2010/03/22 20:53:23 ldeniau Exp $
 # |
 #
 
 TODO-CosBase
-  - Windows support (Cygwin)
+  - docstr doc generator
+  - refactoring of Autorelease (bloc mode)
   - refactoring of cos_symbols.c (?)
   - much more unit tests
   - manuals (once docstr is finalized)
+  - Windows support (Cygwin)
   - icc support on Linux and MacOSX x86 and x86_64
   - more OO (interface) and classes for introspection (after CosStd is stable)
   - libunwind support (check portability outside gcc or gcc option) (?)
   - libpthread support for coroutine (check portability on Cygwin) (?)
 
 TODO-CosStd (and other modules)
+  - refactoring of Functor class cluster (remove support for dictionnary?)
   - much more unit tests
   - stabilize the code and the interface (generics)
-  - complete review and cleanup of the code
+  - complete review and cleanup of the code (simplify class clusters)
   - check COS completeness vs other dynamic language (Io, Cecil, Slate, ...)
   
 TODO-CosExt

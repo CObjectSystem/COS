@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generics.h,v 1.2 2009/08/07 10:56:35 ldeniau Exp $
+ | $Id: generics.h,v 1.3 2010/03/22 20:53:24 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,6 @@
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 #include <cos/gen/init.h>
-#include <cos/gen/new.h>
 
 #endif
 
