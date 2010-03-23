@@ -29,11 +29,11 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: CHANGELOG,v 1.5 2010/03/22 20:53:23 ldeniau Exp $
+# | $Id: CHANGELOG,v 1.6 2010/03/23 16:31:28 ldeniau Exp $
 # |
 #
 
-** 0.98 [2010-] // TODO, ongoing state
+** 0.91 [2010-] // TODO, ongoing state
   - docstring system finished and based on Sphinx (Python) for
     the html/pdf output.
   - documentation is ongoing
