@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.52 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Array.c,v 1.53 2010/03/24 09:01:30 ldeniau Exp $
  |
 */
 
@@ -121,6 +121,16 @@ endmethod
 
 // ----- constructors
 
+defmethod(OBJ, gcopy, Array) // copy
+  struct Array* cpy = Array_alloc(self->size);
+  OBJ _cpy = (OBJ)cpy; PRT(_cpy);
+
+  copy(cpy->object,1,&cpy->size,self->object,self->stride,self->size);
+
+  UNPRT(_cpy);
+  retmethod(_cpy);
+endmethod
+
 defmethod(OBJ, gclone, Array) // clone
   struct Array* cpy = Array_alloc(self->size);
   OBJ _cpy = (OBJ)cpy; PRT(_cpy);
@@ -193,7 +203,7 @@ defmethod(OBJ,  ginitWith         , pmArray, XRange) // Float sequence
 
       if ((XRange_stride(self2) > 0 && end > XRange_end(self2)) ||
           (XRange_stride(self2) < 0 && end < XRange_end(self2)))
-        gcopy(vec->object[size-1], aFloat(XRange_end(self2)));     
+        ginitWith(vec->object[size-1], aFloat(XRange_end(self2)));     
     }
     
     UNPRT(_vec);

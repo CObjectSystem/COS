@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.24 2010/02/21 16:36:10 ldeniau Exp $
+ | $Id: Number.c,v 1.25 2010/03/24 09:01:30 ldeniau Exp $
  |
 */
 
@@ -90,7 +90,8 @@ DEFMETHOD(Complex,     )
 #undef  DEFMETHOD
 #define DEFMETHOD(T,P) \
 \
-defmethod(OBJ, gclone, T)  \
+defalias (OBJ, (gcopy)gclone, T); \
+defmethod(OBJ,  gcopy       , T)  \
   struct T *new = STATIC_CAST(struct T*, galloc(T)); \
   new->P value = self->P value; \
   retmethod( (OBJ)new ); \
@@ -126,8 +127,7 @@ DEFMETHOD(Complex)
 #undef  DEFMETHOD
 #define DEFMETHOD(T1,T2) \
 \
-defalias (OBJ, (ginitWith)gcopy, T1, T2); \
-defmethod(OBJ,  ginitWith      , T1, T2) \
+defmethod(OBJ,  ginitWith, T1, T2) \
   self->value = self2->value; \
   retmethod(_1); \
 endmethod
