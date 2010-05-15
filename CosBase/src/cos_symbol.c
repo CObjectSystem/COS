@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.52 2010/03/13 15:16:22 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.53 2010/05/15 21:53:33 ldeniau Exp $
  |
 */
 
@@ -1228,7 +1228,7 @@ void
 cos_module_load(STR *mod)
 {
   void (*symbol)(void);
-  void **tmp, *handle;
+  void  *handle;
   char   buf[256];
   STR    ext, err;
   int    i, j;
@@ -1248,6 +1248,9 @@ cos_module_load(STR *mod)
     ;
 
   for (i = 0; mod[i]; i++) {
+    if (j == MAX_TBL)
+      cos_abort("too many COS modules loaded (%u loaded)", j);
+
     // load module
     sprintf(buf, COS_LIB_PREFIX "%200s%s" COS_LIB_SHEXT, ext, mod[i]);
     buf[sizeof(buf)-1] = 0;
@@ -1260,19 +1263,20 @@ cos_module_load(STR *mod)
     sprintf(buf, "cos_symbol_init%200s", mod[i]);
     buf[sizeof(buf)-1] = 0;
     
-    dlerror();
-    tmp = (void**)(void*)&symbol;
-    *tmp = dlsym(handle, buf);
+    {
+      union { void (*fun)(void); void *sym; } alias;
+      STATIC_ASSERT(function_ptr_are_incompatible_with_void_ptr,
+        sizeof(void(*)(void)) == sizeof(alias) && sizeof(void*) == sizeof(alias));
+      alias.sym = dlsym(handle, buf);
+      symbol = alias.fun;
+    }
+
     if ((err = dlerror()) != NULL)
       cos_abort("unable to initialize module %s: %s", mod[i], err);
 
     // register symbols
-    if (j == MAX_TBL)
-      cos_abort("too many COS modules loaded (%u loaded)", j);
-    else {
-      symbol();
-      tbl_mod[j] = handle;
-    }
+    symbol();
+    tbl_mod[j] = handle;
   }
 
   // init loaded tables and classes
