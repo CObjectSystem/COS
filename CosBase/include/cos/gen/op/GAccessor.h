@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GAccessor.h,v 1.2 2010/01/09 10:03:47 ldeniau Exp $
+ | $Id: GAccessor.h,v 1.3 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -42,12 +42,12 @@
 
 // Generic is a core class, see cos/cos/coscls.h
 
-defclass(GAccessor , Generic  ) endclass
-defclass(G_getAt   , GAccessor) endclass
-defclass(G_putAt   , GAccessor) endclass
-defclass(G_getAtInt, GAccessor) endclass
-defclass(G_putAtInt, GAccessor) endclass
-defclass(G_getAtStr, GAccessor) endclass
-defclass(G_putAtStr, GAccessor) endclass
+defclass(G_Accessor, Generic   ) endclass
+defclass(G_getAt   , G_Accessor) endclass
+defclass(G_putAt   , G_Accessor) endclass
+defclass(G_getAtIdx, G_Accessor) endclass
+defclass(G_putAtIdx, G_Accessor) endclass
+defclass(G_getAtKey, G_Accessor) endclass
+defclass(G_putAtKey, G_Accessor) endclass
 
 #endif // COS_GEN_OP_GACCESSOR_H

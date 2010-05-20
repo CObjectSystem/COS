@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Null.c,v 1.4 2010/01/13 21:28:27 ldeniau Exp $
+ | $Id: Null.c,v 1.5 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -54,7 +54,7 @@ endmethod
 
 // ----- unrecognized
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 trace(SEL sel, OBJ obj[])
 {
   char buf[128];
@@ -62,7 +62,7 @@ trace(SEL sel, OBJ obj[])
             cos_method_call(sel, obj, buf, sizeof buf));
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 chkret(SEL sel, OBJ* ret)
 {
   if (COS_GEN_ISOBJ(sel))

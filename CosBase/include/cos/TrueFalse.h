@@ -32,13 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: TrueFalse.h,v 1.7 2009/09/18 16:17:46 ldeniau Exp $
+ | $Id: TrueFalse.h,v 1.8 2010/05/20 15:48:13 ldeniau Exp $
  |
 */
 
 #include <cos/Predicate.h>
 
-defclass(TrueFalse, Predicate) endclass
+defclass(TrueFalse, Predicate)
+endclass
 
 defclass(True, TrueFalse)
   FINAL_CLASS

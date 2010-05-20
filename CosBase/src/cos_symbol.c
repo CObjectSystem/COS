@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.53 2010/05/15 21:53:33 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.54 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -471,7 +471,7 @@ nxt_enlarge(void)
   FCT **nxt = realloc(sym.nxt, m * sizeof *sym.nxt);
 
   if (!nxt)
-    cos_abort("out of memory while storing next methods");
+    cos_abort("out of memory during next_method registration");
 
   sym.nxt = nxt;
   sym.m_nxt = m;
@@ -554,7 +554,7 @@ sym_prepStorage(U32 n_cls, U32 n_gen, U32 n_mth, U32 n_doc)
 
   if ((!sym.cls && n_cls) || (!sym.gen && n_gen) ||
       (!sym.mth && n_mth) || (!sym.doc && n_doc))
-    cos_abort("out of memory while storing symbols");
+    cos_abort("out of memory during symbols registration");
 
   n_bhv = n_gen + 3*n_cls;
 

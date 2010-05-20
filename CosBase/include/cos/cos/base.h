@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.30 2010/03/22 20:53:24 ldeniau Exp $
+ | $Id: base.h,v 1.31 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -45,9 +45,9 @@
 #define COS_DISABLE_YES
 #define COS_DISABLE_STATIC_ASSERT
 #define COS_DISABLE_STATIC_CAST
-#define COS_DISABLE_STATIC_DCAST
-#define COS_DISABLE_OBJECT_CAST
-#define COS_DISABLE_OBJECT_DCAST
+#define COS_DISABLE_objcast
+#define COS_DISABLE_dyncast
+#define COS_DISABLE_chkcast
 #endif
 
 #ifndef COS_DISABLE_NO
@@ -66,16 +66,16 @@
 #define STATIC_CAST(typename,value) COS_STATIC_CAST(typename,value)
 #endif
 
-#ifndef COS_DISABLE_STATIC_DCAST
-#define STATIC_DCAST(class,object) COS_STATIC_DCAST(class,object)
+#ifndef COS_DISABLE_objcast
+#define objcast(class,object) COS_OBJECT_CAST(class,object)
 #endif
 
-#ifndef COS_DISABLE_OBJECT_CAST
-#define OBJECT_CAST(class,object) COS_OBJECT_CAST(class,object)
+#ifndef COS_DISABLE_dyncast
+#define dyncast(class,object) COS_OBJECT_DCAST(class,object)
 #endif
 
-#ifndef COS_DISABLE_OBJECT_DCAST
-#define OBJECT_DCAST(class,object) COS_OBJECT_DCAST(class,object)
+#ifndef COS_DISABLE_chkcast
+#define chkcast(class,object) COS_OBJECT_SCAST(class,object)
 #endif
 
 /***********************************************************
@@ -96,20 +96,20 @@
 #define COS_LOGMSG_ABORT 6
 
 // convert value (C cast)
-#define COS_STATIC_CAST(typename,value) ((typename)(value))
+#define COS_STATIC_CAST(type,value) ((type) (value))
         
-// convert value (static cast in release mode, dynamic cast in debug mode)
-#define COS_STATIC_DCAST(cls,obj) \
-COS_PP_IFNDEF(COS_DEBUG) \
-  ( COS_STATIC_CAST(struct cls*,obj), COS_OBJECT_DCAST(cls,obj) )
-
 // convert object (COS cast)
 #define COS_OBJECT_CAST(cls,obj) \
-((struct cls*)cos_object_cast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
+((struct cls*) cos_object_cast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
 
 // convert object (COS downcast)
 #define COS_OBJECT_DCAST(cls,obj) \
-((struct cls*)cos_object_dcast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
+((struct cls*) cos_object_dcast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
+
+// convert value (static cast in release mode, dynamic cast in debug mode)
+#define COS_OBJECT_SCAST(cls,obj) \
+COS_PP_IFNDEF(COS_DEBUG) ( COS_STATIC_CAST(struct cls*, obj), \
+                           COS_OBJECT_DCAST(cls, obj) )
 
 // compile time assert
 #define COS_STATIC_ASSERT(tag,cond) \

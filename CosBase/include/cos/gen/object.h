@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.37 2010/03/21 20:34:46 ldeniau Exp $
+ | $Id: object.h,v 1.38 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -72,7 +72,7 @@ defgeneric(void, grelease    , _1);
 defgeneric(OBJ , gautoDelete , _1);
 defgeneric(OBJ , gautoRelease, _1);
 defgeneric(U32 , gretainCount, _1);
-
+  
 // identity, conversion, coercion
 defgeneric(OBJ, gisKindOf    , _1, _2); // returns True or False
 defgeneric(OBJ, gisInstanceOf, _1, _2); // returns True or False
@@ -99,8 +99,9 @@ defgeneric(void, gthrow        , _1, (STR)func, (STR)file, (int)line);
 #define gretain(obj)  gretain_inline (obj)
 #define grelease(obj) grelease_inline(obj)
 
-static COS_ALWAYS_INLINE OBJ
-gretain_inline(OBJ _1) {
+static cos_inline OBJ
+gretain_inline(OBJ _1)
+{
   return cos_object_rc(_1) >= COS_RC_UNIT   ? cos_object_incRc(_1)
        : cos_object_rc(_1) == COS_RC_STATIC ? _1
        : (gretain)(_1);
@@ -108,8 +109,9 @@ gretain_inline(OBJ _1) {
   COS_UNUSED(gretain_inline);
 }
 
-static COS_ALWAYS_INLINE void
-grelease_inline(OBJ _1) {
+static cos_inline void
+grelease_inline(OBJ _1)
+{
   (void)(cos_object_rc(_1) >  COS_RC_UNIT   ? (cos_object_decRc(_1), 0)
        : cos_object_rc(_1) != COS_RC_STATIC ? ((grelease)(_1), 0)
        : 0);

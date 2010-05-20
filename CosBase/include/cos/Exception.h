@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.h,v 1.8 2010/02/03 15:06:36 ldeniau Exp $
+ | $Id: Exception.h,v 1.9 2010/05/20 15:48:13 ldeniau Exp $
  |
 */
 
@@ -49,32 +49,32 @@ defclass(Exception)
   char *str;
 endclass
 
-defclass(ExErrno,Exception)
+defclass(ExErrno, Exception)
   int err;
 endclass
 
-defclass(ExSignal,Exception)
+defclass(ExSignal, Exception)
   int sig;
 endclass
 
-defclass(ExBadAlloc      ,Exception) endclass
-defclass(ExBadArity      ,Exception) endclass
-defclass(ExBadAssert     ,Exception) endclass
-defclass(ExBadCast       ,Exception) endclass
-defclass(ExBadDomain     ,Exception) endclass
-defclass(ExBadFormat     ,Exception) endclass
-defclass(ExBadMessage    ,Exception) endclass
-defclass(ExBadMode       ,Exception) endclass
-defclass(ExBadProperty   ,Exception) endclass
-defclass(ExBadPredicate  ,Exception) endclass
-defclass(ExBadRange      ,Exception) endclass
-defclass(ExBadSize       ,Exception) endclass
-defclass(ExBadType       ,Exception) endclass
-defclass(ExBadValue      ,Exception) endclass
-defclass(ExNotFound      ,Exception) endclass
-defclass(ExNotImplemented,Exception) endclass
-defclass(ExNotSupported  ,Exception) endclass
-defclass(ExOverflow      ,Exception) endclass
-defclass(ExUnderflow     ,Exception) endclass
+defclass(ExBadAlloc      , Exception) endclass
+defclass(ExBadArity      , Exception) endclass
+defclass(ExBadAssert     , Exception) endclass
+defclass(ExBadCast       , Exception) endclass
+defclass(ExBadDomain     , Exception) endclass
+defclass(ExBadFormat     , Exception) endclass
+defclass(ExBadMessage    , Exception) endclass
+defclass(ExBadMode       , Exception) endclass
+defclass(ExBadProperty   , Exception) endclass
+defclass(ExBadPredicate  , Exception) endclass
+defclass(ExBadRange      , Exception) endclass
+defclass(ExBadSize       , Exception) endclass
+defclass(ExBadType       , Exception) endclass
+defclass(ExBadValue      , Exception) endclass
+defclass(ExNotFound      , Exception) endclass
+defclass(ExNotImplemented, Exception) endclass
+defclass(ExNotSupported  , Exception) endclass
+defclass(ExOverflow      , Exception) endclass
+defclass(ExUnderflow     , Exception) endclass
 
 #endif // COS_EXCEPTION_H

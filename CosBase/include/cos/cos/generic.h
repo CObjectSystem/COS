@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.39 2010/02/20 23:38:51 ldeniau Exp $
+ | $Id: generic.h,v 1.40 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -209,7 +209,7 @@
           COS_PP_LEN(CS), \
           COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
           COS_PP_NOT(COS_TOK_ISVOID(RET)), \
-          COS_PP_IF(COS_VALIST_INLINE)(COS_NO, \
+          COS_PP_IF(COS_INLINE_VALIST)(COS_NO, \
           COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_VALIST),COS_NO,COS_PP_OR)) )
 
 #define COS_GEN_DEF_1(RET,NAME,PS,AS,IS,C,A,R,U) \
@@ -243,7 +243,7 @@ COS_SCP_END
           COS_PP_ISTUPLE(COS_PP_SEQ(AS)), \
           COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_OBJ),COS_YES,COS_PP_AND), \
           COS_PP_NOT(COS_TOK_ISVOID(RET)), \
-          COS_PP_IF(COS_VALIST_INLINE)(COS_NO, \
+          COS_PP_IF(COS_INLINE_VALIST)(COS_NO, \
           COS_PP_FOLDL(COS_PP_MAP(PS,COS_GEN_VALIST),COS_NO,COS_PP_OR)) )
 
 #define COS_GEN_MAK_1(RET,NAME,CLS,PS,AS,IS,C,A,O,R,U) \
@@ -369,7 +369,7 @@ extern void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
 
 // generic function definition
 #define COS_GEN_FUNCDEF(RET,NAME,PS,AS,IS,C,A,R,U,V) \
-COS_PP_IF(COS_PP_OR(U,V))(,static COS_ALWAYS_INLINE) \
+COS_PP_IF(COS_PP_OR(U,V))(,static cos_inline) \
 RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
 { \
   /* local result and arguments (if any) */ \
@@ -398,7 +398,7 @@ RET (NAME) COS_PP_MAP2(PS,IS,COS_SIG_GENF) \
 
 // generic next function definition
 #define COS_GEN_NEXTDEF(RET,NAME,PS,AS,IS,C,A,R,U,V) \
-COS_PP_IF(COS_PP_OR(U,V))(,static COS_ALWAYS_INLINE) \
+COS_PP_IF(COS_PP_OR(U,V))(,static cos_inline) \
 void COS_NXT_NAME(NAME) (COS_PP_SEQ(COS_PP_MAP2(PS,IS,COS_SIG_NXTF)), \
                          SEL _sel, RET* _ret, COS_PP_CAT(IMP,C) _nxt) \
 { \

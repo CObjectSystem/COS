@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: docstr.h,v 1.2 2010/03/14 08:58:12 ldeniau Exp $
+ | $Id: docstr.h,v 1.3 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -147,7 +147,7 @@
  * Implementation
  */
 
-COS_CLS_DEF(MetaDocStr,Object)
+COS_CLS_DEF(MetaDocStr, Object)
   STR ref; // module/section/textref
   OBJ obj; // component or metaref (e.g. function and types)
   STR doc; // doc string (reStructuredText)

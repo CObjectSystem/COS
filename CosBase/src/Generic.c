@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.8 2010/01/09 10:03:47 ldeniau Exp $
+ | $Id: Generic.c,v 1.9 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -41,13 +41,13 @@ makclass(Generic, Behavior);
 
 // -----
 
-makclass(GAccessor , Generic  );
-makclass(G_getAt   , GAccessor);
-makclass(G_putAt   , GAccessor);
-makclass(G_getAtInt, GAccessor);
-makclass(G_putAtInt, GAccessor);
-makclass(G_getAtStr, GAccessor);
-makclass(G_putAtStr, GAccessor);
+makclass(G_Accessor, Generic  );
+makclass(G_getAt   , G_Accessor);
+makclass(G_putAt   , G_Accessor);
+makclass(G_getAtIdx, G_Accessor);
+makclass(G_putAtIdx, G_Accessor);
+makclass(G_getAtKey, G_Accessor);
+makclass(G_putAtKey, G_Accessor);
 
 // -----
 

@@ -32,14 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utest.h,v 1.5 2009/09/06 18:42:26 ldeniau Exp $
+ | $Id: utest.h,v 1.6 2010/05/20 15:48:13 ldeniau Exp $
  |
 */
 
 #define UTEST_START(name) \
   { \
     struct cos_utest_info _utst_info[1]; \
-    cos_utest_init(_utst_info, KEEP_FAILED_MAX, name, __FILE__); \
+    cos_utest_init(_utst_info, UTEST_KEEP_MAX_FAILED, name, __FILE__); \
     {
 
 #define UTEST(cond) \
@@ -60,13 +60,13 @@
     cos_stest_fini(_stst_info); \
   } while (0)
 
-#define KEEP_FAILED_MAX 25
+#define UTEST_KEEP_MAX_FAILED 25
 
 struct cos_utest_info {
   int         keep_max;
   const char *test_file;
-  const char *fail_cond[KEEP_FAILED_MAX];
-  int         fail_line[KEEP_FAILED_MAX];
+  const char *fail_cond[UTEST_KEEP_MAX_FAILED];
+  int         fail_line[UTEST_KEEP_MAX_FAILED];
   int         fail_cnt;
   int         test_cnt;
   double      test_t0;

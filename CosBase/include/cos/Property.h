@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Property.h,v 1.4 2009/08/03 10:07:00 ldeniau Exp $
+ | $Id: Property.h,v 1.5 2010/05/20 15:48:13 ldeniau Exp $
  |
 */
 
@@ -53,7 +53,7 @@
    attributes introspection and scripting.
 */
 
-defclass(Property,Nil)
+defclass(Property, Nil)
 endclass
 
 #endif // COS_PROPERTY_H

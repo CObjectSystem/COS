@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: value.h,v 1.16 2010/03/21 20:34:46 ldeniau Exp $
+ | $Id: value.h,v 1.17 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -40,8 +40,8 @@
 
 defgeneric(STR  , gstr ,  _1);
 defgeneric(U32  , gsize,  _1);
-defgeneric(I32  , gindex, _1);
 defgeneric(BOOL , gbool,  _1);     
+defgeneric(I32  , gidx,   _1);
 defgeneric(void*, gptr ,  _1);
 defgeneric(FCT  , gfct ,  _1);
 

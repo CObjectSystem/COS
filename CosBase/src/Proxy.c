@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.19 2010/02/21 16:27:25 ldeniau Exp $
+ | $Id: Proxy.c,v 1.20 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -427,14 +427,14 @@ endmethod
 
 // ----- unrecognized (1+3+7+15+31=57 cases)
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 chkret(SEL sel, OBJ* ret, struct Proxy* pxy)
 {
   if (COS_GEN_ISOBJ(sel) && *ret == pxy->obj)
     *ret = (OBJ)pxy;
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 chkret2(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2)
 {
   if (COS_GEN_ISOBJ(sel)) {
@@ -443,7 +443,7 @@ chkret2(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2)
   }
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 chkret3(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3)
 {
   if (COS_GEN_ISOBJ(sel)) {
@@ -453,7 +453,7 @@ chkret3(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy*
   }
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 chkret4(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3,
                            struct Proxy* pxy4)
 {
@@ -465,7 +465,7 @@ chkret4(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy*
   }
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 chkret5(SEL sel, OBJ* ret, struct Proxy* pxy1, struct Proxy* pxy2, struct Proxy* pxy3,
                            struct Proxy* pxy4, struct Proxy* pxy5)
 {

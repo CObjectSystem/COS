@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Predicate.h,v 1.1 2009/02/25 23:06:08 ldeniau Exp $
+ | $Id: Predicate.h,v 1.2 2010/05/20 15:48:13 ldeniau Exp $
  |
 */
 
@@ -48,7 +48,7 @@
    results as objects.
 */
 
-defclass(Predicate,Nil)
+defclass(Predicate, Nil)
 endclass
 
 #endif // COS_PREDICATE_H

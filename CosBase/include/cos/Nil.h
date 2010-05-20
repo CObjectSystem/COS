@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Nil.h,v 1.6 2010/01/11 13:41:19 ldeniau Exp $
+ | $Id: Nil.h,v 1.7 2010/05/20 15:48:13 ldeniau Exp $
  |
 */
 
@@ -51,7 +51,7 @@
    Use Null (instead of Nil or 0) if you mean "no-data" object.
 */
 
-defclass(Nil,_)
+defclass(Nil, _)
 endclass
 
 #endif // COS_NIL_H

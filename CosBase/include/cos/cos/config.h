@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.19 2010/01/21 22:38:32 ldeniau Exp $
+ | $Id: config.h,v 1.20 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -128,12 +128,12 @@
 
 #undef  __attribute__         // not a macro so far but safer
 #define __attribute__(a)      // disable GCC __attribute__
-#define COS_ALWAYS_INLINE inline
+#define cos_inline inline
 
 #else
 
-#define COS_ALWAYS_INLINE inline __attribute__((__always_inline__))
-#define COS_VALIST_INLINE COS_NO // gcc doesn't know how to inline va_list arg
+#define cos_inline inline __attribute__((__always_inline__))
+#define COS_INLINE_VALIST COS_NO // gcc doesn't know how to inline va_list arg
 
 #endif
 

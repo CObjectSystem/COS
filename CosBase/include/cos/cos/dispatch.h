@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: dispatch.h,v 1.7 2009/08/19 10:14:22 ldeniau Exp $
+ | $Id: dispatch.h,v 1.8 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -42,13 +42,13 @@
 
 // --------------------------------------------------
 
-static COS_ALWAYS_INLINE U32
+static cos_inline U32
 cos_method_hkey1(U32 idg, U32 id1)
 {
   return idg +id1;
 }
 
-static COS_ALWAYS_INLINE IMP1
+static cos_inline IMP1
 cos_method_fastLookup1(SEL restrict _sel, U32 id1)
 {
   U32 key = cos_method_hkey1(_sel->Behavior.id,id1);
@@ -64,7 +64,7 @@ cos_method_fastLookup1(SEL restrict _sel, U32 id1)
   COS_UNUSED(cos_method_fastLookup1);
 }
 
-static COS_ALWAYS_INLINE BOOL
+static cos_inline BOOL
 cos_method_understand1(SEL restrict _sel, U32 id1)
 {
   U32 key = cos_method_hkey1(_sel->Behavior.id,id1);
@@ -82,13 +82,13 @@ cos_method_understand1(SEL restrict _sel, U32 id1)
 
 // --------------------------------------------------
 
-static COS_ALWAYS_INLINE U32
+static cos_inline U32
 cos_method_hkey2(U32 idg, U32 id1, U32 id2)
 {
   return idg +id1 +id2/2;
 }
 
-static COS_ALWAYS_INLINE IMP2
+static cos_inline IMP2
 cos_method_fastLookup2(SEL restrict _sel, U32 id1, U32 id2)
 {
   U32 key = cos_method_hkey2(_sel->Behavior.id,id1,id2);
@@ -105,7 +105,7 @@ cos_method_fastLookup2(SEL restrict _sel, U32 id1, U32 id2)
   COS_UNUSED(cos_method_fastLookup2);
 }
 
-static COS_ALWAYS_INLINE BOOL
+static cos_inline BOOL
 cos_method_understand2(SEL restrict _sel, U32 id1, U32 id2)
 {
   U32 key = cos_method_hkey2(_sel->Behavior.id,id1,id2);
@@ -124,13 +124,13 @@ cos_method_understand2(SEL restrict _sel, U32 id1, U32 id2)
 
 // --------------------------------------------------
 
-static COS_ALWAYS_INLINE U32
+static cos_inline U32
 cos_method_hkey3(U32 idg, U32 id1, U32 id2, U32 id3)
 {
   return idg +id1 +id2/2 +id3/4;
 }
 
-static COS_ALWAYS_INLINE IMP3
+static cos_inline IMP3
 cos_method_fastLookup3(SEL restrict _sel, U32 id1, U32 id2, U32 id3)
 {
   U32 key = cos_method_hkey3(_sel->Behavior.id,id1,id2,id3);
@@ -148,7 +148,7 @@ cos_method_fastLookup3(SEL restrict _sel, U32 id1, U32 id2, U32 id3)
   COS_UNUSED(cos_method_fastLookup3);
 }
 
-static COS_ALWAYS_INLINE BOOL
+static cos_inline BOOL
 cos_method_understand3(SEL restrict _sel, U32 id1, U32 id2, U32 id3)
 {
   U32 key = cos_method_hkey3(_sel->Behavior.id,id1,id2,id3);
@@ -168,13 +168,13 @@ cos_method_understand3(SEL restrict _sel, U32 id1, U32 id2, U32 id3)
 
 // --------------------------------------------------
 
-static COS_ALWAYS_INLINE U32
+static cos_inline U32
 cos_method_hkey4(U32 idg, U32 id1, U32 id2, U32 id3, U32 id4)
 {
   return idg +id1 +id2/2 +id3/4 +id4/8;
 }
 
-static COS_ALWAYS_INLINE IMP4
+static cos_inline IMP4
 cos_method_fastLookup4(SEL restrict _sel, U32 id1, U32 id2, U32 id3, U32 id4)
 {
   U32 key = cos_method_hkey4(_sel->Behavior.id,id1,id2,id3,id4);
@@ -193,7 +193,7 @@ cos_method_fastLookup4(SEL restrict _sel, U32 id1, U32 id2, U32 id3, U32 id4)
   COS_UNUSED(cos_method_fastLookup4);
 }
 
-static COS_ALWAYS_INLINE BOOL
+static cos_inline BOOL
 cos_method_understand4(SEL restrict _sel, U32 id1, U32 id2, U32 id3, U32 id4)
 {
   U32 key = cos_method_hkey4(_sel->Behavior.id,id1,id2,id3,id4);
@@ -214,13 +214,13 @@ cos_method_understand4(SEL restrict _sel, U32 id1, U32 id2, U32 id3, U32 id4)
 
 // --------------------------------------------------
 
-static COS_ALWAYS_INLINE U32
+static cos_inline U32
 cos_method_hkey5(U32 idg, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
   return idg +id1 +id2/2 +id3/4 +id4/8 +id5/16;
 }
 
-static COS_ALWAYS_INLINE IMP5
+static cos_inline IMP5
 cos_method_fastLookup5(SEL restrict _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
   U32 key = cos_method_hkey5(_sel->Behavior.id,id1,id2,id3,id4,id5);
@@ -240,7 +240,7 @@ cos_method_fastLookup5(SEL restrict _sel, U32 id1, U32 id2, U32 id3, U32 id4, U3
   COS_UNUSED(cos_method_fastLookup5);
 }
 
-static COS_ALWAYS_INLINE BOOL
+static cos_inline BOOL
 cos_method_understand5(SEL restrict _sel, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
   U32 key = cos_method_hkey5(_sel->Behavior.id,id1,id2,id3,id4,id5);

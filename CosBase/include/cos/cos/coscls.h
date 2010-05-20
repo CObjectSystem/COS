@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.16 2010/03/13 15:16:22 ldeniau Exp $
+ | $Id: coscls.h,v 1.17 2010/05/20 15:48:16 ldeniau Exp $
  |
 */
 
@@ -122,14 +122,14 @@
 
 */
 
-COS_CLS_DEF(Any,_)
+COS_CLS_DEF(Any, _)
 COS_CLS_END
 
-COS_CLS_DEF(Object,Any)
+COS_CLS_DEF(Object, Any)
 // root of most objects
 COS_CLS_END
 
-COS_CLS_DEF(Behavior,Object)
+COS_CLS_DEF(Behavior, Object)
   U32 id;
 /* id is storing cryptic information (LSB->MSB):
      u27 tag {1..134217727} (unique)
@@ -137,7 +137,7 @@ COS_CLS_DEF(Behavior,Object)
 */
 COS_CLS_END
 
-COS_CLS_DEF(Generic,Behavior)
+COS_CLS_DEF(Generic, Behavior)
   STR file;
   U32 line;
   U32 mth;
@@ -150,7 +150,7 @@ COS_CLS_DEF(Generic,Behavior)
   U32 info; // store cryptic information, see cos/cos/generic.h
 COS_CLS_END
 
-COS_CLS_DEF(Class,Behavior)
+COS_CLS_DEF(Class, Behavior)
   STR file;
   U32 line;
   U32 isz;
@@ -160,7 +160,7 @@ COS_CLS_DEF(Class,Behavior)
   U32 prp[2];
 COS_CLS_END
 
-COS_CLS_DEF(Method,Object)
+COS_CLS_DEF(Method, Object)
   STR file;
   U32 line;
   struct Generic* gen;
@@ -168,27 +168,27 @@ COS_CLS_DEF(Method,Object)
   U32 arnd;
 COS_CLS_END
 
-COS_CLS_DEF(Method1,Method)
+COS_CLS_DEF(Method1, Method)
   IMP1 fct;
   struct Class* cls[1];
 COS_CLS_END
 
-COS_CLS_DEF(Method2,Method)
+COS_CLS_DEF(Method2, Method)
   IMP2 fct;
   struct Class* cls[2];
 COS_CLS_END
 
-COS_CLS_DEF(Method3,Method)
+COS_CLS_DEF(Method3, Method)
   IMP3 fct;
   struct Class* cls[3];
 COS_CLS_END
 
-COS_CLS_DEF(Method4,Method)
+COS_CLS_DEF(Method4, Method)
   IMP4 fct;
   struct Class* cls[4];
 COS_CLS_END
 
-COS_CLS_DEF(Method5,Method)
+COS_CLS_DEF(Method5, Method)
   IMP5 fct;
   struct Class* cls[5];
 COS_CLS_END
@@ -199,7 +199,7 @@ COS_CLS_END
 #endif
 
 #ifndef COS_DISABLE_STD_PREDICATES
-COS_CLS_USE(Nil,True,False);
+COS_CLS_USE(Nil, True, False);
 #endif
 
 #endif // COS_COS_COSCLS_H

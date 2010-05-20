@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: MetaClass.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: MetaClass.h,v 1.3 2010/05/20 15:48:13 ldeniau Exp $
  |
 */
 
@@ -40,10 +40,10 @@
 #include <cos/Object.h>
 #endif 
 
-defclass(MetaClass,Class)
+defclass(MetaClass, Class)
 endclass
 
-defclass(PropMetaClass,MetaClass)
+defclass(PropMetaClass, MetaClass)
 endclass
 
 #endif // COS_METACLASS_H
