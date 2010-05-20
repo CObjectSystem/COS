@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Property.c,v 1.2 2009/02/25 23:06:39 ldeniau Exp $
+ | $Id: Property.c,v 1.3 2010/05/20 16:30:46 ldeniau Exp $
  |
 */
 
@@ -37,5 +37,5 @@
 
 // -----
 
-makclass(Property,Nil);
+makclass(Property, Nil);
 

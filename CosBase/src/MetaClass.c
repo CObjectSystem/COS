@@ -29,15 +29,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: MetaClass.c,v 1.1 2008/06/27 16:17:17 ldeniau Exp $
+ | $Id: MetaClass.c,v 1.2 2010/05/20 16:30:46 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/MetaClass.h>
-#include <cos/gen/object.h>
 
 // ----- 
 
-makclass(MetaClass,Class);
-makclass(PropMetaClass,MetaClass);
+makclass(MetaClass, Class);
+makclass(PropMetaClass, MetaClass);

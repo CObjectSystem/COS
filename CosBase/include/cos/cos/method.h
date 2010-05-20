@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.42 2010/03/13 15:16:22 ldeniau Exp $
+ | $Id: method.h,v 1.43 2010/05/20 16:30:38 ldeniau Exp $
  |
 */
 
@@ -91,7 +91,6 @@
 #define COS_DISABLE_next_method_p
 #define COS_DISABLE_forward_message
 #define COS_DISABLE_method_retval
-#define COS_DISABLE_method_retval_as
 #endif
 
 #ifndef COS_DISABLE_methodref
@@ -132,10 +131,6 @@
 
 #ifndef COS_DISABLE_method_retval
 #define method_retval COS_MTH_RETVAL
-#endif
-
-#ifndef COS_DISABLE_method_retval_as
-#define method_retval_as(...) COS_MTH_RETVAL_AS(__VA_ARGS__)
 #endif
 
 /***********************************************************
@@ -383,9 +378,6 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
 
 // method_retval
 #define COS_MTH_RETVAL (*(_ret_t)_ret)
-
-// method_retval_asa
-#define COS_MTH_RETVAL_AS(T) COS_STATIC_DCAST(T, COS_MTH_RETVAL)
 
 // next_method
 #define COS_MTH_NXT(...) \

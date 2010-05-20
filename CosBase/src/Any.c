@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.21 2010/03/21 20:34:48 ldeniau Exp $
+ | $Id: Any.c,v 1.22 2010/05/20 16:30:46 ldeniau Exp $
  |
 */
 
@@ -43,17 +43,11 @@
 
 // ----- root class
 
-makclass(Any,_);
+makclass(Any, _);
 
 // ----- exceptions
 
 useclass(ExBadAlloc, ExBadMessage);
-
-// ----- properties (read-only)
-
-defmethod(OBJ, ggetAt, Object, mP_class)
-  retmethod(gclass(_1));
-endmethod
 
 // ----- allocator
 

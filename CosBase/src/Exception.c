@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.18 2010/02/21 14:56:27 ldeniau Exp $
+ | $Id: Exception.c,v 1.19 2010/05/20 16:30:46 ldeniau Exp $
  |
 */
 
@@ -49,28 +49,28 @@
 
 makclass(Exception);
 
-makclass(ExErrno         ,Exception);
-makclass(ExSignal        ,Exception);
+makclass(ExErrno         , Exception);
+makclass(ExSignal        , Exception);
 
-makclass(ExBadAlloc      ,Exception);
-makclass(ExBadArity      ,Exception);
-makclass(ExBadAssert     ,Exception);
-makclass(ExBadCast       ,Exception);
-makclass(ExBadDomain     ,Exception);
-makclass(ExBadFormat     ,Exception);
-makclass(ExBadMessage    ,Exception);
-makclass(ExBadMode       ,Exception);
-makclass(ExBadPredicate  ,Exception);
-makclass(ExBadProperty   ,Exception);
-makclass(ExBadRange      ,Exception);
-makclass(ExBadSize       ,Exception);
-makclass(ExBadType       ,Exception);
-makclass(ExBadValue      ,Exception);
-makclass(ExNotFound      ,Exception);
-makclass(ExNotImplemented,Exception);
-makclass(ExNotSupported  ,Exception);
-makclass(ExOverflow      ,Exception);
-makclass(ExUnderflow     ,Exception);
+makclass(ExBadAlloc      , Exception);
+makclass(ExBadArity      , Exception);
+makclass(ExBadAssert     , Exception);
+makclass(ExBadCast       , Exception);
+makclass(ExBadDomain     , Exception);
+makclass(ExBadFormat     , Exception);
+makclass(ExBadMessage    , Exception);
+makclass(ExBadMode       , Exception);
+makclass(ExBadPredicate  , Exception);
+makclass(ExBadProperty   , Exception);
+makclass(ExBadRange      , Exception);
+makclass(ExBadSize       , Exception);
+makclass(ExBadType       , Exception);
+makclass(ExBadValue      , Exception);
+makclass(ExNotFound      , Exception);
+makclass(ExNotImplemented, Exception);
+makclass(ExNotSupported  , Exception);
+makclass(ExOverflow      , Exception);
+makclass(ExUnderflow     , Exception);
 
 // ----- exception
 
@@ -196,7 +196,7 @@ static const char* strsignal(int sig)
   case SIGQUIT: return "Quit";
   case SIGSEGV: return "Segmentation fault";
   case SIGTERM: return "Terminated";
-  default     : return "unknown signal";
+  default     : return "Unknown signal";
   }
 }
 #endif // __GLIBC__

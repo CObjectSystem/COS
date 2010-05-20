@@ -241,7 +241,7 @@
                     <keyword>forward_message</keyword>
                     <keyword>next_method</keyword>
                     <keyword>next_method_p</keyword>
-                    <keyword>method_retval_as</keyword>
+                    <keyword>method_retval</keyword>
                     <keyword>defcontract</keyword>
                     <keyword>endcontract</keyword>
                     <keyword>retcontract</keyword>
@@ -363,9 +363,9 @@
                     <keyword>FINAL_CLASS</keyword>
                     <keyword>STATIC_ASSERT</keyword>
                     <keyword>STATIC_CAST</keyword>
-                    <keyword>STATIC_DCAST</keyword>
-                    <keyword>OBJECT_CAST</keyword>
-                    <keyword>OBJECT_DCAST</keyword>
+                    <keyword>chkcast</keyword>
+                    <keyword>objcast</keyword>
+                    <keyword>dyncast</keyword>
                     <keyword>test_assert</keyword>
                     <keyword>test_invariant</keyword>
                     <keyword>method_retval</keyword>
@@ -388,6 +388,7 @@
 
                     <!-- COS Add-on -->
                     <keyword>Nil</keyword>
+                    <keyword>Null</keyword>
                     <keyword>True</keyword>
                     <keyword>False</keyword>
                 </context>

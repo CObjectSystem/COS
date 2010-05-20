@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.51 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.52 2010/05/20 16:30:46 ldeniau Exp $
  |
 */
 
@@ -195,7 +195,7 @@ defmethod(OBJ, gretain, Any)
     retmethod( cos_object_incRc(_1) );
 
   if (cos_object_rc(_1) == COS_RC_AUTO)
-    retmethod(gclone(_1));
+    retmethod(gcopy(_1));
 
   if (cos_object_rc(_1) == COS_RC_STATIC)
     retmethod(_1);
