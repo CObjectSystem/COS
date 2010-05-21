@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.h,v 1.15 2010/02/21 00:46:24 ldeniau Exp $
+ | $Id: Functor_utl.h,v 1.16 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -47,55 +47,55 @@
 #define PAR_UNIT ((U32) 1 << 27)
 #define PAR_MASK ((U32)31 << 27)
 
-static COS_ALWAYS_INLINE U32
+static cos_inline U32
 getPar(U32 msk)
 {
   return msk & PAR_MASK;
 }
 
-static COS_ALWAYS_INLINE U32
+static cos_inline U32
 getIdx(OBJ arg)
 {
   return (size_t)arg;
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 getVar(OBJ arg)
 {
   return arg;
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 setArg(U32 *msk, U32 idx)
 {
   *msk |= 1 << 3*idx;
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 setIdx(U32 *msk, U32 idx)
 {
   *msk |= 2 << 3*idx;
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 setVar(U32 *msk, U32 idx)
 {
   *msk |= 4 << 3*idx;
 }
 
-static COS_ALWAYS_INLINE BOOL
+static cos_inline BOOL
 isArg(U32 msk, U32 idx)
 {
   return msk & (1 << 3*idx);
 }
 
-static COS_ALWAYS_INLINE BOOL
+static cos_inline BOOL
 isIdx(U32 msk, U32 idx)
 {
   return msk & (2 << 3*idx);
 }
 
-static COS_ALWAYS_INLINE BOOL
+static cos_inline BOOL
 isVar(U32 msk, U32 idx)
 {
   return msk & (4 << 3*idx);
@@ -103,7 +103,7 @@ isVar(U32 msk, U32 idx)
 
 // ----- "array-like" environment
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 getArg(U32 idx, U32 msk, OBJ arg, OBJ var[], U32 size, OBJ env)
 {
   if (isArg(msk, idx))        // argument (free variable)
@@ -118,7 +118,7 @@ getArg(U32 idx, U32 msk, OBJ arg, OBJ var[], U32 size, OBJ env)
   return gevalEnv(arg, env);  // other (expression)
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 getArgOff(U32 idx, U32 msk, OBJ *arg, OBJ var[], U32 size, OBJ env)
 {
   if (isIdx(msk, idx)) {      // environment index (placeholder)
@@ -132,7 +132,7 @@ getArgOff(U32 idx, U32 msk, OBJ *arg, OBJ var[], U32 size, OBJ env)
 
 // ----- "dictionnary-like" environment
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 getArgVar(U32 idx, U32 msk, OBJ arg, OBJ env)
 {
   if (isArg(msk, idx))        // simple argument (free variable)
@@ -142,12 +142,12 @@ getArgVar(U32 idx, U32 msk, OBJ arg, OBJ env)
     return ggetAt(env, getVar(arg));
 
   if (isIdx(msk, idx))        // environment index (placeholder)
-    return ggetAtInt(env, getIdx(arg));
+    return ggetAtIdx(env, getIdx(arg));
 
   return gevalEnv(arg, env);  // other (expression)
 }
 
-static COS_ALWAYS_INLINE void
+static cos_inline void
 getArgVarOff(U32 idx, U32 msk, OBJ *arg, OBJ env)
 {
   if (isVar(msk, idx))        // environment key (placeholder)
@@ -155,7 +155,7 @@ getArgVarOff(U32 idx, U32 msk, OBJ *arg, OBJ env)
 
   else
   if (isIdx(msk, idx))        // environment index (placeholder)
-    *arg = ggetAtInt(env, getIdx(*arg));
+    *arg = ggetAtIdx(env, getIdx(*arg));
 
   else
   *arg = gevalEnv(*arg, env); // other (expression)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.8 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: String.h,v 1.9 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -64,12 +64,12 @@
    where:
    - All strings are mutable
    - All strings hold value elements
-   - String are not sliced (ignored in views construction)
+   - String are _not_ strided (ignored in views construction)
    - Dynamic strings can shrink and grow (gappend, gpreprend)
-   - Dynamic strings can be converted to fixed string (gfix, gadjust)
+   - Dynamic strings can be converted to fixed string (gadjust)
    - Lazy strings are dynamic strings growing automatically using a generator
-   - String views work only on non-dynamic strings
-   - String views clone are block strings (copy), not views
+   - String views convert dynamic strings into fixed strings
+   - String views copy/clone are block strings, not views
 */
 
 defclass(String, ValueSequence)
@@ -153,7 +153,7 @@ struct String* StringView_init(struct StringView*, struct String*, struct Slice*
 
 // --- inliners
 
-static COS_ALWAYS_INLINE struct String*
+static cos_inline struct String*
 String_init(struct String *str, STR cstr)
 {
   size_t size = strlen(cstr);

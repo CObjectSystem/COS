@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.9 2010/02/21 00:46:24 ldeniau Exp $
+ | $Id: String_vw.c,v 1.10 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #include <cos/Slice.h>
 #include <cos/View.h>
 
+#include <cos/gen/collection.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 
@@ -94,8 +95,8 @@ defmethod(OBJ, ginitWith2, StringView, String, Slice)
   PRT(_1);
   self->ref = 0;
   
-  test_assert( !cos_object_isKindOf(_2, classref(StringDyn)),
-               "string views accept only non-dynamic string" );
+  if (cos_object_isKindOf(_2, classref(StringDyn)))
+    gadjust(_2);
 
   OBJ ref = gretain(_2); PRT(ref);
   
@@ -109,7 +110,7 @@ endmethod
 
 defmethod(OBJ, gdeinit, StringView)
   if (self->ref)              // take care of protection cases
-    grelease( (OBJ)self->ref );
+    grelease( (OBJ)self->ref ), self->ref = 0;
   retmethod(_1);
 endmethod
 
@@ -119,7 +120,8 @@ defmethod(void, ginvariant, StringView, (STR)func, (STR)file, (int)line)
   test_assert( cos_object_isKindOf((OBJ)self->ref, classref(String)),
                "string view points to something not a string", func, file, line);
 
-  test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(StringDyn)),
+  test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(StringDyn)) ||
+                cos_object_rc((OBJ)self->ref) == COS_RC_AUTO ,
                "string view points to a dynamic string", func, file, line);
 
   struct String *str = self->ref;

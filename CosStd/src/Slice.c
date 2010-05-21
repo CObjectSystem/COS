@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.19 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Slice.c,v 1.20 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@
 #include <cos/gen/value.h>
 
 #include <cos/prp/object.h>
-#include <cos/prp/sequence.h>
+// #include <cos/prp/sequence.h>
 
 makclass(Slice, ValueSequence);
 
@@ -55,23 +55,17 @@ makclass(Slice, ValueSequence);
 
 useclass(Slice);
 
-// ----- properties
-
-defmethod(OBJ, ggetAt, Object, mP_slice)
-  struct Slice slc = gslice(_1);
-  retmethod( gautoDelete((OBJ)&slc) );
-endmethod
-
 // ----- new
 
 defmethod(OBJ, gnewSlc, pmSlice, (I32)start, (U32)size, (I32)stride)
-  retmethod( (OBJ)Slice_init((void*)galloc(_1), start, size, stride) );
+  retmethod( (OBJ)Slice_init((struct Slice*)galloc(_1), start, size, stride) );
 endmethod
 
-// ----- clone
+// ----- copy/clone
 
-defmethod(OBJ, gclone, Slice)
-  retmethod( (OBJ)Slice_copy((void*)galloc(Slice), self) );
+defalias (OBJ, (gcopy)gclone, Slice);
+defmethod(OBJ,  gcopy       , Slice)
+  retmethod( (OBJ)Slice_copy((struct Slice*)galloc(Slice), self) );
 endmethod
 
 // ----- equality

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.53 2010/03/24 09:01:30 ldeniau Exp $
+ | $Id: Array.c,v 1.54 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -67,10 +67,6 @@ makclass(ArrayN, Array);
 useclass(Array);
 
 // --- getters
-
-defmethod(struct Slice, gslice, Array)
-  retmethod( *atSlice(0,self->size,self->stride) );
-endmethod
 
 defmethod(U32, gsize, Array)
   retmethod(self->size);

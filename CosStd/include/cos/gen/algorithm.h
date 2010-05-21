@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.41 2010/01/10 21:23:04 ldeniau Exp $
+ | $Id: algorithm.h,v 1.42 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -139,5 +139,6 @@ defgeneric(OBJ, gmerge      , _1, _2, fun); // _1 + _2 (requires sorted _1, _2)
 defgeneric(OBJ, gmatch      , _1, _2, fun); // _2 - (_2 - _1) [asymmetric]
 defgeneric(OBJ, gintersect  , _1, _2, fun); // _1 - (_1 - _2) [asymmetric]
   // note : gmatch(_1,_2) == gintersect(_2,_1), except for fun and complexity
+
 #endif // COS_GEN_ALGORITHM_H
 

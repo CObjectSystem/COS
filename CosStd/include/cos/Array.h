@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.30 2009/12/28 00:18:54 ldeniau Exp $
+ | $Id: Array.h,v 1.31 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -44,7 +44,7 @@
    aArrayView(array ,slice)         -> Array view     (automatic)
    aArrayRef (buffer,size[,stride]) -> Array          (automatic)
 
-   gnewWith (Array,array)           -> Block array    (clone)
+   gnewWith (Array,array)           -> Block array    (copy)
    gnewWith (Array,slice)           -> Block array    (Ints)
    gnewWith (Array,range)           -> Block array    (Ints)
    gnewWith2(Array,size,obj)        -> Block array    (element)
@@ -67,10 +67,10 @@
    - All arrays own their elements (gretain) except automatic arrays
    - Block arrays will be one of Array0..9 if size is < 10, ArrayN otherwise
    - Dynamic arrays can shrink and grow (gappend, gpreprend)
-   - Dynamic arrays can be converted to fixed array (gfix, gadjust)
+   - Dynamic arrays can be converted to fixed array (gadjust)
    - Lazy arrays are dynamic arrays growing automatically using a generator
-   - Array views work only on non-dynamic arrays
-   - Array views clone are block arrays (copy), not views
+   - Array views convert dynamic arrays into fixed arrays
+   - Array views copy/clone are block arrays, not views
 */
 
 defclass(Array, Sequence)

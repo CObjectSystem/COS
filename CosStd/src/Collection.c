@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Collection.c,v 1.3 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Collection.c,v 1.4 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -40,15 +40,7 @@
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 
-#include <cos/prp/object.h>
-
 // -----
 
 makclass(Collection);
-
-// ----- properties
-
-defmethod(OBJ, ggetAt, Collection, mP_size)
-  retmethod( gautoDelete(aInt(gsize(_1))) );
-endmethod
 

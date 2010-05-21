@@ -32,15 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GOperator.h,v 1.2 2010/01/03 12:38:48 ldeniau Exp $
+ | $Id: GOperator.h,v 1.3 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-defclass(GOperator , Generic  ) endclass
-defclass(GUnaryOp  , GOperator) endclass
-defclass(GBinaryOp , GOperator) endclass
-defclass(GTernaryOp, GOperator) endclass
+defclass(G_Operator , Generic   ) endclass
+defclass(G_UnaryOp  , G_Operator) endclass
+defclass(G_BinaryOp , G_Operator) endclass
+defclass(G_TernaryOp, G_Operator) endclass
 
 #endif // COS_GEN_OP_GOPERATOR_H

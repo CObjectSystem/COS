@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.9 2009/10/19 19:38:10 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.10 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -51,18 +51,18 @@ endmethod
 
 // ----- getters (index, slice, range, intvector)
 
+defmethod(OBJ, ggetAtIdx, T, (I32)idx)
+  U32 i = Range_index(idx, self->size);
+  test_assert( i < self->size, "index out of range" );
+
+  retmethod( gautoDelete(VALOBJ(self->value[i*self->stride])) );
+endmethod
+
 defmethod(OBJ, ggetAt, T, Int)
-  U32 i;
-  
-  PRE
-    i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+  U32 i = Range_index(self2->value, self->size);
+  test_assert( i < self->size, "index out of range" );
 
-  BODY
-    if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->value, self->size);
-
-    retmethod( gautoDelete(VALOBJ(self->value[i*self->stride])) );
+  retmethod( gautoDelete(VALOBJ(self->value[i*self->stride])) );
 endmethod
 
 defmethod(OBJ, ggetAt, T, Slice)
@@ -79,23 +79,28 @@ endmethod
 
 // ----- object setters (index, slice, range, intvector)
 
-defmethod(OBJ, gputAt, T, Int, Object)
-  U32 i;
-  
-  PRE
-    i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+defmethod(OBJ, gputAtIdx, T, (I32)idx, Object)
+  U32 i = Range_index(idx, self->size);
+  test_assert( i < self->size, "index out of range" );
 
-  BODY
-    if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->value, self->size);
- 
-    VAL  val = TOVAL(_3);
-    VAL *dst = self->value + i*self->stride;
-    
-    *dst = val;
-    
-    retmethod(_1);
+  VAL  val = TOVAL(_2);
+  VAL *dst = self->value + i*self->stride;
+  
+  *dst = val;
+  
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gputAt, T, Int, Object)
+  U32 i = Range_index(self2->value, self->size);
+  test_assert( i < self->size, "index out of range" );
+
+  VAL  val = TOVAL(_3);
+  VAL *dst = self->value + i*self->stride;
+  
+  *dst = val;
+  
+  retmethod(_1);
 endmethod
 
 defmethod(OBJ, gputAt, T, Slice, Object)

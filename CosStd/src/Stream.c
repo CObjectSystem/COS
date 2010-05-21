@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.8 2010/02/21 00:46:24 ldeniau Exp $
+ | $Id: Stream.c,v 1.9 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -459,7 +459,7 @@ defmethod(OBJ, gmapWhile, Functor, InputStream)
   while ((res = geval(_1,_2)) != Nil)
     gpush(rec, res);
 
-  retmethod(gadjust(rec));
+  retmethod(rec);
 endmethod
 
 // high-level object primitives (from class)

@@ -29,106 +29,106 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.4 2010/01/04 09:59:02 ldeniau Exp $
+ | $Id: Generic.c,v 1.5 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GOperator.h>
 
-makclass(GOperator , Generic  );
-makclass(GUnaryOp  , GOperator);
-makclass(GBinaryOp , GOperator);
-makclass(GTernaryOp, GOperator);
+makclass(G_Operator , Generic  );
+makclass(G_UnaryOp  , G_Operator);
+makclass(G_BinaryOp , G_Operator);
+makclass(G_TernaryOp, G_Operator);
 
 #include <cos/gen/op/GNumOp.h>
 
-makclass(G_abs      , GUnaryOp );
-makclass(G_neg      , GUnaryOp );
-makclass(G_sqr      , GUnaryOp );
-makclass(G_inv      , GUnaryOp );
-makclass(G_add      , GBinaryOp);
-makclass(G_sub      , GBinaryOp);
-makclass(G_mul      , GBinaryOp);
-makclass(G_div      , GBinaryOp);
-makclass(G_pow      , GBinaryOp);
-makclass(G_mod      , GBinaryOp);
+makclass(G_abs      , G_UnaryOp );
+makclass(G_neg      , G_UnaryOp );
+makclass(G_sqr      , G_UnaryOp );
+makclass(G_inv      , G_UnaryOp );
+makclass(G_add      , G_BinaryOp);
+makclass(G_sub      , G_BinaryOp);
+makclass(G_mul      , G_BinaryOp);
+makclass(G_div      , G_BinaryOp);
+makclass(G_pow      , G_BinaryOp);
+makclass(G_mod      , G_BinaryOp);
 
-makclass(G_absolute , GUnaryOp );
-makclass(G_negate   , GUnaryOp );
-makclass(G_square   , GUnaryOp );
-makclass(G_invert   , GUnaryOp );
-makclass(G_addTo    , GBinaryOp);
-makclass(G_subTo    , GBinaryOp);
-makclass(G_mulBy    , GBinaryOp);
-makclass(G_divBy    , GBinaryOp);
-makclass(G_power    , GBinaryOp);
-makclass(G_modulo   , GBinaryOp);
+makclass(G_absolute , G_UnaryOp );
+makclass(G_negate   , G_UnaryOp );
+makclass(G_square   , G_UnaryOp );
+makclass(G_invert   , G_UnaryOp );
+makclass(G_addTo    , G_BinaryOp);
+makclass(G_subTo    , G_BinaryOp);
+makclass(G_mulBy    , G_BinaryOp);
+makclass(G_divBy    , G_BinaryOp);
+makclass(G_power    , G_BinaryOp);
+makclass(G_modulo   , G_BinaryOp);
 
 #include <cos/gen/op/GFloatOp.h>
 
-makclass(G_conj       , GUnaryOp  );
-makclass(G_arg        , GUnaryOp  );
-makclass(G_exp        , GUnaryOp  );
-makclass(G_log        , GUnaryOp  );
-makclass(G_sqrt       , GUnaryOp  );
-makclass(G_cos        , GUnaryOp  );
-makclass(G_sin        , GUnaryOp  );
-makclass(G_tan        , GUnaryOp  );
-makclass(G_acos       , GUnaryOp  );
-makclass(G_asin       , GUnaryOp  );
-makclass(G_atan       , GUnaryOp  );
-makclass(G_cosh       , GUnaryOp  );
-makclass(G_sinh       , GUnaryOp  );
-makclass(G_tanh       , GUnaryOp  );
-makclass(G_acosh      , GUnaryOp  );
-makclass(G_asinh      , GUnaryOp  );
-makclass(G_atanh      , GUnaryOp  );
-makclass(G_hypot      , GBinaryOp );
-makclass(G_subSqr     , GBinaryOp );
-makclass(G_mulAdd     , GTernaryOp);
+makclass(G_conj       , G_UnaryOp  );
+makclass(G_arg        , G_UnaryOp  );
+makclass(G_exp        , G_UnaryOp  );
+makclass(G_log        , G_UnaryOp  );
+makclass(G_sqrt       , G_UnaryOp  );
+makclass(G_cos        , G_UnaryOp  );
+makclass(G_sin        , G_UnaryOp  );
+makclass(G_tan        , G_UnaryOp  );
+makclass(G_acos       , G_UnaryOp  );
+makclass(G_asin       , G_UnaryOp  );
+makclass(G_atan       , G_UnaryOp  );
+makclass(G_cosh       , G_UnaryOp  );
+makclass(G_sinh       , G_UnaryOp  );
+makclass(G_tanh       , G_UnaryOp  );
+makclass(G_acosh      , G_UnaryOp  );
+makclass(G_asinh      , G_UnaryOp  );
+makclass(G_atanh      , G_UnaryOp  );
+makclass(G_hypot      , G_BinaryOp );
+makclass(G_subSqr     , G_BinaryOp );
+makclass(G_mulAdd     , G_TernaryOp);
 
-makclass(G_conjugate  , GUnaryOp  );
-makclass(G_argument   , GUnaryOp  );
-makclass(G_exponential, GUnaryOp  );
-makclass(G_logarithm  , GUnaryOp  );
-makclass(G_sqroot     , GUnaryOp  );
-makclass(G_cosine     , GUnaryOp  );
-makclass(G_sine       , GUnaryOp  );
-makclass(G_tangent    , GUnaryOp  );
-makclass(G_acosine    , GUnaryOp  );
-makclass(G_asine      , GUnaryOp  );
-makclass(G_atangent   , GUnaryOp  );
-makclass(G_cosineh    , GUnaryOp  );
-makclass(G_sineh      , GUnaryOp  );
-makclass(G_tangenth   , GUnaryOp  );
-makclass(G_acosineh   , GUnaryOp  );
-makclass(G_asineh     , GUnaryOp  );
-makclass(G_atangenth  , GUnaryOp  );
-makclass(G_hypotenuse , GBinaryOp );
+makclass(G_conjugate  , G_UnaryOp  );
+makclass(G_argument   , G_UnaryOp  );
+makclass(G_exponential, G_UnaryOp  );
+makclass(G_logarithm  , G_UnaryOp  );
+makclass(G_sqroot     , G_UnaryOp  );
+makclass(G_cosine     , G_UnaryOp  );
+makclass(G_sine       , G_UnaryOp  );
+makclass(G_tangent    , G_UnaryOp  );
+makclass(G_acosine    , G_UnaryOp  );
+makclass(G_asine      , G_UnaryOp  );
+makclass(G_atangent   , G_UnaryOp  );
+makclass(G_cosineh    , G_UnaryOp  );
+makclass(G_sineh      , G_UnaryOp  );
+makclass(G_tangenth   , G_UnaryOp  );
+makclass(G_acosineh   , G_UnaryOp  );
+makclass(G_asineh     , G_UnaryOp  );
+makclass(G_atangenth  , G_UnaryOp  );
+makclass(G_hypotenuse , G_BinaryOp );
 
 #include <cos/gen/op/GRelOp.h>
 
-makclass(G_compare         , GBinaryOp);
-makclass(G_isEqual         , GBinaryOp);
-makclass(G_isNotEqual      , GBinaryOp);
-makclass(G_isLesser        , GBinaryOp);
-makclass(G_isLesserOrEqual , GBinaryOp);
-makclass(G_isGreater       , GBinaryOp);
-makclass(G_isGreaterOrEqual, GBinaryOp);
-makclass(G_min             , GBinaryOp);
-makclass(G_max             , GBinaryOp);
-makclass(G_hash            , GUnaryOp );
+makclass(G_compare         , G_BinaryOp);
+makclass(G_isEqual         , G_BinaryOp);
+makclass(G_isNotEqual      , G_BinaryOp);
+makclass(G_isLesser        , G_BinaryOp);
+makclass(G_isLesserOrEqual , G_BinaryOp);
+makclass(G_isGreater       , G_BinaryOp);
+makclass(G_isGreaterOrEqual, G_BinaryOp);
+makclass(G_min             , G_BinaryOp);
+makclass(G_max             , G_BinaryOp);
+makclass(G_hash            , G_UnaryOp );
 
 #include <cos/gen/op/GLogicOp.h>
 
-makclass(G_not    , GUnaryOp );
-makclass(G_and    , GBinaryOp);
-makclass(G_or     , GBinaryOp);
-makclass(G_xor    , GBinaryOp);
-makclass(G_implies, GBinaryOp);
+makclass(G_not    , G_UnaryOp );
+makclass(G_and    , G_BinaryOp);
+makclass(G_or     , G_BinaryOp);
+makclass(G_xor    , G_BinaryOp);
+makclass(G_implies, G_BinaryOp);
 
 #include <cos/gen/op/GVectOp.h>
 
-makclass(G_sum , GUnaryOp);
-makclass(G_prod, GUnaryOp);
+makclass(G_sum , G_UnaryOp);
+makclass(G_prod, G_UnaryOp);
 

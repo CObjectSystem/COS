@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.10 2009/08/10 21:02:14 ldeniau Exp $
+ | $Id: Value.h,v 1.11 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -47,16 +47,17 @@
             <- Char
             <- Short
          <- Long
-         <- BigInt     (gmp)
+         <- BigInt     (gmp mpz_t)
       <- Floating
          <- Float
          <- Complex
-         <- BigFloat   (gmp)
-
-   <- DateTime
+         <- Rational   (gmp mpq_t)
+         <- BigFloat   (gmp mpf_t)
 
    <- Range
    <- Slice
+
+   <- DateTime
 */
 
 defclass(Value)

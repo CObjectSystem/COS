@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Iterator.h,v 1.1 2010/01/21 14:52:53 ldeniau Exp $
+ | $Id: Iterator.h,v 1.2 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -42,9 +42,9 @@
 
   - Iterators are low-level abstract classes used to traverse collections.
   - All iterators support gnext which returns the next object or Nil.
-  - All iterators support gallNext which returns the an array of
-    remaining objects (possibly empty). The Iterator class provides a default
-    implementation based on gnext.
+  - All iterators support gallNext which returns an array of remaining objects
+    (possibly empty). The Collection class provides default implementation based
+    on gnext.
 */
 
 defclass(Iterator)

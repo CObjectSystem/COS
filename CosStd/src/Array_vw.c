@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_vw.c,v 1.4 2009/09/30 21:52:59 ldeniau Exp $
+ | $Id: Array_vw.c,v 1.5 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -38,6 +38,7 @@
 #include <cos/Slice.h>
 #include <cos/View.h>
 
+#include <cos/gen/collection.h>
 #include <cos/gen/object.h>
 
 // -----
@@ -96,24 +97,25 @@ defmethod(OBJ,  ginitWith2          , mSubView, Array, Range) // vector view
 endmethod
 
 defmethod(OBJ, ginitWith3, ArrayView, Array, Slice, Int) // vector view
-  PRE POST BODY
-    PRT(_1);
-    test_assert( !cos_object_isKindOf(_2, classref(ArrayDyn)),
-                 "array views accept only non-dynamic array" );
+  PRT(_1);
+  self->ref = 0;
 
-    OBJ ref = gretain(_2); PRT(ref);
-    
-    ArrayView_init(self, STATIC_CAST(struct Array*, ref), self3, self4->value);
+  if (cos_object_isKindOf(_2, classref(ArrayDyn)))
+    gadjust(_2);
 
-    UNPRT(_1);
-    retmethod(_1);
+  OBJ ref = gretain(_2); PRT(ref);
+  
+  ArrayView_init(self, STATIC_CAST(struct Array*, ref), self3, self4->value);
+
+  UNPRT(_1);
+  retmethod(_1);
 endmethod
 
 // ----- destructor
 
 defmethod(OBJ, gdeinit, ArrayView)
   if (self->ref)              // take care of protection cases
-    grelease( (OBJ)self->ref );
+    grelease( (OBJ)self->ref ), self->ref = 0;
   retmethod(_1);
 endmethod
 
@@ -123,8 +125,9 @@ defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
   test_assert( cos_object_isKindOf((OBJ)self->ref, classref(Array)),
                "array view points to something not an array", func, file, line);
 
-  test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(ArrayDyn)),
-               "array view points to a dynamic an array", func, file, line);
+  test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(ArrayDyn)) ||
+                cos_object_rc((OBJ)self->ref) == COS_RC_AUTO ,
+               "array view points to a dynamic array", func, file, line);
 
   struct Array *vec = self->ref;
 
@@ -137,8 +140,8 @@ defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
   U32 first = Slice_first(slc);
   U32 last  = Slice_last (slc);
 
-  test_assert( first < self->ref->size && last < self->ref->size,
-               "array view is out of range", func, file, line);
+  test_assert( first < self->ref->size &&
+               last  < self->ref->size, "array view is out of range", func, file, line);
 
   if (next_method_p)
     next_method(self, func, file, line);

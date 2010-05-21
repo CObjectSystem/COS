@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.18 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.19 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -61,9 +61,8 @@ endmethod
 
 // ----- getters (index, slice, range, intvector)
 
-defmethod(OBJ, ggetAtInt, Array, (I32)idx)
+defmethod(OBJ, ggetAtIdx, Array, (I32)idx)
   U32 i = Range_index(idx, self->size);
-
   test_assert( i < self->size, "index out of range" );
 
   retmethod( self->object[i*self->stride] );
@@ -71,7 +70,6 @@ endmethod
 
 defmethod(OBJ, ggetAt, Array, Int)
   U32 i = Range_index(self2->value, self->size);
-
   test_assert( i < self->size, "index out of range" );
 
   retmethod( self->object[i*self->stride] );
@@ -95,9 +93,8 @@ endmethod
 
 // ----- object setters (index, slice, range, intvector)
 
-defmethod(OBJ, gputAtInt, Array, (I32)idx, Object)
+defmethod(OBJ, gputAtIdx, Array, (I32)idx, Object)
   U32 i = Range_index(idx, self->size);
-
   test_assert( i < self->size, "index out of range" );
 
   OBJ *dst = self->object + i*self->stride;
@@ -108,7 +105,6 @@ endmethod
 
 defmethod(OBJ, gputAt, Array, Int, Object)
   U32 i = Range_index(self2->value, self->size);
-
   test_assert( i < self->size, "index out of range" );
 
   OBJ *dst = self->object + i*self->stride;

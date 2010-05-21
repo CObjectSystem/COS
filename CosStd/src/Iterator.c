@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Iterator.c,v 1.2 2010/01/29 12:36:34 ldeniau Exp $
+ | $Id: Iterator.c,v 1.3 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -57,6 +57,6 @@ defmethod(OBJ, gallNext, Iterator)
   while ((obj = gnext(_1)) != Nil)
     gpush(arr, obj);
 
-  retmethod( gadjust(arr) );
+  retmethod(arr);
 endmethod
 

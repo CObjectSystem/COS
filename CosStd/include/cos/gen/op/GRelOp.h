@@ -32,23 +32,23 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GRelOp.h,v 1.3 2010/01/04 09:59:01 ldeniau Exp $
+ | $Id: GRelOp.h,v 1.4 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GOperator.h>
 
-defclass(G_compare         , GBinaryOp) endclass
-defclass(G_isEqual         , GBinaryOp) endclass
-defclass(G_isNotEqual      , GBinaryOp) endclass
-defclass(G_isLesser        , GBinaryOp) endclass
-defclass(G_isLesserOrEqual , GBinaryOp) endclass
-defclass(G_isGreater       , GBinaryOp) endclass
-defclass(G_isGreaterOrEqual, GBinaryOp) endclass
+defclass(G_compare         , G_BinaryOp) endclass
+defclass(G_isEqual         , G_BinaryOp) endclass
+defclass(G_isNotEqual      , G_BinaryOp) endclass
+defclass(G_isLesser        , G_BinaryOp) endclass
+defclass(G_isLesserOrEqual , G_BinaryOp) endclass
+defclass(G_isGreater       , G_BinaryOp) endclass
+defclass(G_isGreaterOrEqual, G_BinaryOp) endclass
 
-defclass(G_min             , GBinaryOp) endclass
-defclass(G_max             , GBinaryOp) endclass
+defclass(G_min             , G_BinaryOp) endclass
+defclass(G_max             , G_BinaryOp) endclass
 
-defclass(G_hash            , GUnaryOp ) endclass
+defclass(G_hash            , G_UnaryOp ) endclass
 
 #endif // COS_GEN_OP_GRELOP_H

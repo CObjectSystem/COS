@@ -32,15 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: iterator.h,v 1.1 2010/01/21 14:52:53 ldeniau Exp $
+ | $Id: iterator.h,v 1.2 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-defgeneric(OBJ, giterator , _1);
-defgeneric(OBJ, griterator, _1); // reverse iterator
-defgeneric(OBJ, gnext     , _1);
-defgeneric(OBJ, gallNext  , _1);
+defgeneric(OBJ, giterator   , _1);
+defgeneric(OBJ, grevIterator, _1); // reverse iterator
+defgeneric(OBJ, gnext       , _1);
+defgeneric(OBJ, gallNext    , _1); // return an array of remaining objects
 
 #endif // COS_GEN_ITERATOR_H

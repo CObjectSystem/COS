@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.11 2010/01/12 15:25:19 ldeniau Exp $
+ | $Id: functor.h,v 1.12 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -80,60 +80,60 @@ defgeneric(OBJ, gcompose, _1);       // compose Array of functors
 
 // ----- eval inliners
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval0(OBJ fun) {
   return gevalEnv(fun, aArray0());
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval1(OBJ fun, OBJ arg1) {
   return gevalEnv(fun, aArray(arg1));
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval2(OBJ fun, OBJ arg1, OBJ arg2) {
   return gevalEnv(fun, aArray(arg1, arg2));
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval3(OBJ fun, OBJ arg1, OBJ arg2, OBJ arg3) {
   return gevalEnv(fun, aArray(arg1, arg2, arg3));
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval4(OBJ fun, OBJ arg1, OBJ arg2, OBJ arg3, OBJ arg4) {
   return gevalEnv(fun, aArray(arg1, arg2, arg3, arg4));
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval5(OBJ fun, OBJ arg1, OBJ arg2, OBJ arg3, OBJ arg4, OBJ arg5) {
   return gevalEnv(fun, aArray(arg1, arg2, arg3, arg4, arg5));
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval6(OBJ fun, OBJ arg1, OBJ arg2, OBJ arg3, OBJ arg4, OBJ arg5, OBJ arg6) {
   return gevalEnv(fun, aArray(arg1, arg2, arg3, arg4, arg5, arg6));
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval7(OBJ fun, OBJ arg1, OBJ arg2, OBJ arg3, OBJ arg4, OBJ arg5,
                 OBJ arg6, OBJ arg7) {
   return gevalEnv(fun, aArray(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval8(OBJ fun, OBJ arg1, OBJ arg2, OBJ arg3, OBJ arg4, OBJ arg5,
                 OBJ arg6, OBJ arg7, OBJ arg8) {
   return gevalEnv(fun, aArray(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 geval9(OBJ fun, OBJ arg1, OBJ arg2, OBJ arg3, OBJ arg4, OBJ arg5,
                 OBJ arg6, OBJ arg7, OBJ arg8, OBJ arg9) {
   return gevalEnv(fun, aArray(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9));
 }
 
-static COS_ALWAYS_INLINE OBJ
+static cos_inline OBJ
 gevaln(OBJ fun, OBJ args[], U32 narg) {
   return gevalEnv(fun, aArrayRef(args, narg));
 }

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_lzy.c,v 1.8 2010/02/21 16:36:10 ldeniau Exp $
+ | $Id: Array_lzy.c,v 1.9 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -101,7 +101,7 @@ endmethod
 
 defmethod(OBJ, gadjust, ArrayLzy)
   if (self->generator)
-    grelease(self->generator);
+    grelease(self->generator), self->generator = 0;
   next_method(self);
 endmethod
 

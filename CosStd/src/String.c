@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.15 2010/02/21 16:36:10 ldeniau Exp $
+ | $Id: String.c,v 1.16 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -60,10 +60,6 @@ useclass(String, StringView);
 STATIC_ASSERT(string_auto_max_size_is_too_small, STRING_AUTO_MAXSIZE >= 64);
 
 // --- getters
-
-defmethod(struct Slice, gslice, String)
-  retmethod( *atSlice(0,self->size,1) );
-endmethod
 
 defmethod(U32, gsize, String)
   retmethod(self->size);

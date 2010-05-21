@@ -32,13 +32,13 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GVectOp.h,v 1.4 2010/01/04 09:59:01 ldeniau Exp $
+ | $Id: GVectOp.h,v 1.5 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GOperator.h>
 
-defclass(G_sum , GUnaryOp) endclass
-defclass(G_prod, GUnaryOp) endclass
+defclass(G_sum , G_UnaryOp) endclass
+defclass(G_prod, G_UnaryOp) endclass
 
 #endif // COS_GEN_OP_GVECTOP_H

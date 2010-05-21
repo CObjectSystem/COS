@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Locker.h,v 1.3 2009/06/19 23:57:27 ldeniau Exp $
+ | $Id: Locker.h,v 1.4 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -42,13 +42,13 @@
 
 #include <pthread.h>
 
-defclass(Locker,Proxy)
+defclass(Locker, Proxy)
   pthread_mutex_t lock;
 endclass
 
 #else
 
-defclass(Locker,Proxy)
+defclass(Locker, Proxy)
 endclass
 
 #endif

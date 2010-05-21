@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.h,v 1.7 2010/01/29 12:36:34 ldeniau Exp $
+ | $Id: File.h,v 1.8 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -58,18 +58,18 @@ defclass(File, Stream)
   struct File_Descriptor_ fd;
 endclass
 
-defclass(InputFile, InputStream)
+defclass(InputFile, InputStream)      // r mode
   struct File_Descriptor_ fd;
 endclass
 
-defclass(OutputFile, OutputStream)
+defclass(OutputFile, OutputStream)    // w mode
   struct File_Descriptor_ fd;
 endclass
 
-defclass(InputOutputFile, InputFile)
+defclass(InputOutputFile, InputFile)  // r+ mode
 endclass
 
-defclass(OutputInputFile, OutputFile)
+defclass(OutputInputFile, OutputFile) // w+ mode
 endclass
 
 #endif // COS_FILE_H

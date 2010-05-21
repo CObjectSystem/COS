@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.20 2010/02/21 16:36:10 ldeniau Exp $
+ | $Id: File.c,v 1.21 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -80,11 +80,6 @@ STATIC_ASSERT(IntputFile_vs_File__invalid_layout_compatibility,
 STATIC_ASSERT(OutputFile_vs_File__invalid_layout_compatibility,
               COS_FIELD_COMPATIBILITY(OutputFile, File, fd));
 
-// ----- properties
-
-defproperty(InputFile , (fd.name)name, );
-defproperty(OutputFile, (fd.name)name, );
-
 // ----- constructors
 
 defmethod(OBJ, ginit, File)
@@ -113,7 +108,7 @@ endmethod
 
 defmethod(OBJ, gdeinit, File)
   if (self->fd.buf)
-    free(self->fd.buf);
+    free(self->fd.buf), self->fd.buf = 0;
   
   next_method(self);
 endmethod

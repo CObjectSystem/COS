@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.32 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.33 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -277,7 +277,7 @@ defmethod(OBJ, gmapWhile, Functor, Array)
     *dst++ = gretain(res), ++*dst_n;
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmapIf, Functor, Array)
@@ -300,7 +300,7 @@ defmethod(OBJ, gmapIf, Functor, Array)
       *dst++ = gretain(res), ++*dst_n;
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gmap, Functor, Array)
@@ -432,7 +432,7 @@ defmethod(OBJ, gselect, Array, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, greject, Array, Functor)
@@ -453,7 +453,7 @@ defmethod(OBJ, greject, Array, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, gselectWhile, Array, Functor)
@@ -475,7 +475,7 @@ defmethod(OBJ, gselectWhile, Array, Functor)
   }
   // reject the rest
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 defmethod(OBJ, grejectWhile, Array, Functor)
@@ -500,7 +500,7 @@ defmethod(OBJ, grejectWhile, Array, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 // ----- reduce
@@ -877,7 +877,7 @@ defmethod(OBJ, gunique, Array, Functor)
     }
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 // ----- split (return an array of arrays)
@@ -907,7 +907,7 @@ defmethod(OBJ, gsplit, Array, Functor)
     beg += len;
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 // ----- group (return an array of arrays)
@@ -997,7 +997,7 @@ defmethod(OBJ, gdiff, Array, Collection, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 // ----- match (asymmetric match, self2 - (self2 - self1))
@@ -1022,7 +1022,7 @@ defmethod(OBJ, gmatch, Array, Collection, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 // ----- intersect (asymmetric intersect, self1 - (self1 - self2))
@@ -1045,7 +1045,7 @@ defmethod(OBJ, gintersect, Array, Collection, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_arr));
+  retmethod(_arr);
 endmethod
 
 // ----- finding

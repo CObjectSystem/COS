@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.15 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: String_fun.c,v 1.16 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -152,7 +152,7 @@ defmethod(OBJ, gmapWhile, Functor, String)
     val++;
   }
 
-  retmethod(gadjust(_str));
+  retmethod(_str);
 endmethod
 
 defmethod(OBJ, gmapIf, Functor, String)
@@ -173,7 +173,7 @@ defmethod(OBJ, gmapIf, Functor, String)
    val++;
   }
 
-  retmethod(gadjust(_str));
+  retmethod(_str);
 endmethod
 
 defmethod(OBJ, gmap, Functor, String)
@@ -269,7 +269,7 @@ defmethod(OBJ, gselect, String, Functor)
     val++;
   }
 
-  retmethod(gadjust(_str));
+  retmethod(_str);
 endmethod
 
 defmethod(OBJ, greject, String, Functor)
@@ -289,7 +289,7 @@ defmethod(OBJ, greject, String, Functor)
     val++;
   }
 
-  retmethod(gadjust(_str));
+  retmethod(_str);
 endmethod
 
 defmethod(OBJ, gselectWhile, String, Functor)
@@ -310,7 +310,7 @@ defmethod(OBJ, gselectWhile, String, Functor)
   }
   // reject the rest
 
-  retmethod(gadjust(_str));
+  retmethod(_str);
 endmethod
 
 defmethod(OBJ, grejectWhile, String, Functor)
@@ -334,7 +334,7 @@ defmethod(OBJ, grejectWhile, String, Functor)
     val++;
   }
 
-  retmethod(gadjust(_str));
+  retmethod(_str);
 endmethod
 
 // ----- reduce
@@ -451,7 +451,7 @@ defmethod(OBJ, gunique, String, Functor)
     }
   }
   
-  retmethod(gadjust(_str));
+  retmethod(_str);
 endmethod
 
 // ----- search (functor)

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.22 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.23 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -76,7 +76,7 @@ STATIC_ASSERT(functor9_to_function9_compatibility,
 
 enum { FUN_ISEXPR, FUN_ISCLOSED, FUN_ISFUNC };
 
-static COS_ALWAYS_INLINE int
+static cos_inline int
 getFunType(U32 msk, OBJ arg[], U32 n)
 {
   U32 i, narg = 0;

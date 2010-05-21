@@ -32,50 +32,50 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GFloatOp.h,v 1.4 2010/01/04 09:59:01 ldeniau Exp $
+ | $Id: GFloatOp.h,v 1.5 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GOperator.h>
 
-defclass(G_conj       , GUnaryOp  ) endclass
-defclass(G_arg        , GUnaryOp  ) endclass
-defclass(G_exp        , GUnaryOp  ) endclass
-defclass(G_log        , GUnaryOp  ) endclass
-defclass(G_sqrt       , GUnaryOp  ) endclass
-defclass(G_cos        , GUnaryOp  ) endclass
-defclass(G_sin        , GUnaryOp  ) endclass
-defclass(G_tan        , GUnaryOp  ) endclass
-defclass(G_acos       , GUnaryOp  ) endclass
-defclass(G_asin       , GUnaryOp  ) endclass
-defclass(G_atan       , GUnaryOp  ) endclass
-defclass(G_cosh       , GUnaryOp  ) endclass
-defclass(G_sinh       , GUnaryOp  ) endclass
-defclass(G_tanh       , GUnaryOp  ) endclass
-defclass(G_acosh      , GUnaryOp  ) endclass
-defclass(G_asinh      , GUnaryOp  ) endclass
-defclass(G_atanh      , GUnaryOp  ) endclass
-defclass(G_hypot      , GBinaryOp ) endclass
-defclass(G_subSqr     , GBinaryOp ) endclass
-defclass(G_mulAdd     , GTernaryOp) endclass
+defclass(G_conj       , G_UnaryOp  ) endclass
+defclass(G_arg        , G_UnaryOp  ) endclass
+defclass(G_exp        , G_UnaryOp  ) endclass
+defclass(G_log        , G_UnaryOp  ) endclass
+defclass(G_sqrt       , G_UnaryOp  ) endclass
+defclass(G_cos        , G_UnaryOp  ) endclass
+defclass(G_sin        , G_UnaryOp  ) endclass
+defclass(G_tan        , G_UnaryOp  ) endclass
+defclass(G_acos       , G_UnaryOp  ) endclass
+defclass(G_asin       , G_UnaryOp  ) endclass
+defclass(G_atan       , G_UnaryOp  ) endclass
+defclass(G_cosh       , G_UnaryOp  ) endclass
+defclass(G_sinh       , G_UnaryOp  ) endclass
+defclass(G_tanh       , G_UnaryOp  ) endclass
+defclass(G_acosh      , G_UnaryOp  ) endclass
+defclass(G_asinh      , G_UnaryOp  ) endclass
+defclass(G_atanh      , G_UnaryOp  ) endclass
+defclass(G_hypot      , G_BinaryOp ) endclass
+defclass(G_subSqr     , G_BinaryOp ) endclass
+defclass(G_mulAdd     , G_TernaryOp) endclass
 
-defclass(G_conjugate  , GUnaryOp  ) endclass
-defclass(G_argument   , GUnaryOp  ) endclass
-defclass(G_exponential, GUnaryOp  ) endclass
-defclass(G_logarithm  , GUnaryOp  ) endclass
-defclass(G_sqroot     , GUnaryOp  ) endclass
-defclass(G_cosine     , GUnaryOp  ) endclass
-defclass(G_sine       , GUnaryOp  ) endclass
-defclass(G_tangent    , GUnaryOp  ) endclass
-defclass(G_acosine    , GUnaryOp  ) endclass
-defclass(G_asine      , GUnaryOp  ) endclass
-defclass(G_atangent   , GUnaryOp  ) endclass
-defclass(G_cosineh    , GUnaryOp  ) endclass
-defclass(G_sineh      , GUnaryOp  ) endclass
-defclass(G_tangenth   , GUnaryOp  ) endclass
-defclass(G_acosineh   , GUnaryOp  ) endclass
-defclass(G_asineh     , GUnaryOp  ) endclass
-defclass(G_atangenth  , GUnaryOp  ) endclass
-defclass(G_hypotenuse , GBinaryOp ) endclass
+defclass(G_conjugate  , G_UnaryOp  ) endclass
+defclass(G_argument   , G_UnaryOp  ) endclass
+defclass(G_exponential, G_UnaryOp  ) endclass
+defclass(G_logarithm  , G_UnaryOp  ) endclass
+defclass(G_sqroot     , G_UnaryOp  ) endclass
+defclass(G_cosine     , G_UnaryOp  ) endclass
+defclass(G_sine       , G_UnaryOp  ) endclass
+defclass(G_tangent    , G_UnaryOp  ) endclass
+defclass(G_acosine    , G_UnaryOp  ) endclass
+defclass(G_asine      , G_UnaryOp  ) endclass
+defclass(G_atangent   , G_UnaryOp  ) endclass
+defclass(G_cosineh    , G_UnaryOp  ) endclass
+defclass(G_sineh      , G_UnaryOp  ) endclass
+defclass(G_tangenth   , G_UnaryOp  ) endclass
+defclass(G_acosineh   , G_UnaryOp  ) endclass
+defclass(G_asineh     , G_UnaryOp  ) endclass
+defclass(G_atangenth  , G_UnaryOp  ) endclass
+defclass(G_hypotenuse , G_BinaryOp ) endclass
 
 #endif // COS_GEN_OP_GFLOATOP_H

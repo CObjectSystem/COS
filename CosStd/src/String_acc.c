@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_acc.c,v 1.8 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: String_acc.c,v 1.9 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -61,18 +61,18 @@ endmethod
 
 // ----- getters (index, slice, range, intvector)
 
+defmethod(OBJ, ggetAtIdx, String, (I32)idx)
+  U32 i = Range_index(idx, self->size);
+  test_assert( i < self->size, "index out of range" );
+
+  retmethod( gautoDelete(aChar(self->value[i])) );
+endmethod
+
 defmethod(OBJ, ggetAt, String, Int)
-  U32 i;
+  U32 i = Range_index(self2->value, self->size);
+  test_assert( i < self->size, "index out of range" );
 
-  PRE
-    i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
-
-  BODY
-    if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->value, self->size);
-
-    retmethod( gautoDelete(aChar(self->value[i])) );
+  retmethod( gautoDelete(aChar(self->value[i])) );
 endmethod
 
 defmethod(OBJ, ggetAt, String, Slice)
@@ -89,20 +89,22 @@ endmethod
 
 // ----- object setters (index, slice, range, intvector)
 
-defmethod(OBJ, gputAt, String, Int, Object)
-  U32 i;
-  
-  PRE
-    i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+defmethod(OBJ, gputAtIdx, String, (I32)idx, Object)
+  U32 i = Range_index(idx, self->size);
+  test_assert( i < self->size, "index out of range" );
 
-  BODY
-    if (!COS_CONTRACT) // no PRE
-      i = Range_index(self2->value, self->size);
-      
-    self->value[i] = (U32)gchr(_3);
+  self->value[i] = (U32)gchr(_2);
     
-    retmethod(_1);
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gputAt, String, Int, Object)
+  U32 i = Range_index(self2->value, self->size);
+  test_assert( i < self->size, "index out of range" );
+
+  self->value[i] = (U32)gchr(_3);
+    
+  retmethod(_1);
 endmethod
 
 defmethod(OBJ, gputAt, String, Slice, Object)

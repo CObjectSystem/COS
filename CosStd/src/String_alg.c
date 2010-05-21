@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.19 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: String_alg.c,v 1.20 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -213,7 +213,7 @@ defmethod(OBJ, gsplit, String, Object)
   }
   
   UNPRT(str);
-  retmethod(gadjust(strs));
+  retmethod(strs);
 endmethod
 
 // ----- search (object)

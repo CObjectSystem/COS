@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Collection.h,v 1.5 2010/01/21 14:12:35 ldeniau Exp $
+ | $Id: Collection.h,v 1.6 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -64,7 +64,6 @@
 
   - All collections provide maps (high-level) and iterators (low-level)
   - All collections own (gretain) their elements (and keys if any)
-  - All collections do swallow copy (map/apply gclone for deep copy)
 */
 
 defclass(Collection)

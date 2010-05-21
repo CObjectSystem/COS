@@ -32,16 +32,16 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GLogicOp.h,v 1.3 2010/01/04 09:59:01 ldeniau Exp $
+ | $Id: GLogicOp.h,v 1.4 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GOperator.h>
 
-defclass(G_not    , GUnaryOp ) endclass
-defclass(G_and    , GBinaryOp) endclass
-defclass(G_or     , GBinaryOp) endclass
-defclass(G_xor    , GBinaryOp) endclass
-defclass(G_implies, GBinaryOp) endclass
+defclass(G_not    , G_UnaryOp ) endclass
+defclass(G_and    , G_BinaryOp) endclass
+defclass(G_or     , G_BinaryOp) endclass
+defclass(G_xor    , G_BinaryOp) endclass
+defclass(G_implies, G_BinaryOp) endclass
 
 #endif // COS_GEN_OP_GLOGICOP_H

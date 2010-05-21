@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.12 2010/01/21 14:12:36 ldeniau Exp $
+ | $Id: Sequence.h,v 1.13 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -55,7 +55,7 @@ endclass
    Sequence_SizedName build a type name by suffixing the type by the size
    If the size of (__VA_ARGS__) >= S, then suffix from N is used.
    Sequence_SizedName(Array,10,N,obj1,obj2,obj3) -> Array3 (with size == 3)
-   Sequence_SizedName(Array,10,N,obj1,...,obj10) -> ArrayN (with size == 10)
+   Sequence_SizedName(Array,10,N,obj1,..,obj10)  -> ArrayN (with size == 10)
    Sequence_SizedName(Array,2,Long,obj1,obj2) -> ArrayLong (with size == 2)
 */
 

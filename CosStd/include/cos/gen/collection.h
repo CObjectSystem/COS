@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: collection.h,v 1.2 2010/01/21 14:52:53 ldeniau Exp $
+ | $Id: collection.h,v 1.3 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -59,7 +59,7 @@ defgeneric(OBJ, gback     , _1);
 defgeneric(OBJ, gprepend  , _1, what);
 defgeneric(OBJ, gappend   , _1, what);
 defgeneric(OBJ, gchop     , _1, what);
-defgeneric(OBJ, gdrop     , _1, num); // front if num<0
+defgeneric(OBJ, gdrop     , _1, num); // back if num<0
 defgeneric(OBJ, gdropFirst, _1);
 defgeneric(OBJ, gdropLast , _1);
 defgeneric(OBJ, gfirst    , _1);

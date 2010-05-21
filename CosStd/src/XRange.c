@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.13 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: XRange.c,v 1.14 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -72,9 +72,10 @@ defmethod(OBJ, gnewXRng, pmXRange, (F64)start, (F64)end, (F64)stride)
   retmethod( (OBJ)XRange_init((void*)galloc(_1), start, end, stride) );
 endmethod
 
-// ----- clone
+// ----- copy/clone
 
-defmethod(OBJ, gclone, XRange)
+defalias (OBJ, (gcopy)gclone, XRange);
+defmethod(OBJ,  gcopy       , XRange)
   retmethod( (OBJ)XRange_copy((void*)galloc(XRange), self) );
 endmethod
 
@@ -85,10 +86,6 @@ defmethod(OBJ, gisEqual, XRange, XRange)
 endmethod
 
 // ----- size
-
-#define size(rng) gautoDelete(aInt(XRange_size(rng)))
-defproperty(XRange, ()size, size);
-#undef  size
 
 defmethod(U32, gsize, XRange)
   retmethod(XRange_size(self));

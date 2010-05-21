@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.10 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.11 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -94,8 +94,10 @@ endmethod
 
 defmethod(OBJ, ginitWith3, TV, T, Slice, Int) // vector view
   PRT(_1);
-  test_assert( !cos_object_isKindOf(_2, classref(TD)),
-                TS " views accept only non-dynamic " TS );
+  self->ref = 0;
+  
+  if (cos_object_isKindOf(_2, classref(TD)))
+    gadjust(_2);
 
   OBJ ref = gretain(_2); PRT(ref);
   
@@ -109,7 +111,7 @@ endmethod
 
 defmethod(OBJ, gdeinit, TV)
   if (self->ref)              // take care of protection cases
-    grelease( (OBJ)self->ref );
+    grelease( (OBJ)self->ref ), self->ref = 0;
   retmethod(_1);
 endmethod
 
@@ -119,7 +121,8 @@ defmethod(void, ginvariant, TV, (STR)func, (STR)file, (int)line)
   test_assert( cos_object_isKindOf((OBJ)self->ref, classref(T)),
                TS " view points to something not a " TS, func, file, line);
 
-  test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(TD)),
+  test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(TD)) ||
+               cos_object_rc((OBJ)self->ref) == COS_RC_AUTO ,
                TS " view points to a dynamic " TS, func, file, line);
 
   struct T *vec = self->ref;
@@ -133,8 +136,8 @@ defmethod(void, ginvariant, TV, (STR)func, (STR)file, (int)line)
   U32 first = Slice_first(slc);
   U32 last  = Slice_last (slc);
 
-  test_assert( first < self->ref->size && last < self->ref->size,
-               TS " view is out of range", func, file, line);
+  test_assert( first < self->ref->size &&
+               last  < self->ref->size, TS " view is out of range", func, file, line);
 
   if (next_method_p)
     next_method(self, func, file, line);

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.14 2010/02/02 16:27:42 ldeniau Exp $
+ | $Id: ut_array.c,v 1.15 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@
 #include <cos/gen/stream.h>
 #include <cos/gen/value.h>
 
-#include <cos/prp/sequence.h>
+// #include <cos/prp/sequence.h>
 
 #include <cos/utest.h>
 
@@ -64,7 +64,6 @@ isEq(OBJ r, OBJ ref)
 void
 ut_array_basics(void)
 {
-  useproperty(size);
   useclass(Array, Array1, Array2, Array5, Array9, ArrayN);
   useclass(AutoRelease);
   
@@ -73,17 +72,14 @@ ut_array_basics(void)
 
   UTEST_START("Array basics")
 
+  // empty
+  UTEST(gisEmpty(aArray(aInt(0))) == False);
+
   // sizes
   UTEST(gsize(aArray(aInt(0))) == 1);
   UTEST(gsize(aArray(aInt(0,1))) == 2);
   UTEST(gsize(aArray(aInt(0,1,2,3,4))) == 5);
   UTEST(gsize(aArray(aInt(0,1,2,3,4,5,6,7,8,9))) == 10);
-
-  UTEST(gisEmpty(aArray(aInt(0))) == False);
-  UTEST(gisEqual(ggetAt(aArray(aInt(0)),size), aInt(1)) == True);
-  UTEST(gisEqual(ggetAt(aArray(aInt(0,1)),size), aInt(2)) == True);
-  UTEST(gisEqual(ggetAt(aArray(aInt(0,1,2,3,4)),size), aInt(5)) == True);
-  UTEST(gisEqual(ggetAt(aArray(aInt(0,1,2,3,4,5,6,7,8,9)),size), aInt(10)) == True);
 
   // types
   UTEST(gisKindOf(aArray(aInt(0)), Array1) == True);

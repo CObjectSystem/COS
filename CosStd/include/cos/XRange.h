@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.h,v 1.5 2010/01/21 14:12:36 ldeniau Exp $
+ | $Id: XRange.h,v 1.6 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -56,6 +56,14 @@ endclass
 
 #define aXRange(...)  ( (OBJ)atXRange(__VA_ARGS__) )
 #define atXRange(...) COS_PP_CAT_NARG(atXRange_,__VA_ARGS__)(__VA_ARGS__)
+
+// --- shortcuts
+
+#ifndef COS_NOSHORTCUT
+
+#define aXRng(...)  aXRange(__VA_ARGS__)
+
+#endif
 
 /***********************************************************
  * Implementation (private)

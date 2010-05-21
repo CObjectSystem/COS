@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.c,v 1.19 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Range.c,v 1.20 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -62,7 +62,8 @@ endmethod
 
 // ----- clone
 
-defmethod(OBJ, gclone, Range)
+defalias (OBJ, (gcopy)gclone, Range);
+defmethod(OBJ,  gcopy       , Range)
   retmethod( (OBJ)Range_copy((void*)galloc(Range), self) );
 endmethod
 
@@ -73,10 +74,6 @@ defmethod(OBJ, gisEqual, Range, Range)
 endmethod
 
 // ----- size
-
-#define size(rng) gautoDelete(aInt(Range_size(rng)))
-defproperty(Range, ()size, size);
-#undef  size
 
 defmethod(U32, gsize, Range)
   retmethod(Range_size(self));

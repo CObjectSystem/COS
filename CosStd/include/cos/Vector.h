@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.h,v 1.17 2009/12/17 14:08:54 ldeniau Exp $
+ | $Id: Vector.h,v 1.18 2010/05/21 14:59:07 ldeniau Exp $
  |
 */
 
@@ -71,10 +71,11 @@
    - All vectors hold value elements
    - Block vectors will be one of TVector0..9 if size is < 10, TVectorN otherwise
    - Dynamic vectors can shrink and grow (gappend, gpreprend)
-   - Dynamic vectors can be converted to fixed vector (gfix, gadjust)
+   - Dynamic vectors can be converted to fixed vector (gadjust)
    - Lazy vectors are dynamic vectors growing automatically using a generator
-   - Vector views work only on non-dynamic vectors
-   - Vector views clone are block vectors (copy), not views
+   - Vector views convert dynamic vectors into fixed vectors
+   - Vector views copy/clone are block vectors, not views
+
 */
 
 defclass(Vector, ValueSequence)

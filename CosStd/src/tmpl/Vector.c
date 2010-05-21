@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.17 2010/02/21 16:36:10 ldeniau Exp $
+ | $Id: Vector.c,v 1.18 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@
 #include <cos/gen/init.h>
 #include <cos/gen/object.h>
 #include <cos/gen/relop.h>
-#include <cos/gen/sequence.h>
+// #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
 
 #include <cos/carray.h>
@@ -76,10 +76,6 @@ useclass(ExBadAlloc);
 useclass(Lesser,Equal,Greater);
 
 // --- getters
-
-defmethod(struct Slice, gslice, T)
-  retmethod( *atSlice(0,self->size,self->stride) );
-endmethod
 
 defmethod(U32, gsize, T)
   retmethod(self->size);

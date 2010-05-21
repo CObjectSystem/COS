@@ -32,16 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.7 2010/01/21 14:12:36 ldeniau Exp $
+ | $Id: sequence.h,v 1.8 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
 #include <cos/XRange.h>
-
-// value getters
-defgeneric(struct Slice , gslice , _1);
-defgeneric(struct Range , grange , _1);
-defgeneric(struct XRange, gxrange, _1);
 
 // new (no 'init' for final classes)
 defgeneric(OBJ, gnewSlc , _1, (I32)start, (U32)size, (I32)stride);

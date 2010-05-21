@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.20 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.21 2010/05/21 14:59:09 ldeniau Exp $
  |
 */
 
@@ -256,7 +256,7 @@ defmethod(OBJ, gmapWhile, Functor, T)
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmapIf, Functor, T)
@@ -278,7 +278,7 @@ defmethod(OBJ, gmapIf, Functor, T)
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gmap, Functor, T)
@@ -410,7 +410,7 @@ defmethod(OBJ, gselect, T, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, greject, T, Functor)
@@ -431,7 +431,7 @@ defmethod(OBJ, greject, T, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, gselectWhile, T, Functor)
@@ -453,7 +453,7 @@ defmethod(OBJ, gselectWhile, T, Functor)
   }
   // reject the rest
 
-  retmethod(gadjust(_vec));
+  retmethod(_vec);
 endmethod
 
 defmethod(OBJ, grejectWhile, T, Functor)
@@ -478,7 +478,7 @@ defmethod(OBJ, grejectWhile, T, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- reduce1
@@ -787,7 +787,7 @@ defmethod(OBJ, gunique, T, Functor)
     }
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- diff (asymetric diff, self1 - self2)
@@ -810,7 +810,7 @@ defmethod(OBJ, gdiff, T, T, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- intersect (asymetric intersect, self1 - (self1 - self2))
@@ -833,7 +833,7 @@ defmethod(OBJ, gintersect, T, Collection, Functor)
     val += val_s;
   }
 
-  retmethod(gadjust(_vec));
+  retmethod(_vec);
 endmethod
 
 // ----- finding
