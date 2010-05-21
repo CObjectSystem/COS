@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.1 2009/01/26 15:18:49 ldeniau Exp $
+ | $Id: object.h,v 1.2 2010/05/21 10:06:17 ldeniau Exp $
  |
 */
 
@@ -40,10 +40,6 @@
 
 // object and class properties
 defproperty(class     );
-defproperty(error     );
-defproperty(name      );
-defproperty(signal    );
-defproperty(size      );
 defproperty(superClass);
 
 #endif // COS_PRP_OBJECT_H

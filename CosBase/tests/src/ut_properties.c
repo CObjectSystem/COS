@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_properties.c,v 1.3 2009/02/03 14:40:48 ldeniau Exp $
+ | $Id: ut_properties.c,v 1.4 2010/05/21 10:06:17 ldeniau Exp $
  |
 */
 
@@ -63,24 +63,19 @@ chk_prop_superClass(OBJ cls)
 void
 ut_properties(void)
 {
-  useproperty(class, name, size, superClass, error, signal);
-  useproperty((class)cls,(size)sz,(superClass)spr); // check local renaming syntax
+  useproperty(class, superClass);
+  useproperty((class)cls, (superClass)spr); // check local renaming syntax
 
-  useclass(Object,Class,MetaClass,PropMetaClass);
+  useclass(Object, Class, MetaClass, PropMetaClass);
   useclass(A,B,C,D,E);
 
   UTEST_START("properties definition & use")
   
-    UTEST( class == cls );
-    UTEST( size == sz );
+    UTEST( class      == cls );
     UTEST( superClass == spr );
 
-    UTEST( chk_prop(class, "class") );
-    UTEST( chk_prop(error, "error") );
-    UTEST( chk_prop(name, "name") );
-    UTEST( chk_prop(signal, "signal") );
-    UTEST( chk_prop(size, "size") );
-    UTEST( chk_prop(superClass, "superClass") );
+    UTEST( chk_prop(class      , "class"      ) );
+    UTEST( chk_prop(superClass , "superClass" ) );
 
     UTEST( chk_prop_class(Object) );
     UTEST( chk_prop_class(Class) );

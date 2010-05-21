@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.22 2010/05/20 16:30:46 ldeniau Exp $
+ | $Id: Any.c,v 1.23 2010/05/21 10:06:17 ldeniau Exp $
  |
 */
 
@@ -49,6 +49,12 @@ makclass(Any, _);
 
 useclass(ExBadAlloc, ExBadMessage);
 
+// ----- properties (read-only)
+
+defmethod(OBJ, ggetAt, Any, mP_class)
+  retmethod(gclass(_1));
+endmethod
+   
 // ----- allocator
 
 defmethod(OBJ, galloc, mAny)
