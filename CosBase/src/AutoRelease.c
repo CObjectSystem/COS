@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.52 2010/05/20 16:30:46 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.53 2010/05/21 14:22:07 ldeniau Exp $
  |
 */
 
@@ -297,7 +297,7 @@ defmethod(OBJ, gdeinit, AutoRelease)
 
   // free stack
   if (self->stk != self->_stk)
-    free(self->stk);
+    free(self->stk), self->stk = 0;
 
   // remove from top
   pool_set(self->prv);

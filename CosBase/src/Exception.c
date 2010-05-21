@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.19 2010/05/20 16:30:46 ldeniau Exp $
+ | $Id: Exception.c,v 1.20 2010/05/21 14:22:07 ldeniau Exp $
  |
 */
 
@@ -110,10 +110,10 @@ endmethod
 
 defmethod(OBJ, gdeinit, Exception)
   if (self->str != 0)
-    free(self->str);
+    free(self->str), self->str = 0;
 
   if (self->obj != Nil)
-    grelease(self->obj);
+    grelease(self->obj), self->obj = Nil;
 
   retmethod(_1);
 endmethod

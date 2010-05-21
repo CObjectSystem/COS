@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.48 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: cosapi.h,v 1.49 2010/05/21 14:22:07 ldeniau Exp $
  |
 */
 
@@ -425,14 +425,14 @@ cos_object_cast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
 }
 
 static cos_inline void*
-cos_object_dcast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
+cos_object_dyncast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
 {
   if (cos_object_isa     (obj, cls) ||
       cos_object_isKindOf(obj, cls))
     return obj;
 
   cos_exception_badcast(obj, cls, func, file, line);
-  COS_UNUSED(cos_object_dcast);
+  COS_UNUSED(cos_object_dyncast);
 }
 
 static cos_inline BOOL

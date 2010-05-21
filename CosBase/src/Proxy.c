@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.20 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: Proxy.c,v 1.21 2010/05/21 14:22:07 ldeniau Exp $
  |
 */
 
@@ -59,7 +59,7 @@ endmethod
 
 defmethod(OBJ, gdeinit, Proxy)
   if (self->obj)
-    grelease(self->obj);
+    grelease(self->obj), self->obj = 0;
 
   retmethod(_1);
 endmethod

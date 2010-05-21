@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.31 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: base.h,v 1.32 2010/05/21 14:22:07 ldeniau Exp $
  |
 */
 
@@ -104,7 +104,7 @@
 
 // convert object (COS downcast)
 #define COS_OBJECT_DCAST(cls,obj) \
-((struct cls*) cos_object_dcast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
+((struct cls*) cos_object_dyncast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
 
 // convert value (static cast in release mode, dynamic cast in debug mode)
 #define COS_OBJECT_SCAST(cls,obj) \

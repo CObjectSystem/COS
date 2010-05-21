@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.2 2010/03/22 20:53:24 ldeniau Exp $
+ | $Id: String.c,v 1.3 2010/05/21 14:22:07 ldeniau Exp $
  |
 */
 
@@ -60,7 +60,7 @@ defmethod(OBJ, ginitWithStr, String, (STR)str)
 endmethod
 
 defmethod(OBJ, gdeinit, String)
-  free(self->str);
+  free(self->str), self->str = 0;
   retmethod(_1);
 endmethod
 
