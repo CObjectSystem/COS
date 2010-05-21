@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: accessor.h,v 1.11 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: accessor.h,v 1.12 2010/05/21 09:47:25 ldeniau Exp $
  |
 */
 
@@ -40,9 +40,9 @@
 #include <cos/gen/op/GAccessor.h>
 #endif 
 
-// getters, setters, properties, keys
-defgeneric(OBJ, (G_getAt) ggetAt, _1, at);
-defgeneric(OBJ, (G_putAt) gputAt, _1, at, what);
+// getters, setters, properties, keys, etc...
+defgeneric(OBJ, (G_getAt)    ggetAt   , _1, at);
+defgeneric(OBJ, (G_putAt)    gputAt   , _1, at, what);
 
 // common case for indexes
 defgeneric(OBJ, (G_getAtIdx) ggetAtIdx, _1, (I32)idx);
