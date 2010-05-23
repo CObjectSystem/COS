@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.17 2010/05/23 08:22:55 ldeniau Exp $
+ | $Id: Range.h,v 1.18 2010/05/23 14:35:45 ldeniau Exp $
  |
 */
 
@@ -137,11 +137,6 @@ Range_init(struct Range *r, I32 start, I32 end, I32 stride) {
   return r;
 }
 
-static cos_inline struct Range
-Range_make(I32 start, I32 end, I32 stride) {
-  return *atRange(start, end, stride);
-}
-
 // enumerator
 static cos_inline struct Range*
 Range_enum(struct Range *r, I32 start, I32 next, I32 end) {
@@ -150,11 +145,6 @@ Range_enum(struct Range *r, I32 start, I32 next, I32 end) {
   r->stride = start == next ? 1 : next-start;
 
   return r;
-}
-
-static cos_inline struct Range
-Range_makeEnum(I32 start, I32 next, I32 end) {
-  return *atRange(start, next, .., end);
 }
 
 // copy

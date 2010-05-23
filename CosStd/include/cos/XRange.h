@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.h,v 1.7 2010/05/23 08:22:55 ldeniau Exp $
+ | $Id: XRange.h,v 1.8 2010/05/23 14:35:45 ldeniau Exp $
  |
 */
 
@@ -95,11 +95,6 @@ XRange_init(struct XRange *r, F64 start, F64 end, F64 stride) {
   return r;
 }
 
-static cos_inline struct XRange
-XRange_make(F64 start, F64 end, F64 stride) {
-  return *atXRange(start, end, stride);
-}
-
 // enumerator
 static cos_inline struct XRange*
 XRange_enum(struct XRange *r, F64 start, F64 next, F64 end) {
@@ -108,11 +103,6 @@ XRange_enum(struct XRange *r, F64 start, F64 next, F64 end) {
   r->stride = float_equal(start,next) ? 1 : next-start;
 
   return r;
-}
-
-static cos_inline struct XRange
-XRange_makeEnum(F64 start, F64 next, F64 end) {
-  return *atXRange(start, next, .., end);
 }
 
 // copy

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.17 2010/05/23 08:22:55 ldeniau Exp $
+ | $Id: Slice.h,v 1.18 2010/05/23 14:35:45 ldeniau Exp $
  |
 */
 
@@ -111,11 +111,6 @@ Slice_init(struct Slice *s, I32 start, U32 size, I32 stride) {
   return s;
 }
 
-static cos_inline struct Slice
-Slice_make(I32 start, U32 size, I32 stride) {
-  return *atSlice(start, size, stride);
-}
-
 // enumerator
 static cos_inline struct Slice*
 Slice_enum(struct Slice *s, I32 start, I32 next, I32 end) {
@@ -126,11 +121,6 @@ Slice_enum(struct Slice *s, I32 start, I32 next, I32 end) {
   s ->size = size < 0 ? 0 : size;
 
   return s;
-}
-
-static cos_inline struct Slice
-Slice_makeEnum(I32 start, I32 next, I32 end) {
-  return *atSlice(start, next, .., end);
 }
 
 // copy
