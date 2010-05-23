@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.h,v 1.6 2010/05/21 14:59:07 ldeniau Exp $
+ | $Id: XRange.h,v 1.7 2010/05/23 08:22:55 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,7 @@
 #include <float.h>
 
 /* NOTE-USER: XRanges
-  - XRanges defines floating value sequences (see Range.h)
+  - XRanges defines floating sequences (see Range.h)
 */
 
 defclass(XRange, ValueSequence)
@@ -86,7 +86,7 @@ endclass
 // --- XRange inliners (low-level monorphic interface)
 
 // constructor
-static inline struct XRange*
+static cos_inline struct XRange*
 XRange_init(struct XRange *r, F64 start, F64 end, F64 stride) {
   r->start  = start;
   r->end    = end;
@@ -95,13 +95,13 @@ XRange_init(struct XRange *r, F64 start, F64 end, F64 stride) {
   return r;
 }
 
-static inline struct XRange
+static cos_inline struct XRange
 XRange_make(F64 start, F64 end, F64 stride) {
   return *atXRange(start, end, stride);
 }
 
 // enumerator
-static inline struct XRange*
+static cos_inline struct XRange*
 XRange_enum(struct XRange *r, F64 start, F64 next, F64 end) {
   r->start  = start;
   r->end    = end;
@@ -110,13 +110,13 @@ XRange_enum(struct XRange *r, F64 start, F64 next, F64 end) {
   return r;
 }
 
-static inline struct XRange
+static cos_inline struct XRange
 XRange_makeEnum(F64 start, F64 next, F64 end) {
   return *atXRange(start, next, .., end);
 }
 
 // copy
-static inline struct XRange*
+static cos_inline struct XRange*
 XRange_copy(struct XRange *r1, const struct XRange *r2) {
   r1->start  = r2->start;
   r1->end    = r2->end;
@@ -126,38 +126,38 @@ XRange_copy(struct XRange *r1, const struct XRange *r2) {
 }
 
 // getters
-static inline F64
+static cos_inline F64
 XRange_start(const struct XRange *r) {
   return r->start;
 }
 
-static inline F64
+static cos_inline F64
 XRange_end(const struct XRange *r) {
   return r->end;
 }
 
-static inline F64
+static cos_inline F64
 XRange_stride(const struct XRange *r) {
   return r->stride;
 }
 
-static inline F64
+static cos_inline F64
 XRange_eval(const struct XRange *r, F64 x) {
   return r->start + x * r->stride;
 }
 
-static inline U32
+static cos_inline U32
 XRange_size(const struct XRange *r)
 {
   I32 size = (r->end - r->start) / r->stride + 1 + DBL_EPSILON;
   return size > 0 ? size : 0;
 }
 
-// predicates
+// predicates (declaration)
 BOOL XRange_isEqual(const struct XRange *r1, const struct XRange *r2);
 
 // closed vs open interval
-static inline BOOL
+static cos_inline BOOL
 XRange_isClosed(const struct XRange *r) {
   return r->stride > 0 ? r->start <= r->end : r->start >= r->end;
 }
@@ -165,12 +165,12 @@ XRange_isClosed(const struct XRange *r) {
 // conversion
 #include <cos/Range.h>
 
-static inline struct XRange
+static cos_inline struct XRange
 XRange_fromSlice(const struct Slice *s) {
   return *atXRange(Slice_start(s), Slice_end(s), Slice_stride(s));
 }
 
-static inline struct XRange
+static cos_inline struct XRange
 XRange_fromRange(const struct Range *r) {
   return *atXRange(Range_start(r), Range_end(r), Range_stride(r));
 }

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.16 2009/10/19 19:38:09 ldeniau Exp $
+ | $Id: Range.h,v 1.17 2010/05/23 08:22:55 ldeniau Exp $
  |
 */
 
@@ -40,7 +40,12 @@
 
 /* NOTE-USER: Ranges
   - Ranges are objects useful to represent relative strided interval of sequence
-    aRange([start],end,[stride])   ([] means optional, default: start=0, stride=1)
+    aRange([start],end,[stride])   (default: start=0, stride=1)
+
+    aRange(10)       = range from index 0      to 10     included with step  1
+    aRange(0,10)     = range from index 0      to 10     included with step  1
+    aRange(0,10,1)   = range from index 0      to 10     included with step  1
+
     aRange( 1,10, 2) = range from index 1      to 10     included with step  2
     aRange(-5,-1, 1) = range from index size-5 to size-1 included with step  1
     aRange(10, 1,-1) = range from index 10     to 1      included with step -1
@@ -50,9 +55,10 @@
     aRange(1,3,..,7) = range from index 1      to 7      included with step  2
     aRange(0,3,..,7) = range from index 0      to 6      included with step  3
      
-  - Ranges can be normalized versus the sequence size
-    negative relative indexes are converted to absolute indexes (abs_idx = size - neg_idx)
-    normalization is not idempotent (cases where abs_idx is negative)
+  - Ranges can be normalized versus the size of a sequence
+    . negative relative indexes are converted to absolute indexes using
+      the normalization: absolute_index = sequence_size - negative_index
+    . normalization is not idempotent (cases where absolute_index is negative)
     aRange( -5,-1,1) with seq_size = 10 -> aRange( 5,9,1) with size =  5
     aRange(-15,-1,1) with seq_size = 10 -> aRange(-5,9,1) with size = 15
 
@@ -60,9 +66,9 @@
     aRange(0,5, 1) -> closed with size = 6
     aRange(0,0, 1) -> closed with size = 1
     aRange(0,5,-1) -> open   with size = 0
-    aRange(0,0, 0) -> close  with size = 0 and stride = 1
+    aRange(0,0, 0) -> close  with size = 0 and stride = 1 (0 strides become 1)
 
-  - Ranges can be converted to Slices for some sequence
+  - Ranges can be converted to Slices (given the sequence size)
   - Slices can be converted to Ranges
 */
 
@@ -94,9 +100,9 @@ endclass
    - the end is included in the range (Ranges cannot have zero size)
    - open ranges have zero size (consistent with conversion to Slice)
    - validation and consitency checks are the user's responsibility
-   - stride must never be zero! (never happens if you use the ctor)
+   - stride must never be zero! (converted to 1 if you use the ctor)
 */
-static inline U32
+static cos_inline U32
 Range_index(I32 index, U32 seq_size) {
   return index + (index < 0) * seq_size;
 }
@@ -122,7 +128,7 @@ Range_index(I32 index, U32 seq_size) {
 // --- Range inliners (low-level monorphic interface)
 
 // constructor
-static inline struct Range*
+static cos_inline struct Range*
 Range_init(struct Range *r, I32 start, I32 end, I32 stride) {
   r->start  = start;
   r->end    = end;
@@ -131,13 +137,13 @@ Range_init(struct Range *r, I32 start, I32 end, I32 stride) {
   return r;
 }
 
-static inline struct Range
+static cos_inline struct Range
 Range_make(I32 start, I32 end, I32 stride) {
   return *atRange(start, end, stride);
 }
 
 // enumerator
-static inline struct Range*
+static cos_inline struct Range*
 Range_enum(struct Range *r, I32 start, I32 next, I32 end) {
   r->start  = start;
   r->end    = end;
@@ -146,13 +152,13 @@ Range_enum(struct Range *r, I32 start, I32 next, I32 end) {
   return r;
 }
 
-static inline struct Range
+static cos_inline struct Range
 Range_makeEnum(I32 start, I32 next, I32 end) {
   return *atRange(start, next, .., end);
 }
 
 // copy
-static inline struct Range*
+static cos_inline struct Range*
 Range_copy(struct Range *r1, const struct Range *r2) {
   r1->start  = r2->start;
   r1->end    = r2->end;
@@ -162,39 +168,39 @@ Range_copy(struct Range *r1, const struct Range *r2) {
 }
 
 // getters
-static inline I32
+static cos_inline I32
 Range_start(const struct Range *r) {
   return r->start;
 }
 
-static inline I32
+static cos_inline I32
 Range_end(const struct Range *r) {
   return r->end;
 }
 
-static inline I32
+static cos_inline I32
 Range_stride(const struct Range *r) {
   return r->stride;
 }
 
-static inline I32
+static cos_inline I32
 Range_eval(const struct Range *r, I32 idx) {
   return r->start + idx * r->stride;
 }
 
-static inline U32
+static cos_inline U32
 Range_size(const struct Range *r) {
   I32 size  = (r->end - r->start + r->stride) / r->stride;
   return size > 0 ? size : 0;
 }
 
 // predicates
-static inline BOOL
+static cos_inline BOOL
 Range_isContiguous(const struct Range *r) {
   return r->stride == 1 || r->stride == -1;
 }
 
-static inline BOOL
+static cos_inline BOOL
 Range_isEqual(const struct Range *r1, const struct Range *r2) {
   return r1->start  == r2->start
       && r1->end    == r2->end
@@ -202,7 +208,7 @@ Range_isEqual(const struct Range *r1, const struct Range *r2) {
 }
 
 // closed vs open interval
-static inline BOOL
+static cos_inline BOOL
 Range_isClosed(const struct Range *r) {
   return r->stride > 0 ? r->start <= r->end : r->start >= r->end;
 }
@@ -210,19 +216,19 @@ Range_isClosed(const struct Range *r) {
 // normalization
 
 // sequence first index (normalized vs sequence's size)
-static inline U32
+static cos_inline U32
 Range_first(const struct Range *r, U32 seq_size) {
   return Range_index(r->start, seq_size);
 }
 
 // sequence last index (normalized vs sequence's size) (included)
-static inline U32
+static cos_inline U32
 Range_last(const struct Range *r, U32 seq_size) {
   return Range_index(r->end, seq_size);
 }
 
-// normalization (requires sequence's size, preserves stride)
-static inline struct Range
+// normalization (require sequence's size, preserve stride)
+static cos_inline struct Range
 Range_normalize(const struct Range *r, U32 seq_size) {
   U32 start = Range_first(r, seq_size);
   U32 end   = Range_last (r, seq_size);
@@ -237,7 +243,7 @@ Range_normalize(const struct Range *r, U32 seq_size) {
 // conversion
 #include <cos/Slice.h>
 
-static inline struct Range
+static cos_inline struct Range
 Range_fromSlice(const struct Slice *s) {
   return *atRange(Slice_start(s), Slice_end(s), Slice_stride(s));
 }

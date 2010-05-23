@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.16 2009/09/03 23:21:42 ldeniau Exp $
+ | $Id: Slice.h,v 1.17 2010/05/23 08:22:55 ldeniau Exp $
  |
 */
 
@@ -40,13 +40,18 @@
 
 /* NOTE-USER: Slices
   - Slices are objects useful to represent sliced views of sequence
-    aSlice([start],size,[stride])   ([] means optional, default: start=0, stride=1)
+    aSlice([start],size,[stride])   (default: start=0, stride=1)
+    
+    aSlice(10)       = range from index  0 to 10 excluded with step  1
+    aSlice(0,10)     = range from index  0 to 10 excluded with step  1
+    aSlice(0,10,1)   = range from index  0 to 10 excluded with step  1
+
     aSlice( 1,10, 2) = range from index  1 to 21 excluded with step  2 (size = 10)
     aSlice( 5, 5,-1) = range from index  5 to  0 excluded with step -1 (size =  5)
     aSlice(-5, 5, 1) = range from index -5 to  0 excluded with step  1 (size =  5)
 
   - Slices can be converted to Ranges
-  - Ranges can be converted to Slices given the sequence size
+  - Ranges can be converted to Slices (given the sequence size)
 */
 
 defclass(Slice, ValueSequence)
@@ -60,6 +65,14 @@ endclass
 
 #define aSlice(...)  ( (OBJ)atSlice(__VA_ARGS__) )
 #define atSlice(...) COS_PP_CAT_NARG(atSlice_,__VA_ARGS__)(__VA_ARGS__)
+
+// --- shortcuts
+
+#ifndef COS_NOSHORTCUT
+
+#define aSlc(...)  aSlice(__VA_ARGS__)
+
+#endif
 
 /* NOTE-USER: Slice indexing policy
    - start can be negative, zero or positive
@@ -89,7 +102,7 @@ endclass
 // --- Slice inliners (low-level monorphic interface)
 
 // constructor
-static inline struct Slice*
+static cos_inline struct Slice*
 Slice_init(struct Slice *s, I32 start, U32 size, I32 stride) {
   s->start  = start;
   s->size   = size;
@@ -98,13 +111,13 @@ Slice_init(struct Slice *s, I32 start, U32 size, I32 stride) {
   return s;
 }
 
-static inline struct Slice
+static cos_inline struct Slice
 Slice_make(I32 start, U32 size, I32 stride) {
   return *atSlice(start, size, stride);
 }
 
 // enumerator
-static inline struct Slice*
+static cos_inline struct Slice*
 Slice_enum(struct Slice *s, I32 start, I32 next, I32 end) {
   s->start  = start;
   s->stride = start == next ? 1 : next-start;
@@ -115,13 +128,13 @@ Slice_enum(struct Slice *s, I32 start, I32 next, I32 end) {
   return s;
 }
 
-static inline struct Slice
+static cos_inline struct Slice
 Slice_makeEnum(I32 start, I32 next, I32 end) {
   return *atSlice(start, next, .., end);
 }
 
 // copy
-static inline struct Slice*
+static cos_inline struct Slice*
 Slice_copy(struct Slice *s1, const struct Slice *s2) {
   s1->start  = s2->start;
   s1->size   = s2->size;
@@ -131,50 +144,50 @@ Slice_copy(struct Slice *s1, const struct Slice *s2) {
 }
 
 // getters
-static inline I32
+static cos_inline I32
 Slice_start(const struct Slice *s) {
   return s->start;
 }
 
-static inline U32
+static cos_inline U32
 Slice_size(const struct Slice *s) {
   return s->size;
 }
 
-static inline I32
+static cos_inline I32
 Slice_stride(const struct Slice *s) {
   return s->stride;
 }
 
-static inline I32
+static cos_inline I32
 Slice_eval(const struct Slice *s, I32 idx) {
   return s->start + idx * s->stride;
 }
 
-static inline I32
+static cos_inline I32
 Slice_end(const struct Slice *s) {
   return s->size ? Slice_eval(s, s->size-1) : s->start;
 }
 
 // sequence first index
-static inline U32
+static cos_inline U32
 Slice_first(const struct Slice *s) {
   return Slice_start(s);
 }
 
 // sequence last index
-static inline U32
+static cos_inline U32
 Slice_last(const struct Slice *s) {
   return Slice_end(s);
 }
 
 // predicates
-static inline BOOL
+static cos_inline BOOL
 Slice_isContiguous(const struct Slice *s) {
   return s->stride == 1 || s->stride == -1;
 }
 
-static inline BOOL
+static cos_inline BOOL
 Slice_isEqual(const struct Slice *s1, const struct Slice *s2) {
   return s1->start  == s2->start
       && s1->size   == s2->size
@@ -182,7 +195,7 @@ Slice_isEqual(const struct Slice *s1, const struct Slice *s2) {
 }
 
 // sliced Slice (s2 over s1)
-static inline struct Slice*
+static cos_inline struct Slice*
 Slice_addTo(struct Slice *s1, const struct Slice *s2) {
   s1->start  += s2->start*s1->stride;
   s1->size    = s2->size;
@@ -194,7 +207,7 @@ Slice_addTo(struct Slice *s1, const struct Slice *s2) {
 // conversion
 #include <cos/Range.h>
 
-static inline struct Slice
+static cos_inline struct Slice
 Slice_fromRange(const struct Range *r)
 {
   return *atSlice(Range_start(r), Range_size(r), Range_stride(r));

@@ -328,6 +328,9 @@
                     <keyword>restrict</keyword>
                     <keyword>static</keyword>
                     <keyword>volatile</keyword>
+                    
+                    <!-- COS Add-on -->
+                    <keyword>cos_inline</keyword>
                 </context>
 
                 <context id="common-defines" style-ref="common-defines">

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Collection.h,v 1.6 2010/05/21 14:59:07 ldeniau Exp $
+ | $Id: Collection.h,v 1.7 2010/05/23 08:22:55 ldeniau Exp $
  |
 */
 
@@ -41,18 +41,14 @@
 /* NOTE-USER: Collection subclasses
 
 <- Collection
-  <- Map    (hash+equal keys  )
-  <- OrdMap (compare    keys  )
-  <- Set    (hash+equal values)
-  <- OrdSet (compare    values)
+  <- Map    (hash+equal keys  )  // TODO
+  <- OrdMap (compare    keys  )  // TODO
+  <- Set    (hash+equal values)  // TODO
+  <- OrdSet (compare    values)  // TODO
   <- Sequence
     <- Array
-    <- Deque
     <- List
     <- ValueSequence (elements are values)
-      <- Slice
-      <- Range
-      <- XRange
       <- String
       <- Vector
         <- BitVector // TODO

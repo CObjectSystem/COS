@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Value.h,v 1.11 2010/05/21 14:59:07 ldeniau Exp $
+ | $Id: Value.h,v 1.12 2010/05/23 08:22:55 ldeniau Exp $
  |
 */
 
@@ -54,8 +54,9 @@
          <- Rational   (gmp mpq_t)
          <- BigFloat   (gmp mpf_t)
 
-   <- Range
    <- Slice
+   <- Range
+   <- XRange
 
    <- DateTime
 */
