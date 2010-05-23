@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.9 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.10 2010/05/23 15:44:57 ldeniau Exp $
  |
 */
 
@@ -436,10 +436,11 @@ defmethod(OBJ, gremoveAt, StringDyn, Slice)
 endmethod
 
 defmethod(OBJ, gremoveAt, StringDyn, Range)
-  struct Range range = Range_normalize(self2,self->StringFix.String.size);
-  struct Slice slice = Slice_fromRange(&range);
+  U32            size = self->StringFix.String.size;
+  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),size);
+  struct Slice *slice = Slice_fromRange(atSlice(0),range);
   
-  gremoveAt(_1,(OBJ)&slice);
+  gremoveAt(_1,(OBJ)slice);
   
   retmethod(_1);
 endmethod

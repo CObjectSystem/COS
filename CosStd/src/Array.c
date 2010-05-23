@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.54 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Array.c,v 1.55 2010/05/23 15:44:57 ldeniau Exp $
  |
 */
 
@@ -274,10 +274,10 @@ endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, Range);
 defmethod(OBJ,  ginitWith2          , pmArray, Array, Range) // sub vector
-  struct Range range = Range_normalize(self3,self2->size);
-  struct Slice slice = Slice_fromRange(&range);
+  struct Range* range = Range_normalize(Range_copy(atRange(0),self3),self2->size);
+  struct Slice* slice = Slice_fromRange(atSlice(0), range);
 
-  retmethod( ginitWith2(_1,_2,(OBJ)&slice) );
+  retmethod( ginitWith2(_1,_2,(OBJ)slice) );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, IntVector);

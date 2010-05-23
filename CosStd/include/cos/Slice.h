@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.18 2010/05/23 14:35:45 ldeniau Exp $
+ | $Id: Slice.h,v 1.19 2010/05/23 15:44:57 ldeniau Exp $
  |
 */
 
@@ -197,10 +197,10 @@ Slice_addTo(struct Slice *s1, const struct Slice *s2) {
 // conversion
 #include <cos/Range.h>
 
-static cos_inline struct Slice
-Slice_fromRange(const struct Range *r)
+static cos_inline struct Slice*
+Slice_fromRange(struct Slice *s, const struct Range *r)
 {
-  return *atSlice(Range_start(r), Range_size(r), Range_stride(r));
+  return Slice_init(s, Range_start(r), Range_size(r), Range_stride(r));
 }
 
 #endif // COS_SLICE_H

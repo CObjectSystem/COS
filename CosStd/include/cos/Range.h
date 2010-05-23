@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Range.h,v 1.18 2010/05/23 14:35:45 ldeniau Exp $
+ | $Id: Range.h,v 1.19 2010/05/23 15:44:57 ldeniau Exp $
  |
 */
 
@@ -218,24 +218,26 @@ Range_last(const struct Range *r, U32 seq_size) {
 }
 
 // normalization (require sequence's size, preserve stride)
-static cos_inline struct Range
-Range_normalize(const struct Range *r, U32 seq_size) {
+static cos_inline struct Range*
+Range_normalize(struct Range *r, U32 seq_size) {
   U32 start = Range_first(r, seq_size);
   U32 end   = Range_last (r, seq_size);
 
   if ( (start <= end && r->stride >= 0)
     || (start >= end && r->stride <= 0) )
-    return *atRange(start, end, r->stride);
+    r->start = start, r->end = end;
   else
-    return *atRange(end, start, r->stride);
+    r->start = end  , r->end = start;
+
+  return r;
 }
 
 // conversion
 #include <cos/Slice.h>
 
-static cos_inline struct Range
-Range_fromSlice(const struct Slice *s) {
-  return *atRange(Slice_start(s), Slice_end(s), Slice_stride(s));
+static cos_inline struct Range*
+Range_fromSlice(struct Range *r, const struct Slice *s) {
+  return Range_init(r, Slice_start(s), Slice_end(s), Slice_stride(s));
 }
 
 #endif // COS_RANGE_H

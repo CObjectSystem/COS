@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.19 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.20 2010/05/23 15:44:57 ldeniau Exp $
  |
 */
 
@@ -459,10 +459,10 @@ defmethod(OBJ, ginsertAt, ArrayDyn, Slice, Object)
 endmethod
 
 defmethod(OBJ, ginsertAt, ArrayDyn, Range, Object)
-  struct Range range = Range_normalize(self2,self->ArrayFix.Array.size);
-  struct Slice slice = Slice_fromRange(&range);
+  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),self->ArrayFix.Array.size);
+  struct Slice *slice = Slice_fromRange(atSlice(0),range);
   
-  retmethod( ginsertAt(_1,(OBJ)&slice,_3) );
+  retmethod( ginsertAt(_1,(OBJ)slice,_3) );
 endmethod
 
 defmethod(OBJ, ginsertAt, ArrayDyn, IntVector, Object)
@@ -648,10 +648,11 @@ defmethod(OBJ, gremoveAt, ArrayDyn, Slice)
 endmethod
 
 defmethod(OBJ, gremoveAt, ArrayDyn, Range)
-  struct Range range = Range_normalize(self2,self->ArrayFix.Array.size);
-  struct Slice slice = Slice_fromRange(&range);
+  U32           size  = self->ArrayFix.Array.size;
+  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),size);
+  struct Slice *slice = Slice_fromRange(atSlice(0),range);
           
-  retmethod( gremoveAt(_1,(OBJ)&slice) );
+  retmethod( gremoveAt(_1,(OBJ)slice) );
 endmethod
 
 defmethod(OBJ, gremoveAt, ArrayDyn, IntVector)

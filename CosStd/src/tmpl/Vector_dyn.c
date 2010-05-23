@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.14 2009/10/19 19:38:10 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.15 2010/05/23 15:44:57 ldeniau Exp $
  |
 */
 
@@ -413,10 +413,10 @@ defmethod(OBJ, ginsertAt, TD, Slice, Object)
 endmethod
 
 defmethod(OBJ, ginsertAt, TD, Range, Object)
-  struct Range range = Range_normalize(self2,self->TF.T.size);
-  struct Slice slice = Slice_fromRange(&range);
+  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),self->TF.T.size);
+  struct Slice *slice = Slice_fromRange(atSlice(0),range);
   
-  retmethod( ginsertAt(_1,(OBJ)&slice,_3) );
+  retmethod( ginsertAt(_1,(OBJ)slice,_3) );
 endmethod
 
 defmethod(OBJ, ginsertAt, TD, Slice, T)
@@ -533,10 +533,10 @@ defmethod(OBJ, gremoveAt, TD, Slice)
 endmethod
 
 defmethod(OBJ, gremoveAt, TD, Range)
-  struct Range range = Range_normalize(self2,self->TF.T.size);
-  struct Slice slice = Slice_fromRange(&range);
+  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),self->TF.T.size);
+  struct Slice *slice = Slice_fromRange(atSlice(0),range);
   
-  retmethod( gremoveAt(_1,(OBJ)&slice) );
+  retmethod( gremoveAt(_1,(OBJ)slice) );
 endmethod
 
 // --- dequeue aliases

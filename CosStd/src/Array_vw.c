@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_vw.c,v 1.5 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Array_vw.c,v 1.6 2010/05/23 15:44:57 ldeniau Exp $
  |
 */
 
@@ -77,10 +77,10 @@ endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, Array, Range);
 defmethod(OBJ,  ginitWith2          , mView, Array, Range) // vector view
-  struct Range range = Range_normalize(self3,self2->size);
-  struct Slice slice = Slice_fromRange(&range);
+  struct Range *range = Range_normalize(Range_copy(atRange(0),self3),self2->size);
+  struct Slice *slice = Slice_fromRange(atSlice(0),range);
   
-  retmethod(ginitWith3(galloc(ArrayView),_2,(OBJ)&slice,aInt(NO)));
+  retmethod(ginitWith3(galloc(ArrayView),_2,(OBJ)slice,aInt(NO)));
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mSubView, Array, Slice);
@@ -90,10 +90,10 @@ endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mSubView, Array, Range);
 defmethod(OBJ,  ginitWith2          , mSubView, Array, Range) // vector view
-  struct Range range = Range_normalize(self3,self2->size);
-  struct Slice slice = Slice_fromRange(&range);
+  struct Range *range = Range_normalize(Range_copy(atRange(0),self3),self2->size);
+  struct Slice *slice = Slice_fromRange(atSlice(0),range);
 
-  retmethod(ginitWith3(galloc(ArraySubView),_2,(OBJ)&slice,aInt(YES)));
+  retmethod(ginitWith3(galloc(ArraySubView),_2,(OBJ)slice,aInt(YES)));
 endmethod
 
 defmethod(OBJ, ginitWith3, ArrayView, Array, Slice, Int) // vector view

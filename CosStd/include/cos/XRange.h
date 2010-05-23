@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.h,v 1.8 2010/05/23 14:35:45 ldeniau Exp $
+ | $Id: XRange.h,v 1.9 2010/05/23 15:44:57 ldeniau Exp $
  |
 */
 
@@ -155,14 +155,14 @@ XRange_isClosed(const struct XRange *r) {
 // conversion
 #include <cos/Range.h>
 
-static cos_inline struct XRange
-XRange_fromSlice(const struct Slice *s) {
-  return *atXRange(Slice_start(s), Slice_end(s), Slice_stride(s));
+static cos_inline struct XRange*
+XRange_fromSlice(struct XRange *x, const struct Slice *s) {
+  return XRange_init(x, Slice_start(s), Slice_end(s), Slice_stride(s));
 }
 
-static cos_inline struct XRange
-XRange_fromRange(const struct Range *r) {
-  return *atXRange(Range_start(r), Range_end(r), Range_stride(r));
+static cos_inline struct XRange*
+XRange_fromRange(struct XRange *x, const struct Range *r) {
+  return XRange_init(x, Range_start(r), Range_end(r), Range_stride(r));
 }
 
 #endif // COS_XRANGE_H
