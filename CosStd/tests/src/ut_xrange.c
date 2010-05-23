@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_xrange.c,v 1.7 2010/02/02 16:27:42 ldeniau Exp $
+ | $Id: ut_xrange.c,v 1.8 2010/05/23 16:02:13 ldeniau Exp $
  |
 */
 
@@ -43,9 +43,9 @@
 #include "tests.h"
 
 static BOOL
-eq(struct XRange r, struct XRange *ref)
+eq(struct XRange *r, struct XRange *ref)
 {
-  return XRange_isEqual(&r, ref);
+  return XRange_isEqual(r, ref);
 }
 
 static BOOL
@@ -213,72 +213,72 @@ ut_xrange(void)
     UTEST( gsize(aXRange(0,0.1,..,0.4)) == 5);
 
     // xrange vs slice
-    UTEST( eq(XRange_fromSlice(atSlice(-1,3,1)), atXRange(-1,1,1)) );
-    UTEST( eq(XRange_fromSlice(atSlice(-1,2,2)), atXRange(-1,1,2)) );
-    UTEST( eq(XRange_fromSlice(atSlice(-1,3,3)), atXRange(-1,5,3)) );
-    UTEST( eq(XRange_fromSlice(atSlice(-1,2,3)), atXRange(-1,2,3)) );
-    UTEST( eq(XRange_fromSlice(atSlice( 1,2,3)), atXRange( 1,4,3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-1,3,1)), atXRange(-1,1,1)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-1,2,2)), atXRange(-1,1,2)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-1,3,3)), atXRange(-1,5,3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-1,2,3)), atXRange(-1,2,3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice( 1,2,3)), atXRange( 1,4,3)) );
 
-    UTEST( eq(XRange_fromSlice(atSlice(9,10,-1)), atXRange(9,0,-1)) );
-    UTEST( eq(XRange_fromSlice(atSlice(9,5,-2)), atXRange(9,1,-2)) );
-    UTEST( eq(XRange_fromSlice(atSlice(9,4,-3)), atXRange(9,0,-3)) );
-    UTEST( eq(XRange_fromSlice(atSlice(9,3,-3)), atXRange(9,3,-3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(9,10,-1)), atXRange(9,0,-1)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(9,5,-2)), atXRange(9,1,-2)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(9,4,-3)), atXRange(9,0,-3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(9,3,-3)), atXRange(9,3,-3)) );
 
-    UTEST( eq(XRange_fromSlice(atSlice(0,10,1)),atXRange(0,9,1)) );
-    UTEST( eq(XRange_fromSlice(atSlice(1,10,1)),atXRange(1,10,1)) );
-    UTEST( eq(XRange_fromSlice(atSlice(1,5,2)),atXRange(1,9,2)) );
-    UTEST( eq(XRange_fromSlice(atSlice(1,4,3)),atXRange(1,10,3)) );
-    UTEST( eq(XRange_fromSlice(atSlice(1,3,3)),atXRange(1,7,3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(0,10,1)),atXRange(0,9,1)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(1,10,1)),atXRange(1,10,1)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(1,5,2)),atXRange(1,9,2)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(1,4,3)),atXRange(1,10,3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(1,3,3)),atXRange(1,7,3)) );
 
-    UTEST( eq(XRange_fromSlice(atSlice(9,10,-1)),atXRange(9,0,-1)) );
-    UTEST( eq(XRange_fromSlice(atSlice(10,10,-1)),atXRange(10,1,-1)) );
-    UTEST( eq(XRange_fromSlice(atSlice(10,5,-2)),atXRange(10,2,-2)) );
-    UTEST( eq(XRange_fromSlice(atSlice(10,4,-3)),atXRange(10,1,-3)) );
-    UTEST( eq(XRange_fromSlice(atSlice(9,3,-3)),atXRange(9,3,-3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(9,10,-1)),atXRange(9,0,-1)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(10,10,-1)),atXRange(10,1,-1)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(10,5,-2)),atXRange(10,2,-2)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(10,4,-3)),atXRange(10,1,-3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(9,3,-3)),atXRange(9,3,-3)) );
 
-    UTEST( eq(XRange_fromSlice(atSlice(-1,10,-1)),atXRange(-1,-10,-1)) );
-    UTEST( eq(XRange_fromSlice(atSlice(-1,5,-2)),atXRange(-1,-9,-2)) );
-    UTEST( eq(XRange_fromSlice(atSlice(-1,4,-3)),atXRange(-1,-10,-3)) );
-    UTEST( eq(XRange_fromSlice(atSlice(-1,3,-3)),atXRange(-1,-7,-3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-1,10,-1)),atXRange(-1,-10,-1)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-1,5,-2)),atXRange(-1,-9,-2)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-1,4,-3)),atXRange(-1,-10,-3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-1,3,-3)),atXRange(-1,-7,-3)) );
 
-    UTEST( eq(XRange_fromSlice(atSlice(-10,10,1)),atXRange(-10,-1,1)) );
-    UTEST( eq(XRange_fromSlice(atSlice(-10,5,2)),atXRange(-10,-2,2)) );
-    UTEST( eq(XRange_fromSlice(atSlice(-10,4,3)),atXRange(-10,-1,3)) );
-    UTEST( eq(XRange_fromSlice(atSlice(-9,3,3)),atXRange(-9,-3,3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-10,10,1)),atXRange(-10,-1,1)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-10,5,2)),atXRange(-10,-2,2)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-10,4,3)),atXRange(-10,-1,3)) );
+    UTEST( eq(XRange_fromSlice(atXRange(0), atSlice(-9,3,3)),atXRange(-9,-3,3)) );
     
     // xrange vs range
-    UTEST( eq(XRange_fromRange(atRange(-1,1,1)), atXRange(-1,1,1)) );
-    UTEST( eq(XRange_fromRange(atRange(-1,1,2)), atXRange(-1,1,2)) );
-    UTEST( eq(XRange_fromRange(atRange(-1,5,3)), atXRange(-1,5,3)) );
-    UTEST( eq(XRange_fromRange(atRange(-1,2,3)), atXRange(-1,2,3)) );
-    UTEST( eq(XRange_fromRange(atRange( 1,4,3)), atXRange( 1,4,3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-1,1,1)), atXRange(-1,1,1)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-1,1,2)), atXRange(-1,1,2)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-1,5,3)), atXRange(-1,5,3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-1,2,3)), atXRange(-1,2,3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange( 1,4,3)), atXRange( 1,4,3)) );
 
-    UTEST( eq(XRange_fromRange(atRange(9,0,-1)), atXRange(9,0,-1)) );
-    UTEST( eq(XRange_fromRange(atRange(9,1,-2)), atXRange(9,1,-2)) );
-    UTEST( eq(XRange_fromRange(atRange(9,0,-3)), atXRange(9,0,-3)) );
-    UTEST( eq(XRange_fromRange(atRange(9,3,-3)), atXRange(9,3,-3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(9,0,-1)), atXRange(9,0,-1)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(9,1,-2)), atXRange(9,1,-2)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(9,0,-3)), atXRange(9,0,-3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(9,3,-3)), atXRange(9,3,-3)) );
 
-    UTEST( eq(XRange_fromRange(atRange(0,9,1)),atXRange(0,9,1)) );
-    UTEST( eq(XRange_fromRange(atRange(1,10,1)),atXRange(1,10,1)) );
-    UTEST( eq(XRange_fromRange(atRange(1,9,2)),atXRange(1,9,2)) );
-    UTEST( eq(XRange_fromRange(atRange(1,10,3)),atXRange(1,10,3)) );
-    UTEST( eq(XRange_fromRange(atRange(1,7,3)),atXRange(1,7,3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(0,9,1)),atXRange(0,9,1)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(1,10,1)),atXRange(1,10,1)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(1,9,2)),atXRange(1,9,2)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(1,10,3)),atXRange(1,10,3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(1,7,3)),atXRange(1,7,3)) );
 
-    UTEST( eq(XRange_fromRange(atRange(9,0,-1)),atXRange(9,0,-1)) );
-    UTEST( eq(XRange_fromRange(atRange(10,1,-1)),atXRange(10,1,-1)) );
-    UTEST( eq(XRange_fromRange(atRange(10,2,-2)),atXRange(10,2,-2)) );
-    UTEST( eq(XRange_fromRange(atRange(10,1,-3)),atXRange(10,1,-3)) );
-    UTEST( eq(XRange_fromRange(atRange(9,3,-3)),atXRange(9,3,-3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(9,0,-1)),atXRange(9,0,-1)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(10,1,-1)),atXRange(10,1,-1)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(10,2,-2)),atXRange(10,2,-2)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(10,1,-3)),atXRange(10,1,-3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(9,3,-3)),atXRange(9,3,-3)) );
 
-    UTEST( eq(XRange_fromRange(atRange(-1,-10,-1)),atXRange(-1,-10,-1)) );
-    UTEST( eq(XRange_fromRange(atRange(-1,-9,-2)),atXRange(-1,-9,-2)) );
-    UTEST( eq(XRange_fromRange(atRange(-1,-10,-3)),atXRange(-1,-10,-3)) );
-    UTEST( eq(XRange_fromRange(atRange(-1,-7,-3)),atXRange(-1,-7,-3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-1,-10,-1)),atXRange(-1,-10,-1)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-1,-9,-2)),atXRange(-1,-9,-2)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-1,-10,-3)),atXRange(-1,-10,-3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-1,-7,-3)),atXRange(-1,-7,-3)) );
 
-    UTEST( eq(XRange_fromRange(atRange(-10,-1,1)),atXRange(-10,-1,1)) );
-    UTEST( eq(XRange_fromRange(atRange(-10,-2,2)),atXRange(-10,-2,2)) );
-    UTEST( eq(XRange_fromRange(atRange(-10,-1,3)),atXRange(-10,-1,3)) );
-    UTEST( eq(XRange_fromRange(atRange(-9,-3,3)),atXRange(-9,-3,3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-10,-1,1)),atXRange(-10,-1,1)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-10,-2,2)),atXRange(-10,-2,2)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-10,-1,3)),atXRange(-10,-1,3)) );
+    UTEST( eq(XRange_fromRange(atXRange(0), atRange(-9,-3,3)),atXRange(-9,-3,3)) );
 
   UTEST_END
 }
