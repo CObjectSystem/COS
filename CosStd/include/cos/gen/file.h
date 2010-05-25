@@ -32,17 +32,20 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: file.h,v 1.2 2010/01/29 12:36:34 ldeniau Exp $
+ | $Id: file.h,v 1.3 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
+#include <cos/Object.h>
+
 #include <stdio.h>
 
-// handle
-defgeneric(OBJ, gremove, _1);
+// position
+defgeneric(int , gseek, _1, (long)pos, (int)from); //
+defgeneric(long, gtell, _1);
 
-// low-level FILE access (may be removed in the future)
+// low-level FILE interface
+defgeneric(OBJ  , ginitWithFILE, _1, (FILE*)fp, name);
 defgeneric(FILE*, ggetFILE, _1);
-defgeneric(OBJ  , gsetFILE, _1, (FILE*)fp, (STR)mode, (STR)name);
 
 #endif // COS_GEN_FILE_H

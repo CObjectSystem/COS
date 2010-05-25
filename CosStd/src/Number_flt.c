@@ -29,16 +29,17 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.11 2010/02/21 16:36:10 ldeniau Exp $
+ | $Id: Number_flt.c,v 1.12 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 #include <cos/Number.h>
 
-#include <cos/gen/object.h>
 #include <cos/gen/floatop.h>
+#include <cos/gen/init.h>
 #include <cos/gen/numop.h>
+#include <cos/gen/object.h>
 
 #include <math.h>
 #include <float.h>
@@ -187,13 +188,6 @@ defmethod(OBJ, gpower, Complex, Complex)
   retmethod(_1);
 endmethod
 
-// ----- hypotenuse
-
-defmethod(OBJ, ghypotenuse, Float, Float)
-  self->value = hypot(self->value, self2->value);
-  retmethod(_1);
-endmethod
-
 // ----- conj
 
 defmethod(OBJ, gconj, Complex)
@@ -248,17 +242,18 @@ DEFMETHOD(gatanh, gatangenth  )
 // ----- hypot
 
 defmethod(OBJ, ghypot, Float, Float)
-  retmethod( ghypotenuse(gautoDelete(gclone(_1)),_2) );
+  F64 value = hypot(self->value, self2->value);
+  retmethod( gautoDelete(ginitWithFlt(galloc(Float), value)) );
 endmethod
 
 // ----- subSqr
 
-defmethod(OBJ, gsubSqr, Number, Number)
+defmethod(OBJ, gsqrErr, Number, Number)
   OBJ flt = gsub(_1,_2);
   retmethod( gmulBy(flt,flt) );
 endmethod
 
-defmethod(OBJ, gsubSqr, Integral, Number)
+defmethod(OBJ, gsqrErr, Integral, Number)
   OBJ flt = gsubTo(gautoDelete(gnewWith(Float,_1)),_2);
   retmethod( gmulBy(flt,flt) );
 endmethod

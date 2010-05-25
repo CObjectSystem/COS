@@ -32,23 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.12 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: functor.h,v 1.13 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
 #include <cos/Array.h>
-
-defgeneric(OBJ, gnewWithFun0, Functor, (FUN0)fct);
-defgeneric(OBJ, gnewWithFun1, Functor, (FUN1)fct, (OBJ*)arg);
-defgeneric(OBJ, gnewWithFun2, Functor, (FUN2)fct, (OBJ*)arg);
-defgeneric(OBJ, gnewWithFun3, Functor, (FUN3)fct, (OBJ*)arg);
-defgeneric(OBJ, gnewWithFun4, Functor, (FUN4)fct, (OBJ*)arg);
-defgeneric(OBJ, gnewWithFun5, Functor, (FUN5)fct, (OBJ*)arg);
-defgeneric(OBJ, gnewWithFun6, Functor, (FUN6)fct, (OBJ*)arg);
-defgeneric(OBJ, gnewWithFun7, Functor, (FUN7)fct, (OBJ*)arg);
-defgeneric(OBJ, gnewWithFun8, Functor, (FUN8)fct, (OBJ*)arg);
-defgeneric(OBJ, gnewWithFun9, Functor, (FUN9)fct, (OBJ*)arg);
-defgeneric(OBJ, gnewWithMth , Functor, (SEL )sel, (OBJ*)rcv, (void*)arg);
 
 defgeneric(OBJ, ginitWithFun0, Functor, (FUN0)fct);
 defgeneric(OBJ, ginitWithFun1, Functor, (FUN1)fct, (OBJ*)arg);

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.21 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.22 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -517,6 +517,28 @@ defmethod(OBJ, greduce1, T, Functor, Object)
   retmethod(res);
 endmethod
 
+defmethod(OBJ, greduce2, T, Functor, Object, Object)
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
+  VAL *end   = val + val_s*size;
+  OBJ  res   = _3;
+
+  if (size) {
+    val += val_s;
+ 
+    while (val != end) {
+      res = geval(_2, res, VALOBJ(*(val-val_s)), VALOBJ(*val));
+      val += val_s;
+    }
+
+    res = geval(_2, res, VALOBJ(*(val-val_s)), _4);
+  }
+  
+  retmethod(res);
+endmethod
+
+/*
 defmethod(OBJ, grreduce, T, Functor)
   test_assert( self->size > 0, "empty vector" );
 
@@ -551,27 +573,6 @@ defmethod(OBJ, grreduce1, T, Functor, Object)
   retmethod(res);
 endmethod
 
-defmethod(OBJ, greduce2, T, Functor, Object, Object)
-  U32  size  = self->size;
-  I32  val_s = self->stride;
-  VAL *val   = self->value;
-  VAL *end   = val + val_s*size;
-  OBJ  res   = _3;
-
-  if (size) {
-    val += val_s;
- 
-    while (val != end) {
-      res = geval(_2, res, VALOBJ(*(val-val_s)), VALOBJ(*val));
-      val += val_s;
-    }
-
-    res = geval(_2, res, VALOBJ(*(val-val_s)), _4);
-  }
-  
-  retmethod(res);
-endmethod
-
 defmethod(OBJ, grreduce2, T, Functor, Object, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
@@ -592,6 +593,7 @@ defmethod(OBJ, grreduce2, T, Functor, Object, Object)
   
   retmethod(res);
 endmethod
+*/
 
 // ----- accumulate
 
@@ -626,6 +628,36 @@ defmethod(OBJ, gaccumulate1, T, Functor, Object)
   retmethod(_vec);
 endmethod
 
+defmethod(OBJ, gaccumulate2, T, Functor, Object, Object)
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  VAL *val   = self->value;
+  VAL *end   = val + val_s*size;
+  OBJ  res   = _3;
+
+  struct T* vec = T_alloc(size);
+  OBJ _vec = gautoDelete( (OBJ)vec );
+
+  U32 *dst_n = &vec->size;
+  VAL *dst   = vec->value;
+
+  if (size) {
+    val += val_s;
+    
+    while (val != end) {
+      res = geval(_2, res, VALOBJ(*(val-val_s)), VALOBJ(*val));
+      val += val_s;
+      *dst++ = TOVAL(res), ++*dst_n;
+    }
+
+    res = geval(_2, res, VALOBJ(*(val-val_s)), _4);
+    *dst++ = TOVAL(res), ++*dst_n;
+  }
+
+  retmethod(_vec);
+endmethod
+
+/*
 defmethod(OBJ, graccumulate, T, Functor)
   test_assert( self->size > 0, "empty vector" );
   
@@ -652,35 +684,6 @@ defmethod(OBJ, graccumulate1, T, Functor, Object)
     end -= val_s,
     res = geval(_2, VALOBJ(*end), res);
     *--dst = TOVAL(res), ++*dst_n;
-  }
-
-  retmethod(_vec);
-endmethod
-
-defmethod(OBJ, gaccumulate2, T, Functor, Object, Object)
-  U32  size  = self->size;
-  I32  val_s = self->stride;
-  VAL *val   = self->value;
-  VAL *end   = val + val_s*size;
-  OBJ  res   = _3;
-
-  struct T* vec = T_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
-
-  U32 *dst_n = &vec->size;
-  VAL *dst   = vec->value;
-
-  if (size) {
-    val += val_s;
-    
-    while (val != end) {
-      res = geval(_2, res, VALOBJ(*(val-val_s)), VALOBJ(*val));
-      val += val_s;
-      *dst++ = TOVAL(res), ++*dst_n;
-    }
-
-    res = geval(_2, res, VALOBJ(*(val-val_s)), _4);
-    *dst++ = TOVAL(res), ++*dst_n;
   }
 
   retmethod(_vec);
@@ -714,6 +717,7 @@ defmethod(OBJ, graccumulate2, T, Functor, Object, Object)
 
   retmethod(_vec);
 endmethod
+*/
 
 // ----- all, any, count
 

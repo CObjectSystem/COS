@@ -1,10 +1,10 @@
-#ifndef COS_PRP_SEQUENCE_H
-#define COS_PRP_SEQUENCE_H
+#ifndef COS_GEN_ARRAY_H
+#define COS_GEN_ARRAY_H
 
 /*
  o---------------------------------------------------------------------o
  |
- | COS properties for sequences
+ | COS generics for arrays
  |
  o---------------------------------------------------------------------o
  |
@@ -32,14 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.2 2009/09/16 17:03:02 ldeniau Exp $
+ | $Id: array.h,v 1.1 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
-#include <cos/Property.h>
+#include <cos/Object.h>
 
-// sequence properties
-defproperty(array);
-defproperty(slice);
+// repeat, generate
+defgeneric(OBJ, grepeat  , obj, num);
+defgeneric(OBJ, ggenerate, fun, ini); // stops when fun return Nil
 
-#endif // COS_PRP_SEQUENCE_H
+#endif // COS_GEN_ARRAY_H
+

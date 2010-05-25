@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Generic.c,v 1.5 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Generic.c,v 1.6 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -84,7 +84,7 @@ makclass(G_acosh      , G_UnaryOp  );
 makclass(G_asinh      , G_UnaryOp  );
 makclass(G_atanh      , G_UnaryOp  );
 makclass(G_hypot      , G_BinaryOp );
-makclass(G_subSqr     , G_BinaryOp );
+makclass(G_sqrErr     , G_BinaryOp );
 makclass(G_mulAdd     , G_TernaryOp);
 
 makclass(G_conjugate  , G_UnaryOp  );
@@ -104,7 +104,6 @@ makclass(G_tangenth   , G_UnaryOp  );
 makclass(G_acosineh   , G_UnaryOp  );
 makclass(G_asineh     , G_UnaryOp  );
 makclass(G_atangenth  , G_UnaryOp  );
-makclass(G_hypotenuse , G_BinaryOp );
 
 #include <cos/gen/op/GRelOp.h>
 

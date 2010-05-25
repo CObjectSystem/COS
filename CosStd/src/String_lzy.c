@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_lzy.c,v 1.8 2010/02/21 16:36:10 ldeniau Exp $
+ | $Id: String_lzy.c,v 1.9 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,7 @@
 
 #include <cos/gen/accessor.h>
 #include <cos/gen/collection.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 

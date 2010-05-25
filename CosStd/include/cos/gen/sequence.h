@@ -32,15 +32,62 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.8 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: sequence.h,v 1.9 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
-#include <cos/XRange.h>
+#include <cos/Object.h>
 
-// new (no 'init' for final classes)
-defgeneric(OBJ, gnewSlc , _1, (I32)start, (U32)size, (I32)stride);
-defgeneric(OBJ, gnewRng , _1, (I32)start, (I32)end , (I32)stride);
-defgeneric(OBJ, gnewXRng, _1, (F64)start, (F64)end , (F64)stride);
+// in place
+defgeneric(OBJ, greverse, _1);
+defgeneric(OBJ, gpermute, _1, idx);
+
+// concat
+defgeneric(OBJ, gconcat , _1, _2);
+defgeneric(OBJ, gconcat3, _1, _2, _3);
+defgeneric(OBJ, gconcat4, _1, _2, _3, _4);
+defgeneric(OBJ, gconcatn, _1);
+
+// zip
+defgeneric(OBJ, gzip , _1, _2);
+defgeneric(OBJ, gzip3, _1, _2, _3);
+defgeneric(OBJ, gzip4, _1, _2, _3, _4);
+defgeneric(OBJ, gzipn, _1);
+
+// array-like accessor
+defgeneric(I32, gindexOf, _1, fun); // return index or -1 if not found
+
+// list-like accessor
+defgeneric(OBJ, ginsertAt , _1, at, what);
+defgeneric(OBJ, gremoveAt , _1, at);
+
+// stack-like accessors
+defgeneric(OBJ, gpush     , _1, what);
+defgeneric(OBJ, gtop      , _1);
+defgeneric(OBJ, gpop      , _1); // return _1
+
+// dequeue-like accessors
+defgeneric(OBJ, gpushFront, _1, what);
+defgeneric(OBJ, gpushBack , _1, what);
+defgeneric(OBJ, gpopFront , _1);
+defgeneric(OBJ, gpopBack  , _1);
+defgeneric(OBJ, gfront    , _1);
+defgeneric(OBJ, gback     , _1);
+
+// seq-like accessor
+defgeneric(OBJ, gprepend  , _1, what);
+defgeneric(OBJ, gappend   , _1, what);
+defgeneric(OBJ, gchop     , _1, what);
+defgeneric(OBJ, gdrop     , _1, num); // back if num<0
+defgeneric(OBJ, gdropFirst, _1);
+defgeneric(OBJ, gdropLast , _1);
+defgeneric(OBJ, gfirst    , _1);
+defgeneric(OBJ, glast     , _1);
+
+// adjust sequence (e.g. capacity to size)
+defgeneric(OBJ, gadjust   , _1);
+
+// englarge sequence memory (e.g. front if by<0)
+defgeneric(OBJ, genlarge  , _1, by);
 
 #endif // COS_GEN_SEQUENCE_H

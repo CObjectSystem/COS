@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_mth.c,v 1.23 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Functor_mth.c,v 1.24 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -204,8 +204,7 @@ DEFFUNC(5)
 
 // ----- constructor
 
-defalias (OBJ, (ginitWithMth)gnewWithMth, pmFunctor, (SEL)sel, (OBJ*)rcv, (void*)arg);
-defmethod(OBJ,  ginitWithMth            , pmFunctor, (SEL)sel, (OBJ*)rcv, (void*)arg)
+defmethod(OBJ, ginitWithMth, pmFunctor, (SEL)sel, (OBJ*)rcv, (void*)arg)
   OBJ mth = Nil;
 
   switch(COS_GEN_RNK(sel)) {

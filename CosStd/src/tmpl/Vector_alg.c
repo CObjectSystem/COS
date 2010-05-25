@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.10 2010/01/10 01:11:42 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.11 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -226,6 +226,7 @@ defmethod(OBJ, gzip4, T, T, T, T)
   retmethod(gautoDelete( (OBJ)vec ));
 endmethod
 
+/*
 defmethod(OBJ, gzip5, T, T, T, T, T)
   U32 size = self->size < self2->size ? self->size : self2->size;
       size = self3->size < size ? self3->size : size;
@@ -257,8 +258,9 @@ defmethod(OBJ, gzip5, T, T, T, T, T)
 
   retmethod(gautoDelete( (OBJ)vec ));
 endmethod
+*/
 
-// ----- concat, concat3, concat4, concat5
+// ----- concat, concat3, concat4
 
 defmethod(OBJ, gconcat, T, T)
   U32 size = self->size + self2->size;
@@ -299,6 +301,7 @@ defmethod(OBJ, gconcat4, T, T, T, T)
   retmethod(gautoDelete( (OBJ)vec ));
 endmethod
 
+/*
 defmethod(OBJ, gconcat5, T, T, T, T, T)
   U32 size = self->size + self2->size + self3->size + self4->size + self5->size;
   struct T *vec = T_alloc(size);
@@ -313,6 +316,7 @@ defmethod(OBJ, gconcat5, T, T, T, T, T)
 
   retmethod(gautoDelete( (OBJ)vec ));
 endmethod
+*/
 
 // ----- search (object)
 

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.h,v 1.4 2010/01/29 12:36:34 ldeniau Exp $
+ | $Id: Stream.h,v 1.5 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -48,7 +48,6 @@
 */
 
 defclass(Stream)
-  OBJ delegate; // can be null
 endclass
 
 defclass(InputStream, Stream)

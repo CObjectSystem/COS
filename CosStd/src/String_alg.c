@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.20 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: String_alg.c,v 1.21 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -41,6 +41,7 @@
 #include <cos/gen/algorithm.h>
 #include <cos/gen/collection.h>
 #include <cos/gen/object.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/relop.h>
 #include <cos/gen/value.h>
 
@@ -131,7 +132,7 @@ defmethod(OBJ, gzip3, String, String, String)
   retmethod(gautoDelete( (OBJ)str ));
 endmethod
 
-// ----- concat, concat3, concat4, concat5
+// ----- concat, concat3, concat4
 
 defmethod(OBJ, gconcat, String, String)
   U32 size = self->size + self2->size;
@@ -172,6 +173,7 @@ defmethod(OBJ, gconcat4, String, String, String, String)
   retmethod(gautoDelete( (OBJ)str ));
 endmethod
 
+/*
 defmethod(OBJ, gconcat5, String, String, String, String, String)
   U32 size = self->size + self2->size +
              self3->size + self4->size + self5->size;
@@ -187,6 +189,7 @@ defmethod(OBJ, gconcat5, String, String, String, String, String)
 
   retmethod(gautoDelete( (OBJ)str ));
 endmethod
+*/
 
 // ----- split (object)
 

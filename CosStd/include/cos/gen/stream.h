@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: stream.h,v 1.10 2010/02/21 00:46:24 ldeniau Exp $
+ | $Id: stream.h,v 1.11 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -45,12 +45,6 @@ enum { EndOfStream = -1 /* EOF */ };
 // ----- standard streams
 
 extern OBJ StdIn, StdOut, StdErr, StdLog;
-
-// -----
-
-defgeneric(OBJ, gopen , _1, name, mode);
-defgeneric(OBJ, gclose, _1);
-defgeneric(OBJ, gflush, _1);
 
 // low-level character primitives (!REQUIRED!)
 defgeneric(I32, ggetChr  , _1);           // return EndOfStream or chr
@@ -90,5 +84,8 @@ defgeneric(OBJ, ggetContent, _1); // (return a lazy string or Nil on error)
 defgeneric(OBJ, gget  , _1, _2);  // (return object or Nil on error)
 defgeneric(OBJ, gput  , _1, _2);  // (return stream or Nil on error)
 defgeneric(OBJ, gputLn, _1, _2);  // (return stream or Nil on error)
+
+// flush stream
+defgeneric(OBJ, gflush, _1); // may fail silently
 
 #endif // COS_GEN_STREAM_H

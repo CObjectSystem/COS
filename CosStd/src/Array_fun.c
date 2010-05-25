@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.33 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.34 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,7 @@
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/collection.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 
@@ -548,6 +549,36 @@ defmethod(OBJ, greduce1, Array, Functor, Object)
 endmethod
 
 /*
+  reduce2:
+  res = f(ini, in[0], in[1])
+  res = f(res, in[1], in[2])
+  ...
+  res = f(res, in[N-2], in[N-1])
+  res = f(res, in[N-1], fin)
+*/
+
+defmethod(OBJ, greduce2, Array, Functor, Object, Object)
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res   = _3;
+
+  if (size) {
+    val += val_s;
+
+    while (val != end) {
+      res = geval(_2, res, *(val-val_s), *val);
+      val += val_s;
+    }
+
+    res = geval(_2, res, *(val-val_s), _4);
+  }
+  
+  retmethod(res);
+endmethod
+
+/*
   rreduce1:
   res = f(in[N-1], ini)
   res = f(in[N-2], res)
@@ -555,6 +586,7 @@ endmethod
   res = f(in[0]  , res)
 */
 
+/*
 defmethod(OBJ, grreduce, Array, Functor)
   test_assert( self->size > 0, "empty array" );
 
@@ -588,36 +620,7 @@ defmethod(OBJ, grreduce1, Array, Functor, Object)
 
   retmethod(res);
 endmethod
-
-/*
-  reduce2:
-  res = f(ini, in[0], in[1])
-  res = f(res, in[1], in[2])
-  ...
-  res = f(res, in[N-2], in[N-1])
-  res = f(res, in[N-1], fin)
 */
-
-defmethod(OBJ, greduce2, Array, Functor, Object, Object)
-  U32  size  = self->size;
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
-  OBJ  res   = _3;
-
-  if (size) {
-    val += val_s;
-
-    while (val != end) {
-      res = geval(_2, res, *(val-val_s), *val);
-      val += val_s;
-    }
-
-    res = geval(_2, res, *(val-val_s), _4);
-  }
-  
-  retmethod(res);
-endmethod
 
 /*
   rreduce2:
@@ -628,6 +631,7 @@ endmethod
   res = f(fin    , in[0]  , res)
 */
 
+/*
 defmethod(OBJ, grreduce2, Array, Functor, Object, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
@@ -648,6 +652,7 @@ defmethod(OBJ, grreduce2, Array, Functor, Object, Object)
 
   retmethod(res);
 endmethod
+*/
 
 // ----- accumulate
 
@@ -685,45 +690,6 @@ defmethod(OBJ, gaccumulate1, Array, Functor, Object)
     res = geval(_2, res, *val);
     val += val_s;
     *dst++ = gretain(res), ++*dst_n;
-  }
-  
-  retmethod(_arr);
-endmethod
-
-/*
-  raccumulate1:
-  res = f(in[N-1], ini) -> out[N-1]
-  res = f(in[N-2], res) -> out[N-2]
-  ...
-  res = f(in[0]  , res) -> out[0]
-*/
-
-defmethod(OBJ, graccumulate, Array, Functor)
-  test_assert( self->size > 0, "empty array" );
-
-  OBJ ini = gautoDelete(gclone(glast(_1)));
-  OBJ arr = aArrayView(self, atSlice(self->size-1));
-  
-  retmethod( graccumulate1(arr, _2, ini) );
-endmethod
-
-defmethod(OBJ, graccumulate1, Array, Functor, Object)
-  U32  size  = self->size;
-  I32  val_s = self->stride;
-  OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
-  OBJ  res   = _3;
-
-  struct Array* arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
-
-  U32 *dst_n = &arr->size;
-  OBJ *dst   = arr->object + size;
-
-  while (val != end) {
-    end -= val_s,
-    res = geval(_2, *end, res);
-    *--dst = gretain(res), ++*dst_n;
   }
   
   retmethod(_arr);
@@ -768,6 +734,47 @@ defmethod(OBJ, gaccumulate2, Array, Functor, Object, Object)
 endmethod
 
 /*
+  raccumulate1:
+  res = f(in[N-1], ini) -> out[N-1]
+  res = f(in[N-2], res) -> out[N-2]
+  ...
+  res = f(in[0]  , res) -> out[0]
+*/
+
+/*
+defmethod(OBJ, graccumulate, Array, Functor)
+  test_assert( self->size > 0, "empty array" );
+
+  OBJ ini = gautoDelete(gclone(glast(_1)));
+  OBJ arr = aArrayView(self, atSlice(self->size-1));
+  
+  retmethod( graccumulate1(arr, _2, ini) );
+endmethod
+
+defmethod(OBJ, graccumulate1, Array, Functor, Object)
+  U32  size  = self->size;
+  I32  val_s = self->stride;
+  OBJ *val   = self->object;
+  OBJ *end   = val + val_s*size;
+  OBJ  res   = _3;
+
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = gautoDelete( (OBJ)arr );
+
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object + size;
+
+  while (val != end) {
+    end -= val_s,
+    res = geval(_2, *end, res);
+    *--dst = gretain(res), ++*dst_n;
+  }
+  
+  retmethod(_arr);
+endmethod
+*/
+
+/*
   raccumulate2:
   res = f(in[N-2], in[N-1], ini)  -> out[N-1]
   res = f(in[N-3], in[N-2], res)  -> out[N-2]
@@ -775,7 +782,7 @@ endmethod
   res = f(in[0]  , in[1]  , res)  -> out[1]
   res = f(fin    , in[0]  , res)  -> out[0]
 */
-
+/*
 defmethod(OBJ, graccumulate2, Array, Functor, Object, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
@@ -804,6 +811,7 @@ defmethod(OBJ, graccumulate2, Array, Functor, Object, Object)
   
   retmethod(_arr);
 endmethod
+*/
 
 // ----- all, any, count
 
@@ -1001,7 +1009,7 @@ defmethod(OBJ, gdiff, Array, Collection, Functor)
 endmethod
 
 // ----- match (asymmetric match, self2 - (self2 - self1))
-
+/*
 defmethod(OBJ, gmatch, Array, Collection, Functor)
   U32 size = self->size;
   OBJ _arr = gautoDelete(gnewWith(Array,aInt(size)));
@@ -1024,6 +1032,7 @@ defmethod(OBJ, gmatch, Array, Collection, Functor)
 
   retmethod(_arr);
 endmethod
+*/
 
 // ----- intersect (asymmetric intersect, self1 - (self1 - self2))
 

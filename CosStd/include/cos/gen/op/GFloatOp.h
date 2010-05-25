@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GFloatOp.h,v 1.5 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: GFloatOp.h,v 1.6 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -56,7 +56,7 @@ defclass(G_acosh      , G_UnaryOp  ) endclass
 defclass(G_asinh      , G_UnaryOp  ) endclass
 defclass(G_atanh      , G_UnaryOp  ) endclass
 defclass(G_hypot      , G_BinaryOp ) endclass
-defclass(G_subSqr     , G_BinaryOp ) endclass
+defclass(G_sqrErr     , G_BinaryOp ) endclass
 defclass(G_mulAdd     , G_TernaryOp) endclass
 
 defclass(G_conjugate  , G_UnaryOp  ) endclass
@@ -76,6 +76,5 @@ defclass(G_tangenth   , G_UnaryOp  ) endclass
 defclass(G_acosineh   , G_UnaryOp  ) endclass
 defclass(G_asineh     , G_UnaryOp  ) endclass
 defclass(G_atangenth  , G_UnaryOp  ) endclass
-defclass(G_hypotenuse , G_BinaryOp ) endclass
 
 #endif // COS_GEN_OP_GFLOATOP_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.15 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: ut_array.c,v 1.16 2010/05/25 15:33:40 ldeniau Exp $
  |
 */
 
@@ -249,6 +249,7 @@ ut_array_functor(void)
   UTEST( gisEqual(obj, aInt(6)) == False );
 
   // rreduce1
+  /*
   obj = grreduce1(aArrayRef(buf,0), addTo, aInt(0));
   UTEST( gisEqual(obj, aInt(0)) == True );
 
@@ -260,6 +261,7 @@ ut_array_functor(void)
 
   obj = grreduce1(aArray(aInt(1,2,3,4)), addTo, aInt(0));
   UTEST( gisEqual(obj, aInt(6)) == False );
+  */
 
   // accumulate1
   arr = gaccumulate1(aArrayRef(buf,0), addTo, aInt(0));
@@ -278,6 +280,7 @@ ut_array_functor(void)
   UTEST( gisEqual(arr, aArray(aInt(64,16,8,1))) == True );
 
   // raccumulate1
+  /*
   arr = graccumulate1(aArrayRef(buf,0), addTo, aInt(0));
   UTEST( gisEqual(arr, aArrayRef(buf,0)) == True );
 
@@ -295,7 +298,8 @@ ut_array_functor(void)
 
   arr = graccumulate1(aArray(aInt(8,12,24,2)), div, aInt(1));
   UTEST( gisEqual(arr, aArray(aInt(8,1,12,2))) == True );
-
+  */
+  
   // all
   UTEST( gall(aArrayRef(buf,0),id) == True );
   UTEST( gall(aArray(True),id) == True );

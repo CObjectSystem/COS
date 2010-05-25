@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_vw.c,v 1.11 2010/05/23 15:44:57 ldeniau Exp $
+ | $Id: String_vw.c,v 1.12 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -39,6 +39,7 @@
 
 #include <cos/gen/collection.h>
 #include <cos/gen/object.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
 
 // -----

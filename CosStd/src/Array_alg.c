@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.22 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.23 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,9 @@
 #include <cos/Number.h>
 
 #include <cos/gen/algorithm.h>
+#include <cos/gen/array.h>
 #include <cos/gen/collection.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/relop.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
@@ -193,7 +195,7 @@ defmethod(OBJ, grepeat, Object, Int)
   retmethod(gautoDelete( gnewWith2(Array,_2,_1) ));
 endmethod
 
-// ----- zip, zip3, zip4, zip5, zipn
+// ----- zip, zip3, zip4, zipn
 
 defmethod(OBJ, gzip, Array, Array)
   U32 size = self->size < self2->size ? self->size : self2->size;
@@ -270,6 +272,7 @@ defmethod(OBJ, gzip4, Array, Array, Array, Array)
   retmethod(_arr);
 endmethod
 
+/*
 defmethod(OBJ, gzip5, Array, Array, Array, Array, Array)
   U32 size = self->size < self2->size ? self->size : self2->size;
       size = self3->size < size ? self3->size : size;
@@ -302,6 +305,7 @@ defmethod(OBJ, gzip5, Array, Array, Array, Array, Array)
 
   retmethod(_arr);
 endmethod
+*/
 
 defmethod(OBJ, gzipn, Array)
   U32  size  = self->size;
@@ -327,7 +331,7 @@ defmethod(OBJ, gzipn, Array)
        src = self->object;
        
   while (src != end) {
-    struct Array* self2 = STATIC_CAST(struct Array*, *src);
+    struct Array* self2 = chkcast(Array, *src);
     copy(dst,size,&arr->size,self2->object,self2->stride,self2->size);
     src += src_s;
     dst += 1;
@@ -336,7 +340,7 @@ defmethod(OBJ, gzipn, Array)
   retmethod(_arr);
 endmethod
 
-// ----- concat, concat3, concat4, concat5, concatn
+// ----- concat, concat3, concat4, concatn
 
 defmethod(OBJ, gconcat, Array, Array)
   U32 size = self->size + self2->size;
@@ -380,6 +384,7 @@ defmethod(OBJ, gconcat4, Array, Array, Array, Array)
   retmethod(_arr);
 endmethod
 
+/*
 defmethod(OBJ, gconcat5, Array, Array, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size + self4->size + self5->size;
   struct Array *arr = Array_alloc(size);
@@ -395,6 +400,7 @@ defmethod(OBJ, gconcat5, Array, Array, Array, Array, Array)
 
   retmethod(_arr);
 endmethod
+*/
 
 defmethod(OBJ, gconcatn, Array)
   U32  size  = self->size;
@@ -419,7 +425,7 @@ defmethod(OBJ, gconcatn, Array)
        src = self->object;
   
   while(src != end) {
-    struct Array* self2 = STATIC_CAST(struct Array*, *src);
+    struct Array* self2 = chkcast(Array, *src);
     dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
     src += src_s;
   }

@@ -32,14 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: numop.h,v 1.2 2010/01/04 09:59:01 ldeniau Exp $
+ | $Id: numop.h,v 1.3 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GNumOp.h>
 
 /* NOTE-USER: operators policy
-   The policy of these methods is to return the operation result in a
+   The policy of these messages is to return the operation result in a
    new autoDelete object resulting from the promotion/coercion of _1
    and _2 which follows the rules of C99 for primitive types.
 */
@@ -55,7 +55,7 @@ defgeneric(OBJ, (G_pow) gpow, _1, _2); // return _1 ^ _2
 defgeneric(OBJ, (G_mod) gmod, _1, _2); // return _1 % _2
 
 /* NOTE-USER: operators policy
-   The policy of these methods is to perform the operation 'in place'
+   The policy of these messages is to perform the operation 'in place'
    in _1 without any type promotion/coercion and return _1. Therefore if
    the types of _1 and _2 differ, some operations may not be available
    if they may induce a loss of information (e.g. gaddTo(Int,Long)).

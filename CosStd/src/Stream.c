@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.9 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Stream.c,v 1.10 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -39,7 +39,7 @@
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/collection.h>
-#include <cos/gen/delegate.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/object.h>
 #include <cos/gen/stream.h>
@@ -54,39 +54,6 @@ makclass(InputStream , Stream);
 makclass(OutputStream, Stream);
 
 makclass(ExBadStream, Exception);
-
-// ----- constructors, destructor
-
-defmethod(OBJ, ginit, Stream)
-  self->delegate = 0;
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, ginitWith, Stream, Stream)
-  self->delegate = gretain(_2);
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gdeinit, Stream)
-  if (self->delegate)
-    grelease(self->delegate);
-
-  retmethod(_1);
-endmethod
-
-// ----- delegate
-
-defmethod(OBJ, gdelegate, Stream)
-  retmethod(self->delegate);
-endmethod
-
-defmethod(OBJ, gsetDelegate, Stream, Stream)
-  OBJ old = self->delegate;
-  self->delegate = gretain(_2);
-  if (old) grelease(old);
-
-  retmethod(_1);
-endmethod
 
 /* NOTE-USER: default Stream generic methods
    rely on ggetChr, gputChr and gungetChr
@@ -128,7 +95,7 @@ defmethod(size_t, gputStrLn, OutputStream, (STR)str)
     
   put(sel, _1, &(gputChr_arg_t){ '\n' }, &ret);
 
-  retmethod( n + ret == '\n' );
+  retmethod( n + (ret == '\n') );
 endmethod
 
 // low-level buffer primitives
@@ -294,7 +261,7 @@ endmethod
 
 defmethod(size_t, ggetDelims, InputStream, (U8*)buf, (size_t)len, (STR)delims)
 PRE
-  test_assert( buf || !len, "invalid buffer" );
+  test_assert( buf    || !len, "invalid buffer"     );
   test_assert( delims || !len, "invalid delimiters" );
 
 BODY
@@ -429,7 +396,7 @@ endmethod
 defmethod(OBJ, ggetLines, InputStream)
   useclass(Array, String);
   
-  OBJ fun = gget(_1, aLzy(String));  // line generator
+  OBJ fun = gget(_1, aLzy(String));   // line generator
   OBJ str = gnewWith(Array, fun);     // lazy array
 
   retmethod( gautoDelete(str) );
@@ -438,7 +405,7 @@ endmethod
 defmethod(OBJ, ggetContent, InputStream)
   useclass(String);
   
-  OBJ fun = gget(_1, aLzy(String));  // line generator
+  OBJ fun = gget(_1, aLzy(String));   // line generator
   OBJ str = gnewWith(String, fun);    // lazy string
 
   retmethod( gautoDelete(str) );

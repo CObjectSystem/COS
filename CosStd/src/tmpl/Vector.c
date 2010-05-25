@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.19 2010/05/23 15:44:57 ldeniau Exp $
+ | $Id: Vector.c,v 1.20 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -42,7 +42,9 @@
 
 #include <cos/gen/accessor.h>
 #include <cos/gen/algorithm.h>
+#include <cos/gen/array.h>
 #include <cos/gen/collection.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/functor.h>
 #include <cos/gen/init.h>
 #include <cos/gen/object.h>

@@ -32,38 +32,41 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.h,v 1.8 2010/05/21 14:59:07 ldeniau Exp $
+ | $Id: File.h,v 1.9 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
 #include <cos/Stream.h>
 
+/* NOTE-USER: File classes (wrapper to C FILE*)
+
+<- InputStream
+  <- InputFile
+    <- InputOutputFile
+    
+<- OutputStream
+  <- OutputFile
+    <- OutputInputFile
+*/
+
 #include <stdio.h>
 
 // ----- private shared data structure
 
-struct File_Descriptor_ {
+struct file_descriptor_ {
   FILE *fp;
   OBJ   name;
   BOOL  own;
-  U32   size;
-  U32   pos;
-  U32   max;
-  U8   *buf;
 };
 
-// ----- File state machine
-
-defclass(File, Stream)
-  struct File_Descriptor_ fd;
-endclass
+// ----- File types
 
 defclass(InputFile, InputStream)      // r mode
-  struct File_Descriptor_ fd;
+  struct file_descriptor_ fd;
 endclass
 
 defclass(OutputFile, OutputStream)    // w mode
-  struct File_Descriptor_ fd;
+  struct file_descriptor_ fd;
 endclass
 
 defclass(InputOutputFile, InputFile)  // r+ mode

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_vw.c,v 1.6 2010/05/23 15:44:57 ldeniau Exp $
+ | $Id: Array_vw.c,v 1.7 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -39,6 +39,7 @@
 #include <cos/View.h>
 
 #include <cos/gen/collection.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/object.h>
 
 // -----

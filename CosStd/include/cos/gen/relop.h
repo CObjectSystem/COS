@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: relop.h,v 1.4 2010/05/23 08:23:02 ldeniau Exp $
+ | $Id: relop.h,v 1.5 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -73,7 +73,5 @@ defgeneric(U64, (G_hash) ghash, _1);
 // min, max (fun should return Ordered or the min, max)
 defgeneric(OBJ, (G_min ) gmin, _1, _2 or fun);
 defgeneric(OBJ, (G_max ) gmax, _1, _2 or fun);
-// note: gmin   (_1, gmin(__1,__2)) should work like
-//       greduce(_1, gmin(__1,__2), maxVal)
 
 #endif // COS_GEN_RELOP_H

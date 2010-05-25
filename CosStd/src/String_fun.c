@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.16 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: String_fun.c,v 1.17 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -365,6 +365,7 @@ defmethod(OBJ, greduce1, String, Functor, Object)
   retmethod(res);
 endmethod
 
+/*
 defmethod(OBJ, grreduce, String, Functor)
   test_assert( self->size > 0, "empty string" );
 
@@ -390,6 +391,7 @@ defmethod(OBJ, grreduce1, String, Functor, Object)
 
   retmethod(res);
 endmethod
+*/
 
 // ----- all, any
 

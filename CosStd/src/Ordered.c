@@ -29,12 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Ordered.c,v 1.10 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Ordered.c,v 1.11 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
 #include <cos/Ordered.h>
-#include <cos/gen/algorithm.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/numop.h>
 
 // -----

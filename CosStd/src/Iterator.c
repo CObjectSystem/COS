@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Iterator.c,v 1.3 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Iterator.c,v 1.4 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #include <cos/Iterator.h>
 
 #include <cos/gen/collection.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/object.h>
 #include <cos/gen/iterator.h>
 

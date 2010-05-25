@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.20 2010/05/23 15:44:57 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.21 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
@@ -41,6 +41,7 @@
 #include <cos/gen/accessor.h>
 #include <cos/gen/algorithm.h>
 #include <cos/gen/collection.h>
+#include <cos/gen/sequence.h>
 #include <cos/gen/object.h>
 
 #include "Array_utl.h"

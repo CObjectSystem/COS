@@ -32,46 +32,54 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: collection.h,v 1.3 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: collection.h,v 1.4 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-// list-like accessor
-defgeneric(OBJ, ginsertAt , _1, at, what);
-defgeneric(OBJ, gremoveAt , _1, at);
-
-// stack-like accessors
-defgeneric(OBJ, gpush     , _1, what);
-defgeneric(OBJ, gtop      , _1);
-defgeneric(OBJ, gpop      , _1); // return _1
-
-// dequeue-like accessors
-defgeneric(OBJ, gpushFront, _1, what);
-defgeneric(OBJ, gpushBack , _1, what);
-defgeneric(OBJ, gpopFront , _1);
-defgeneric(OBJ, gpopBack  , _1);
-defgeneric(OBJ, gfront    , _1);
-defgeneric(OBJ, gback     , _1);
-
-// seq-like accessor
-defgeneric(OBJ, gprepend  , _1, what);
-defgeneric(OBJ, gappend   , _1, what);
-defgeneric(OBJ, gchop     , _1, what);
-defgeneric(OBJ, gdrop     , _1, num); // back if num<0
-defgeneric(OBJ, gdropFirst, _1);
-defgeneric(OBJ, gdropLast , _1);
-defgeneric(OBJ, gfirst    , _1);
-defgeneric(OBJ, glast     , _1);
-
 // check for elements
-defgeneric(OBJ, gisEmpty  , _1);
+defgeneric(OBJ, gisEmpty, _1);
 
-// adjust collection (e.g. capacity to size)
-defgeneric(OBJ, gadjust   , _1);
+// foreach (discard returned value)
+defgeneric(void, gforeach     , _1, fun);
+defgeneric(void, gforeach2    , _1, _2, fun);
+defgeneric(void, gforeach3    , _1, _2, _3, fun);
+defgeneric(void, gforeach4    , _1, _2, _3, _4, fun);
+defgeneric(void, gforeachWhile, _1, fun); // stop if fun returns Nil
 
-// englarge collection memory (e.g. front if by<0)
-defgeneric(OBJ, genlarge  , _1, by);
+// apply (in-place map on _1, return _1)
+defgeneric(OBJ, gapply     , fun, _1);
+defgeneric(OBJ, gapply2    , fun, _1, _2);
+defgeneric(OBJ, gapply3    , fun, _1, _2, _3);
+defgeneric(OBJ, gapply4    , fun, _1, _2, _3, _4);
+defgeneric(OBJ, gapplyIf   , fun, _1); // reject if fun returns Nil
+defgeneric(OBJ, gapplyWhile, fun, _1); // stop   if fun returns Nil
+
+// map
+defgeneric(OBJ, gmap     , fun, _1);
+defgeneric(OBJ, gmap2    , fun, _1, _2);
+defgeneric(OBJ, gmap3    , fun, _1, _2, _3);
+defgeneric(OBJ, gmap4    , fun, _1, _2, _3, _4);
+defgeneric(OBJ, gmapIf   , fun, _1); // reject if fun returns Nil
+defgeneric(OBJ, gmapWhile, fun, _1); // stop   if fun returns Nil
+
+// filter
+defgeneric(OBJ, gselect     , _1, fun); // select if    fun returns True
+defgeneric(OBJ, gselectWhile, _1, fun); // select while fun returns True
+
+// filter-out
+defgeneric(OBJ, greject     , _1, fun); // reject if    fun returns True
+defgeneric(OBJ, grejectWhile, _1, fun); // reject while fun returns True
+
+// reduce
+defgeneric(OBJ, greduce , _1, fun);                // foldl1
+defgeneric(OBJ, greduce1, _1, fun, ini);           // foldl
+defgeneric(OBJ, greduce2, _1, fun, ini, fin);      // foldl with lookahead
+
+// accumulate
+defgeneric(OBJ, gaccumulate , _1, fun);            // scanl1
+defgeneric(OBJ, gaccumulate1, _1, fun, ini);       // scanl
+defgeneric(OBJ, gaccumulate2, _1, fun, ini, fin);  // scanl with lookahead
 
 #endif // COS_GEN_COLLECTION_H

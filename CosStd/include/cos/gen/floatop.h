@@ -32,14 +32,14 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: floatop.h,v 1.5 2010/01/04 09:59:01 ldeniau Exp $
+ | $Id: floatop.h,v 1.6 2010/05/25 15:33:39 ldeniau Exp $
  |
 */
 
 #include <cos/gen/op/GFloatOp.h>
 
 /* NOTE-USER: operators policy
-   The policy of these methods is to return the operation result in a
+   The policy of these messages is to return the operation result in a
    new autoDelete object resulting from the promotion/coercion of _1
    and _2 which follows the rules of C99 for primitive types.
 */
@@ -64,11 +64,11 @@ defgeneric(OBJ, (G_asinh ) gasinh, _1);  // return asinh(_1)
 defgeneric(OBJ, (G_atanh ) gatanh, _1);  // return atanh(_1)
 
 defgeneric(OBJ, (G_hypot ) ghypot , _1, _2);     // return sqrt(_1^2+_2^2)
-defgeneric(OBJ, (G_subSqr) gsubSqr, _1, _2);     // return (_1-_2)^2
+defgeneric(OBJ, (G_sqrErr) gsqrErr, _1, _2);     // return (_1-_2)^2
 defgeneric(OBJ, (G_mulAdd) gmulAdd, _1, _2, _3); // return _1*_2+_3
 
 /* NOTE-USER: operators policy
-   The policy of these methods is to perform the operation 'in place'
+   The policy of these messages is to perform the operation 'in place'
    in _1 without any type promotion/coercion and return _1. For Complex
    results from gabsolute and gargument are returned in the real part.
 */
@@ -91,7 +91,5 @@ defgeneric(OBJ, (G_tangenth   ) gtangenth   , _1);  // return _1 = tanh(_1)
 defgeneric(OBJ, (G_acosineh   ) gacosineh   , _1);  // return _1 = acosh(_1)
 defgeneric(OBJ, (G_asineh     ) gasineh     , _1);  // return _1 = asinh(_1)
 defgeneric(OBJ, (G_atangenth  ) gatangenth  , _1);  // return _1 = atanh(_1)
-
-defgeneric(OBJ, (G_hypotenuse ) ghypotenuse , _1, _2); // return _1 = sqrt(_1^2+_2^2)
 
 #endif // COS_GEN_FLOATOP_H
