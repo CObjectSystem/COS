@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.h,v 1.2 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: Class.h,v 1.3 2010/05/26 22:46:29 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif
 
 // Class is a core class, see cos/cos/coscls.h
 

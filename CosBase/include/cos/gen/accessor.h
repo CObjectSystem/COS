@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: accessor.h,v 1.12 2010/05/21 09:47:25 ldeniau Exp $
+ | $Id: accessor.h,v 1.13 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
-#ifndef COS_GEN_OP_GACCESSOR_H
 #include <cos/gen/op/GAccessor.h>
-#endif 
 
 // getters, setters, properties, keys, etc...
 defgeneric(OBJ, (G_getAt)    ggetAt   , _1, at);

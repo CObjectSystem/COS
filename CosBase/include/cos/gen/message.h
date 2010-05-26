@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: message.h,v 1.4 2010/01/12 15:45:40 ldeniau Exp $
+ | $Id: message.h,v 1.5 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif
 
 // errors and forwarding
 defgeneric(void, gunrecognizedMessage1, _1);

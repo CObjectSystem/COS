@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Nil.h,v 1.7 2010/05/20 15:48:13 ldeniau Exp $
+ | $Id: Nil.h,v 1.8 2010/05/26 22:46:29 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif
 
 /* NOTE-USER: Nil behavior
 

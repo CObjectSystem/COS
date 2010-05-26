@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: MetaClass.h,v 1.3 2010/05/20 15:48:13 ldeniau Exp $
+ | $Id: MetaClass.h,v 1.4 2010/05/26 22:46:29 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif 
 
 defclass(MetaClass, Class)
 endclass

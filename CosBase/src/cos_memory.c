@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_memory.c,v 1.1 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: cos_memory.c,v 1.2 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
@@ -85,7 +85,7 @@ cos_mem_malloc(size_t size, STR func, STR file, int line)
   void *ptr = (malloc)(size);
 
   if (cos_mem_trace_on)
-  fprintf(stderr, PRFX "malloc'ed pointer %p\n", INFO, ptr ? ptr : "(nil)");
+    fprintf(stderr, PRFX "malloc'ed pointer %p\n", INFO, ptr ? ptr : "(nil)");
 
   ++cos_mem_alloc_n;
 
@@ -98,7 +98,7 @@ cos_mem_calloc(size_t nelem, size_t size, STR func, STR file, int line)
   void *ptr = (calloc)(nelem, size);
   
   if (cos_mem_trace_on)
-  fprintf(stderr, PRFX "calloc'ed pointer %p\n", INFO, ptr ? ptr : "(nil)");
+    fprintf(stderr, PRFX "calloc'ed pointer %p\n", INFO, ptr ? ptr : "(nil)");
 
   ++cos_mem_alloc_n;
 
@@ -111,8 +111,8 @@ cos_mem_realloc(void *p, size_t size, STR func, STR file, int line)
   void *ptr = (realloc)(p, size);
   
   if (cos_mem_trace_on)
-  fprintf(stderr, PRFX "realloc'ed pointer %p (was %p)\n", INFO,
-          ptr ? ptr : "(nil)", p ? p : "(nil)");
+    fprintf(stderr, PRFX "realloc'ed pointer %p (was %p)\n", INFO,
+            ptr ? ptr : "(nil)", p ? p : "(nil)");
 
   cos_mem_alloc_n += !p;
 
@@ -123,7 +123,7 @@ void
 cos_mem_free(void *ptr, STR func, STR file, int line)
 {
   if (cos_mem_trace_on)
-  fprintf(stderr, PRFX "free'ed pointer %p\n", INFO, ptr ? ptr : "(nil)");
+    fprintf(stderr, PRFX "free'ed pointer %p\n", INFO, ptr ? ptr : "(nil)");
 
   ++cos_mem_free_n;
 

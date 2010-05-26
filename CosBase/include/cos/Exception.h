@@ -32,16 +32,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.h,v 1.9 2010/05/20 15:48:13 ldeniau Exp $
+ | $Id: Exception.h,v 1.10 2010/05/26 22:46:29 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif 
 
 /* NOTE-USER: exception
    - use gstr(ex) from cos/gen/value.h to retrieve the reason
+   - use gobj(ex) from cos/gen/value.h to retrieve the object
 */
 
 defclass(Exception)

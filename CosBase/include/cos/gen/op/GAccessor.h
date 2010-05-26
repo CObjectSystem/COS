@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: GAccessor.h,v 1.3 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: GAccessor.h,v 1.4 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif 
 
 // Generic is a core class, see cos/cos/coscls.h
 

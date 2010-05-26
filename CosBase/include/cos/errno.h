@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: errno.h,v 1.4 2008/12/02 17:32:21 ldeniau Exp $
+ | $Id: errno.h,v 1.5 2010/05/26 22:46:29 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif 
 
 #include <errno.h>
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.54 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.55 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
@@ -775,8 +775,8 @@ cls_deinit(void)
 
 // ----- general
 
-static BOOL init_done = NO;
-static double init_duration = 0.0;
+static BOOL   init_done       = NO;
+static double init_duration   = 0.0;
 static double deinit_duration = 0.0;
 
 void
@@ -874,6 +874,9 @@ cos_generic_getWithStr(STR str)
 {
   struct Generic *gen;
 
+  if (!str || !*str)
+    cos_abort("null generic name");
+
   gen = bsearch(str, sym.gen, sym.n_gen, sizeof *sym.gen, gen_strcmp);
 
   return gen ? *(struct Generic**)gen : 0;
@@ -901,6 +904,9 @@ cos_class_getWithStr(STR str)
 {
   struct Class *cls;
   STR p;
+
+  if (!str || !*str)
+    cos_abort("null class name");
 
   p = str + (str[0] == 'm') + (str[0] == 'p') + (str[1] == 'm');
 
@@ -935,6 +941,7 @@ cos_class_getWithStr(STR str)
 BOOL
 cos_class_isSubclassOf(const struct Class *cls, const struct Class *ref)
 {
+  // TODO check ?
   return cls_isSubOf(cls, ref);
 }
 
@@ -944,6 +951,9 @@ struct Class*
 cos_property_getWithStr(STR str)
 {
   struct Class *prp;
+
+  if (!str || !*str)
+    cos_abort("null property name");
 
   prp = bsearch(str, sym.prp, sym.n_prp, sizeof *sym.prp, prp_strcmp);
 
@@ -1244,12 +1254,18 @@ cos_module_load(STR *mod)
   if (!mod)
     cos_abort("null module table");
 
+  if (!*mod)
+    cos_abort("empty module table");
+
   for (j = 0; j < MAX_TBL && tbl_mod[j]; j++)
     ;
 
   for (i = 0; mod[i]; i++) {
     if (j == MAX_TBL)
       cos_abort("too many COS modules loaded (%u loaded)", j);
+
+    if (!*mod[i])
+      cos_abort("null module name");
 
     // load module
     sprintf(buf, COS_LIB_PREFIX "%200s%s" COS_LIB_SHEXT, ext, mod[i]);
@@ -1263,10 +1279,12 @@ cos_module_load(STR *mod)
     sprintf(buf, "cos_symbol_init%200s", mod[i]);
     buf[sizeof(buf)-1] = 0;
     
-    {
+    { // avoid compiler warning on type-punning
       union { void (*fun)(void); void *sym; } alias;
+      
       STATIC_ASSERT(function_ptr_are_incompatible_with_void_ptr,
         sizeof(void(*)(void)) == sizeof(alias) && sizeof(void*) == sizeof(alias));
+
       alias.sym = dlsym(handle, buf);
       symbol = alias.fun;
     }
@@ -1304,7 +1322,13 @@ mod_clear(void)
 void
 cos_module_load(STR *mod)
 {
-  cos_abort("dynamic linking loader not supported (module %s)", mod);
+  if (!mod)
+    cos_abort("null module table");
+
+  if (!*mod)
+    cos_abort("empty module table");
+
+  cos_abort("dynamic linking loader not supported (module %s)", *mod);
 }
 
 #endif

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch1.c,v 1.10 2010/01/16 13:58:41 ldeniau Exp $
+ | $Id: cos_dispatch1.c,v 1.11 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
@@ -65,13 +65,21 @@ __thread struct cos_method_cache1 cos_method_cache1_ = { &cache_empty, 0, 0, 0 }
 
 #else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
+int           cos_method_cache1_key_init = 0;
 pthread_key_t cos_method_cache1_key;
 
 struct cos_method_cache1*
 cos_method_cache1_init(void)
 {
-  struct cos_method_cache1 *cache = malloc(sizeof *cache);
-  if (!cache)
+  struct cos_method_cache1 *cache;
+
+  if (!cos_method_cache1_key_init) {
+    if ( pthread_key_create(&cos_method_cache1_key, free) )
+	    cos_abort("unable to initialize dispatcher cache1");
+    cos_method_cache1_key_init = 1;
+  }
+
+  if (!(cache = malloc(sizeof *cache)))
 	  cos_abort("out of memory while creating dispatcher cache1");
 
   cache->slot = &cache_empty;
@@ -83,17 +91,6 @@ cos_method_cache1_init(void)
 	  cos_abort("unable to initialize dispatcher cache1");
 
   return cache;
-}
-
-#ifndef __GNUC__
-#error "COS: pthread requires either TLS or GCC constructor"
-#endif
-
-static void cache_init(void) __attribute__((constructor));
-static void cache_init(void)
-{
-  if ( pthread_key_create(&cos_method_cache1_key, free) )
-	  cos_abort("unable to initialize dispatcher cache1");
 }
 
 #endif // ------------------------------------------------

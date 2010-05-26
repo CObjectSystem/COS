@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.23 2010/05/21 10:06:17 ldeniau Exp $
+ | $Id: Any.c,v 1.24 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
@@ -104,11 +104,11 @@ endmethod
 // ----- identity
 
 defmethod(OBJ, gisInstanceOf, Any, Class)
-  retmethod( cos_object_id(_1) == self2->Behavior.id ? True : False );
+  retmethod( cos_object_isa(_1, self2) ? True : False );
 endmethod
 
 defmethod(OBJ, gisKindOf, Any, Class)
-  retmethod( cos_object_id(_1) == self2->Behavior.id ||
+  retmethod( cos_object_isa     (_1, self2) ||
              cos_object_isKindOf(_1, self2) ? True : False );
 endmethod
 

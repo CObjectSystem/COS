@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.c,v 1.21 2010/05/21 14:22:07 ldeniau Exp $
+ | $Id: Proxy.c,v 1.22 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
@@ -48,12 +48,7 @@ makclass(Proxy);
 // ----- constructor, destructor
 
 defmethod(OBJ, ginitWith, Proxy, Object)
-  PRT(_1);
-
-  self->obj = 0;
   self->obj = gretain(_2);
-
-  UNPRT(_1);
   retmethod(_1);
 endmethod
 

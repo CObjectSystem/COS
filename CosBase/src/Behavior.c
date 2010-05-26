@@ -29,11 +29,10 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Behavior.c,v 1.2 2009/02/25 23:22:10 ldeniau Exp $
+ | $Id: Behavior.c,v 1.3 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/Behavior.h>
 
 // ----- 

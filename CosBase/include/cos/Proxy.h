@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Proxy.h,v 1.3 2009/02/25 23:06:08 ldeniau Exp $
+ | $Id: Proxy.h,v 1.4 2010/05/26 22:46:29 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif
 
 /* NOTE-USER: Proxy behavior
 

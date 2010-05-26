@@ -29,11 +29,10 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.9 2010/05/20 16:30:46 ldeniau Exp $
+ | $Id: Class.c,v 1.10 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
-#include <cos/Object.h>
 #include <cos/Class.h>
 #include <cos/prp/object.h>
 #include <cos/gen/object.h>

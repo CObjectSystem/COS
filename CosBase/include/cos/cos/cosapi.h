@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.49 2010/05/21 14:22:07 ldeniau Exp $
+ | $Id: cosapi.h,v 1.50 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
@@ -184,7 +184,7 @@ U32   cos_mem_nfree  (void); // number of free  modulo 2^32
 
 // topic-specific debug
 #define COS_IF_DEBUG(topic,...) \
-        ((void)(COS_PP_CAT(COS_DEBUG_,topic) && (cos_debug(__VA_ARGS__),0)))
+        ((void)(COS_PP_CAT(DEBUG_,topic) && (cos_debug(__VA_ARGS__),0)))
 
 // COS symbols init
 void cos_symbol_init(void);
@@ -279,45 +279,75 @@ struct cos_method_cache5* cos_method_cache5_init(void);
 static cos_inline struct cos_method_cache1*
 cos_method_cache1(void)
 {
+  struct cos_method_cache1 *cache;
+  extern int cos_method_cache1_key_init;
   extern pthread_key_t cos_method_cache1_key;
-  struct cos_method_cache1 *cache = pthread_getspecific(cos_method_cache1_key);
-  return cache ? cache : cos_method_cache1_init();
+  
+  if (! cos_method_cache1_key_init ||
+      !(cache = pthread_getspecific(cos_method_cache1_key)))
+    cache = cos_method_cache1_init();
+
+  return cache;
   COS_UNUSED(cos_method_cache1);
 }
 
 static cos_inline struct cos_method_cache2*
 cos_method_cache2(void)
 {
+  struct cos_method_cache2 *cache;
+  extern int cos_method_cache2_key_init;
   extern pthread_key_t cos_method_cache2_key;
-  struct cos_method_cache2 *cache = pthread_getspecific(cos_method_cache2_key);
-  return cache ? cache : cos_method_cache2_init();
+  
+  if (! cos_method_cache2_key_init ||
+      !(cache = pthread_getspecific(cos_method_cache2_key)))
+    cache = cos_method_cache2_init();
+
+  return cache;
   COS_UNUSED(cos_method_cache2);
 }
 
 static cos_inline struct cos_method_cache3*
 cos_method_cache3(void)
 {
+  struct cos_method_cache3 *cache;
+  extern int cos_method_cache3_key_init;
   extern pthread_key_t cos_method_cache3_key;
-  struct cos_method_cache3 *cache = pthread_getspecific(cos_method_cache3_key);
-  return cache ? cache : cos_method_cache3_init();
+  
+  if (! cos_method_cache3_key_init ||
+      !(cache = pthread_getspecific(cos_method_cache3_key)))
+    cache = cos_method_cache3_init();
+
+  return cache;
   COS_UNUSED(cos_method_cache3);
 }
 
 static cos_inline struct cos_method_cache4*
 cos_method_cache4(void)
 {
+  struct cos_method_cache4 *cache;
+  extern int cos_method_cache4_key_init;
   extern pthread_key_t cos_method_cache4_key;
-  struct cos_method_cache4 *cache = pthread_getspecific(cos_method_cache4_key);
-  return cache ? cache : cos_method_cache4_init();
+  
+  if (! cos_method_cache4_key_init ||
+      !(cache = pthread_getspecific(cos_method_cache4_key)))
+    cache = cos_method_cache4_init();
+
+  return cache;
   COS_UNUSED(cos_method_cache4);
 }
 
 static cos_inline struct cos_method_cache5*
 cos_method_cache5(void)
 {
+  struct cos_method_cache5 *cache;
+  extern int cos_method_cache5_key_init;
   extern pthread_key_t cos_method_cache5_key;
-  struct cos_method_cache5 *cache = pthread_getspecific(cos_method_cache5_key);
-  return cache ? cache : cos_method_cache5_init();
+  
+  if (! cos_method_cache5_key_init ||
+      !(cache = pthread_getspecific(cos_method_cache5_key)))
+    cache = cos_method_cache5_init();
+
+  return cache;
   COS_UNUSED(cos_method_cache5);
 }
 
@@ -417,7 +447,7 @@ cos_object_isa(OBJ obj, const struct Class *cls)
 static cos_inline void*
 cos_object_cast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
 {
-  if (cos_object_isa(obj, cls))
+  if (obj && cos_object_isa(obj, cls))
     return obj;
 
   cos_exception_badcast(obj, cls, func, file, line);
@@ -427,8 +457,9 @@ cos_object_cast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
 static cos_inline void*
 cos_object_dyncast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
 {
-  if (cos_object_isa     (obj, cls) ||
-      cos_object_isKindOf(obj, cls))
+  if (obj && (
+      cos_object_isa     (obj, cls) ||
+      cos_object_isKindOf(obj, cls)))
     return obj;
 
   cos_exception_badcast(obj, cls, func, file, line);

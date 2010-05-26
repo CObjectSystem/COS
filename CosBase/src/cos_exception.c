@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.27 2010/05/26 19:34:12 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.28 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
@@ -57,35 +57,41 @@ cxt_set(struct cos_exception_context *cxt)
 
 #else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
-static pthread_key_t _cxt_key;
+static int           cxt_key_init = 0
+static pthread_key_t cxt_key;
 
 static void
 cxt_set(struct cos_exception_context *cxt)
 {
-	 test_assert( pthread_setspecific(_cxt_key, cxt) == 0 );
+	if( pthread_setspecific(cxt_key, cxt) );
+    cos_abort("unable to set exception context");
+}
+
+static void
+cxt_init(void)
+{
+  if (!cxt_key_init) {
+    if ( pthread_key_create(&cxt_key, 0) )
+	    cos_abort("unable to initialize exceptions");
+    cxt_key_init = 1;
+  }
+
+  cxt_set(&_cxt0);
+  return &_cxt0;
 }
 
 struct cos_exception_context*
 cos_exception_context(void)
 {
-  struct cos_exception_context *cxt = pthread_getspecific(_cxt_key);
-	if (cxt) return cxt;
-	 
-	cxt_set(&_cxt0);
-  return &_cxt0;
+  struct cos_exception_context *cxt;
+  
+  if (! cxt_key_init ||
+      !(cxt = pthread_getspecific(cxt_key)))
+      cxt = cxt_init();
+
+  return cxt;
 }
-
-#ifndef __GNUC__
-#error "COS: pthread requires either TLS or GCC constructor"
-#endif
-
-static void cxt_init(void) __attribute__((constructor));
-static void cxt_init(void)
-{
-  if ( pthread_key_create(&_cxt_key, 0) )
-	  cos_abort("unable to initialize exceptions");
-}
-
+  
 #endif // ------------------------------------------------
 
 static void

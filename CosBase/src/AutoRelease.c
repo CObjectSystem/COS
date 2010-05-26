@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.53 2010/05/21 14:22:07 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.54 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
@@ -195,7 +195,7 @@ defmethod(OBJ, gretain, Any)
     retmethod( cos_object_incRc(_1) );
 
   if (cos_object_rc(_1) == COS_RC_AUTO)
-    retmethod(gcopy(_1));
+    retmethod( gcopy(_1) );
 
   if (cos_object_rc(_1) == COS_RC_STATIC)
     retmethod(_1);
@@ -207,10 +207,10 @@ endmethod
 defalias (OBJ, (gautoRelease)gautoDelete, Any);
 defmethod(OBJ,  gautoRelease            , Any)
   if (cos_object_rc(_1) >= COS_RC_UNIT)
-    retmethod(push(_1));
+    retmethod( push(_1) );
 
   if (cos_object_rc(_1) == COS_RC_AUTO)
-    retmethod(push(gclone(_1)));
+    retmethod( push(gclone(_1)) );
 
   if (cos_object_rc(_1) == COS_RC_STATIC)
     retmethod(_1);

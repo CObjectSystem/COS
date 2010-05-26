@@ -32,13 +32,11 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: MetaDocStr.h,v 1.2 2010/03/13 15:16:22 ldeniau Exp $
+ | $Id: MetaDocStr.h,v 1.3 2010/05/26 22:46:29 ldeniau Exp $
  |
 */
 
-#ifndef COS_OBJECT_H
 #include <cos/Object.h>
-#endif
 
 // MetaDocStr is a core class, see cos/cos/docstr.h
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.21 2010/05/26 19:34:12 ldeniau Exp $
+ | $Id: Exception.c,v 1.22 2010/05/26 22:46:30 ldeniau Exp $
  |
 */
 
@@ -84,7 +84,7 @@ str_dup(STR str)
 }
 
 defmethod(OBJ, ginit, Exception)
-  self->obj = Nil;
+  self->obj = 0;
   self->str = 0;
   retmethod(_1);
 endmethod
@@ -96,7 +96,7 @@ defmethod(OBJ, ginitWithObj, Exception, (OBJ)obj)
 endmethod
 
 defmethod(OBJ, ginitWithStr, Exception, (STR)str)
-  self->obj = Nil;
+  self->obj = 0;
   self->str = str_dup(str);
   retmethod(_1);
 endmethod
@@ -108,17 +108,17 @@ defmethod(OBJ, ginitWithObjStr, Exception, (OBJ)obj, (STR)str)
 endmethod
 
 defmethod(OBJ, gdeinit, Exception)
-  if (self->str != 0)
+  if (self->str)
     free(self->str), self->str = 0;
 
-  if (self->obj != Nil)
-    grelease(self->obj), self->obj = Nil;
+  if (self->obj)
+    grelease(self->obj), self->obj = 0;
 
   retmethod(_1);
 endmethod
 
 defmethod(STR, gstr, Exception)
-  if (self->obj != Nil && gunderstandMessage1(_1, genericref(gstr)) == True)
+  if (self->obj && gunderstandMessage1(_1, genericref(gstr)) == True)
     retmethod( gstr(self->obj) );
     
   if (self->str)
@@ -128,7 +128,7 @@ defmethod(STR, gstr, Exception)
 endmethod
 
 defmethod(OBJ, gobj, Exception)
-  retmethod(self->obj);
+  retmethod( self->obj ? self->obj : Nil );
 endmethod
 
 // ----- assert
