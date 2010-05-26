@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch4.c,v 1.11 2010/05/26 22:46:30 ldeniau Exp $
+ | $Id: cos_dispatch4.c,v 1.12 2010/05/26 23:26:29 ldeniau Exp $
  |
 */
 
@@ -65,20 +65,26 @@ __thread struct cos_method_cache4 cos_method_cache4_ = { &cache_empty, 0, 0, 0 }
 
 #else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
-int           cos_method_cache4_key_init = 0;
-pthread_key_t cos_method_cache4_key;
+       int            cos_method_cache4_key_init = 0;
+       pthread_key_t  cos_method_cache4_key;
+static pthread_once_t cos_method_cache4_key_once = PTHREAD_ONCE_INIT;
+
+static void
+make_key(void)
+{
+  if ( pthread_key_create(&cos_method_cache4_key, free) )
+    cos_abort("unable to initialize dispatcher cache4");
+    
+  cos_method_cache4_key_init = 1;
+}
 
 struct cos_method_cache4*
 cos_method_cache4_init(void)
 {
   struct cos_method_cache4 *cache;
-  
-  if (!cos_method_cache4_key_init) {
-    if ( pthread_key_create(&cos_method_cache4_key, free) )
-	    cos_abort("unable to initialize dispatcher cache4");
-    cos_method_cache4_key_init = 1;
-  }
 
+  pthread_once(&cos_method_cache4_key_once, make_key);
+ 
   if (!(cache = malloc(sizeof *cache)))
 	  cos_abort("out of memory while creating dispatcher cache4");
 

@@ -65,19 +65,25 @@ __thread struct cos_method_cache5 cos_method_cache5_ = { &cache_empty, 0, 0, 0 }
 
 #else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
-int           cos_method_cache5_key_init = 0;
-pthread_key_t cos_method_cache5_key;
+       int            cos_method_cache5_key_init = 0;
+       pthread_key_t  cos_method_cache5_key;
+static pthread_once_t cos_method_cache5_key_once = PTHREAD_ONCE_INIT;
+
+static void
+make_key(void)
+{
+  if ( pthread_key_create(&cos_method_cache5_key, free) )
+    cos_abort("unable to initialize dispatcher cache5");
+    
+  cos_method_cache5_key_init = 1;
+}
 
 struct cos_method_cache5*
 cos_method_cache5_init(void)
 {
   struct cos_method_cache5 *cache;
   
-  if (!cos_method_cache5_key_init) {
-    if ( pthread_key_create(&cos_method_cache5_key, free) )
-	    cos_abort("unable to initialize dispatcher cache5");
-    cos_method_cache5_key_init = 1;
-  }
+  pthread_once(&cos_method_cache5_key_once, make_key);
 
   if (!(cache = malloc(sizeof *cache)))
 	  cos_abort("out of memory while creating dispatcher cache5");

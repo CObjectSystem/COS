@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch1.c,v 1.11 2010/05/26 22:46:30 ldeniau Exp $
+ | $Id: cos_dispatch1.c,v 1.12 2010/05/26 23:26:29 ldeniau Exp $
  |
 */
 
@@ -64,21 +64,27 @@ static struct cos_method_slot1 *cache_empty = &sentinel;
 __thread struct cos_method_cache1 cos_method_cache1_ = { &cache_empty, 0, 0, 0 };
 
 #else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
+      
+       int            cos_method_cache1_key_init = 0;
+       pthread_key_t  cos_method_cache1_key;
+static pthread_once_t cos_method_cache1_key_once = PTHREAD_ONCE_INIT;
 
-int           cos_method_cache1_key_init = 0;
-pthread_key_t cos_method_cache1_key;
+static void
+make_key(void)
+{
+  if ( pthread_key_create(&cos_method_cache1_key, free) )
+    cos_abort("unable to initialize dispatcher cache1");
+    
+  cos_method_cache1_key_init = 1;
+}
 
 struct cos_method_cache1*
 cos_method_cache1_init(void)
 {
   struct cos_method_cache1 *cache;
 
-  if (!cos_method_cache1_key_init) {
-    if ( pthread_key_create(&cos_method_cache1_key, free) )
-	    cos_abort("unable to initialize dispatcher cache1");
-    cos_method_cache1_key_init = 1;
-  }
-
+  pthread_once(&cos_method_cache1_key_once, make_key);
+ 
   if (!(cache = malloc(sizeof *cache)))
 	  cos_abort("out of memory while creating dispatcher cache1");
 
