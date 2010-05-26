@@ -29,19 +29,20 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: main.c,v 1.3 2009/09/05 17:49:32 ldeniau Exp $
+ | $Id: main.c,v 1.4 2010/05/26 15:12:59 ldeniau Exp $
  |
 */
 
 #include <cos/Number.h>
 #include <cos/Functor.h>
 
-#include <cos/gen/value.h>
-#include <cos/gen/object.h>
-#include <cos/gen/functor.h>
-#include <cos/gen/operator.h>
-#include <cos/gen/container.h>
 #include <cos/gen/algorithm.h>
+#include <cos/gen/array.h>
+#include <cos/gen/collection.h>
+#include <cos/gen/functor.h>
+#include <cos/gen/numop.h>
+#include <cos/gen/object.h>
+#include <cos/gen/value.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -113,7 +114,7 @@ sum_oop(I32 n)
   F64 t0   = clock();
   OBJ xs   = grepeat(ini,aInt(n));
   F64 t1   = clock();
-  I32 x    = gint(greduce(xs,aFunctor(gaddTo,0,0),aInt(0)));
+  I32 x    = gint(greduce1(xs,aFunctor(gaddTo,0,0),aInt(0)));
   F64 t2   = clock();
              grelease(pool);
   F64 t3   = clock();
@@ -130,7 +131,7 @@ int main(int argc, char *argv[])
   I32 n = argc == 2 ? strtol(argv[1],0,0) : 1000000;
 
   if (n <= 10)
-    cos_logmsg_set(COS_LOGMSG_TRACE);
+    cos_logmsg_setLevel(COS_LOGMSG_TRACE);
 
   sum_rep(n);
   sum_itr(n);

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.1 2009/08/03 21:20:39 ldeniau Exp $
+# | $Id: Makefile,v 1.2 2010/05/26 15:12:59 ldeniau Exp $
 # |
 #
 
@@ -48,8 +48,8 @@ targets := release.run # debug.run
 
 # files & modules
 sources := $(wildcard *.c)
-defgens := $(wildcard generics.h)
-defprps := $(wildcard properties.h)
+defgens := 
+defprps :=
 
 # project dependencies (as with -lname)
 moddeps := CosBase CosStd
