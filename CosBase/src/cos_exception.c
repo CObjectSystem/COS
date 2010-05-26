@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.29 2010/05/26 23:26:29 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.30 2010/05/26 23:35:06 ldeniau Exp $
  |
 */
 
@@ -57,14 +57,14 @@ cxt_set(struct cos_exception_context *cxt)
 
 #else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
 
-static int            cxt_key_init = 0
+static int            cxt_key_init = 0;
 static pthread_key_t  cxt_key;
 static pthread_once_t cxt_key_once = PTHREAD_ONCE_INIT;
 
 static void
 cxt_set(struct cos_exception_context *cxt)
 {
-	if( pthread_setspecific(cxt_key, cxt) );
+	if( pthread_setspecific(cxt_key, cxt) )
     cos_abort("unable to set exception context");
 }
 
@@ -73,13 +73,13 @@ make_key(void)
 {
   if ( pthread_key_create(&cxt_key, 0) )
     cos_abort("unable to initialize exceptions");
-  cxt_key_init = 1;
 }
 
-static void
+static struct cos_exception_context*
 cxt_init(void)
 {
   pthread_once(&cxt_key_once, make_key);
+  cxt_key_init = 1;
   cxt_set(&_cxt0);
   return &_cxt0;
 }

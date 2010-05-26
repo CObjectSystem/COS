@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_dispatch1.c,v 1.12 2010/05/26 23:26:29 ldeniau Exp $
+ | $Id: cos_dispatch1.c,v 1.13 2010/05/26 23:35:06 ldeniau Exp $
  |
 */
 
@@ -74,8 +74,6 @@ make_key(void)
 {
   if ( pthread_key_create(&cos_method_cache1_key, free) )
     cos_abort("unable to initialize dispatcher cache1");
-    
-  cos_method_cache1_key_init = 1;
 }
 
 struct cos_method_cache1*
@@ -84,6 +82,7 @@ cos_method_cache1_init(void)
   struct cos_method_cache1 *cache;
 
   pthread_once(&cos_method_cache1_key_once, make_key);
+  cos_method_cache1_key_init = 1;
  
   if (!(cache = malloc(sizeof *cache)))
 	  cos_abort("out of memory while creating dispatcher cache1");

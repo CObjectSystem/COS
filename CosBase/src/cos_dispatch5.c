@@ -74,8 +74,6 @@ make_key(void)
 {
   if ( pthread_key_create(&cos_method_cache5_key, free) )
     cos_abort("unable to initialize dispatcher cache5");
-    
-  cos_method_cache5_key_init = 1;
 }
 
 struct cos_method_cache5*
@@ -84,6 +82,7 @@ cos_method_cache5_init(void)
   struct cos_method_cache5 *cache;
   
   pthread_once(&cos_method_cache5_key_once, make_key);
+  cos_method_cache5_key_init = 1;
 
   if (!(cache = malloc(sizeof *cache)))
 	  cos_abort("out of memory while creating dispatcher cache5");
