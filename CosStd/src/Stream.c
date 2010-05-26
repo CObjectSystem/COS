@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.10 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: Stream.c,v 1.11 2010/05/26 15:02:00 ldeniau Exp $
  |
 */
 
@@ -162,6 +162,7 @@ BODY
   retmethod( n );
 endmethod
 
+/*
 defmethod(size_t, gungetData, InputStream, (U8*)buf, (size_t)len)
 PRE
   test_assert( buf || !len, "invalid buffer" );
@@ -183,6 +184,7 @@ BODY
 
   retmethod( len - n );
 endmethod
+*/
 
 defmethod(size_t, gskipnChr, InputStream, (size_t)len)
   size_t n = 0;
@@ -405,7 +407,7 @@ endmethod
 defmethod(OBJ, ggetContent, InputStream)
   useclass(String);
   
-  OBJ fun = gget(_1, aLzy(String));   // line generator
+  OBJ fun = gget(_1, aLzy(String));   // content generator
   OBJ str = gnewWith(String, fun);    // lazy string
 
   retmethod( gautoDelete(str) );
@@ -429,14 +431,10 @@ defmethod(OBJ, gmapWhile, Functor, InputStream)
   retmethod(rec);
 endmethod
 
-// high-level object primitives (from class)
+// high-level object primitives
 
 defmethod(OBJ, gget, InputStream, Class)
   forward_message(_1, gautoDelete(gnew(_2)));
-endmethod
-
-defmethod(OBJ, gput, OutputStream, Class)
-  retmethod(gputStr(_1, self2->str) > 0 ? _1 : Nil);
 endmethod
 
 defmethod(OBJ, gputLn, OutputStream, Object)

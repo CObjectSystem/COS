@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.22 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: File.c,v 1.23 2010/05/26 15:02:00 ldeniau Exp $
  |
 */
 
@@ -107,18 +107,14 @@ close_file(struct file_descriptor_ *fd)
 {
   if (fd->fp) {
     if (fd->own)
-      fclose(fd->fp);
+      fclose(fd->fp), fd->own = NO;
     else
       fflush(fd->fp);
+    fd->fp = 0;
   }
 
-  fd->fp  = 0;
-  fd->own = NO;
-
   if (fd->name)
-    grelease(fd->name);
-  
-  fd->name = 0;
+    grelease(fd->name), fd->name = 0;
 }
 
 defmethod(OBJ, gdeinit, InputFile)
@@ -157,11 +153,11 @@ endmethod
 // ----- name
 
 defmethod(STR, gstr, OutputFile)
-  retmethod(gstr(self->fd.name));
+  retmethod( gstr(self->fd.name) );
 endmethod
 
 defmethod(STR, gstr, InputFile)
-  retmethod(gstr(self->fd.name));
+  retmethod( gstr(self->fd.name) );
 endmethod
 
 // ----- read/write primitives
@@ -236,21 +232,23 @@ endmethod
 
 OBJ StdIn=0, StdOut=0, StdErr=0, StdLog=0;
 
-defmethod(void, (ginitialize)CFileInit, pmStream)
-  if (!StdIn) {
-    StdIn  = ginitWithFILE(galloc(InputFile) , stdin , aStr("stdin" ));
-    StdOut = ginitWithFILE(galloc(OutputFile), stdout, aStr("stdout"));
-    StdErr = ginitWithFILE(galloc(OutputFile), stderr, aStr("stderr"));
-    StdLog = ginitWithFILE(galloc(OutputFile), stderr, aStr("stdlog"));
-  }
+defmethod(void, ginitialize, pmInputFile)
+  if (!StdIn) StdIn = ginitWithFILE(galloc(InputFile), stdin, aStr("stdin" ));
 endmethod
 
-defmethod(void, (gdeinitialize)CFileDeinit, pmStream)
-  if (StdIn) {
-    gdelete(StdIn);
-    gdelete(StdOut);
-    gdelete(StdErr);
-    gdelete(StdLog);
-  }
+defmethod(void, gdeinitialize, pmInputFile)
+  if (StdIn) gdelete(StdIn), StdIn = 0;
+endmethod
+
+defmethod(void, ginitialize, pmOutputFile)
+  if (!StdOut) StdOut = ginitWithFILE(galloc(OutputFile), stdout, aStr("stdout"));
+  if (!StdErr) StdErr = ginitWithFILE(galloc(OutputFile), stderr, aStr("stderr"));
+  if (!StdLog) StdLog = ginitWithFILE(galloc(OutputFile), stderr, aStr("stdlog"));
+endmethod
+
+defmethod(void, gdeinitialize, pmOutputFile)
+  if (StdOut) gdelete(StdOut), StdOut = 0;
+  if (StdErr) gdelete(StdErr), StdErr = 0;
+  if (StdLog) gdelete(StdLog), StdLog = 0;
 endmethod
 

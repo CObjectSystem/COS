@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_io.c,v 1.10 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: String_io.c,v 1.11 2010/05/26 15:02:00 ldeniau Exp $
  |
 */
 
@@ -44,15 +44,16 @@
 
 defmethod(OBJ, gget, InputStream, StringDyn)
   U8 buf[4096];
-  size_t n, sum = 0;
+  size_t n, cnt = 0;
   
   do {
     n = ggetLine(_1, buf, sizeof buf);
-    gappend(_2, aStringRef(buf, n-1));
-    sum += n;
-  } while (n && buf[n-1] != '\n');
+    if (!n) break;
+    gappend(_2, aStringRef(buf, n));
+    cnt += n;
+  } while (buf[n-1] != '\n');
 
-  retmethod(sum ? _2 : Nil);
+  retmethod(cnt ? _2 : Nil);
 endmethod
 
 // ----- put

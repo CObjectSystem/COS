@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.17 2010/01/29 13:38:39 ldeniau Exp $
+ | $Id: Number.h,v 1.18 2010/05/26 15:02:00 ldeniau Exp $
  |
 */
 
@@ -149,14 +149,5 @@ complex_notEqualEps(C64 x, C64 y, F64 e)
 {
   return !complex_equalEps(x,y,e);
 }
-
-// ----- simple parsers
-
-// integer:  [+-]?[0-9]+
-// floating: [+-]?[0-9]+(.[0-9]+)?([eE][+-]?[0-9]+)?
-U32 Number_parseI16(OBJ stream, I32 *val);
-U32 Number_parseI32(OBJ stream, I32 *val);
-U32 Number_parseI64(OBJ stream, I64 *val);
-U32 Number_parseF64(OBJ stream, F64 *val);
 
 #endif // COS_NUMBER_H

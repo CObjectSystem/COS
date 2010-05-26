@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_io.c,v 1.5 2010/01/29 13:38:40 ldeniau Exp $
+ | $Id: Number_io.c,v 1.6 2010/05/26 15:02:00 ldeniau Exp $
  |
 */
 
@@ -56,22 +56,22 @@ defmethod(OBJ, gget, InputStream, Char)
 endmethod
 
 defmethod(OBJ, gget, InputStream, Short)
-  U32 n = Number_parseI16(_1, &self2->Int.value);
+  U32 n = Stream_parseI16(_1, &self2->Int.value, YES);
   retmethod(n ? _2 : Nil);
 endmethod
 
 defmethod(OBJ, gget, InputStream, Int)
-  U32 n = Number_parseI32(_1, &self2->value);
+  U32 n = Stream_parseI32(_1, &self2->value, YES);
   retmethod(n ? _2 : Nil);
 endmethod
 
 defmethod(OBJ, gget, InputStream, Long)
-  U32 n = Number_parseI64(_1, &self2->value);
+  U32 n = Stream_parseI64(_1, &self2->value, YES);
   retmethod(n ? _2 : Nil);
 endmethod
 
 defmethod(OBJ, gget, InputStream, Float)
-  U32 n = Number_parseF64(_1, &self2->value);
+  U32 n = Stream_parseF64(_1, &self2->value, YES);
   retmethod(n ? _2 : Nil);
 endmethod
 
