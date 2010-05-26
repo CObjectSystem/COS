@@ -29,13 +29,12 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.20 2010/05/21 14:22:07 ldeniau Exp $
+ | $Id: Exception.c,v 1.21 2010/05/26 19:34:12 ldeniau Exp $
  |
 */
 
 #include <cos/Exception.h>
 
-#include <cos/debug.h>
 #include <cos/errno.h>
 #include <cos/signal.h>
 
@@ -219,14 +218,6 @@ ex_signal(int sig)
   // reload handler
   if (cos_signal(sig) == SIG_ERR)
     test_errno();
-
-  switch (sig) {
-  case SIGABRT:
-  case SIGBUS :
-  case SIGFPE :
-  case SIGILL :
-  case SIGSEGV: cos_showCallStack(0);
-  }
 
   if (cos_object_id(ExSignal) == 0) {
     if (sig == SIGABRT) signal(sig, SIG_DFL);

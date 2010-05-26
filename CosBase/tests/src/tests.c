@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.22 2009/12/28 00:03:47 ldeniau Exp $
+ | $Id: tests.c,v 1.23 2010/05/26 19:34:12 ldeniau Exp $
  |
 */
 
@@ -75,14 +75,10 @@ int main(int argc, char *argv[])
       init_time = YES;
     if (!strcmp(argv[i], "-s"))
       speed_tst = YES;
-    if (!strcmp(argv[i], "-t")) {
+    if (!strcmp(argv[i], "-t"))
       cos_logmsg_setLevel(COS_LOGMSG_TRACE);
-      cos_exception_showStack = YES;
-    }
-    if (!strcmp(argv[i], "-m")) {
+    if (!strcmp(argv[i], "-m"))
       cos_logmsg_setLevel(COS_LOGMSG_TRALL);
-      cos_exception_showStack = YES;
-    }
 
   }
 

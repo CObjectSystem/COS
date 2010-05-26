@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.26 2010/02/03 15:06:42 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.27 2010/05/26 19:34:12 ldeniau Exp $
  |
 */
 
@@ -122,11 +122,6 @@ terminate_default(OBJ ex, STR func, STR file, int line)
   else
     cos_info ("exiting with uncaught exception %s '%s' thrown at (%s:%d:%s)",
               cos_object_className(ex), reason, file, line, func);
-
-#ifdef __GLIBC__
-  if (cos_exception_showStack)
-    cos_showCallStack(0);    
-#endif
 }
 
 static cos_exception_handler handler = terminate_default;
@@ -237,8 +232,6 @@ endmethod
  *  Debug Functions
  * ----------------------------------------------------------------------------
  */
-
-int cos_exception_showStack = 0;
 
 void
 cos_exception_showProtectionStack(FILE *fp)
