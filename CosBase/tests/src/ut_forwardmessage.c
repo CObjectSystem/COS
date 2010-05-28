@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_forwardmessage.c,v 1.4 2009/04/17 21:13:56 ldeniau Exp $
+ | $Id: ut_forwardmessage.c,v 1.5 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -52,10 +52,10 @@ check_fwd(OBJ cls, OBJ (*func)(OBJ), STR res)
   STR s   = gstr(_1);
   BOOL ret;
 
-  gdelete(_1);
+  grelease(_1);
   func(pxy);
   ret = !strcmp(s, res);
-  gdelete(pxy);
+  grelease(pxy);
   
   return ret;
 }

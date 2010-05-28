@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_nextmethod.c,v 1.6 2009/04/17 21:13:56 ldeniau Exp $
+ | $Id: ut_nextmethod.c,v 1.7 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -64,8 +64,8 @@ check_nxt(char mode, OBJ cls1, OBJ cls2, STR res)
          ||  strcmp(s1+2, res)
          ||  strcmp(s2+2, res) );
 
-  gdelete(_1);
-  gdelete(_2);
+  grelease(_1);
+  grelease(_2);
   
   return ret;
 }

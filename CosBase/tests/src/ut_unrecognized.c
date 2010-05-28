@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_unrecognized.c,v 1.4 2009/04/17 21:13:56 ldeniau Exp $
+ | $Id: ut_unrecognized.c,v 1.5 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -51,7 +51,7 @@ check_msg(OBJ cls, OBJ (*func)(OBJ), STR res)
 
   func(_1);
   ret = !strcmp(s, res);
-  gdelete(_1);
+  grelease(_1);
   
   return ret;
 }

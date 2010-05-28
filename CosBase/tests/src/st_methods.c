@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.16 2009/09/28 14:04:06 ldeniau Exp $
+ | $Id: st_methods.c,v 1.17 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -61,7 +61,7 @@ st_methods(void)
   
   test_assert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
 
-  gdelete(cnt);
+  grelease(cnt);
 }
 
 void
@@ -80,7 +80,7 @@ st_nextmethods(void)
   STEST( "next method (5 arguments)", P, gincrBy5(cnt,1,1,1,1,1) );
   
   test_assert( gint(cnt) == P+P+2*P+3*P+4*P+5*P );
-  gdelete(cnt);
+  grelease(cnt);
 }
 
 void
@@ -97,8 +97,8 @@ st_multimethods(void)
   STEST( "multimethod (rank 5)", N, gaddTo4(cnt,one,one,one,one) );
   
   test_assert( gint(cnt) == N+2*N+3*N+4*N );
-  gdelete(cnt);
-  gdelete(one);
+  grelease(cnt);
+  grelease(one);
 }
 
 void
@@ -134,7 +134,7 @@ st_methods_ptr(void)
   
   test_assert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
 
-  gdelete(cnt);
+  grelease(cnt);
 }
 
 void
@@ -163,8 +163,8 @@ st_multimethods_ptr(void)
   
   test_assert( gint(cnt) == N+2*N+3*N+4*N );
 
-  gdelete(cnt);
-  gdelete(one);
+  grelease(cnt);
+  grelease(one);
 }
 
 void
@@ -180,7 +180,7 @@ st_memory(void)
   // warm-up memory allocation
   memset(arr, 0, P * sizeof *arr);
   for (i=0; i<P; i++) arr[i] = gnew(Counter);
-  for (i=P; i>0; i--) gdelete(arr[i-1]);
+  for (i=P; i>0; i--) grelease(arr[i-1]);
 
   i = 0;
   STEST( "new (galloc+ginit)", P, arr[i++] = gnew(Counter) );
@@ -194,11 +194,11 @@ st_memory(void)
   cos_logmsg_setLevel(lvl);
 
   i = 0;
-  STEST( "delete", P, gdelete(arr[i++]) );
+  STEST( "delete", P, grelease(arr[i++]) );
 
-  STEST( "new + delete", P, gdelete(gnew(Counter)) );
+  STEST( "new + delete", P, grelease(gnew(Counter)) );
 
-  gdelete(ar);
+  grelease(ar);
 }
 
 void

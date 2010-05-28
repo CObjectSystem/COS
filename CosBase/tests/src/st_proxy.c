@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_proxy.c,v 1.6 2009/04/17 21:13:56 ldeniau Exp $
+ | $Id: st_proxy.c,v 1.7 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -53,7 +53,7 @@ st_pxymethods(void)
   OBJ cnt = gnew(Counter);
   OBJ pxy = gnewWith(Proxy,cnt);
 
-  gdelete(cnt);
+  grelease(cnt);
 
   STEST( "method through proxy (0 argument )", N, gincr(pxy) );
   STEST( "method through proxy (1 argument )", N, gincrBy1(pxy,1) );
@@ -64,7 +64,7 @@ st_pxymethods(void)
 
   test_assert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
   
-  gdelete(pxy);
+  grelease(pxy);
 }
 
 
@@ -83,7 +83,7 @@ st_pxynextmethods(void)
   OBJ cnt = gnew(Counter);
   OBJ pxy = gnewWith(ProxyCounter,cnt);
 
-  gdelete(cnt);
+  grelease(cnt);
 
   STEST( "next method through proxy (0 argument )", N, gincr(pxy) );
   STEST( "next method through proxy (1 argument )", N, gincrBy1(pxy,1) );
@@ -94,7 +94,7 @@ st_pxynextmethods(void)
 
   test_assert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
   
-  gdelete(pxy);
+  grelease(pxy);
 }
 
 void
@@ -106,7 +106,7 @@ st_pxymultimethods(void)
   OBJ pxy = gnewWith(Proxy,cnt);
   OBJ one = gincr(gnew(Counter));
 
-  gdelete(cnt);
+  grelease(cnt);
 
   STEST( "multimethod through proxy (rank 2)", N, gaddTo1(pxy,one) );
   STEST( "multimethod through proxy (rank 3)", N, gaddTo2(pxy,one,one) );
@@ -114,6 +114,6 @@ st_pxymultimethods(void)
   STEST( "multimethod through proxy (rank 5)", N, gaddTo4(pxy,one,one,one,one) );
   
   test_assert( gint(pxy) == N+2*N+3*N+4*N );
-  gdelete(pxy);
-  gdelete(one);
+  grelease(pxy);
+  grelease(one);
 }

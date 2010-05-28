@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_autorealease.c,v 1.12 2009/04/17 21:13:56 ldeniau Exp $
+ | $Id: ut_autorealease.c,v 1.13 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -60,30 +60,20 @@ ut_autorelease(void)
     c = gclone(a);
     UTEST( gretainCount(a) == 1 );
     UTEST( gretainCount(c) == 1 );
-    UTEST( (gdelete(a), 1) );
-    UTEST( (gdelete(c), 1) );
+    UTEST( (grelease(a), 1) );
+    UTEST( (grelease(c), 1) );
 
     // ----
     a = gretain(gnew(A));
     UTEST( gretainCount(a) == 2  );
     UTEST( (grelease(a), 1) );
     UTEST( gretainCount(a) == 1  );
-    UTEST( (gdelete(a), 1) );
-
-    // ----
-    a = gretain(gnew(A));
-    UTEST( gretainCount(a) == 2  );
-    UTEST( (gdelete(a), 1) );
-    UTEST( gretainCount(a) == 1  );
     UTEST( (grelease(a), 1) );
 
     // ----
-    ar = gnew(AutoRelease);
     a = gretain(gnew(A));
     UTEST( gretainCount(a) == 2  );
-    gautoDelete(a);
-    UTEST( gretainCount(a) == 2  );
-    gdelete(ar);
+    UTEST( (grelease(a), 1) );
     UTEST( gretainCount(a) == 1  );
     UTEST( (grelease(a), 1) );
 
@@ -93,13 +83,23 @@ ut_autorelease(void)
     UTEST( gretainCount(a) == 2  );
     gautoRelease(a);
     UTEST( gretainCount(a) == 2  );
-    gdelete(ar);
+    grelease(ar);
     UTEST( gretainCount(a) == 1  );
-    UTEST( (gdelete(a), 1) );
+    UTEST( (grelease(a), 1) );
 
     // ----
     ar = gnew(AutoRelease);
-    a = gautoDelete(gnew(A));
+    a = gretain(gnew(A));
+    UTEST( gretainCount(a) == 2  );
+    gautoRelease(a);
+    UTEST( gretainCount(a) == 2  );
+    grelease(ar);
+    UTEST( gretainCount(a) == 1  );
+    UTEST( (grelease(a), 1) );
+
+    // ----
+    ar = gnew(AutoRelease);
+    a = gautoRelease(gnew(A));
     UTEST( gsize(ar) == 1 );
     UTEST( gretainCount(a) == 1  );
     a = gretain(a);
@@ -108,16 +108,16 @@ ut_autorelease(void)
     a = gretain(a);
     UTEST( gsize(ar) == 1 );
     UTEST( gretainCount(a) == 3  );
-    gdelete(ar);
+    grelease(ar);
     UTEST( gretainCount(a) == 2  );
     UTEST( (grelease(a), 1) );
     UTEST( gretainCount(a) == 1  );
-    UTEST( (gdelete(a), 1) );
+    UTEST( (grelease(a), 1) );
 
     // ----
     ar = gnew(AutoRelease);
-    a = gautoDelete(gnew(A));
-    c = gautoDelete(gnew(A));
+    a = gautoRelease(gnew(A));
+    c = gautoRelease(gnew(A));
     UTEST( gsize(ar) == 2 );
     a = gretain(a);
     UTEST( gsize(ar) == 2 );
@@ -125,7 +125,7 @@ ut_autorelease(void)
     c = gretain(c);
     UTEST( gsize(ar) == 2 );
     UTEST( gretainCount(c) == 2  );
-    gdelete(ar);
+    grelease(ar);
     UTEST( gretainCount(a) == 1  );
     UTEST( gretainCount(c) == 1  );
     UTEST( (grelease(a), 1) );
@@ -135,12 +135,12 @@ ut_autorelease(void)
     ar = gnew(AutoRelease);
     for (i = 1; i <= 1000; i++) {
       size_t s;
-      gautoDelete(gnew(A));
+      gautoRelease(gnew(A));
       s = gsize(ar);
       if (!(s & (s-1))) // check every 2^n
         UTEST( s == i );
     }
-    gdelete(ar);
+    grelease(ar);
 
     // ----
     ar = gnew(AutoRelease);
@@ -148,23 +148,23 @@ ut_autorelease(void)
     TRY
       ar1 = gnew(AutoRelease);
       for (i = 0; i < 100; i++)
-        arr[i] = gautoDelete(gnew(A));
+        arr[i] = gautoRelease(gnew(A));
       TRY
         ar2 = gnew(AutoRelease);
         for (; i < 300; i++)
-          arr[i] = gautoDelete(gnew(A));
+          arr[i] = gautoRelease(gnew(A));
         TRY
           ar3 = gnew(AutoRelease);
           for (; i < 600; i++)
-            arr[i] = gautoDelete(gnew(A));
+            arr[i] = gautoRelease(gnew(A));
           TRY
              ar4 = gnew(AutoRelease);
              for (; i < 700; i++)
-               gautoDelete(gnew(A));
+               gautoRelease(gnew(A));
              THROW(Nil);
           FINALLY
             UTEST( gsize(ar4) == 100 );
-            gdelete(ar4), ar4 = 0;
+            grelease(ar4), ar4 = 0;
           ENDTRY
         FINALLY
           UTEST( gsize(ar3) == 300 );
@@ -180,7 +180,7 @@ ut_autorelease(void)
       UTEST( gsize(ar3) == 300 );
     ENDTRY
     UTEST( gsize(ar) == 0 );
-    gdelete(ar); // destroy all chained pools
+    grelease(ar); // destroy all chained pools
     ar = ar1 = ar2 = ar3 = ar4 = 0;
 
   UTEST_END

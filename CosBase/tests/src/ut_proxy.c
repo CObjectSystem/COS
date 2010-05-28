@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_proxy.c,v 1.3 2009/04/17 21:13:56 ldeniau Exp $
+ | $Id: ut_proxy.c,v 1.4 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -53,10 +53,10 @@ check_gmf(OBJ cls, STR res)
   STR s   = gstr(_1);
   BOOL ret;
 
-  gdelete(_1);
+  grelease(_1);
   gcatStr(pxy, " understands gcatStr");
   ret = !strcmp(s, res);
-  gdelete(pxy);
+  grelease(pxy);
   
   return ret;
 }
@@ -71,10 +71,10 @@ check_vmf(OBJ cls, STR res)
   STR s   = gstr(_1);
   BOOL ret;
 
-  gdelete(_1);
+  grelease(_1);
   gvputStr(pxy, "%s understands %s", gclassName(_1), "gvputStr");
   ret = !strcmp(s, res);
-  gdelete(pxy);
+  grelease(pxy);
   
   return ret;
 }

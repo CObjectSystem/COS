@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_methods.c,v 1.5 2009/04/17 21:13:56 ldeniau Exp $
+ | $Id: ut_methods.c,v 1.6 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@ ut_methods(void)
   usegeneric((gunderstandMessage1)gum1);
   usegeneric((ginstancesUnderstandMessage1)gium1);
   usegeneric(gclass , gclassName);
-  usegeneric(gretain, grelease, gdelete );
+  usegeneric(gretain, grelease);
   usegeneric(galloc , gdealloc  );
   usegeneric(gisKindOf);
 
@@ -78,8 +78,8 @@ ut_methods(void)
     UTEST(          gunderstandMessage1(Object, (SEL)grelease)   == True  );
     UTEST( ginstancesUnderstandMessage1(Object, (SEL)grelease)   == True  );
 
-    UTEST(          gunderstandMessage1(Object, (SEL)gdelete)    == True  );
-    UTEST( ginstancesUnderstandMessage1(Object, (SEL)gdelete)    == True  );
+    UTEST(          gunderstandMessage1(Object, (SEL)grelease)    == True  );
+    UTEST( ginstancesUnderstandMessage1(Object, (SEL)grelease)    == True  );
 
     UTEST(          gunderstandMessage2(Object, Object, (SEL)gisKindOf) == True  );
     UTEST( ginstancesUnderstandMessage2(Object, Object, (SEL)gisKindOf) == False );
@@ -96,7 +96,7 @@ ut_methods(void)
     
     UTEST(          gunderstandMessage1(Class, (SEL)gretain)    == True );
     UTEST( ginstancesUnderstandMessage1(Class, (SEL)grelease)   == True );
-    UTEST( ginstancesUnderstandMessage1(Class, (SEL)gdelete)    == True );
+    UTEST( ginstancesUnderstandMessage1(Class, (SEL)grelease)    == True );
 
     // MetaClass
     UTEST(          gunderstandMessage1(MetaClass, (SEL)galloc)     == True );
@@ -107,7 +107,7 @@ ut_methods(void)
     
     UTEST(          gunderstandMessage1(MetaClass, (SEL)gretain)    == True );
     UTEST( ginstancesUnderstandMessage1(MetaClass, (SEL)grelease)   == True );
-    UTEST( ginstancesUnderstandMessage1(MetaClass, (SEL)gdelete)    == True );
+    UTEST( ginstancesUnderstandMessage1(MetaClass, (SEL)grelease)    == True );
 
     // PropMetaClass
     UTEST(          gunderstandMessage1(PropMetaClass, (SEL)galloc)     == True );
@@ -118,7 +118,7 @@ ut_methods(void)
     
     UTEST(          gunderstandMessage1(PropMetaClass, (SEL)gretain)    == True );
     UTEST( ginstancesUnderstandMessage1(PropMetaClass, (SEL)grelease)   == True );
-    UTEST( ginstancesUnderstandMessage1(PropMetaClass, (SEL)gdelete)    == True );
+    UTEST( ginstancesUnderstandMessage1(PropMetaClass, (SEL)grelease)    == True );
     
   UTEST_END
 }

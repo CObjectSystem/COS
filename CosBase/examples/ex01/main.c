@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: main.c,v 1.3 2009/04/17 21:13:55 ldeniau Exp $
+ | $Id: main.c,v 1.4 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -47,9 +47,9 @@ int main(void)
   gprint(strm, str1);
   gprint(strm, str2);
     
-  gdelete(str1);
-  gdelete(str2);
-  gdelete(strm);
+  grelease(str1);
+  grelease(str2);
+  grelease(strm);
 
   return EXIT_SUCCESS;
 }

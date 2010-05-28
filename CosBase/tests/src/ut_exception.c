@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_exception.c,v 1.10 2009/04/19 17:52:37 ldeniau Exp $
+ | $Id: ut_exception.c,v 1.11 2010/05/28 08:53:08 ldeniau Exp $
  |
 */
 
@@ -102,7 +102,7 @@ useclass(ExSignal);
       UTEST( check_str(ex, "C is thrown") );
       UTEST( ex_file == file && ex_line == line );
       gvputStr(ex, "%s has been caught as an A", gclassName(ex));
-      gdelete(ex); // delete c
+      grelease(ex); // delete c
 
     CATCH_ANY()
       UTEST( !"CATCH_ANY() should not be reached" );
@@ -110,7 +110,7 @@ useclass(ExSignal);
     FINALLY
       if (do_throw == NO) {
         UTEST( check_str(c, "C is not thrown") );
-        gdelete(a), gdelete(b); gdelete(c);
+        grelease(a), grelease(b); grelease(c);
       }
       if (do_throw == YES)
         UTEST( check_str(c, "C has been caught as an A") );
@@ -134,7 +134,7 @@ useclass(ExSignal);
     // catch the rethrow
     UTEST( gisInstanceOf(ex,A) == True );
 		UTEST( ex_file == file && ex_line == line );
-		gdelete(ex);
+		grelease(ex);
   FINALLY
   ENDTRY
 
@@ -144,7 +144,7 @@ useclass(ExSignal);
       raise(sig[i]);
     CATCH(ExSignal, ex)
       UTEST( gint(ex) == sig[i] );
-      gdelete(ex);
+      grelease(ex);
     ENDTRY
 
   UTEST_END
