@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.40 2010/05/26 22:46:30 ldeniau Exp $
+ | $Id: object.h,v 1.41 2010/05/28 08:39:12 ldeniau Exp $
  |
 */
 
@@ -69,9 +69,7 @@ defgeneric(OBJ , gclear , _1);
 
 // ownership
 defgeneric(OBJ , gretain     , _1);
-defgeneric(void, gdelete     , _1);
 defgeneric(void, grelease    , _1);
-defgeneric(OBJ , gautoDelete , _1);
 defgeneric(OBJ , gautoRelease, _1);
 defgeneric(U32 , gretainCount, _1);
   
@@ -104,20 +102,14 @@ defgeneric(void, gthrow        , _1, (STR)func, (STR)file, (int)line);
 static cos_inline OBJ
 gretain_inline(OBJ _1)
 {
-  return cos_object_rc(_1) >= COS_RC_UNIT   ? cos_object_incRc(_1)
-       : cos_object_rc(_1) == COS_RC_STATIC ? _1
-       : (gretain)(_1);
-
+  return cos_object_rc(_1) >= COS_RC_UNIT ? cos_object_incRc(_1) : (gretain)(_1);
   COS_UNUSED(gretain_inline);
 }
 
 static cos_inline void
 grelease_inline(OBJ _1)
 {
-  (void)(cos_object_rc(_1) >  COS_RC_UNIT   ? (cos_object_decRc(_1), 0)
-       : cos_object_rc(_1) != COS_RC_STATIC ? ((grelease)(_1), 0)
-       : 0);
-
+  if (cos_object_rc(_1) > COS_RC_UNIT) cos_object_decRc(_1); else (grelease)(_1);
   COS_UNUSED(grelease_inline);
 }
 

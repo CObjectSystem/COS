@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.30 2010/05/26 23:35:06 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.31 2010/05/28 08:39:12 ldeniau Exp $
  |
 */
 
@@ -113,7 +113,7 @@ unwind_stack(struct cos_exception_context *cxt)
         ep->fct(*ep->alt);
     }
     else if (*p->obj)
-      gdelete(*p->obj);
+      grelease(*p->obj);
   }
 
   cxt->unstk = NO;

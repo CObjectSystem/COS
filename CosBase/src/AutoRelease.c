@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: AutoRelease.c,v 1.54 2010/05/26 22:46:30 ldeniau Exp $
+ | $Id: AutoRelease.c,v 1.55 2010/05/28 08:39:12 ldeniau Exp $
  |
 */
 
@@ -204,13 +204,12 @@ defmethod(OBJ, gretain, Any)
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
-defalias (OBJ, (gautoRelease)gautoDelete, Any);
-defmethod(OBJ,  gautoRelease            , Any)
+defmethod(OBJ, gautoRelease, Any)
   if (cos_object_rc(_1) >= COS_RC_UNIT)
     retmethod( push(_1) );
 
   if (cos_object_rc(_1) == COS_RC_AUTO)
-    retmethod( push(gclone(_1)) );
+    retmethod( push(gcopy(_1)) );
 
   if (cos_object_rc(_1) == COS_RC_STATIC)
     retmethod(_1);
@@ -219,8 +218,7 @@ defmethod(OBJ,  gautoRelease            , Any)
   THROW( gnewWithStr(ExBadValue, "invalid reference counting") );
 endmethod
 
-defalias (void, (grelease)gdelete, Any);
-defmethod(void,  grelease        , Any)
+defmethod(void, grelease, Any)
   if (cos_object_rc(_1) > COS_RC_UNIT)
     cos_object_decRc(_1);
   
@@ -239,13 +237,11 @@ defmethod(OBJ, gretain, Class)
   retmethod(_1);
 endmethod
 
-defalias (OBJ, (gautoRelease)gautoDelete, Class);
-defmethod(OBJ,  gautoRelease            , Class)
+defmethod(OBJ, gautoRelease, Class)
   retmethod(_1);
 endmethod
 
-defalias (void, (grelease)gdelete, Class);
-defmethod(void,  grelease        , Class)
+defmethod(void, grelease, Class)
 endmethod
 
 // ----- AutoRelease ownership
@@ -255,13 +251,11 @@ defmethod(OBJ, gretain, AutoRelease)
   COS_UNUSED(_ret);
 endmethod
 
-defalias (OBJ, (gautoRelease)gautoDelete, AutoRelease);
-defmethod(OBJ,  gautoRelease            , AutoRelease)
+defmethod(OBJ, gautoRelease, AutoRelease)
   COS_UNUSED(_ret); // insensitive, already chained
 endmethod
 
-defalias (void, (grelease)gdelete, AutoRelease);
-defmethod(void,  grelease        , AutoRelease)
+defmethod(void, grelease, AutoRelease)
   cos_trace("destroying pool at %p [%u objects]", (void*)_1, gsize(_1));
   gdealloc(gdeinit(_1)); // cannot be auto, static or retained
 endmethod

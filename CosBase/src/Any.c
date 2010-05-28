@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.24 2010/05/26 22:46:30 ldeniau Exp $
+ | $Id: Any.c,v 1.25 2010/05/28 08:39:12 ldeniau Exp $
  |
 */
 
@@ -85,14 +85,7 @@ endmethod
 // ----- deallocator
 
 defmethod(void, gdealloc, Any)
-  PRE
-    test_assert(cos_object_id(_1) != COS_ID_INVALID &&
-                cos_object_rc(_1) != COS_RC_INVALID, "object already destroyed");
-  BODY
-    cos_object_setId(_1, COS_ID_INVALID);
-    cos_object_setRc(_1, COS_RC_INVALID);
-    
-    free(_1);
+  free(_1);
 endmethod
 
 // ----- ownership

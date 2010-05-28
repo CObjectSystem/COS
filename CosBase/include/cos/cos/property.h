@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: property.h,v 1.13 2009/10/19 19:14:56 ldeniau Exp $
+ | $Id: property.h,v 1.14 2010/05/28 08:39:09 ldeniau Exp $
  |
 */
 
@@ -123,7 +123,7 @@
 
      // hand-written read-write property size
      defmethod(OBJ, ggetAt, Array, mP_size)
-       retmethod( gautoDelete(aInt(self->size)) );
+       retmethod( gautoRelease(aInt(self->size)) );
      endmethod
 
      defmethod(OBJ, gputAt, Array, mP_size, Object)
