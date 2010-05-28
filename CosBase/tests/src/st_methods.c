@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.18 2010/05/28 11:33:25 ldeniau Exp $
+ | $Id: st_methods.c,v 1.19 2010/05/28 12:13:22 ldeniau Exp $
  |
 */
 
@@ -167,9 +167,6 @@ st_multimethods_ptr(void)
   grelease(one);
 }
 
-#undef NDEBUG
-#include <assert.h>
-
 void
 st_memory(void)
 {
@@ -177,16 +174,22 @@ st_memory(void)
   static OBJ arr[P];
   useclass(Counter, AutoRelease);
   OBJ ar = gnew(AutoRelease);
+  size_t sz = gsize(Counter);
   size_t i;
   int lvl;
 
-  // warm-up memory allocation
-  {
-    void *p = malloc(N*2);
-    assert(p);
-    memset(p, 0, N*2);
-    free(p);
-  }
+  // memory warm up
+  for (i = 0; i < P; i++)
+    arr[i++] = malloc(sz);
+
+  for (i = 0; i < P; i++)
+    free(arr[i++]);
+
+  i = 0;
+  STEST( "malloc", P, arr[i++] = malloc(sz) );
+
+  i = 0;
+  STEST( "free", P, free(arr[i++]) );
 
   i = 0;
   STEST( "galloc + ginit", P, arr[i++] = ginit(galloc(Counter)) );

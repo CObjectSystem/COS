@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Class.c,v 1.10 2010/05/26 22:46:30 ldeniau Exp $
+ | $Id: Class.c,v 1.11 2010/05/28 12:13:22 ldeniau Exp $
  |
 */
 
@@ -51,6 +51,10 @@ defproperty(Class, (spr)superClass, (OBJ));
 
 defmethod(STR, gstr, Class)
   retmethod( self->str );
+endmethod
+
+defmethod(U32, gsize, Class)
+  retmethod( self->isz );
 endmethod
 
 defmethod(OBJ, gsuperClass, Class)
