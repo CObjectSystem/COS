@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.11 2010/05/28 11:33:25 ldeniau Exp $
+# | $Id: Makefile,v 1.12 2010/05/28 11:57:08 ldeniau Exp $
 # |
 #
 
@@ -55,7 +55,7 @@ defprps := $(headers)
 
 # project dependencies (as with -lname)
 moddeps := CosBase
-libdeps := tcmalloc_minimal
+libdeps := # tcmalloc_minimal
 
 # project dependencies (as with -Ipath or -Lpath)
 incdirs := ../include src

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.25 2010/05/28 08:39:12 ldeniau Exp $
+ | $Id: Any.c,v 1.26 2010/05/28 11:57:08 ldeniau Exp $
  |
 */
 
@@ -69,17 +69,18 @@ defmethod(OBJ, galloc, mAny)
 endmethod
 
 defmethod(OBJ, gallocWithSize, mAny, (size_t)extra)
-  PRE
-    test_assert(self->isz+extra > extra, "size overflow");
-  BODY
-    struct Any *obj = malloc(self->isz + extra);
+PRE
+  test_assert(self->isz+extra > extra, "size overflow");
+  
+BODY
+  struct Any *obj = malloc(self->isz + extra);
 
-    if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
+  if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
 
-    obj->_id = cos_class_id(self);
-    obj->_rc = COS_RC_UNIT;
+  obj->_id = cos_class_id(self);
+  obj->_rc = COS_RC_UNIT;
 
-    retmethod( (OBJ)obj );
+  retmethod( (OBJ)obj );
 endmethod
 
 // ----- deallocator
