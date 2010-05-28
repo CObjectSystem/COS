@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.19 2010/05/28 12:13:22 ldeniau Exp $
+ | $Id: st_methods.c,v 1.20 2010/05/28 12:25:10 ldeniau Exp $
  |
 */
 
@@ -72,12 +72,12 @@ st_nextmethods(void)
 
   OBJ cnt = gnew(MilliCounter);
 
-  STEST( "next method (0 argument )", P, gincr(cnt) );
-  STEST( "next method (1 argument )", P, gincrBy1(cnt,1) );
-  STEST( "next method (2 arguments)", P, gincrBy2(cnt,1,1) );
-  STEST( "next method (3 arguments)", P, gincrBy3(cnt,1,1,1) );
-  STEST( "next method (4 arguments)", P, gincrBy4(cnt,1,1,1,1) );
-  STEST( "next method (5 arguments)", P, gincrBy5(cnt,1,1,1,1,1) );
+  STEST( "method + next method (0 argument )", P, gincr(cnt) );
+  STEST( "method + next method (1 argument )", P, gincrBy1(cnt,1) );
+  STEST( "method + next method (2 arguments)", P, gincrBy2(cnt,1,1) );
+  STEST( "method + next method (3 arguments)", P, gincrBy3(cnt,1,1,1) );
+  STEST( "method + next method (4 arguments)", P, gincrBy4(cnt,1,1,1,1) );
+  STEST( "method + next method (5 arguments)", P, gincrBy5(cnt,1,1,1,1,1) );
   
   test_assert( gint(cnt) == P+P+2*P+3*P+4*P+5*P );
   grelease(cnt);
@@ -178,7 +178,7 @@ st_memory(void)
   size_t i;
   int lvl;
 
-  // memory warm up
+  // allocator warm up
   for (i = 0; i < P; i++)
     arr[i++] = malloc(sz);
 
@@ -205,7 +205,7 @@ st_memory(void)
   i = 0;
   STEST( "release", P, grelease(arr[i++]) );
 
-  STEST( "new + release", P, grelease(ginit(galloc(Counter))) );
+  STEST( "alloc + init + release", P, grelease(ginit(galloc(Counter))) );
 
   grelease(ar);
 }
@@ -213,5 +213,5 @@ st_memory(void)
 void
 st_exception(void)
 {
-  STEST( "try-endtry", N/100, TRY ENDTRY );
+  STEST( "try-endtry", N/50, TRY ENDTRY );
 }
