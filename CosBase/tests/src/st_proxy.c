@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: st_proxy.c,v 1.7 2010/05/28 08:53:08 ldeniau Exp $
+ | $Id: st_proxy.c,v 1.8 2010/05/28 12:25:10 ldeniau Exp $
  |
 */
 
@@ -85,12 +85,12 @@ st_pxynextmethods(void)
 
   grelease(cnt);
 
-  STEST( "next method through proxy (0 argument )", N, gincr(pxy) );
-  STEST( "next method through proxy (1 argument )", N, gincrBy1(pxy,1) );
-  STEST( "next method through proxy (2 arguments)", N, gincrBy2(pxy,1,1) );
-  STEST( "next method through proxy (3 arguments)", N, gincrBy3(pxy,1,1,1) );
-  STEST( "next method through proxy (4 arguments)", N, gincrBy4(pxy,1,1,1,1) );
-  STEST( "next method through proxy (5 arguments)", N, gincrBy5(pxy,1,1,1,1,1) );
+  STEST( "method + next method through proxy (0 argument )", N, gincr(pxy) );
+  STEST( "method + next method through proxy (1 argument )", N, gincrBy1(pxy,1) );
+  STEST( "method + next method through proxy (2 arguments)", N, gincrBy2(pxy,1,1) );
+  STEST( "method + next method through proxy (3 arguments)", N, gincrBy3(pxy,1,1,1) );
+  STEST( "method + next method through proxy (4 arguments)", N, gincrBy4(pxy,1,1,1,1) );
+  STEST( "method + next method through proxy (5 arguments)", N, gincrBy5(pxy,1,1,1,1,1) );
 
   test_assert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
   

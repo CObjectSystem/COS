@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.20 2010/05/28 12:25:10 ldeniau Exp $
+ | $Id: st_methods.c,v 1.21 2010/05/28 12:27:37 ldeniau Exp $
  |
 */
 
@@ -192,7 +192,7 @@ st_memory(void)
   STEST( "free", P, free(arr[i++]) );
 
   i = 0;
-  STEST( "galloc + ginit", P, arr[i++] = ginit(galloc(Counter)) );
+  STEST( "alloc + init", P, arr[i++] = ginit(galloc(Counter)) );
 
   i = 0;
   STEST( "retain", P, gretain(arr[i++]) );
