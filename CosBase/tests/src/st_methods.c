@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------oh
  |
- | $Id: st_methods.c,v 1.17 2010/05/28 08:53:08 ldeniau Exp $
+ | $Id: st_methods.c,v 1.18 2010/05/28 11:33:25 ldeniau Exp $
  |
 */
 
@@ -167,6 +167,9 @@ st_multimethods_ptr(void)
   grelease(one);
 }
 
+#undef NDEBUG
+#include <assert.h>
+
 void
 st_memory(void)
 {
@@ -178,12 +181,15 @@ st_memory(void)
   int lvl;
 
   // warm-up memory allocation
-  memset(arr, 0, P * sizeof *arr);
-  for (i=0; i<P; i++) arr[i] = gnew(Counter);
-  for (i=P; i>0; i--) grelease(arr[i-1]);
+  {
+    void *p = malloc(N*2);
+    assert(p);
+    memset(p, 0, N*2);
+    free(p);
+  }
 
   i = 0;
-  STEST( "new (galloc+ginit)", P, arr[i++] = gnew(Counter) );
+  STEST( "galloc + ginit", P, arr[i++] = ginit(galloc(Counter)) );
 
   i = 0;
   STEST( "retain", P, gretain(arr[i++]) );
@@ -194,9 +200,9 @@ st_memory(void)
   cos_logmsg_setLevel(lvl);
 
   i = 0;
-  STEST( "delete", P, grelease(arr[i++]) );
+  STEST( "release", P, grelease(arr[i++]) );
 
-  STEST( "new + delete", P, grelease(gnew(Counter)) );
+  STEST( "new + release", P, grelease(ginit(galloc(Counter))) );
 
   grelease(ar);
 }

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: default,v 1.30 2009/06/14 17:47:38 ldeniau Exp $
+# | $Id: default,v 1.31 2010/05/28 11:33:25 ldeniau Exp $
 # |
 #
 
@@ -94,7 +94,7 @@ LIBS      = $(addprefix -l, $(addsuffix $(TARGETEXT),$(moddeps)) $(libdeps))
 #
 # standard patterns
 #
-CLEANPAT := '*~' '.*~' '.\#*'
+CLEANPAT := '*~' '.*~' '.\#*' '*.bak'
 CLEANCMD := $(call rest,$(addprefix -o -name ,$(CLEANPAT) $(cleanpat)))
 
 TAREXPAT := 'CVS*' TODO tmp $(CLEANPAT) $(cleanpat)
