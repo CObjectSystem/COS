@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.10 2010/05/31 14:02:23 ldeniau Exp $
+ | $Id: String.h,v 1.11 2010/05/31 14:12:41 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 /* NOTE-USER: String class cluster constructors
 
    aString    ("string")           -> String          (automatic)
-   aStringRef (buffer,size)        -> String          (automatic)
+   aStringRef (buffer[,size])      -> String          (automatic)
 
    gnewWith (String,string)        -> Block string    (copy)
    gnewWith2(String,size,chr)      -> Block string    (element)
@@ -113,9 +113,15 @@ struct String* String_alloc(U32);
   ( &(struct String) { {{{ cos_object_auto(String) }}}, \
     (U8[]){ cstr }, sizeof cstr -1 })
 
-// --- StringRef (low-level, size = sizeof buffer -1 or strlen)
+// --- StringRef (low-level)
 
-#define atStringRef(buffer,size) \
+#define atStringRef(...) \
+  COS_PP_CAT_NARG(atStringRef_,__VA_ARGS__)(__VA_ARGS__)
+
+#define atStringRef_1(buffer) \
+        atStringRef_2(buffer, strlen(buffer))
+
+#define atStringRef_2(buffer,size) \
   ( &(struct String) { {{{ cos_object_auto(String) }}}, (buffer), (size) } )
 
 #endif // COS_STRING_H

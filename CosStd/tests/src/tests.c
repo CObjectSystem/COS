@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.c,v 1.17 2010/05/31 14:02:59 ldeniau Exp $
+ | $Id: tests.c,v 1.18 2010/05/31 14:15:26 ldeniau Exp $
  |
 */
 
@@ -80,9 +80,6 @@ int main(int argc, char *argv[])
     if (!strcmp(argv[i], "-m"))
       cos_logmsg_setLevel(COS_LOGMSG_TRALL);
   }
-
-  if (alloc_trc)
-    cos_mem_trace(YES);
 
   if (init_time) {
     // must be loaded before COS is initialized (and first message is sent)
@@ -137,11 +134,8 @@ int main(int argc, char *argv[])
     cos_method_statCache5(0);
   }
 
-  if (alloc_trc) {
+  if (alloc_trc)
     cos_deinit();
-    printf("\n** COS alloc/free balance: %u/%u\n",
-           cos_mem_nalloc(), cos_mem_nfree());
-  }
     
   return EXIT_SUCCESS;
 }
