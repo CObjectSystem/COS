@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.27 2010/05/31 10:09:03 ldeniau Exp $
+ | $Id: Any.c,v 1.28 2010/05/31 10:15:28 ldeniau Exp $
  |
 */
 
@@ -74,7 +74,7 @@ defmethod(OBJ, gallocWithSize, mAny, (size_t)extra)
   struct Any *obj;
   
   if (size - extra != self->isz)
-    THROW(gnewWithStr(ExOverflow, "extra size too large"));
+    THROW(gnewWithStr(ExOverflow, "extra size is too large"));
   
   if (!(obj = malloc(size)))
     THROW(ExBadAlloc); // throw the class (no allocation)
