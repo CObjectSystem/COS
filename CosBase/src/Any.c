@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Any.c,v 1.26 2010/05/28 11:57:08 ldeniau Exp $
+ | $Id: Any.c,v 1.27 2010/05/31 10:09:03 ldeniau Exp $
  |
 */
 
@@ -47,7 +47,7 @@ makclass(Any, _);
 
 // ----- exceptions
 
-useclass(ExBadAlloc, ExBadMessage);
+useclass(ExBadAlloc, ExBadMessage, ExOverflow);
 
 // ----- properties (read-only)
 
@@ -60,7 +60,8 @@ endmethod
 defmethod(OBJ, galloc, mAny)
   struct Any *obj = malloc(self->isz);
 
-  if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
+  if (!obj)
+    THROW(ExBadAlloc); // throw the class (no allocation)
 
   obj->_id = cos_class_id(self);
   obj->_rc = COS_RC_UNIT;
@@ -69,14 +70,15 @@ defmethod(OBJ, galloc, mAny)
 endmethod
 
 defmethod(OBJ, gallocWithSize, mAny, (size_t)extra)
-PRE
-  test_assert(self->isz+extra > extra, "size overflow");
+  size_t size = self->isz + extra;
+  struct Any *obj;
   
-BODY
-  struct Any *obj = malloc(self->isz + extra);
-
-  if (!obj) THROW(ExBadAlloc); // throw the class (no allocation)
-
+  if (size - extra != self->isz)
+    THROW(gnewWithStr(ExOverflow, "extra size too large"));
+  
+  if (!(obj = malloc(size)))
+    THROW(ExBadAlloc); // throw the class (no allocation)
+  
   obj->_id = cos_class_id(self);
   obj->_rc = COS_RC_UNIT;
 
