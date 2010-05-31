@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_string.c,v 1.3 2010/01/03 15:00:01 ldeniau Exp $
+ | $Id: ut_string.c,v 1.4 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -50,7 +50,7 @@ static BOOL
 isEq(OBJ r, OBJ ref)
 {
   OBJ res = gisEqual(r, ref);
-  gdelete(r);
+  grelease(r);
   return res == True;
 }
 */
@@ -136,6 +136,6 @@ ut_string(void)
 
   UTEST_END
 
-  gdelete(pool);
+  grelease(pool);
 }
 

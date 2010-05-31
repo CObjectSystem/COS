@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_acc.c,v 1.11 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: String_acc.c,v 1.12 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -52,12 +52,12 @@ useclass(String);
 
 defmethod(OBJ,  glast, String)
   retmethod( self->size
-           ? gautoDelete(aChar(self->value[self->size-1]))
+           ? gautoRelease(aChar(self->value[self->size-1]))
            : Nil );
 endmethod
 
 defmethod(OBJ, gfirst, String)
-  retmethod( self->size ? gautoDelete(aChar(self->value[0])) : Nil );
+  retmethod( self->size ? gautoRelease(aChar(self->value[0])) : Nil );
 endmethod
 
 // ----- getters (index, slice, range, intvector)
@@ -66,26 +66,26 @@ defmethod(OBJ, ggetAtIdx, String, (I32)idx)
   U32 i = Range_index(idx, self->size);
   test_assert( i < self->size, "index out of range" );
 
-  retmethod( gautoDelete(aChar(self->value[i])) );
+  retmethod( gautoRelease(aChar(self->value[i])) );
 endmethod
 
 defmethod(OBJ, ggetAt, String, Int)
   U32 i = Range_index(self2->value, self->size);
   test_assert( i < self->size, "index out of range" );
 
-  retmethod( gautoDelete(aChar(self->value[i])) );
+  retmethod( gautoRelease(aChar(self->value[i])) );
 endmethod
 
 defmethod(OBJ, ggetAt, String, Slice)
-  retmethod( gautoDelete(gnewWith2(String,_1,_2)) );
+  retmethod( gautoRelease(gnewWith2(String,_1,_2)) );
 endmethod
 
 defmethod(OBJ, ggetAt, String, Range)
-  retmethod( gautoDelete(gnewWith2(String,_1,_2)) );
+  retmethod( gautoRelease(gnewWith2(String,_1,_2)) );
 endmethod
 
 defmethod(OBJ, ggetAt, String, IntVector)
-  retmethod( gautoDelete(gnewWith2(String,_1,_2)) );
+  retmethod( gautoRelease(gnewWith2(String,_1,_2)) );
 endmethod
 
 // ----- object setters (index, slice, range, intvector)

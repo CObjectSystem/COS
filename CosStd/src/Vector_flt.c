@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_flt.c,v 1.6 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Vector_flt.c,v 1.7 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -68,7 +68,7 @@ defmethod(OBJ, gsum, T) \
     val += val_s; \
   } \
 \
-  retmethod(gautoDelete(O(s))); \
+  retmethod(gautoRelease(O(s))); \
 endmethod
 
 DEFMETHOD(FltVector, F64, aFloat  )
@@ -90,7 +90,7 @@ defmethod(OBJ, gprod, T) \
     val += val_s; \
   } \
 \
-  retmethod(gautoDelete(O(p))); \
+  retmethod(gautoRelease(O(p))); \
 endmethod
 
 DEFMETHOD(FltVector, F64, aFloat  )
@@ -205,7 +205,7 @@ endmethod
 #define DEFMETHOD(mth,gen) \
 \
 defmethod(OBJ, mth, FloatingVector) \
-  retmethod(gen(gautoDelete(gclone(_1)))); \
+  retmethod(gen(gautoRelease(gclone(_1)))); \
 endmethod
 
 DEFMETHOD(gconj , gconjugate  )

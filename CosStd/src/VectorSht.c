@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS LngVector
+ | COS ShtVector
  |
  o---------------------------------------------------------------------o
  |
@@ -29,56 +29,56 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.c,v 1.9 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: VectorSht.c,v 1.1 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
-#define LNGVECTOR_ONLY
+#define SHTVECTOR_ONLY
 
-#define T     LngVector
-#define TM   mLngVector
-#define TP  pmLngVector
-#define TN    LngVectorN
-#define TF    LngVectorFix
-#define TD    LngVectorDyn
-#define TL    LngVectorLzy
-#define TV    LngVectorView
-#define TW    LngVectorSubView
-#define TS    "long vector"
-#define TE    Long
+#define T     ShtVector
+#define TM   mShtVector
+#define TP  pmShtVector
+#define TN    ShtVectorN
+#define TF    ShtVectorFix
+#define TD    ShtVectorDyn
+#define TL    ShtVectorLzy
+#define TV    ShtVectorView
+#define TW    ShtVectorSubView
+#define TS    "short vector"
+#define TE    Short
 
-#define TF1   LngFunction1
-#define TF2   LngFunction2
-#define TF3   LngFunction3
-#define TF4   LngFunction4
-#define TF5   LngFunction5
+#define TF1   IntFunction1
+#define TF2   IntFunction2
+#define TF3   IntFunction3
+#define TF4   IntFunction4
+#define TF5   IntFunction5
 
-#define PF1   I64FCT1
-#define PF2   I64FCT2
-#define PF3   I64FCT3
-#define PF4   I64FCT4
-#define PF5   I64FCT5
+#define PF1   I32FCT1
+#define PF2   I32FCT2
+#define PF3   I32FCT3
+#define PF4   I32FCT4
+#define PF5   I32FCT5
 
 #define VS    Vector.ValueSequence.Sequence
 
-#define VAL       I64
-#define VALOBJ(v) aLong(v)
+#define VAL       I16
+#define VALOBJ(v) aShort(v)
 
-#define aTView(v,s)    aLngVectorView(v,s)
-#define aTRef(v,s)     aLngVectorRef(v,s)
+#define aTView(v,s)    aShtVectorView(v,s)
+#define aTRef(v,s)     aShtVectorRef(v,s)
 
-#define T_alloc(s)        LngVector_alloc(s)
-#define TV_init(vw,v,s,b) LngVectorView_init(vw,v,s,b)
+#define T_alloc(s)        ShtVector_alloc(s)
+#define TV_init(vw,v,s,b) ShtVectorView_init(vw,v,s,b)
 
-#define TOVALPTR        glngPtr
-#define TOVAL(v)        glng(v)
-#define VALUE(v)        v->value
-#define EQUAL(v1,v2)    (v1 == v2)
+#define TOVALPTR      gshtPtr
+#define TOVAL(v)      gsht(v)
+#define VALUE(v)      v->Int.value
+#define EQUAL(v1,v2)  (v1 == v2)
 
-#include <cos/LngVector.h>
+#include <cos/ShtVector.h>
 #include <cos/Function.h>
 
-makclass(LngVector, IntegralVector);
+makclass(ShtVector, IntegralVector);
 
 // vector templates
 #include "./tmpl/Vector_utl.h"
@@ -86,7 +86,7 @@ makclass(LngVector, IntegralVector);
 #include "./tmpl/Vector.c"
 
 #include "./tmpl/Vector_dyn.c"
-#include "./tmpl/Vector_lzy.c"
+// #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"
 
 #include "./tmpl/Vector_acc.c"

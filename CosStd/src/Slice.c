@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.c,v 1.21 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: Slice.c,v 1.22 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -103,7 +103,7 @@ endmethod
 defmethod(OBJ, gmap, Functor, Slice)
   U32 size = Slice_size(self2);
   struct IntVector* vec = IntVector_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n = &vec->size;
   I32 *dst   = vec->value;
@@ -118,7 +118,7 @@ endmethod
 defmethod(OBJ, gmap, IntFunction1, Slice)
   U32 size = Slice_size(self2);
   struct IntVector* vec = IntVector_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n  = &vec->size;
   I32 *dst    = vec->value;

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.11 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.12 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -109,12 +109,8 @@ endmethod
 
 // ----- compose
 
-defmethod(OBJ, gcompose, Functor)
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gcompose, Array)
-  retmethod(gautoDelete(gnewWith(ComposeFun,_1)));
+defmethod(OBJ, gcomposen, Array)
+  retmethod(gautoRelease(gnewWith(ComposeFun,_1)));
 endmethod
 
 // ----- eval

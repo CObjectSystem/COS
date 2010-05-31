@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vector, Dynamic Vector, Lazy Vector and Vector View
+ | COS Vector, Dynamic Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: FltVector.h,v 1.9 2010/01/07 00:46:26 ldeniau Exp $
+ | $Id: FltVector.h,v 1.10 2010/05/31 14:02:23 ldeniau Exp $
  |
 */
 
@@ -92,10 +92,6 @@ endclass
 defclass(FltVectorDyn, FltVectorFix)
 endclass
 
-defclass(FltVectorLzy, FltVectorDyn)
-  OBJ generator;
-endclass
-
 // ----- FltVector view and subview
 
 defclass(FltVectorView, FltVector)
@@ -116,7 +112,7 @@ struct FltVector* FltVectorView_init(struct FltVectorView*, struct FltVector*,
 
 #define atFltVector(...)                 atVector    (Flt,F64,__VA_ARGS__)
 #define atFltVectorRef(...)              atVectorRef (Flt,    __VA_ARGS__)
-#define atFltVectorView(vector,slice)    atVectorView(Flt,vector,slice,0)
-#define atFltVectorSubView(vector,slice) atVectorView(Flt,vector,slice,1)
+#define atFltVectorView(vector,slice)    atVectorView(Flt,vector,slice,COS_NO)
+#define atFltVectorSubView(vector,slice) atVectorView(Flt,vector,slice,COS_YES)
 
 #endif // COS_FLTVECTOR_H

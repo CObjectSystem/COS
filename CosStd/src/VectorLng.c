@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS CpxVector - basic vectors
+ | COS LngVector
  |
  o---------------------------------------------------------------------o
  |
@@ -29,56 +29,56 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.c,v 1.9 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: VectorLng.c,v 1.1 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
-#define CPXVECTOR_ONLY
+#define LNGVECTOR_ONLY
 
-#define T     CpxVector
-#define TM   mCpxVector
-#define TP  pmCpxVector
-#define TN    CpxVectorN
-#define TF    CpxVectorFix
-#define TD    CpxVectorDyn
-#define TL    CpxVectorLzy
-#define TV    CpxVectorView
-#define TW    CpxVectorSubView
-#define TS    "complex vector"
-#define TE    Complex
+#define T     LngVector
+#define TM   mLngVector
+#define TP  pmLngVector
+#define TN    LngVectorN
+#define TF    LngVectorFix
+#define TD    LngVectorDyn
+#define TL    LngVectorLzy
+#define TV    LngVectorView
+#define TW    LngVectorSubView
+#define TS    "long vector"
+#define TE    Long
 
-#define TF1   CpxFunction1
-#define TF2   CpxFunction2
-#define TF3   CpxFunction3
-#define TF4   CpxFunction4
-#define TF5   CpxFunction5
+#define TF1   LngFunction1
+#define TF2   LngFunction2
+#define TF3   LngFunction3
+#define TF4   LngFunction4
+#define TF5   LngFunction5
 
-#define PF1   C64FCT1
-#define PF2   C64FCT2
-#define PF3   C64FCT3
-#define PF4   C64FCT4
-#define PF5   C64FCT5
+#define PF1   I64FCT1
+#define PF2   I64FCT2
+#define PF3   I64FCT3
+#define PF4   I64FCT4
+#define PF5   I64FCT5
 
 #define VS    Vector.ValueSequence.Sequence
 
-#define VAL       C64
-#define VALOBJ(v) aComplex(v)
+#define VAL       I64
+#define VALOBJ(v) aLong(v)
 
-#define aTView(v,s)    aCpxVectorView(v,s)
-#define aTRef(v,s)     aCpxVectorRef(v,s)
+#define aTView(v,s)    aLngVectorView(v,s)
+#define aTRef(v,s)     aLngVectorRef(v,s)
 
-#define T_alloc(s)        CpxVector_alloc(s)
-#define TV_init(vw,v,s,b) CpxVectorView_init(vw,v,s,b)
+#define T_alloc(s)        LngVector_alloc(s)
+#define TV_init(vw,v,s,b) LngVectorView_init(vw,v,s,b)
 
-#define TOVALPTR     gcpxPtr
-#define TOVAL(v)     gcpx(v)
-#define VALUE(v)     v->value
-#define EQUAL(v1,v2) complex_equal(v1,v2)
+#define TOVALPTR        glngPtr
+#define TOVAL(v)        glng(v)
+#define VALUE(v)        v->value
+#define EQUAL(v1,v2)    (v1 == v2)
 
-#include <cos/CpxVector.h>
+#include <cos/LngVector.h>
 #include <cos/Function.h>
 
-makclass(CpxVector, FloatingVector);
+makclass(LngVector, IntegralVector);
 
 // vector templates
 #include "./tmpl/Vector_utl.h"
@@ -86,7 +86,7 @@ makclass(CpxVector, FloatingVector);
 #include "./tmpl/Vector.c"
 
 #include "./tmpl/Vector_dyn.c"
-#include "./tmpl/Vector_lzy.c"
+// #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"
 
 #include "./tmpl/Vector_acc.c"

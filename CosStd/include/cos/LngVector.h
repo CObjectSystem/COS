@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vector, Dynamic Vector, Lazy Vector and Vector View
+ | COS Vector, Dynamic Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: LngVector.h,v 1.9 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: LngVector.h,v 1.10 2010/05/31 14:02:23 ldeniau Exp $
  |
 */
 
@@ -92,11 +92,6 @@ endclass
 defclass(LngVectorDyn, LngVectorFix)
 endclass
 
-defclass(LngVectorLzy, LngVectorDyn)
-  I32 arity;
-  OBJ generator;
-endclass
-
 // ----- LngVector view and subview
 
 defclass(LngVectorView, LngVector)
@@ -117,7 +112,7 @@ struct LngVector* LngVectorView_init(struct LngVectorView*, struct LngVector*,
 
 #define atLngVector(...)                 atVector    (Lng,I64,__VA_ARGS__)
 #define atLngVectorRef(...)              atVectorRef (Lng,    __VA_ARGS__)
-#define atLngVectorView(vector,slice)    atVectorView(Lng,vector,slice,0)
-#define atLngVectorSubView(vector,slice) atVectorView(Lng,vector,slice,1)
+#define atLngVectorView(vector,slice)    atVectorView(Lng,vector,slice,COS_NO)
+#define atLngVectorSubView(vector,slice) atVectorView(Lng,vector,slice,COS_YES)
 
 #endif // COS_LNGVECTOR_H

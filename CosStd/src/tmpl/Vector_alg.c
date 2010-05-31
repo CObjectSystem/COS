@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_alg.c,v 1.11 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: Vector_alg.c,v 1.12 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -149,7 +149,7 @@ endmethod
 // ----- repeat
 
 defmethod(OBJ, grepeat, TE, Int)
-  retmethod(gautoDelete( gnewWith2(T,_2,_1) ));
+  retmethod(gautoRelease( gnewWith2(T,_2,_1) ));
 endmethod
 
 // ----- zip, zip3, zip4
@@ -171,7 +171,7 @@ defmethod(OBJ, gzip, T, T)
     *dst++ = *src2, ++*dst_n, src2 += src2_s;
   }
 
-  retmethod(gautoDelete( (OBJ)vec ));
+  retmethod(gautoRelease( (OBJ)vec ));
 endmethod
 
 defmethod(OBJ, gzip3, T, T, T)
@@ -195,7 +195,7 @@ defmethod(OBJ, gzip3, T, T, T)
     *dst++ = *src3, ++*dst_n, src3 += src3_s;
   }
 
-  retmethod(gautoDelete( (OBJ)vec ));
+  retmethod(gautoRelease( (OBJ)vec ));
 endmethod
 
 defmethod(OBJ, gzip4, T, T, T, T)
@@ -223,7 +223,7 @@ defmethod(OBJ, gzip4, T, T, T, T)
     *dst++ = *src4, ++*dst_n, src4 += src4_s;
   }
 
-  retmethod(gautoDelete( (OBJ)vec ));
+  retmethod(gautoRelease( (OBJ)vec ));
 endmethod
 
 /*
@@ -256,7 +256,7 @@ defmethod(OBJ, gzip5, T, T, T, T, T)
     *dst++ = *src5, ++*dst_n, src5 += src5_s;
   }
 
-  retmethod(gautoDelete( (OBJ)vec ));
+  retmethod(gautoRelease( (OBJ)vec ));
 endmethod
 */
 
@@ -271,7 +271,7 @@ defmethod(OBJ, gconcat, T, T)
   dst = copy(dst,&vec->size,self ->value,self ->stride,self ->size);
         copy(dst,&vec->size,self2->value,self2->stride,self2->size);
 
-  retmethod(gautoDelete( (OBJ)vec ));
+  retmethod(gautoRelease( (OBJ)vec ));
 endmethod
 
 defmethod(OBJ, gconcat3, T, T, T)
@@ -284,7 +284,7 @@ defmethod(OBJ, gconcat3, T, T, T)
   dst = copy(dst,&vec->size,self2->value,self2->stride,self2->size);
         copy(dst,&vec->size,self3->value,self3->stride,self3->size);
 
-  retmethod(gautoDelete( (OBJ)vec ));
+  retmethod(gautoRelease( (OBJ)vec ));
 endmethod
 
 defmethod(OBJ, gconcat4, T, T, T, T)
@@ -298,7 +298,7 @@ defmethod(OBJ, gconcat4, T, T, T, T)
   dst = copy(dst,&vec->size,self3->value,self3->stride,self3->size);
         copy(dst,&vec->size,self4->value,self4->stride,self4->size);
 
-  retmethod(gautoDelete( (OBJ)vec ));
+  retmethod(gautoRelease( (OBJ)vec ));
 endmethod
 
 /*
@@ -314,7 +314,7 @@ defmethod(OBJ, gconcat5, T, T, T, T, T)
   dst = copy(dst,&vec->size,self4->value,self4->stride,self4->size);
         copy(dst,&vec->size,self5->value,self5->stride,self5->size);
 
-  retmethod(gautoDelete( (OBJ)vec ));
+  retmethod(gautoRelease( (OBJ)vec ));
 endmethod
 */
 
@@ -343,7 +343,7 @@ defmethod(OBJ, gfind, T, Object)
 
   VAL *p = findVal(val,val_n,val_s,TOVAL(_2));
 
-  retmethod( p ? gautoDelete(VALOBJ(*p)) : Nil );
+  retmethod( p ? gautoRelease(VALOBJ(*p)) : Nil );
 endmethod
 
 defmethod(OBJ, gifind, T, Object)
@@ -353,7 +353,7 @@ defmethod(OBJ, gifind, T, Object)
 
   VAL *p = findVal(val,val_n,val_s,TOVAL(_2));
 
-  retmethod(p ? gautoDelete( aInt((p-val)/val_s) ) : Nil);
+  retmethod(p ? gautoRelease( aInt((p-val)/val_s) ) : Nil);
 endmethod
 
 // ----- search (array)
@@ -424,7 +424,7 @@ findSub(VAL *val, U32 val_n, I32 val_s, VAL *pat, U32 pat_n, I32 pat_s)
 
 // -- find methods
 
-defmethod(I32, gindexOf, T, T)
+defmethod(U32, gindexOf, T, T)
   U32  val_n = self->size;
   I32  val_s = self->stride;
   VAL *val   = self->value;
@@ -442,7 +442,7 @@ defmethod(OBJ, gfind, T, T)
   if (!p) retmethod(Nil);
 
   OBJ avw = aTView(self, atSlice((p-val)/val_s,self2->size,val_s) );
-  retmethod(gautoDelete( avw ));
+  retmethod(gautoRelease( avw ));
 endmethod
 
 defmethod(OBJ, gifind, T, T)
@@ -454,6 +454,6 @@ defmethod(OBJ, gifind, T, T)
   if (!p) retmethod(Nil);
 
   OBJ slc = aSlice((p-val)/val_s,self2->size,val_s);
-  retmethod(gautoDelete( slc ));  
+  retmethod(gautoRelease( slc ));  
 endmethod
 

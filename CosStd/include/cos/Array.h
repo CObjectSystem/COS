@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array, Dynamic Array, Lazy Array and Array View
+ | COS Array, Dynamic Array and Array View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,35 +32,36 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.31 2010/05/21 14:59:07 ldeniau Exp $
+ | $Id: Array.h,v 1.32 2010/05/31 14:02:19 ldeniau Exp $
  |
 */
 
 #include <cos/Sequence.h>
 
-/* NOTE-USER: Array class cluster constructors
+/* NOTE-USER: Array constructors (class cluster)
 
-   aArray    (obj,...)              -> Block array    (automatic)
-   aArrayView(array ,slice)         -> Array view     (automatic)
-   aArrayRef (buffer,size[,stride]) -> Array          (automatic)
+   aArray       (obj,...)               -> Block array    (automatic)
+   aArrayRef    (buffer,size[,stride])  -> Array          (automatic)
+   aArrayView   (array,slice)           -> Array view     (automatic)
+   aArraySubView(array,slice)           -> Array view     (automatic)
 
-   gnewWith (Array,array)           -> Block array    (copy)
-   gnewWith (Array,slice)           -> Block array    (Ints)
-   gnewWith (Array,range)           -> Block array    (Ints)
-   gnewWith2(Array,size,obj)        -> Block array    (element)
-   gnewWith2(Array,size,fun)        -> Block array    (generator)
-   gnewWith2(Array,array,slice)     -> Block array    (subarray)
-   gnewWith2(Array,array,range)     -> Block array    (subarray)
-   gnewWith2(Array,array,intvec)    -> Block array    (sequence)
+   gnewWith (Array,array)               -> Block array    (copy)
+   gnewWith (Array,slice)               -> Block array    (Int sequence)
+   gnewWith (Array,range)               -> Block array    (Int sequence)
+   gnewWith (Array,xrange)              -> Block array    (Float sequence)
+   gnewWith2(Array,size,obj)            -> Block array    (element)
+   gnewWith2(Array,size,fun)            -> Block array    (generator)
+   gnewWith2(Array,array,slice)         -> Block array    (subarray)
+   gnewWith2(Array,array,range)         -> Block array    (subarray)
+   gnewWith2(Array,array,intvec)        -> Block array    (random subarray)
 
-   gnew     (Array)                 -> Dynamic array
-   gnewWith (Array,capacity)        -> Dynamic array  (pre-allocated)
+   gnew     (Array)                     -> Dynamic array
 
-   gnewWith (Array,fun)             -> Lazy array     (generator)
-   gnewWith2(Array,fun,array)       -> Lazy array     (generator)
+   gnewWith2(View,array,slice)          -> Array view     (view)
+   gnewWith2(View,array,range)          -> Array view     (view)
 
-   gnewWith2(View,array,slice)      -> Array view     (view)
-   gnewWith2(View,array,range)      -> Array view     (view)
+   gnewWith2(SubView,array,slice)       -> Array view     (substride view)
+   gnewWith2(SubView,array,range)       -> Array view     (substride view)
 
    where:
    - All arrays are mutable and strided
@@ -68,9 +69,9 @@
    - Block arrays will be one of Array0..9 if size is < 10, ArrayN otherwise
    - Dynamic arrays can shrink and grow (gappend, gpreprend)
    - Dynamic arrays can be converted to fixed array (gadjust)
-   - Lazy arrays are dynamic arrays growing automatically using a generator
    - Array views convert dynamic arrays into fixed arrays
    - Array views copy/clone are block arrays, not views
+   - Array subviews are views which don't follow the underlying arrays strides
 */
 
 defclass(Array, Sequence)
@@ -115,11 +116,6 @@ endclass
 defclass(ArrayDyn, ArrayFix)
 endclass
 
-defclass(ArrayLzy, ArrayDyn)
-  I32 arity;
-  OBJ generator;
-endclass
-
 // ----- Array view and subview
 
 defclass(ArrayView, Array)
@@ -133,7 +129,8 @@ endclass
 
 struct Slice;
 struct Array* Array_alloc(U32);
-struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*, BOOL);
+struct Array* ArrayView_init(struct ArrayView*, struct Array*,
+                             struct Slice*, BOOL);
 
 // ----- automatic constructors
 
@@ -151,11 +148,11 @@ struct Array* ArrayView_init(struct ArrayView*, struct Array*, struct Slice*, BO
 
 #define atArrayView(array,slice) ArrayView_init( \
   (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \
-  array,slice,0)
+  array,slice,COS_NO)
 
 #define atArraySubView(array,slice) ArrayView_init( \
   (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \
-  array,slice,1)
+  array,slice,COS_YES)
 
 // --- ArrayRef (low-level)
 

@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vector, Dynamic Vector, Lazy Vector and Vector View
+ | COS Vector, Dynamic Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ShtVector.h,v 1.5 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: ShtVector.h,v 1.6 2010/05/31 14:02:23 ldeniau Exp $
  |
 */
 
@@ -92,11 +92,6 @@ endclass
 defclass(ShtVectorDyn, ShtVectorFix)
 endclass
 
-defclass(ShtVectorLzy, ShtVectorDyn)
-  I32 arity;
-  OBJ generator;
-endclass
-
 // ----- ShtVector view and subview
 
 defclass(ShtVectorView, ShtVector)
@@ -117,7 +112,7 @@ struct ShtVector* ShtVectorView_init(struct ShtVectorView*, struct ShtVector*,
 
 #define atShtVector(...)                 atVector    (Sht,I16,__VA_ARGS__)
 #define atShtVectorRef(...)              atVectorRef (Sht,    __VA_ARGS__)
-#define atShtVectorView(vector,slice)    atVectorView(Sht,vector,slice,0)
-#define atShtVectorSubView(vector,slice) atVectorView(Sht,vector,slice,1)
+#define atShtVectorView(vector,slice)    atVectorView(Sht,vector,slice,COS_NO)
+#define atShtVectorSubView(vector,slice) atVectorView(Sht,vector,slice,COS_YES)
 
 #endif // COS_SHTVECTOR_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.c,v 1.9 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: VectorInt.c,v 1.1 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -86,7 +86,7 @@ makclass(IntVector, IntegralVector);
 #include "./tmpl/Vector.c"
 
 #include "./tmpl/Vector_dyn.c"
-#include "./tmpl/Vector_lzy.c"
+// #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"
 
 #include "./tmpl/Vector_acc.c"

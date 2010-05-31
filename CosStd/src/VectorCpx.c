@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS ShtVector
+ | COS CpxVector - basic vectors
  |
  o---------------------------------------------------------------------o
  |
@@ -29,56 +29,56 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ShtVector.c,v 1.9 2009/10/02 21:56:20 ldeniau Exp $
+ | $Id: VectorCpx.c,v 1.1 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
-#define SHTVECTOR_ONLY
+#define CPXVECTOR_ONLY
 
-#define T     ShtVector
-#define TM   mShtVector
-#define TP  pmShtVector
-#define TN    ShtVectorN
-#define TF    ShtVectorFix
-#define TD    ShtVectorDyn
-#define TL    ShtVectorLzy
-#define TV    ShtVectorView
-#define TW    ShtVectorSubView
-#define TS    "short vector"
-#define TE    Short
+#define T     CpxVector
+#define TM   mCpxVector
+#define TP  pmCpxVector
+#define TN    CpxVectorN
+#define TF    CpxVectorFix
+#define TD    CpxVectorDyn
+#define TL    CpxVectorLzy
+#define TV    CpxVectorView
+#define TW    CpxVectorSubView
+#define TS    "complex vector"
+#define TE    Complex
 
-#define TF1   IntFunction1
-#define TF2   IntFunction2
-#define TF3   IntFunction3
-#define TF4   IntFunction4
-#define TF5   IntFunction5
+#define TF1   CpxFunction1
+#define TF2   CpxFunction2
+#define TF3   CpxFunction3
+#define TF4   CpxFunction4
+#define TF5   CpxFunction5
 
-#define PF1   I32FCT1
-#define PF2   I32FCT2
-#define PF3   I32FCT3
-#define PF4   I32FCT4
-#define PF5   I32FCT5
+#define PF1   C64FCT1
+#define PF2   C64FCT2
+#define PF3   C64FCT3
+#define PF4   C64FCT4
+#define PF5   C64FCT5
 
 #define VS    Vector.ValueSequence.Sequence
 
-#define VAL       I16
-#define VALOBJ(v) aShort(v)
+#define VAL       C64
+#define VALOBJ(v) aComplex(v)
 
-#define aTView(v,s)    aShtVectorView(v,s)
-#define aTRef(v,s)     aShtVectorRef(v,s)
+#define aTView(v,s)    aCpxVectorView(v,s)
+#define aTRef(v,s)     aCpxVectorRef(v,s)
 
-#define T_alloc(s)        ShtVector_alloc(s)
-#define TV_init(vw,v,s,b) ShtVectorView_init(vw,v,s,b)
+#define T_alloc(s)        CpxVector_alloc(s)
+#define TV_init(vw,v,s,b) CpxVectorView_init(vw,v,s,b)
 
-#define TOVALPTR      gshtPtr
-#define TOVAL(v)      gsht(v)
-#define VALUE(v)      v->Int.value
-#define EQUAL(v1,v2)  (v1 == v2)
+#define TOVALPTR     gcpxPtr
+#define TOVAL(v)     gcpx(v)
+#define VALUE(v)     v->value
+#define EQUAL(v1,v2) complex_equal(v1,v2)
 
-#include <cos/ShtVector.h>
+#include <cos/CpxVector.h>
 #include <cos/Function.h>
 
-makclass(ShtVector, IntegralVector);
+makclass(CpxVector, FloatingVector);
 
 // vector templates
 #include "./tmpl/Vector_utl.h"
@@ -86,7 +86,7 @@ makclass(ShtVector, IntegralVector);
 #include "./tmpl/Vector.c"
 
 #include "./tmpl/Vector_dyn.c"
-#include "./tmpl/Vector_lzy.c"
+// #include "./tmpl/Vector_lzy.c"
 #include "./tmpl/Vector_vw.c"
 
 #include "./tmpl/Vector_acc.c"

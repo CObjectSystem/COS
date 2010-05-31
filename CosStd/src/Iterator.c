@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Iterator.c,v 1.4 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: Iterator.c,v 1.5 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -52,7 +52,7 @@ useclass(Array);
 // -----
 
 defmethod(OBJ, gallNext, Iterator)
-  OBJ arr = gautoDelete(gnew(Array));
+  OBJ arr = gautoRelease(gnew(Array));
   OBJ obj;
 
   while ((obj = gnext(_1)) != Nil)

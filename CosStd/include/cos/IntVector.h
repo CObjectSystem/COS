@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vector, Dynamic Vector, Lazy Vector and Vector View
+ | COS Vector, Dynamic Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: IntVector.h,v 1.10 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: IntVector.h,v 1.11 2010/05/31 14:02:23 ldeniau Exp $
  |
 */
 
@@ -92,11 +92,6 @@ endclass
 defclass(IntVectorDyn, IntVectorFix)
 endclass
 
-defclass(IntVectorLzy, IntVectorDyn)
-  I32 arity;
-  OBJ generator;
-endclass
-
 // ----- IntVector view and subview
 
 defclass(IntVectorView, IntVector)
@@ -117,7 +112,7 @@ struct IntVector* IntVectorView_init(struct IntVectorView*, struct IntVector*,
 
 #define atIntVector(...)                 atVector    (Int,I32,__VA_ARGS__)
 #define atIntVectorRef(...)              atVectorRef (Int,    __VA_ARGS__)
-#define atIntVectorView(vector,slice)    atVectorView(Int,vector,slice,0)
-#define atIntVectorSubView(vector,slice) atVectorView(Int,vector,slice,1)
+#define atIntVectorView(vector,slice)    atVectorView(Int,vector,slice,COS_NO)
+#define atIntVectorSubView(vector,slice) atVectorView(Int,vector,slice,COS_YES)
 
 #endif // COS_INTVECTOR_H

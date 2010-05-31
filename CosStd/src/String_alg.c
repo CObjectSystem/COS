@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.21 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: String_alg.c,v 1.22 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -109,7 +109,7 @@ defmethod(OBJ, gzip, String, String)
     *dst++ = *src2++;
   }
 
-  retmethod(gautoDelete( (OBJ)str ));
+  retmethod(gautoRelease( (OBJ)str ));
 endmethod
 
 defmethod(OBJ, gzip3, String, String, String)
@@ -129,7 +129,7 @@ defmethod(OBJ, gzip3, String, String, String)
     *dst++ = *src3++;
   }
 
-  retmethod(gautoDelete( (OBJ)str ));
+  retmethod(gautoRelease( (OBJ)str ));
 endmethod
 
 // ----- concat, concat3, concat4
@@ -143,7 +143,7 @@ defmethod(OBJ, gconcat, String, String)
   memcpy(dst,self ->value,self ->size); dst += self->size;
   memcpy(dst,self2->value,self2->size);
 
-  retmethod(gautoDelete( (OBJ)str ));
+  retmethod(gautoRelease( (OBJ)str ));
 endmethod
 
 defmethod(OBJ, gconcat3, String, String, String)
@@ -156,7 +156,7 @@ defmethod(OBJ, gconcat3, String, String, String)
   memcpy(dst,self2->value,self2->size); dst += self2->size;
   memcpy(dst,self3->value,self3->size);
 
-  retmethod(gautoDelete( (OBJ)str ));
+  retmethod(gautoRelease( (OBJ)str ));
 endmethod
 
 defmethod(OBJ, gconcat4, String, String, String, String)
@@ -170,7 +170,7 @@ defmethod(OBJ, gconcat4, String, String, String, String)
   memcpy(dst,self3->value,self3->size); dst += self3->size;
   memcpy(dst,self4->value,self4->size);
 
-  retmethod(gautoDelete( (OBJ)str ));
+  retmethod(gautoRelease( (OBJ)str ));
 endmethod
 
 /*
@@ -187,7 +187,7 @@ defmethod(OBJ, gconcat5, String, String, String, String, String)
   memcpy(dst,self4->value,self4->size); dst += self4->size;
   memcpy(dst,self5->value,self5->size);
 
-  retmethod(gautoDelete( (OBJ)str ));
+  retmethod(gautoRelease( (OBJ)str ));
 endmethod
 */
 
@@ -197,7 +197,7 @@ defmethod(OBJ, gsplit, String, Object)
   U32 size = self->size;
   U8* src  = self->value;
   U8  val  = (U32)gchr(_2);
-  OBJ strs = gautoDelete(gnew(Array));
+  OBJ strs = gautoRelease(gnew(Array));
   OBJ str  = 0; PRT(str);
 
   while(size) {
@@ -207,7 +207,7 @@ defmethod(OBJ, gsplit, String, Object)
     
     str = gnewWith2(View, _1, aSlice(beg,len));
     gpush(strs, str);
-    gdelete(str);
+    grelease(str);
 
     if (!end) break;
 
@@ -225,14 +225,14 @@ defmethod(OBJ, gfind, String, Object)
   U8 val = (U32)gchr(_2);
   U8*  p = memchr(self->value, val, self->size);
   
-  retmethod(p ? gautoDelete(aChar(*p)) : Nil);  
+  retmethod(p ? gautoRelease(aChar(*p)) : Nil);  
 endmethod
 
 defmethod(OBJ, gifind, String, Object)
   U8 val = (U32)gchr(_2);
   U8*  p = memchr(self->value, val, self->size);
 
-  retmethod(p ? gautoDelete(aInt(p-self->value)) : Nil);
+  retmethod(p ? gautoRelease(aInt(p-self->value)) : Nil);
 endmethod
 
 // ----- search (char)
@@ -240,13 +240,13 @@ endmethod
 defmethod(OBJ, gfind, String, Char)
   U8* p = memchr(self->value, self2->Int.value, self->size);
   
-  retmethod(p ? gautoDelete(aChar(*p)) : Nil);  
+  retmethod(p ? gautoRelease(aChar(*p)) : Nil);  
 endmethod
 
 defmethod(OBJ, gifind, String, Char)
   U8* p = memchr(self->value, self2->Int.value, self->size);
 
-  retmethod(p ? gautoDelete(aInt(p-self->value)) : Nil);
+  retmethod(p ? gautoRelease(aInt(p-self->value)) : Nil);
 endmethod
 
 // ----- search (string)
@@ -317,11 +317,12 @@ findSub(U8 *str, U32 str_n, U8 *pat, U32 pat_n)
 
 // -- find methods
 
-defmethod(I32, gindexOf, String, String)
+defmethod(U32, gindexOf, String, String)
     U8* p = findSub(self->value, self->size, self2->value, self2->size);
     retmethod( p ? p - self->value : -1);
 endmethod
 
+/* removed because views were removed
 defmethod(OBJ, gfind, String, String)
   U8* p;
   
@@ -335,9 +336,10 @@ defmethod(OBJ, gfind, String, String)
     p = findSub(self->value, self->size, self2->value, self2->size);
     if (!p) retmethod(Nil);
     
-    OBJ svw = aStringView(self, atSlice(p-self->value,self2->size,1) );
-    retmethod(gautoDelete( svw ));
+    OBJ svw = aStringRef(p, self2->size);
+    retmethod(gautoRelease( svw ));
 endmethod
+*/
 
 defmethod(OBJ, gifind, String, String)
   U8* p;
@@ -353,7 +355,7 @@ defmethod(OBJ, gifind, String, String)
     if (!p) retmethod(Nil);
     
     OBJ slc = aSlice(p-self->value,self2->size,1);
-    retmethod(gautoDelete( slc ));  
+    retmethod(gautoRelease( slc ));  
 endmethod
 
 // More complex matching algorithm

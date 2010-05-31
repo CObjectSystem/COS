@@ -32,34 +32,35 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: algorithm.h,v 1.43 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: algorithm.h,v 1.44 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-// all, any, count
-defgeneric(OBJ, gall  , _1, fun); // fun should return TrueFalse
-defgeneric(OBJ, gany  , _1, fun); // fun should return TrueFalse
-defgeneric(U32, gcount, _1, fun); // fun should return TrueFalse
+// linear search if fun _2 returns TrueFalse
+// binary search if fun _2 returns Ordered (and it is sorted)
+// return Nil if not found
+defgeneric(OBJ, gfind , _1, fun); // return object
+defgeneric(OBJ, gifind, _1, fun); // return res such that ggetAt(_1,res) get object
 
 // sorting (fun must return Ordered)
 defgeneric(OBJ, gsort    , _1, fun); // in place
 defgeneric(OBJ, gisort   , _1, fun); // return an array of indexes/keys
 defgeneric(OBJ, gisSorted, _1, fun); // return True or False
 
-// linear search if fun _2 returns TrueFalse
-// binary search if fun _2 returns Ordered (and it is sorted)
-// return Nil if not found
-defgeneric(OBJ, gfind   , _1, fun); // return object
-defgeneric(OBJ, gifind  , _1, fun); // return res such that ggetAt(_1,res) get object
+// all, any, count
+defgeneric(OBJ, gall  , _1, fun); // fun should return TrueFalse
+defgeneric(OBJ, gany  , _1, fun); // fun should return TrueFalse
+defgeneric(U32, gcount, _1, fun); // fun should return TrueFalse
 
-// set-like algorithms
+// seq-like algorithms
 defgeneric(OBJ, gintersperse, _1, fun); // intersperse value when not Nil
 defgeneric(OBJ, ggroup      , _1, fun); // group true then false (pair)
 defgeneric(OBJ, gsplit      , _1, fun); // split when true
 defgeneric(OBJ, gunique     , _1, fun); // remove contiguous equal elements
 
+// set-like algorithms
 defgeneric(OBJ, gdiff       , _1, _2, fun); // _1 - _2 [asymmetric]
 defgeneric(OBJ, gmerge      , _1, _2, fun); // _1 + _2 (requires sorted _1, _2)
 defgeneric(OBJ, gintersect  , _1, _2, fun); // _1 - (_1 - _2) [asymmetric]

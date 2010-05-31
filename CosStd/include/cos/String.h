@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS String, Dynamic String, Lazy String and String View
+ | COS String and Dynamic String
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.9 2010/05/21 14:59:07 ldeniau Exp $
+ | $Id: String.h,v 1.10 2010/05/31 14:02:23 ldeniau Exp $
  |
 */
 
@@ -40,12 +40,10 @@
 
 /* NOTE-USER: String class cluster constructors
 
-   aStr       ("string")           -> String          (automatic)
-   aString    (c-string)           -> String          (automatic)
+   aString    ("string")           -> String          (automatic)
    aStringRef (buffer,size)        -> String          (automatic)
-   aStringView(string,slice)       -> String view     (automatic)
 
-   gnewWith (String,string)        -> Block string    (clone)
+   gnewWith (String,string)        -> Block string    (copy)
    gnewWith2(String,size,chr)      -> Block string    (element)
    gnewWith2(String,size,fun)      -> Block string    (generator)
    gnewWith2(String,string,slice)  -> Block string    (substring)
@@ -55,21 +53,12 @@
    gnew     (String)               -> Dynamic string
    gnewWith (String,capacity)      -> Dynamic string  (pre-allocated)
 
-   gnewWith (String,fun)           -> Lazy string     (generator)
-   gnewWith2(String,fun,string)    -> Lazy string     (generator)
-
-   gnewWith2(View,string,slice)    -> String view     (view)
-   gnewWith2(View,string,range)    -> String view     (view)
-
    where:
    - All strings are mutable
    - All strings hold value elements
-   - String are _not_ strided (ignored in views construction)
    - Dynamic strings can shrink and grow (gappend, gpreprend)
    - Dynamic strings can be converted to fixed string (gadjust)
-   - Lazy strings are dynamic strings growing automatically using a generator
-   - String views convert dynamic strings into fixed strings
-   - String views copy/clone are block strings, not views
+   - StringRef buffer must allow to put '\0' at buffer[size] (WARNING)
 */
 
 defclass(String, ValueSequence)
@@ -79,10 +68,17 @@ endclass
 
 // ----- automatic constructors
 
-#define aStr(...)     COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),aStr_)) // C-string literal
-#define aString(...)     ( (OBJ)atString    (__VA_ARGS__) )       // C-string
+#define aString(...)     ( (OBJ)atString    (__VA_ARGS__) )  // C-string literal
 #define aStringRef(...)  ( (OBJ)atStringRef (__VA_ARGS__) )
-#define aStringView(...) ( (OBJ)atStringView(__VA_ARGS__) )
+
+// --- shortcuts
+
+#ifndef COS_NOSHORTCUT
+
+#define aStr(...)  COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),aString)) // C-string literal
+
+#endif
+
 
 /***********************************************************
  * Implementation (private)
@@ -106,64 +102,20 @@ endclass
 defclass(StringDyn, StringFix)
 endclass
 
-defclass(StringLzy, StringDyn)
-  OBJ generator;
-endclass
-
-// ----- String view
-
-defclass(StringView, String)
-  struct String *ref;
-endclass
-
 // ----- initializers, allocators (for the class cluster)
 
 struct Slice;
 struct String* String_alloc(U32);
-struct String* StringView_init(struct StringView*, struct String*, struct Slice*);
 
 // ----- automatic constructors
 
-#define aStr_(cstr) ( (OBJ)atStr(cstr) )
-
-#define atStr(cstr) \
+#define atString(cstr) \
   ( &(struct String) { {{{ cos_object_auto(String) }}}, \
     (U8[]){ cstr }, sizeof cstr -1 })
 
-#define atString(cstr) String_init( \
-  ( &(struct String) { {{{ cos_object_auto(String) }}}, \
-    (U8[STRING_AUTO_MAXSIZE]){ "" }, STRING_AUTO_MAXSIZE-1 }), cstr )
-
-// --- StringView
-
-#define atStringView(string,slice) StringView_init( \
-  (&(struct StringView) {{ {{{ cos_object_auto(StringView) }}}, 0, 0 }, 0 }), \
-  string,slice)
-
-// --- StringRef (low-level, size = sizeof buffer -1)
+// --- StringRef (low-level, size = sizeof buffer -1 or strlen)
 
 #define atStringRef(buffer,size) \
   ( &(struct String) { {{{ cos_object_auto(String) }}}, (buffer), (size) } )
-
-// --- some constant
-
-#ifndef STRING_AUTO_MAXSIZE
-#define STRING_AUTO_MAXSIZE 1024
-#endif
-
-// --- inliners
-
-static cos_inline struct String*
-String_init(struct String *str, STR cstr)
-{
-  size_t size = strlen(cstr);
-  
-  if (size < str->size)
-    str->size = size;
-
-  memcpy(str->value, cstr, str->size);
-
-  return str;
-}
 
 #endif // COS_STRING_H

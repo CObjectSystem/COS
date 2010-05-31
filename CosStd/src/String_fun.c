@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.17 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: String_fun.c,v 1.18 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -141,7 +141,7 @@ defmethod(OBJ, gmapWhile, Functor, String)
   U8* end  = val + size;
   OBJ res;
 
-  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
   
   U32 *dst_n = &str->size;
@@ -161,7 +161,7 @@ defmethod(OBJ, gmapIf, Functor, String)
   U8* end  = val + size;
   OBJ res;
 
-  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
   
   U32 *dst_n = &str->size;
@@ -182,7 +182,7 @@ defmethod(OBJ, gmap, Functor, String)
   U8* end  = val + size;
 
   struct String* str = String_alloc(size);
-  OBJ _str = gautoDelete( (OBJ)str );
+  OBJ _str = gautoRelease( (OBJ)str );
 
   U8* dst = str->value;
 
@@ -199,7 +199,7 @@ defmethod(OBJ, gmap2, Functor, String, String)
   U8* end  = val + size;
 
   struct String* str = String_alloc(size);
-  OBJ _str = gautoDelete( (OBJ)str );
+  OBJ _str = gautoRelease( (OBJ)str );
 
   U8* dst = str->value;
 
@@ -218,7 +218,7 @@ defmethod(OBJ, gmap3, Functor, String, String, String)
   U8* end  = val + size;
 
   struct String* str = String_alloc(size);
-  OBJ _str = gautoDelete( (OBJ)str );
+  OBJ _str = gautoRelease( (OBJ)str );
 
   U8* dst = str->value;
 
@@ -239,7 +239,7 @@ defmethod(OBJ, gmap4, Functor, String, String, String, String)
   U8* end  = val + size;
 
   struct String* str = String_alloc(size);
-  OBJ _str = gautoDelete( (OBJ)str );
+  OBJ _str = gautoRelease( (OBJ)str );
 
   U8* dst = str->value;
 
@@ -257,7 +257,7 @@ defmethod(OBJ, gselect, String, Functor)
   U8* val  = self->value;
   U8* end  = val + size;
 
-  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
   U32 *dst_n = &str->size;
@@ -277,7 +277,7 @@ defmethod(OBJ, greject, String, Functor)
   U8* val  = self->value;
   U8* end  = val + size;
 
-  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
   U32 *dst_n = &str->size;
@@ -297,7 +297,7 @@ defmethod(OBJ, gselectWhile, String, Functor)
   U8* val  = self->value;
   U8* end  = val + size;
 
-  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
   U32 *dst_n = &str->size;
@@ -318,7 +318,7 @@ defmethod(OBJ, grejectWhile, String, Functor)
   U8* val  = self->value;
   U8* end  = val + size;
 
-  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
   U32 *dst_n = &str->size;
@@ -345,7 +345,7 @@ defmethod(OBJ, greduce, String, Functor)
   U32 size = self->size;
   U8* val  = self->value;
   U8* end  = val + size;
-  OBJ res  = gautoDelete(gclone(aChar(*val++)));
+  OBJ res  = gautoRelease(gclone(aChar(*val++)));
 
   while (val != end)
     res = geval(_2, res, aChar(*val++));
@@ -372,7 +372,7 @@ defmethod(OBJ, grreduce, String, Functor)
   U32 size = self->size;
   U8* val  = self->value;
   U8* end  = val + size;
-  OBJ  res   = gautoDelete(gclone(aChar(*(--end))));
+  OBJ  res   = gautoRelease(gclone(aChar(*(--end))));
   
   while (val != end)
     res = geval(_2, aChar(*--end), res);
@@ -436,7 +436,7 @@ endmethod
 
 defmethod(OBJ, gunique, String, Functor)
   U32 size = self->size;
-  OBJ _str = gautoDelete(gnewWith(String,aInt(size)));
+  OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
   struct String* str = STATIC_CAST(struct String*, _str);
 
   U8* val = self->value;
@@ -508,7 +508,7 @@ defmethod(OBJ, gfind, String, Functor)
 
   U8* p = findFun(val,val_n,_2);
 
-  retmethod(p ? gautoDelete(aChar(*p)) : Nil);  
+  retmethod(p ? gautoRelease(aChar(*p)) : Nil);  
 endmethod
 
 defmethod(OBJ, gifind, String, Functor)
@@ -517,6 +517,6 @@ defmethod(OBJ, gifind, String, Functor)
 
   U8* p = findFun(val,val_n,_2);
 
-  retmethod(p ? gautoDelete(aInt(p-val)) : Nil);  
+  retmethod(p ? gautoRelease(aInt(p-val)) : Nil);  
 endmethod
 

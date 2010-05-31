@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.11 2010/05/23 15:44:57 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.12 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -41,12 +41,12 @@
 
 defmethod(OBJ, glast, T)
   retmethod( self->size
-           ? gautoDelete(VALOBJ(self->value[(self->size-1)*self->stride]))
+           ? gautoRelease(VALOBJ(self->value[(self->size-1)*self->stride]))
            : Nil );
 endmethod
 
 defmethod(OBJ, gfirst, T)
-  retmethod( self->size ? gautoDelete(VALOBJ(self->value[0])) : Nil );
+  retmethod( self->size ? gautoRelease(VALOBJ(self->value[0])) : Nil );
 endmethod
 
 // ----- getters (index, slice, range, intvector)
@@ -55,26 +55,26 @@ defmethod(OBJ, ggetAtIdx, T, (I32)idx)
   U32 i = Range_index(idx, self->size);
   test_assert( i < self->size, "index out of range" );
 
-  retmethod( gautoDelete(VALOBJ(self->value[i*self->stride])) );
+  retmethod( gautoRelease(VALOBJ(self->value[i*self->stride])) );
 endmethod
 
 defmethod(OBJ, ggetAt, T, Int)
   U32 i = Range_index(self2->value, self->size);
   test_assert( i < self->size, "index out of range" );
 
-  retmethod( gautoDelete(VALOBJ(self->value[i*self->stride])) );
+  retmethod( gautoRelease(VALOBJ(self->value[i*self->stride])) );
 endmethod
 
 defmethod(OBJ, ggetAt, T, Slice)
-  retmethod( gautoDelete(gnewWith2(T,_1,_2)) );
+  retmethod( gautoRelease(gnewWith2(T,_1,_2)) );
 endmethod
 
 defmethod(OBJ, ggetAt, T, Range)
-  retmethod( gautoDelete(gnewWith2(T,_1,_2)) );
+  retmethod( gautoRelease(gnewWith2(T,_1,_2)) );
 endmethod
 
 defmethod(OBJ, ggetAt, T, IntVector)
-  retmethod( gautoDelete(gnewWith2(T,_1,_2)) );
+  retmethod( gautoRelease(gnewWith2(T,_1,_2)) );
 endmethod
 
 // ----- object setters (index, slice, range, intvector)

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.11 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.12 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -212,47 +212,36 @@ defmethod(OBJ, gclear, StringDyn)
   retmethod(_1);
 endmethod
 
-// ----- dropFirst, dropLast, drop
+// ----- popFront, popBack, drop
 
-defmethod(OBJ, gdropFirst, StringDyn)
+defmethod(OBJ, gpopFront, StringDyn)
   struct String *str = &self->StringFix.String;
 
-  if (str->size) {
-    --str->size;
+  if (str->size--)
     ++str->value;
-  }
   
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdropLast, StringDyn)
+defmethod(OBJ, gpopBack, StringDyn)
   struct String *str = &self->StringFix.String;
 
-  if (str->size)
-    --str->size;
-  
-  retmethod(_1);
-endmethod
-
-defmethod(OBJ, gchop, StringDyn, Char)
-  struct String *str = &self->StringFix.String;
-
-  if (str->size && str->value[str->size-1] == (U32)self2->Int.value)
-    str->size--;
+  if (str->size--)
+    {}
   
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gdrop, StringDyn, Int)
   struct String *str = &self->StringFix.String;
-  BOOL front = self2->value < 0;
-  U32 n = front ? -self2->value : self2->value;
+  BOOL          back = self2->value < 0;
+  U32            cnt = back ? -self2->value : self2->value+1;
 
-  if (n > str->size)
-    n = str->size;
+  if (cnt > str->size)
+    cnt = str->size;
 
-  str->size -= n;
-  if (front) str->value += n;
+  str->size -= cnt;
+  if (!back) str->value += cnt;
   
   retmethod(_1);
 endmethod
@@ -337,6 +326,9 @@ defmethod(OBJ, gappend, StringDyn, String)
 
   retmethod(_1);
 endmethod
+
+/* TODO: unchecked code (certainly buggy)
+*/
 
 // --- insertAt
 
@@ -447,18 +439,16 @@ defmethod(OBJ, gremoveAt, StringDyn, Range)
 endmethod
 
 // --- dequeue aliases
-defalias(OBJ, (gprepend  )gpushFront, StringDyn, Char);
-defalias(OBJ, (gappend   )gpushBack , StringDyn, Char);
 defalias(OBJ, (gprepend  )gpushFront, StringDyn, Object);
 defalias(OBJ, (gappend   )gpushBack , StringDyn, Object);
-defalias(OBJ, (gdropFirst)gpopFront , StringDyn);
-defalias(OBJ, (gdropLast )gpopBack  , StringDyn);
-defalias(OBJ, (gfirst    )gfront    , String);
-defalias(OBJ, (glast     )gback     , String);
+defalias(OBJ, (gprepend  )gpushFront, StringDyn, Char);
+defalias(OBJ, (gappend   )gpushBack , StringDyn, Char);
+defalias(OBJ, (gfirst    )gtopFront , String);
+defalias(OBJ, (glast     )gtopBack  , String);
 
 // --- stack aliases
-defalias(OBJ, (gappend  )gpush, StringDyn, Char  );
-defalias(OBJ, (gappend  )gpush, StringDyn, Object);
-defalias(OBJ, (gdropLast)gpop , StringDyn);
-defalias(OBJ, (glast    )gtop , String);
+defalias(OBJ, (gpushBack)gpush, StringDyn, Object);
+defalias(OBJ, (gpushBack)gpush, StringDyn, Char);
+defalias(OBJ, (gpopBack )gpop , StringDyn);
+defalias(OBJ, (gtopBack )gtop , String);
 

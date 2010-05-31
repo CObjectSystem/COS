@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.15 2010/05/23 15:44:57 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.16 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -208,38 +208,36 @@ defmethod(OBJ, gclear, TD)
   retmethod(_1);
 endmethod
 
-// ----- dropFirst, dropLast, drop
+// ----- popFront, popBack, drop
 
-defmethod(OBJ, gdropFirst, TD)
+defmethod(OBJ, gpopFront, TD)
   struct T *vec = &self->TF.T;
 
-  if (vec->size) {
-    --vec->size;
+  if (vec->size--)
     ++vec->value;
-  }
 
   retmethod(_1);
 endmethod
 
-defmethod(OBJ, gdropLast, TD)
+defmethod(OBJ, gpopBack, TD)
   struct T *vec = &self->TF.T;
 
-  if (vec->size)
-    --vec->size;
+  if (vec->size--)
+    {}
 
   retmethod(_1);
 endmethod
 
 defmethod(OBJ, gdrop, TD, Int)
   struct T *vec = &self->TF.T;
-  BOOL front = self2->value < 0;
-  U32 n = front ? -self2->value : self2->value;
+  BOOL     back = self2->value < 0;
+  U32       cnt = back ? -self2->value : self2->value+1;
 
-  if (n > vec->size)
-    n = vec->size;
+  if (cnt > vec->size)
+    cnt = vec->size;
 
-  vec->size -= n;
-  if (front) vec->value += n;
+  vec->size -= cnt;
+  if (!back) vec->value += cnt;
 
   retmethod(_1);
 endmethod
@@ -337,6 +335,9 @@ defmethod(OBJ, gappend, TD, T)
 
   retmethod(_1);
 endmethod
+
+/* TODO: unchecked code (certainly buggy)
+*/
 
 // --- insertAt object (index, slice, range, intvector)
 
@@ -540,20 +541,18 @@ defmethod(OBJ, gremoveAt, TD, Range)
 endmethod
 
 // --- dequeue aliases
-defalias(OBJ, (gprepend  )gpushFront, TD, TE);
-defalias(OBJ, (gappend   )gpushBack , TD, TE);
 defalias(OBJ, (gprepend  )gpushFront, TD, Object);
 defalias(OBJ, (gappend   )gpushBack , TD, Object);
-defalias(OBJ, (gdropFirst)gpopFront , TD);
-defalias(OBJ, (gdropLast )gpopBack  , TD);
-defalias(OBJ, (gfirst    )gfront    , T );
-defalias(OBJ, (glast     )gback     , T );
+defalias(OBJ, (gprepend  )gpushFront, TD, TE);
+defalias(OBJ, (gappend   )gpushBack , TD, TE);
+defalias(OBJ, (gfirst    )gtopFront , T );
+defalias(OBJ, (glast     )gtopBack  , T );
 
 // --- stack aliases
-defalias(OBJ, (gappend  )gpush, TD, TE);
-defalias(OBJ, (gappend  )gpush, TD, Object);
-defalias(OBJ, (gdropLast)gpop , TD);
-defalias(OBJ, (glast    )gtop , T );
+defalias(OBJ, (gpushBack)gpush, TD, Object);
+defalias(OBJ, (gpushBack)gpush, TD, TE);
+defalias(OBJ, (gpopBack )gpop , TD);
+defalias(OBJ, (gtopBack )gtop , T );
 
 
 // --- random insert/remove (too complex? not tested!)

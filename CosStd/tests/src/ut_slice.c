@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_slice.c,v 1.9 2010/05/25 15:33:40 ldeniau Exp $
+ | $Id: ut_slice.c,v 1.10 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -52,7 +52,7 @@ static BOOL
 isEq(OBJ s, OBJ ref)
 {
   OBJ res = gisEqual(s, ref);
-  gdelete(s);
+  grelease(s);
   return res == True;
 }
 

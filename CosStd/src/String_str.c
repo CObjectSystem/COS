@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_str.c,v 1.3 2010/02/21 00:46:24 ldeniau Exp $
+ | $Id: String_str.c,v 1.4 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,6 @@ defmethod(OBJ, gget, String, pmString)
 endmethod
 
 defmethod(OBJ, gget, String, Class)
-  forward_message(_1, gautoDelete(gnew(_2)));
+  forward_message(_1, gautoRelease(gnew(_2)));
 endmethod
 

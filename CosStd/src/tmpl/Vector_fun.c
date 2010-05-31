@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.22 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.23 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -245,7 +245,7 @@ defmethod(OBJ, gmapWhile, Functor, T)
   VAL *end   = val + val_s*size;
   OBJ  res;
 
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
@@ -266,7 +266,7 @@ defmethod(OBJ, gmapIf, Functor, T)
   VAL *end   = val + val_s*size;
   OBJ  res;
 
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
@@ -289,7 +289,7 @@ defmethod(OBJ, gmap, Functor, T)
   OBJ  res;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
@@ -313,7 +313,7 @@ defmethod(OBJ, gmap2, Functor, T, T)
   OBJ  res;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n  = &vec->size;
   VAL *dst    = vec->value;
@@ -341,7 +341,7 @@ defmethod(OBJ, gmap3, Functor, T, T, T)
   OBJ  res;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n  = &vec->size;
   VAL *dst    = vec->value;
@@ -373,7 +373,7 @@ defmethod(OBJ, gmap4, Functor, T, T, T, T)
   OBJ  res;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
@@ -398,7 +398,7 @@ defmethod(OBJ, gselect, T, Functor)
   VAL *val   = self->value;
   VAL *end   = val + val_s*size;
 
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
@@ -419,7 +419,7 @@ defmethod(OBJ, greject, T, Functor)
   VAL *val   = self->value;
   VAL *end   = val + val_s*size;
 
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
@@ -440,7 +440,7 @@ defmethod(OBJ, gselectWhile, T, Functor)
   VAL *val   = self->value;
   VAL *end   = val + val_s*size;
 
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
@@ -462,7 +462,7 @@ defmethod(OBJ, grejectWhile, T, Functor)
   VAL *val   = self->value;
   VAL *end   = val + val_s*size;
 
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
@@ -490,7 +490,7 @@ defmethod(OBJ, greduce, T, Functor)
   I32  val_s = self->stride;
   VAL *val   = self->value;
   VAL *end   = val + val_s*size;
-  OBJ  res   = gautoDelete(gclone(VALOBJ(*val)));
+  OBJ  res   = gautoRelease(gclone(VALOBJ(*val)));
   
   val += val_s;
 
@@ -546,7 +546,7 @@ defmethod(OBJ, grreduce, T, Functor)
   I32  val_s = self->stride;
   VAL *val   = self->value;
   VAL *end   = val + val_s*size;
-  OBJ  res   = gautoDelete(gclone(VALOBJ(*(end-val_s))));
+  OBJ  res   = gautoRelease(gclone(VALOBJ(*(end-val_s))));
   
   end -= val_s;
   
@@ -600,7 +600,7 @@ endmethod
 defmethod(OBJ, gaccumulate, T, Functor)
   test_assert( self->size > 0, "empty vector" );
   
-  OBJ ini = gautoDelete(gclone(VALOBJ(self->value[0])));
+  OBJ ini = gautoRelease(gclone(VALOBJ(self->value[0])));
   OBJ vec = aTView(self, atSlice(1, self->size-1));
   
   retmethod( gaccumulate1(vec, _2, ini) );
@@ -614,7 +614,7 @@ defmethod(OBJ, gaccumulate1, T, Functor, Object)
   OBJ  res   = _3;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
@@ -636,7 +636,7 @@ defmethod(OBJ, gaccumulate2, T, Functor, Object, Object)
   OBJ  res   = _3;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
@@ -675,7 +675,7 @@ defmethod(OBJ, graccumulate1, T, Functor, Object)
   OBJ  res   = _3;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value + size;
@@ -697,7 +697,7 @@ defmethod(OBJ, graccumulate2, T, Functor, Object, Object)
   OBJ  res   = _3;
 
   struct T* vec = T_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value + size;
@@ -771,7 +771,7 @@ endmethod
 
 defmethod(OBJ, gunique, T, Functor)
   U32 size = self->size;
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   I32  val_s = self->stride;
@@ -798,7 +798,7 @@ endmethod
 
 defmethod(OBJ, gdiff, T, T, Functor)
   U32 size = self->size;
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   I32  val_s = self->stride;
@@ -821,7 +821,7 @@ endmethod
 
 defmethod(OBJ, gintersect, T, Collection, Functor)
   U32 size = self->size;
-  OBJ _vec = gautoDelete(gnewWith(T,aInt(size)));
+  OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
   struct T* vec = STATIC_CAST(struct T*, _vec);
 
   I32  val_s = self->stride;
@@ -896,7 +896,7 @@ defmethod(OBJ, gfind, T, Functor)
 
   VAL *p = findFun(val, val_n, val_s, _2);
 
-  retmethod(p ? gautoDelete(VALOBJ(*p)) : Nil);
+  retmethod(p ? gautoRelease(VALOBJ(*p)) : Nil);
 endmethod
 
 defmethod(OBJ, gifind, T, Functor)
@@ -906,7 +906,7 @@ defmethod(OBJ, gifind, T, Functor)
 
   VAL *p = findFun(val, val_n, val_s, _2);
 
-  retmethod(p ? gautoDelete( aInt((p-val)/val_s) ) : Nil);
+  retmethod(p ? gautoRelease( aInt((p-val)/val_s) ) : Nil);
 endmethod
 
 // ----- sorting (in place)
@@ -1172,7 +1172,7 @@ endmethod
 defmethod(OBJ, gisort, T, Functor)
   useclass(IntVector);
 
-  OBJ _vec = gautoDelete(gnewWith(IntVector, aSlice(0,self->size,1)));
+  OBJ _vec = gautoRelease(gnewWith(IntVector, aSlice(0,self->size,1)));
   struct IntVector *vec = STATIC_CAST(struct IntVector*, _vec);
 
   iqsortSFun(vec->value, vec->size-1, self->value, self->stride, _2);

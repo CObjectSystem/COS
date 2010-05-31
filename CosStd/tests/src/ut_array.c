@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.16 2010/05/25 15:33:40 ldeniau Exp $
+ | $Id: ut_array.c,v 1.17 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -57,7 +57,7 @@ static BOOL
 isEq(OBJ r, OBJ ref)
 {
   OBJ res = gisEqual(r, ref);
-  gdelete(r);
+  grelease(r);
   return res == True;
 }
 
@@ -136,7 +136,7 @@ ut_array_basics(void)
 
   UTEST_END
 
-  gdelete(pool);
+  grelease(pool);
 }
 
 void
@@ -489,6 +489,6 @@ ut_array_functor(void)
 
   UTEST_END
 
-  gdelete(pool);
+  grelease(pool);
 }
 

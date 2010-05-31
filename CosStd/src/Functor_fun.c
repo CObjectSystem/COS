@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.24 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.25 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -141,7 +141,7 @@ DEFFUNC(9)
 // ----- constructors
 
 defmethod(OBJ, ginitWithFun0, pmFunctor, (FUN0)fct)
-  retmethod( gautoDelete(aFun(fct)) );
+  retmethod( gautoRelease(aFun(fct)) );
 endmethod
 
 #undef  DEFMETHOD
@@ -252,7 +252,7 @@ defmethod(OBJ, gevalEnv, PFunExpr1, Array) // partial evaluation
 
   OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
 
-  retmethod( gautoDelete(aFun(fct, arg0)) );
+  retmethod( gautoRelease(aFun(fct, arg0)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr2, Array)
@@ -278,7 +278,7 @@ defmethod(OBJ, gevalEnv, PFunExpr2, Array) // partial evaluation
   OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
   OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
 
-  retmethod( gautoDelete(aFun(fct, arg0, arg1)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr3, Array)
@@ -306,7 +306,7 @@ defmethod(OBJ, gevalEnv, PFunExpr3, Array) // partial evaluation
   OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
   OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
 
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr4, Array)
@@ -336,7 +336,7 @@ defmethod(OBJ, gevalEnv, PFunExpr4, Array) // partial evaluation
   OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
   OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
   
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr5, Array)
@@ -368,7 +368,7 @@ defmethod(OBJ, gevalEnv, PFunExpr5, Array)
   OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
   OBJ arg4 = getArg(4, msk, arg[4], var, size, _2);
   
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr6, Array)
@@ -389,7 +389,7 @@ defmethod(OBJ, gevalEnv, FunExpr6, Array)
     retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5) );
 
   // partial evaluation
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr7, Array)
@@ -411,7 +411,7 @@ defmethod(OBJ, gevalEnv, FunExpr7, Array)
     retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6) );
 
   // partial evaluation
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr8, Array)
@@ -434,7 +434,7 @@ defmethod(OBJ, gevalEnv, FunExpr8, Array)
     retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) );
 
   // partial evaluation
-  retmethod( gautoDelete(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7)) );
+  retmethod( gautoRelease(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr9, Array)
@@ -458,7 +458,7 @@ defmethod(OBJ, gevalEnv, FunExpr9, Array)
     retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) );
 
   // partial evaluation
-  retmethod(gautoDelete(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8)));
+  retmethod(gautoRelease(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8)));
 endmethod
 
 // ----- eval (generic environment)
@@ -480,7 +480,7 @@ defmethod(OBJ, gevalEnv, PFunExpr1, Collection) // partial evaluation
 
   OBJ arg0 = getArgVar(0, msk, arg[0], _2);
 
-  retmethod( gautoDelete(aFun(fct, arg0)) );
+  retmethod( gautoRelease(aFun(fct, arg0)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr2, Collection)
@@ -502,7 +502,7 @@ defmethod(OBJ, gevalEnv, PFunExpr2, Collection) // partial evaluation
   OBJ arg0 = getArgVar(0, msk, arg[0], _2);
   OBJ arg1 = getArgVar(1, msk, arg[1], _2);
 
-  retmethod( gautoDelete(aFun(fct, arg0, arg1)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr3, Collection)
@@ -526,7 +526,7 @@ defmethod(OBJ, gevalEnv, PFunExpr3, Collection) // partial evaluation
   OBJ arg1 = getArgVar(1, msk, arg[1], _2);
   OBJ arg2 = getArgVar(2, msk, arg[2], _2);
 
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr4, Collection)
@@ -552,7 +552,7 @@ defmethod(OBJ, gevalEnv, PFunExpr4, Collection) // partial evaluation
   OBJ arg2 = getArgVar(2, msk, arg[2], _2);
   OBJ arg3 = getArgVar(3, msk, arg[3], _2);
 
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr5, Collection)
@@ -580,7 +580,7 @@ defmethod(OBJ, gevalEnv, PFunExpr5, Collection) // partial evaluation
   OBJ arg3 = getArgVar(3, msk, arg[3], _2);
   OBJ arg4 = getArgVar(4, msk, arg[4], _2);
 
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr6, Collection)
@@ -599,7 +599,7 @@ defmethod(OBJ, gevalEnv, FunExpr6, Collection)
     retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5) );
 
   // partial evaluation
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr7, Collection)
@@ -619,7 +619,7 @@ defmethod(OBJ, gevalEnv, FunExpr7, Collection)
     retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6) );
 
   // partial evaluation
-  retmethod( gautoDelete(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6)) );
+  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr8, Collection)
@@ -640,7 +640,7 @@ defmethod(OBJ, gevalEnv, FunExpr8, Collection)
     retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) );
 
   // partial evaluation
-  retmethod( gautoDelete(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7)) );
+  retmethod( gautoRelease(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7)) );
 endmethod
 
 defmethod(OBJ, gevalEnv, FunExpr9, Collection)
@@ -662,6 +662,6 @@ defmethod(OBJ, gevalEnv, FunExpr9, Collection)
     retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) );
 
   // partial evaluation
-  retmethod(gautoDelete(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8)));
+  retmethod(gautoRelease(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8)));
 endmethod
 

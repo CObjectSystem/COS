@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.23 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.24 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #include <cos/Functor.h>
 #include <cos/IntVector.h>
 #include <cos/Number.h>
+#include <cos/Range.h>
 
 #include <cos/gen/algorithm.h>
 #include <cos/gen/array.h>
@@ -192,7 +193,7 @@ endmethod
 // ----- repeat
 
 defmethod(OBJ, grepeat, Object, Int)
-  retmethod(gautoDelete( gnewWith2(Array,_2,_1) ));
+  retmethod(gautoRelease( gnewWith2(Array,_2,_1) ));
 endmethod
 
 // ----- zip, zip3, zip4, zipn
@@ -200,7 +201,7 @@ endmethod
 defmethod(OBJ, gzip, Array, Array)
   U32 size = self->size < self2->size ? self->size : self2->size;
   struct Array* arr = Array_alloc(2*size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
 
   I32  src_s  = self->stride;
   OBJ *src    = self->object; 
@@ -222,7 +223,7 @@ defmethod(OBJ, gzip3, Array, Array, Array)
   U32 size = self->size < self2->size ? self->size : self2->size;
       size = self3->size < size ? self3->size : size;
   struct Array* arr = Array_alloc(3*size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
 
   I32  src_s  = self->stride;
   OBJ *src    = self->object; 
@@ -248,7 +249,7 @@ defmethod(OBJ, gzip4, Array, Array, Array, Array)
       size = self3->size < size ? self3->size : size;
       size = self4->size < size ? self4->size : size;
   struct Array* arr = Array_alloc(4*size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
 
   I32  src_s  = self->stride;
   OBJ *src    = self->object; 
@@ -279,7 +280,7 @@ defmethod(OBJ, gzip5, Array, Array, Array, Array, Array)
       size = self4->size < size ? self4->size : size;
       size = self5->size < size ? self5->size : size;
   struct Array* arr = Array_alloc(5*size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
 
   I32  src_s  = self->stride;
   OBJ *src    = self->object; 
@@ -325,7 +326,7 @@ defmethod(OBJ, gzipn, Array)
 
   // intersperse arrays
   struct Array* arr = Array_alloc(msize * size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
 
   OBJ *dst = arr->object;
        src = self->object;
@@ -345,7 +346,7 @@ endmethod
 defmethod(OBJ, gconcat, Array, Array)
   U32 size = self->size + self2->size;
   struct Array *arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
 
   OBJ *dst = arr->object;
 
@@ -358,7 +359,7 @@ endmethod
 defmethod(OBJ, gconcat3, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size;
   struct Array *arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
 
   OBJ *dst = arr->object;
 
@@ -372,7 +373,7 @@ endmethod
 defmethod(OBJ, gconcat4, Array, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size + self4->size;
   struct Array *arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
 
   OBJ *dst = arr->object;
 
@@ -388,7 +389,7 @@ endmethod
 defmethod(OBJ, gconcat5, Array, Array, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size + self4->size + self5->size;
   struct Array *arr = Array_alloc(size);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
 
   OBJ *dst = arr->object;
 
@@ -419,7 +420,7 @@ defmethod(OBJ, gconcatn, Array)
 
   // concatenate arrays
   struct Array* arr = Array_alloc(ssize);
-  OBJ _arr = gautoDelete( (OBJ)arr );
+  OBJ _arr = gautoRelease( (OBJ)arr );
   
   OBJ *dst = arr->object;
        src = self->object;
@@ -468,7 +469,7 @@ defmethod(OBJ, gifind, Array, Object)
 
   OBJ *p = findVal(val, val_n, val_s, _2);
 
-  retmethod(p ? gautoDelete( aInt((p-val)/val_s) ) : Nil);
+  retmethod(p ? gautoRelease( aInt((p-val)/val_s) ) : Nil);
 endmethod
 
 // ----- search (array)
@@ -539,7 +540,7 @@ findSub(OBJ *val, U32 val_n, I32 val_s, OBJ *pat, U32 pat_n, I32 pat_s)
 
 // -- find methods
 
-defmethod(I32, gindexOf, Array, Array)
+defmethod(U32, gindexOf, Array, Array)
   U32  val_n = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
@@ -557,7 +558,7 @@ defmethod(OBJ, gfind, Array, Array)
   if (!p) retmethod(Nil);
 
   OBJ avw = aArrayView(self, atSlice((p-val)/val_s,self2->size,val_s) );
-  retmethod(gautoDelete( avw ));
+  retmethod(gautoRelease( avw ));
 endmethod
 
 defmethod(OBJ, gifind, Array, Array)
@@ -569,6 +570,6 @@ defmethod(OBJ, gifind, Array, Array)
   if (!p) retmethod(Nil);
 
   OBJ slc = aSlice((p-val)/val_s,self2->size,val_s);
-  retmethod(gautoDelete( slc ));  
+  retmethod(gautoRelease( slc ));  
 endmethod
 

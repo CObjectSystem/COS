@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_itr.c,v 1.9 2010/02/21 16:36:10 ldeniau Exp $
+ | $Id: Functor_itr.c,v 1.10 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -56,7 +56,7 @@ endmethod
 defmethod(OBJ, giterate, Functor, Int)
   test_assert(self2->value > 0, "invalid number of iteration");
 
-  OBJ _itr = gautoDelete(galloc(IterateFun));
+  OBJ _itr = gautoRelease(galloc(IterateFun));
   struct IterateFun *itr = STATIC_CAST(struct IterateFun*, _itr);
 
   itr->Functor.msk = self->msk;
@@ -70,7 +70,7 @@ endmethod
 defmethod(OBJ, giterate, Function1, Int)
   test_assert(self2->value > 0, "invalid number of iteration");
 
-  OBJ _itr = gautoDelete(galloc(IterateFun));
+  OBJ _itr = gautoRelease(galloc(IterateFun));
   struct IterateFun *itr = STATIC_CAST(struct IterateFun*, _itr);
 
   itr->Functor.msk = self->FunExpr.Functor.msk;

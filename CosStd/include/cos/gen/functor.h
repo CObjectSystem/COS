@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: functor.h,v 1.13 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: functor.h,v 1.14 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -50,9 +50,10 @@ defgeneric(OBJ, ginitWithFun8, Functor, (FUN8)fct, (OBJ*)arg);
 defgeneric(OBJ, ginitWithFun9, Functor, (FUN9)fct, (OBJ*)arg);
 defgeneric(OBJ, ginitWithMth , Functor, (SEL )sel, (OBJ*)rcv, (void*)arg);
 
-defgeneric(OBJ, gevalEnv, fun, env); // functor evaluation (e.g Lisp funcall)
-defgeneric(OBJ, giterate, fun, num); // compose num times functor
-defgeneric(OBJ, gcompose, _1);       // compose Array of functors
+defgeneric(OBJ, gevalEnv , fun, env); // functor evaluation (e.g Lisp funcall)
+defgeneric(OBJ, giterate , fun, num); // compose num times functor
+defgeneric(OBJ, gcompose , _1, _2);   // compose two functors
+defgeneric(OBJ, gcomposen, _1);       // compose Array of functors
 
 // ----- eval wrapper
 

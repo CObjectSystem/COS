@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_chr.c,v 1.3 2010/01/15 23:50:13 ldeniau Exp $
+ | $Id: String_chr.c,v 1.4 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -119,7 +119,7 @@ defmethod(OBJ, gstrip, String)
   while (val != end && isspace(* val   )) val++;
   while (val != end && isspace(*(end-1))) end--;
 
-  retmethod( gautoDelete(gnewWith2(View, _1, aSlice(val-self->value,end-val))) );
+  retmethod( gautoRelease(gnewWith2(View, _1, aSlice(val-self->value,end-val))) );
 endmethod
 
 defmethod(OBJ, gstrip, StringDyn)

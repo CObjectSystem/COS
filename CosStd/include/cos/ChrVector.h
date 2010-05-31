@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vector, Dynamic Vector, Lazy Vector and Vector View
+ | COS Vector, Dynamic Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ChrVector.h,v 1.3 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: ChrVector.h,v 1.4 2010/05/31 14:02:23 ldeniau Exp $
  |
 */
 
@@ -92,11 +92,6 @@ endclass
 defclass(ChrVectorDyn, ChrVectorFix)
 endclass
 
-defclass(ChrVectorLzy, ChrVectorDyn)
-  I32 arity;
-  OBJ generator;
-endclass
-
 // ----- ChrVector view and subview
 
 defclass(ChrVectorView, ChrVector)
@@ -117,7 +112,7 @@ struct ChrVector* ChrVectorView_init(struct ChrVectorView*, struct ChrVector*,
 
 #define atChrVector(...)                 atVector    (Chr,I8,__VA_ARGS__)
 #define atChrVectorRef(...)              atVectorRef (Chr,   __VA_ARGS__)
-#define atChrVectorView(vector,slice)    atVectorView(Chr,vector,slice,0)
-#define atChrVectorSubView(vector,slice) atVectorView(Chr,vector,slice,1)
+#define atChrVectorView(vector,slice)    atVectorView(Chr,vector,slice,COS_NO)
+#define atChrVectorSubView(vector,slice) atVectorView(Chr,vector,slice,COS_YES)
 
 #endif // COS_CHRVECTOR_H

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: XRange.c,v 1.15 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: XRange.c,v 1.16 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -114,7 +114,7 @@ endmethod
 defmethod(OBJ, gmap, Functor, XRange)
   U32 size = XRange_size(self2);
   struct FltVector* vec = FltVector_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n = &vec->size;
   F64 *dst   = vec->value;
@@ -129,7 +129,7 @@ endmethod
 defmethod(OBJ, gmap, FltFunction1, XRange)
   U32 size = XRange_size(self2);
   struct FltVector* vec = FltVector_alloc(size);
-  OBJ _vec = gautoDelete( (OBJ)vec );
+  OBJ _vec = gautoRelease( (OBJ)vec );
 
   U32 *dst_n  = &vec->size;
   F64 *dst    = vec->value;

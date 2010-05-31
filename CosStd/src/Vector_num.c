@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_num.c,v 1.3 2010/01/03 14:54:33 ldeniau Exp $
+ | $Id: Vector_num.c,v 1.4 2010/05/31 14:02:59 ldeniau Exp $
  |
 */
 
@@ -261,112 +261,112 @@ endmethod
 // ----- abs
 
 defmethod(OBJ, gabs, Vector)
-  retmethod(gabsolute(gautoDelete(gclone(_1))));
+  retmethod(gabsolute(gautoRelease(gclone(_1))));
 endmethod
 
 // ----- neg
 
 defmethod(OBJ, gneg, Vector)
-  retmethod(gnegate(gautoDelete(gclone(_1))));
+  retmethod(gnegate(gautoRelease(gclone(_1))));
 endmethod
 
 // ----- sqr
 
 defmethod(OBJ, gsqr, Vector)
-  retmethod(gsquare(gautoDelete(gclone(_1))));
+  retmethod(gsquare(gautoRelease(gclone(_1))));
 endmethod
 
 // ----- inv
 
 defmethod(OBJ, ginv, FloatingVector)
-  retmethod(ginvert(gautoDelete(gclone(_1))));
+  retmethod(ginvert(gautoRelease(gclone(_1))));
 endmethod
 
 // ----- add
 
 defmethod(OBJ, gadd, Vector, Vector)
-  retmethod(gaddTo(gautoDelete(gclone(_1)),_2));
+  retmethod(gaddTo(gautoRelease(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gadd, IntegralVector, LngVector)
-  retmethod(gaddTo(gautoDelete(gclone(_2)),_1));
+  retmethod(gaddTo(gautoRelease(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gadd, IntegralVector, FloatingVector)
-  retmethod(gaddTo(gautoDelete(gclone(_2)),_1));
+  retmethod(gaddTo(gautoRelease(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gadd, FloatingVector, CpxVector)
-  retmethod(gaddTo(gautoDelete(gclone(_2)),_1));
+  retmethod(gaddTo(gautoRelease(gclone(_2)),_1));
 endmethod
 
 // ----- sub
 
 defmethod(OBJ, gsub, Vector, Vector)
-  retmethod(gsubTo(gautoDelete(gclone(_1)),_2));
+  retmethod(gsubTo(gautoRelease(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gsub, IntegralVector, LngVector)
-  retmethod(gnegate(gsubTo(gautoDelete(gclone(_2)),_1)));
+  retmethod(gnegate(gsubTo(gautoRelease(gclone(_2)),_1)));
 endmethod
 
 defmethod(OBJ, gsub, IntegralVector, FloatingVector)
-  retmethod(gnegate(gsubTo(gautoDelete(gclone(_2)),_1)));
+  retmethod(gnegate(gsubTo(gautoRelease(gclone(_2)),_1)));
 endmethod
 
 defmethod(OBJ, gsub, FloatingVector, CpxVector)
-  retmethod(gnegate(gsubTo(gautoDelete(gclone(_2)),_1)));
+  retmethod(gnegate(gsubTo(gautoRelease(gclone(_2)),_1)));
 endmethod
 
 // ----- mul
 
 defmethod(OBJ, gmul, Vector, Vector)
-  retmethod(gmulBy(gautoDelete(gclone(_1)),_2));
+  retmethod(gmulBy(gautoRelease(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gmul, IntegralVector, LngVector)
-  retmethod(gmulBy(gautoDelete(gclone(_2)),_1));
+  retmethod(gmulBy(gautoRelease(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gmul, IntegralVector, FloatingVector)
-  retmethod(gmulBy(gautoDelete(gclone(_2)),_1));
+  retmethod(gmulBy(gautoRelease(gclone(_2)),_1));
 endmethod
 
 defmethod(OBJ, gmul, FloatingVector, CpxVector)
-  retmethod(gmulBy(gautoDelete(gclone(_2)),_1));
+  retmethod(gmulBy(gautoRelease(gclone(_2)),_1));
 endmethod
 
 // ----- div
 
 defmethod(OBJ, gdiv, Vector, Vector)
-  retmethod(gdivBy(gautoDelete(gclone(_1)),_2));
+  retmethod(gdivBy(gautoRelease(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gdiv, IntegralVector, LngVector)
-  retmethod(gmulBy(ginvert(gautoDelete(gclone(_2))),_1));
+  retmethod(gmulBy(ginvert(gautoRelease(gclone(_2))),_1));
 endmethod
 
 defmethod(OBJ, gdiv, IntegralVector, FloatingVector)
-  retmethod(gmulBy(ginvert(gautoDelete(gclone(_2))),_1));
+  retmethod(gmulBy(ginvert(gautoRelease(gclone(_2))),_1));
 endmethod
 
 defmethod(OBJ, gdiv, FloatingVector, CpxVector)
-  retmethod(gmulBy(ginvert(gautoDelete(gclone(_2))),_1));
+  retmethod(gmulBy(ginvert(gautoRelease(gclone(_2))),_1));
 endmethod
 
 // ----- pow
 
 defmethod(OBJ, gpow, FloatingVector, Int)
-  retmethod(gpower(gautoDelete(gclone(_1)),_2));
+  retmethod(gpower(gautoRelease(gclone(_1)),_2));
 endmethod
 
 defmethod(OBJ, gpow, FloatingVector, Floating)
-  retmethod(gpower(gautoDelete(gclone(_1)),_2));
+  retmethod(gpower(gautoRelease(gclone(_1)),_2));
 endmethod
 
 // ----- mod
 
 defmethod(OBJ, gmod, IntegralVector, Integral)
-  retmethod(gmodulo(gautoDelete(gclone(_1)),_2));
+  retmethod(gmodulo(gautoRelease(gclone(_1)),_2));
 endmethod
 

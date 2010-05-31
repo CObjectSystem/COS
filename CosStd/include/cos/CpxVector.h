@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Vector, Dynamic Vector, Lazy Vector and Vector View
+ | COS Vector, Dynamic Vector and Vector View
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: CpxVector.h,v 1.9 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: CpxVector.h,v 1.10 2010/05/31 14:02:23 ldeniau Exp $
  |
 */
 
@@ -92,11 +92,6 @@ endclass
 defclass(CpxVectorDyn, CpxVectorFix)
 endclass
 
-defclass(CpxVectorLzy, CpxVectorDyn)
-  I32 arity;
-  OBJ generator;
-endclass
-
 // ----- CpxVector view and subview
 
 defclass(CpxVectorView, CpxVector)
@@ -117,7 +112,7 @@ struct CpxVector* CpxVectorView_init(struct CpxVectorView*, struct CpxVector*,
 
 #define atCpxVector(...)                 atVector    (Cpx,C64,__VA_ARGS__)
 #define atCpxVectorRef(...)              atVectorRef (Cpx,    __VA_ARGS__)
-#define atCpxVectorView(vector,slice)    atVectorView(Cpx,vector,slice,0)
-#define atCpxVectorSubView(vector,slice) atVectorView(Cpx,vector,slice,1)
+#define atCpxVectorView(vector,slice)    atVectorView(Cpx,vector,slice,COS_NO)
+#define atCpxVectorSubView(vector,slice) atVectorView(Cpx,vector,slice,COS_YES)
 
 #endif // COS_CPXVECTOR_H

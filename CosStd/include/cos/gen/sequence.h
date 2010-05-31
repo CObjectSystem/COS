@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.9 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: sequence.h,v 1.10 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -55,39 +55,37 @@ defgeneric(OBJ, gzip4, _1, _2, _3, _4);
 defgeneric(OBJ, gzipn, _1);
 
 // array-like accessor
-defgeneric(I32, gindexOf, _1, fun); // return index or -1 if not found
+defgeneric(U32, gindexOf, _1, fun); // return index or (U32)-1 if not found
 
 // list-like accessor
-defgeneric(OBJ, ginsertAt , _1, at, what);
-defgeneric(OBJ, gremoveAt , _1, at);
+defgeneric(OBJ, ginsertAt, _1, at, what);
+defgeneric(OBJ, gremoveAt, _1, at);
 
 // stack-like accessors
-defgeneric(OBJ, gpush     , _1, what);
-defgeneric(OBJ, gtop      , _1);
-defgeneric(OBJ, gpop      , _1); // return _1
+defgeneric(OBJ, gpush, _1, what);
+defgeneric(OBJ, gpop , _1); // return _1
+defgeneric(OBJ, gtop , _1); // return top object
 
 // dequeue-like accessors
 defgeneric(OBJ, gpushFront, _1, what);
 defgeneric(OBJ, gpushBack , _1, what);
-defgeneric(OBJ, gpopFront , _1);
-defgeneric(OBJ, gpopBack  , _1);
-defgeneric(OBJ, gfront    , _1);
-defgeneric(OBJ, gback     , _1);
+defgeneric(OBJ, gpopFront , _1); // return _1
+defgeneric(OBJ, gpopBack  , _1); // return _1
+defgeneric(OBJ, gtopFront , _1); // return front object
+defgeneric(OBJ, gtopBack  , _1); // return back  object
 
 // seq-like accessor
-defgeneric(OBJ, gprepend  , _1, what);
-defgeneric(OBJ, gappend   , _1, what);
-defgeneric(OBJ, gchop     , _1, what);
-defgeneric(OBJ, gdrop     , _1, num); // back if num<0
-defgeneric(OBJ, gdropFirst, _1);
-defgeneric(OBJ, gdropLast , _1);
-defgeneric(OBJ, gfirst    , _1);
-defgeneric(OBJ, glast     , _1);
+defgeneric(OBJ, gprepend, _1, what);
+defgeneric(OBJ, gappend , _1, what);
+defgeneric(OBJ, gdrop   , _1, idx);  // remove up to index (back if idx<0)
+defgeneric(OBJ, gfirst  , _1);
+defgeneric(OBJ, glast   , _1);
 
-// adjust sequence (e.g. capacity to size)
-defgeneric(OBJ, gadjust   , _1);
+// compact sequence (e.g. capacity to size)
+defgeneric(OBJ, gcompact, _1);
+defgeneric(OBJ, gadjust , _1); // compact + fix type
 
-// englarge sequence memory (e.g. front if by<0)
-defgeneric(OBJ, genlarge  , _1, by);
+// englarge sequence memory (Note: front if by<0)
+defgeneric(OBJ, genlarge, _1, by);
 
 #endif // COS_GEN_SEQUENCE_H

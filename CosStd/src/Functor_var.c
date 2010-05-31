@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_var.c,v 1.7 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Functor_var.c,v 1.8 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -105,6 +105,6 @@ endmethod
 
 defmethod(OBJ, gevalEnv, FunLzy, Collection)
   retmethod ( self->cnt == 1 ? self->fun :
-              gautoDelete(aFunLzyN(self->cnt-1, self->fun)) );
+              gautoRelease(aFunLzyN(self->cnt-1, self->fun)) );
 endmethod
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.23 2010/05/26 15:02:00 ldeniau Exp $
+ | $Id: File.c,v 1.24 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -237,7 +237,7 @@ defmethod(void, ginitialize, pmInputFile)
 endmethod
 
 defmethod(void, gdeinitialize, pmInputFile)
-  if (StdIn) gdelete(StdIn), StdIn = 0;
+  if (StdIn) grelease(StdIn), StdIn = 0;
 endmethod
 
 defmethod(void, ginitialize, pmOutputFile)
@@ -247,8 +247,8 @@ defmethod(void, ginitialize, pmOutputFile)
 endmethod
 
 defmethod(void, gdeinitialize, pmOutputFile)
-  if (StdOut) gdelete(StdOut), StdOut = 0;
-  if (StdErr) gdelete(StdErr), StdErr = 0;
-  if (StdLog) gdelete(StdLog), StdLog = 0;
+  if (StdOut) grelease(StdOut), StdOut = 0;
+  if (StdErr) grelease(StdErr), StdErr = 0;
+  if (StdLog) grelease(StdLog), StdLog = 0;
 endmethod
 

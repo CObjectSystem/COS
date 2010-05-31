@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.16 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: String.c,v 1.17 2010/05/31 14:02:58 ldeniau Exp $
  |
 */
 
@@ -37,6 +37,7 @@
 #include <cos/Functor.h>
 #include <cos/IntVector.h>
 #include <cos/Number.h>
+#include <cos/Range.h>
 
 #include <cos/gen/collection.h>
 #include <cos/gen/functor.h>
@@ -52,12 +53,7 @@ makclass(StringN, String);
 
 // -----
 
-useclass(ExBadAlloc);
-useclass(String, StringView);
-
-// -----
-
-STATIC_ASSERT(string_auto_max_size_is_too_small, STRING_AUTO_MAXSIZE >= 64);
+useclass(String, ExBadAlloc);
 
 // --- getters
 
