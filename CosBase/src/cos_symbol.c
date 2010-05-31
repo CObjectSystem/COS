@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.55 2010/05/26 22:46:30 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.56 2010/05/31 13:11:14 ldeniau Exp $
  |
 */
 
@@ -256,11 +256,14 @@ cls_isProperty(const struct Class *cls)
   return cls_isSubOf(cls, classref(Property));
 }
 
-static inline void
+static void
 mth_initAlias(struct Method1 *ali)
 {
   // hack: retrieve aliased method stored in cls[0]
   struct Method1 *mth = STATIC_CAST(struct Method1*, ali->cls[0]);
+  
+  if (mth->Method.Object.Any._rc == cos_tag_alias) // alias of alias
+    mth_initAlias(mth);
 
   ali->fct = mth->fct;
   ali->cls[0] = mth->cls[0];
