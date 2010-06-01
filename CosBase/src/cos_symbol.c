@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.57 2010/06/01 07:40:17 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.58 2010/06/01 11:31:41 ldeniau Exp $
  |
 */
 
@@ -283,8 +283,10 @@ gen_strcmp(const void *str, const void *_gen)
 static inline BOOL
 cls_isSubOf(const struct Class *cls, const struct Class *ref)
 {
+  U32 ref_id = COS_ID_URK(cos_class_id(ref));
+  
   // a class is a subclass of itself
-  while (cos_class_id(cls) > COS_ID_URK(cos_class_id(ref)))
+  while (cos_class_id(cls) > ref_id)
     cls = cls->spr;
 
   return cls == ref;
@@ -346,8 +348,8 @@ als_stinit(struct Method1 *ali)
   }
 
   if (mth->Method.Object.Any._rc != cos_tag_method) // not alias of method
-    cos_abort("invalid alias at (%s,%d), cross reference between aliases?",
-              ali->Method.file, ali->Method.line);
+    cos_abort("invalid alias of '%s' at (%s,%d), cross reference between aliases?",
+              gen_name(ali->Method.gen), ali->Method.file, ali->Method.line);
   
   ali->fct = mth->fct;
   ali->cls[0] = mth->cls[0];
@@ -361,7 +363,8 @@ static inline void
 gen_incMth(struct Generic *gen)
 {
   if (COS_GEN_NMTH(gen) == COS_GEN_MTHMSK)
-    cos_abort("too many specializations for generic %s", gen_name(gen));
+    cos_abort("too many specializations for generic '%s' at (%s,%d)",
+              gen_name(gen), gen_file(gen), gen_line(gen));
 
   ++gen->info;
 }
@@ -467,7 +470,8 @@ cls_classPropCnt(const struct Generic *gen, const struct Class *cls, I32 rnk)
 
        if (gen == genericref(ggetAt)) p = get;
   else if (gen == genericref(gputAt)) p = put;
-  else cos_abort("invalid generic '%s' for properties", gen_name(gen));
+  else cos_abort("invalid generic '%s' at (%s,%d) for properties",
+                 gen_name(gen), gen_file(gen), gen_line(gen));
 
   if ((U32)rnk > (U32)r) rnk = r;
 
@@ -495,7 +499,8 @@ cls_classPropLst(const struct Generic *gen,
 
        if (gen == genericref(ggetAt)) p = get;
   else if (gen == genericref(gputAt)) p = put;
-  else cos_abort("invalid generic '%s' for properties", gen_name(gen));
+  else cos_abort("invalid generic '%s' at (%s,%d) for properties",
+                 gen_name(gen), gen_file(gen), gen_line(gen));
 
   if ((U32)rnk > (U32)r) rnk = r;
 
@@ -536,7 +541,8 @@ cls_setClassProp(const struct Generic *gen)
 
        if (gen == genericref(ggetAt)) p = get;
   else if (gen == genericref(gputAt)) p = put;
-  else cos_abort("invalid generic '%s' for properties", gen_name(gen));
+  else cos_abort("invalid generic '%s' at (%s,%d) for properties",
+                 gen_name(gen), gen_file(gen), gen_line(gen));
 
   for (i = 0; i < n_mth;) {
 
@@ -1019,7 +1025,7 @@ cos_class_getWithStr(STR str)
   switch (p-str) {
   case 0: // normal class
     test_assert( cls_isClass(cls),
-                 "classes not starting by 'm' or 'pm' should be a normal Class" );
+                 "classes not starting by 'm' or 'pm' should be instance of Class" );
     break;
 
   case 1: // meta class
