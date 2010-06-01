@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.56 2010/05/31 13:11:14 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.57 2010/06/01 07:40:17 ldeniau Exp $
  |
 */
 
@@ -69,6 +69,63 @@ static struct {
 
 // forward decl
 static void mod_clear(void);
+
+// -- component name/location management
+
+static inline STR
+cls_file(const struct Class *cls)
+{
+  return cls->Behavior.Object.Any._rc == COS_RC_STATIC
+    ?              cls->Behavior.file
+    : *(const STR*)cls->Behavior.file;
+}
+
+static inline int
+cls_line(const struct Class *cls)
+{
+  return cls->Behavior.line;
+}
+
+static inline STR
+cls_name(const struct Class *cls)
+{
+  switch (cls->Behavior.Object.Any._rc) {
+  case COS_RC_STATIC:
+  case cos_tag_pclass:
+    return cls->str;
+
+  case cos_tag_class :
+    return STATIC_CAST(const struct Class*, cls->str)->str+2;
+
+  case cos_tag_mclass:
+    return STATIC_CAST(const struct Class*, cls->cls->str)->str+1;
+
+  default:
+    return "unknown";
+  }
+}
+
+static inline STR
+gen_file(const struct Generic *gen)
+{
+  return gen->Behavior.Object.Any._rc == COS_RC_STATIC
+    ?              gen->Behavior.file
+    : *(const STR*)gen->Behavior.file;
+}
+
+static inline int
+gen_line(const struct Generic *gen)
+{
+  return gen->Behavior.line;
+}
+
+static inline STR
+gen_name(const struct Generic *gen)
+{
+  return gen->str;
+}
+
+// -- tag management
 
 static inline U32
 toPow2(U32 val)
@@ -115,10 +172,12 @@ bhv_setTag(struct Behavior *bhv)
     struct Generic *gen = STATIC_CAST(struct Generic*, bhv);
 
     if (bhv->id)
-      cos_abort("generic '%s' has already an id", gen->str);
+      cos_abort("generic '%s' at (%s,%d) has already an id",
+                gen_name(gen), gen_file(gen), gen_line(gen));
 
     if ( (bhv->Object.Any._id & COS_ID_TAGMSK) )
-      cos_abort("generic '%s' has invalid initialization", gen->str);
+      cos_abort("generic '%s' at (%s,%d) has invalid initialization",
+                gen_name(gen), gen_file(gen), gen_line(gen));
 
     bhv->id = bhv->Object.Any._id | bhv_tag();
     bhv->Object.Any._id = 0;
@@ -127,15 +186,18 @@ bhv_setTag(struct Behavior *bhv)
     struct Class *cls = STATIC_CAST(struct Class*, bhv);
 
     if (bhv->Object.Any._id)
-      cos_abort("class '%s' has already an id", cls->str ? cls->str : "?");
+      cos_abort("class '%s' at (%s,%d) has already an id",
+                cls_name(cls), cls_file(cls), cls_line(cls));
 
     if ( (bhv->id & COS_ID_TAGMSK) )
-      cos_abort("class '%s' has invalid initialization (multiple generics?)",
-        cls->str ? cls->str : "?");
+      cos_abort("class '%s' at (%s,%u) has invalid initialization (multiple generics?)",
+                cls_name(cls), cls_file(cls), cls_line(cls));
 
     bhv->id |= bhv_tag();
   }
 }
+
+// -- comparison
 
 static int // qsort
 cls_cmp(const void *_cls1, const void *_cls2)
@@ -216,6 +278,8 @@ gen_strcmp(const void *str, const void *_gen)
   return strcmp(str,gen->str);
 }
 
+// -- predicates
+
 static inline BOOL
 cls_isSubOf(const struct Class *cls, const struct Class *ref)
 {
@@ -256,26 +320,48 @@ cls_isProperty(const struct Class *cls)
   return cls_isSubOf(cls, classref(Property));
 }
 
+// -- component initialization (update from static)
+
 static void
-mth_initAlias(struct Method1 *ali)
+cls_stinit(struct Class *cls) { (void)cls; }
+
+static void
+pcl_stinit(struct Class *pcl) { (void)pcl; }
+
+static void
+mcl_stinit(struct Class *mcl) { (void)mcl; }
+
+static void
+gen_stinit(struct Generic *gen) { (void)gen; }
+
+static void
+als_stinit(struct Method1 *ali)
 {
   // hack: retrieve aliased method stored in cls[0]
   struct Method1 *mth = STATIC_CAST(struct Method1*, ali->cls[0]);
   
-  if (mth->Method.Object.Any._rc == cos_tag_alias) // alias of alias
-    mth_initAlias(mth);
+  if (mth->Method.Object.Any._rc == cos_tag_alias) { // alias of alias
+    ali->Method.Object.Any._rc = cos_tag_invalid; // temporally invalid
+    als_stinit(mth);
+  }
 
+  if (mth->Method.Object.Any._rc != cos_tag_method) // not alias of method
+    cos_abort("invalid alias at (%s,%d), cross reference between aliases?",
+              ali->Method.file, ali->Method.line);
+  
   ali->fct = mth->fct;
   ali->cls[0] = mth->cls[0];
   ali->Method.info = mth->Method.info;
   ali->Method.Object.Any._rc = cos_tag_method; // convert alias to method
 }
 
+// -- generics management
+
 static inline void
 gen_incMth(struct Generic *gen)
 {
   if (COS_GEN_NMTH(gen) == COS_GEN_MTHMSK)
-    cos_abort("too many specializations for generic %s", gen->str);
+    cos_abort("too many specializations for generic %s", gen_name(gen));
 
   ++gen->info;
 }
@@ -315,6 +401,8 @@ gen_setMth(void)
   if (n != sym.n_mth)
     cos_abort("incomplete or missing symbols table");
 }
+
+// -- properties management
 
 static inline void
 cls_setProp(void)
@@ -379,7 +467,7 @@ cls_classPropCnt(const struct Generic *gen, const struct Class *cls, I32 rnk)
 
        if (gen == genericref(ggetAt)) p = get;
   else if (gen == genericref(gputAt)) p = put;
-  else cos_abort("invalid generic '%s' for properties", gen->str);
+  else cos_abort("invalid generic '%s' for properties", gen_name(gen));
 
   if ((U32)rnk > (U32)r) rnk = r;
 
@@ -407,7 +495,7 @@ cls_classPropLst(const struct Generic *gen,
 
        if (gen == genericref(ggetAt)) p = get;
   else if (gen == genericref(gputAt)) p = put;
-  else cos_abort("invalid generic '%s' for properties", gen->str);
+  else cos_abort("invalid generic '%s' for properties", gen_name(gen));
 
   if ((U32)rnk > (U32)r) rnk = r;
 
@@ -448,7 +536,7 @@ cls_setClassProp(const struct Generic *gen)
 
        if (gen == genericref(ggetAt)) p = get;
   else if (gen == genericref(gputAt)) p = put;
-  else cos_abort("invalid generic '%s' for properties", gen->str);
+  else cos_abort("invalid generic '%s' for properties", gen_name(gen));
 
   for (i = 0; i < n_mth;) {
 
@@ -466,6 +554,8 @@ cls_setClassProp(const struct Generic *gen)
     mth[j]->cls[0]->prp[p] = cls_encodeProp(j, i-j);
   }
 }
+
+// -- next_method management
 
 static inline void
 nxt_enlarge(void)
@@ -545,6 +635,8 @@ nxt_init(SEL gen, U32 info, U32 arnd, struct Class *const *cls)
   return 0;
 }
 
+// -- memory management
+
 static void
 sym_prepStorage(U32 n_cls, U32 n_gen, U32 n_mth, U32 n_doc)
 {
@@ -568,6 +660,8 @@ sym_prepStorage(U32 n_cls, U32 n_gen, U32 n_mth, U32 n_doc)
   }
 }
 
+// -- symbols management
+
 static void
 sym_init(void)
 {
@@ -581,11 +675,11 @@ sym_init(void)
 
       // count symbols
       switch (tbl_sym[t][s]->_rc) {
-      case cos_tag_class  : ++n_cls; break;
-      case cos_tag_mclass : ++n_mcl; break;
-      case cos_tag_pclass : ++n_pcl; break;
-      case cos_tag_generic: ++n_gen; break;
-      case cos_tag_alias  : mth_initAlias(STATIC_CAST(struct Method1*, tbl_sym[t][s]));
+      case cos_tag_class  : ++n_cls; cls_stinit((void*)tbl_sym[t][s]); break;
+      case cos_tag_mclass : ++n_mcl; mcl_stinit((void*)tbl_sym[t][s]); break;
+      case cos_tag_pclass : ++n_pcl; pcl_stinit((void*)tbl_sym[t][s]); break;
+      case cos_tag_generic: ++n_gen; gen_stinit((void*)tbl_sym[t][s]); break;
+      case cos_tag_alias  :          als_stinit((void*)tbl_sym[t][s]);
       case cos_tag_method : ++n_mth; break;
       case cos_tag_docstr : ++n_doc; break;
       default: cos_abort("invalid COS symbol");
@@ -617,19 +711,17 @@ sym_init(void)
 
         if (sym.bhv[i]) {
           switch (bhv->Object.Any._rc) {
-          case cos_tag_pclass: {
-            struct Class *pcl = STATIC_CAST(struct Class*, bhv);
-            pcl->file = *(const STR*)pcl->file;
-          }
           case cos_tag_class :
-          case cos_tag_mclass:
-           {
+          case cos_tag_pclass:
+          case cos_tag_mclass: {
             struct Class *cls = STATIC_CAST(struct Class*, bhv);
-            cos_abort("class '%s' slot %u already assigned", cls->str ? cls->str : "?", i);
+            cos_abort("class '%s' at (%s,%d) slot %u already assigned",
+                      cls_name(cls), cls_file(cls), cls_line(cls), i);
           }
           case cos_tag_generic: {
             struct Generic *gen = STATIC_CAST(struct Generic*, bhv);
-            cos_abort("generic '%s' slot %u already assigned", gen->str, i);
+            cos_abort("generic '%s' at (%s,%d) slot %u already assigned",
+                      gen_name(gen), gen_file(gen), gen_line(gen), i);
           }}
         }
 
@@ -641,23 +733,24 @@ sym_init(void)
       case cos_tag_class: {
         struct Class *cls = STATIC_CAST(struct Class*, tbl_sym[t][s]);
         const struct Class *pcl = STATIC_CAST(const struct Class*, cls->str);
-        sym.cls[sym.n_cls++] = cls; // hack: meta-link
-        cls->str = pcl->str+2;      // hack: name is shared
-        cls->file = pcl->file;      // hack: file is shared
+        sym.cls[sym.n_cls++] = cls;             // hack: meta-link
+        cls->str = pcl->str+2;                  // hack: name is shared
+        cls->Behavior.file = cls_file(cls);     // hack: file is indirect
         cls->Behavior.Object.Any._id = cos_class_id(pcl);
         cls->Behavior.Object.Any._rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_pclass: {
         struct Class *pcl = STATIC_CAST(struct Class*, tbl_sym[t][s]);
-        pcl->spr->str = pcl->str+1; // hack: name is shared
-        pcl->spr->file = pcl->file; // hack: file is shared
+        pcl->spr->str = pcl->str+1;             // hack: name is shared
+        pcl->Behavior.file = cls_file(pcl);     // hack: file is indirect
         pcl->Behavior.Object.Any._id = cos_class_id(classref(PropMetaClass));
         pcl->Behavior.Object.Any._rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_mclass: {
         struct Class *mcl = STATIC_CAST(struct Class*, tbl_sym[t][s]);
+        mcl->Behavior.file = cls_file(mcl);    // hack: file is indirect
         mcl->Behavior.Object.Any._id = cos_class_id(classref(MetaClass));
         mcl->Behavior.Object.Any._rc = COS_RC_STATIC;
       } break;
@@ -666,8 +759,8 @@ sym_init(void)
         struct Generic *gen = STATIC_CAST(struct Generic*, tbl_sym[t][s]);
         const struct Class *cls = STATIC_CAST(const struct Class*, gen->sig);
         sym.gen[sym.n_gen++] = gen;
-        gen->sig = gen->str + strlen(gen->str) + 1;
-        gen->file = *(const STR*)gen->file;
+        gen->sig = gen->str + strlen(gen->str) + 1; // hack: sig follows name
+        gen->Behavior.file = gen_file(gen);         // hack: file is indirect
         gen->Behavior.Object.Any._id = cos_class_id(cls);
         gen->Behavior.Object.Any._rc = COS_RC_STATIC;
       } break;
@@ -736,6 +829,8 @@ sym_deinit(void)
   tbl_ini = 0;
 }
 
+// -- classes initialize
+
 static void
 cls_init(void)
 {
@@ -752,6 +847,8 @@ cls_init(void)
       ginitialize((OBJ)cls->cls);
   }
 }
+
+// -- classes deinitialize
 
 static void
 cls_deinit(void)

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: coscls.h,v 1.17 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: coscls.h,v 1.18 2010/06/01 07:40:17 ldeniau Exp $
  |
 */
 
@@ -130,39 +130,37 @@ COS_CLS_DEF(Object, Any)
 COS_CLS_END
 
 COS_CLS_DEF(Behavior, Object)
-  U32 id;
 /* id is storing cryptic information (LSB->MSB):
      u27 tag {1..134217727} (unique)
      u5  rnk {0..31} (class rank) OR {1..5} (generic rank)
 */
+  U32 id;
+  U32 line;
+  STR file;
 COS_CLS_END
 
 COS_CLS_DEF(Generic, Behavior)
-  STR file;
-  U32 line;
-  U32 mth;
   STR str;
   STR sig;
   struct cos_generic_rcvinfo *rcvinfo;
   struct cos_generic_arginfo *arginfo;
   U16 argsize;
   U16 retsize;
+  U32 mth;
   U32 info; // store cryptic information, see cos/cos/generic.h
 COS_CLS_END
 
 COS_CLS_DEF(Class, Behavior)
-  STR file;
-  U32 line;
-  U32 isz;
   STR str;
+  U32 isz;
   struct Class* spr;
   struct Class* cls;
   U32 prp[2];
 COS_CLS_END
 
 COS_CLS_DEF(Method, Object)
-  STR file;
   U32 line;
+  STR file;
   struct Generic* gen;
   U32 info; // store cryptic information, see cos/cos/method.h
   U32 arnd;

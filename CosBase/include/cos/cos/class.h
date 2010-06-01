@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: class.h,v 1.20 2010/02/21 15:54:14 ldeniau Exp $
+ | $Id: class.h,v 1.21 2010/06/01 07:40:17 ldeniau Exp $
  |
 */
 
@@ -248,13 +248,13 @@ struct Class COS_MCL_NAME(NAME) = { /* metaclass */ \
   /* Object id must be zero (init) => encode tag into rc */ \
   {{{ 0, cos_tag_mclass }}, \
   /* encode rank into id */ \
-   (U32)COS_MCL_RANK(NAME) << COS_ID_RNKSHT }, \
+   (U32)COS_MCL_RANK(NAME) << COS_ID_RNKSHT, \
   /* location */ \
-  (STR)(const void*)&COS_CLS_FILE(NAME), COS_CLS_LINE(NAME), \
-  /* class size */ \
-  sizeof(struct Class), \
+  COS_CLS_LINE(NAME), (STR)(const void*)&COS_CLS_FILE(NAME) }, \
   /* classes' names share the same string (STR) */ \
   0, \
+  /* class size */ \
+  sizeof(struct Class), \
   /* metaclass derives from super metaclass */ \
   META_SUPER_REF, \
   /* reference to its (class) instance */ \
@@ -266,13 +266,13 @@ struct Class COS_PCL_NAME(NAME) = { /* property metaclass */ \
   /* Object id must be zero (init) => encode tag into rc */ \
   {{{ 0, cos_tag_pclass }}, \
   /* encode rank into id */ \
-   (U32)COS_PCL_RANK(NAME) << COS_ID_RNKSHT }, \
+   (U32)COS_PCL_RANK(NAME) << COS_ID_RNKSHT, \
   /* location */ \
-  (STR)(const void*)&COS_CLS_FILE(NAME), COS_CLS_LINE(NAME), \
-  /* class size */ \
-  sizeof(struct Class), \
+  COS_CLS_LINE(NAME), (STR)(const void*)&COS_CLS_FILE(NAME) }, \
   /* classes' names share the same string (STR) */ \
   "pm" COS_PP_STR(NAME), \
+  /* class size */ \
+  sizeof(struct Class), \
   /* property metaclass derives from metaclass */ \
   &COS_MCL_NAME(NAME), \
   /* reference to its (class) instance */ \
@@ -284,13 +284,13 @@ struct Class COS_CLS_NAME(NAME) = { /* class */ \
   /* Object id must be zero (init) => encode tag into rc */ \
   {{{ 0, cos_tag_class }}, \
   /* encode rank into id */ \
-   (U32)COS_CLS_RANK(NAME) << COS_ID_RNKSHT }, \
+   (U32)COS_CLS_RANK(NAME) << COS_ID_RNKSHT, \
   /* location */ \
-  (STR)(const void*)&COS_CLS_FILE(NAME), COS_CLS_LINE(NAME), \
-  /* instances size */ \
-  sizeof(struct NAME), \
+  COS_CLS_LINE(NAME), (STR)(const void*)&COS_CLS_FILE(NAME) }, \
   /* hack: pre-init link to property metaclasses */ \
   (void*)&COS_PCL_NAME(NAME), \
+  /* instances size */ \
+  sizeof(struct NAME), \
   /* class derives from super class */ \
   SUPER_REF, \
   /* reference to its (class) instance */ \

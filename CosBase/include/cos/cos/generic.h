@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: generic.h,v 1.40 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: generic.h,v 1.41 2010/06/01 07:40:17 ldeniau Exp $
  |
 */
 
@@ -435,11 +435,9 @@ struct Generic COS_GEN_NAME(NAME) = { \
   /* encode rank into id (temporally) and tag into rc */ \
   {{{ (U32)C << COS_ID_RNKSHT, cos_tag_generic }}, \
   /* id must be zero (init) */ \
-   0 }, \
+   0, \
   /* location */ \
-  (STR)(const void*)&COS_GEN_FILE(NAME), COS_GEN_LINE(NAME), \
-  /* index for array of methods */ \
-  0, \
+  COS_GEN_LINE(NAME), (STR)(const void*)&COS_GEN_FILE(NAME) }, \
   /* name (STR) */ \
   COS_PP_STR(NAME) "\0" \
   /* signature (STR) */ \
@@ -455,6 +453,8 @@ struct Generic COS_GEN_NAME(NAME) = { \
   COS_PP_IF(A)(sizeof(COS_ARG_TYPE(NAME)),0), \
   /* size of returned value, sizeof OBJ = 0, void = -1 */ \
   COS_PP_IF(R)(COS_PP_IF(COS_TOK_ISOBJ(RET))(0,sizeof(COS_RET_TYPE(NAME))),-1), \
+  /* index for array of methods */ \
+  0, \
   /* cryptic information */ \
   COS_GEN_INFO(0,A*COS_PP_LEN(AS),O,COS_GEN_RET(RET),V) \
 }

@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.33 2010/01/31 12:03:53 ldeniau Exp $
+ | $Id: cosdef.h,v 1.34 2010/06/01 07:40:17 ldeniau Exp $
  |
 */
 
@@ -187,6 +187,7 @@ enum {
   cos_tag_method  = 0x50,
   cos_tag_alias   = 0x60,
   cos_tag_docstr  = 0x70,
+  // extra tag
   cos_tag_last
 };
 
