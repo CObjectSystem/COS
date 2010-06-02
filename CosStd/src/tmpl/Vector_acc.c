@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_acc.c,v 1.12 2010/05/31 14:02:59 ldeniau Exp $
+ | $Id: Vector_acc.c,v 1.13 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -124,8 +124,7 @@ defmethod(OBJ, gputAt, T, Slice, Object)
 endmethod
 
 defmethod(OBJ, gputAt, T, Range, Object)
-  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),self->size);
-  struct Slice *slice = Slice_fromRange(atSlice(0),range);
+  struct Slice *slice = Slice_fromRange(atSlice(0), self2, &self->size);
   
   retmethod( gputAt(_1,(OBJ)slice,_3) );
 endmethod

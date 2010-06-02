@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_acc.c,v 1.22 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Array_acc.c,v 1.23 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -91,6 +91,7 @@ defmethod(OBJ, ggetAt, Array, IntVector)
   retmethod( gautoRelease(gnewWith2(Array,_1,_2)) );
 endmethod
 
+// move to collection?
 defmethod(OBJ, ggetAt, Array, Array)
   retmethod( gmap(aFun(ggetAt, _1, __1), _2) );
 endmethod
@@ -137,9 +138,9 @@ BODY
   retmethod(_1);
 endmethod
 
+// move to sequence?
 defmethod(OBJ, gputAt, Array, Range, Object)
-  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),self->size);
-  struct Slice *slice = Slice_fromRange(atSlice(0),range);
+  struct Slice *slice = Slice_fromRange(atSlice(0), self2, &self->size);
   
   retmethod( gputAt(_1,(OBJ)slice,_3) );
 endmethod
@@ -163,6 +164,7 @@ defmethod(OBJ, gputAt, Array, IntVector, Object)
   retmethod(_1);
 endmethod
 
+// move to collection?
 defmethod(OBJ, gputAt, Array, Array, Object)
   gforeach(_2, aFun(gputAt, _1, __1, _3));
   retmethod(_1);
@@ -193,9 +195,9 @@ BODY
   retmethod(_1);
 endmethod
 
+// move to sequence?
 defmethod(OBJ, gputAt, Array, Range, Array)
-  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),self->size);
-  struct Slice *slice = Slice_fromRange(atSlice(0),range);
+  struct Slice *slice = Slice_fromRange(atSlice(0), self2, &self->size);
   
   retmethod( gputAt(_1,(OBJ)slice,_3) );
 endmethod
@@ -226,11 +228,13 @@ BODY
   retmethod(_1);
 endmethod
 
+// move to collection?
 defmethod(OBJ, gputAt, Array, Array, Array)
 PRE
   test_assert( self2->size <= self3->size, "source array is too small" );
 
 BODY
-  retmethod( gmap2(aFun(gputAt, _1, __1, __2), _2, _3) );
+  gforeach2(_2, _3, aFun(gputAt, _1, __1, __2));
+  retmethod(_1); 
 endmethod
 

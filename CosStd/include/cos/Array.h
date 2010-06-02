@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.32 2010/05/31 14:02:19 ldeniau Exp $
+ | $Id: Array.h,v 1.33 2010/06/02 22:47:18 ldeniau Exp $
  |
 */
 
@@ -49,6 +49,7 @@
    gnewWith (Array,slice)               -> Block array    (Int sequence)
    gnewWith (Array,range)               -> Block array    (Int sequence)
    gnewWith (Array,xrange)              -> Block array    (Float sequence)
+   
    gnewWith2(Array,size,obj)            -> Block array    (element)
    gnewWith2(Array,size,fun)            -> Block array    (generator)
    gnewWith2(Array,array,slice)         -> Block array    (subarray)
@@ -56,6 +57,7 @@
    gnewWith2(Array,array,intvec)        -> Block array    (random subarray)
 
    gnew     (Array)                     -> Dynamic array
+   gnew     (Array,size)                -> Dynamic array  (with capacity)
 
    gnewWith2(View,array,slice)          -> Array view     (view)
    gnewWith2(View,array,range)          -> Array view     (view)
@@ -94,32 +96,35 @@ endclass
 
 // ----- Block array
 
-defclass(Array0, Array) OBJ _object[]; endclass
-defclass(Array1, Array) OBJ _object[]; endclass
-defclass(Array2, Array) OBJ _object[]; endclass
-defclass(Array3, Array) OBJ _object[]; endclass
-defclass(Array4, Array) OBJ _object[]; endclass
-defclass(Array5, Array) OBJ _object[]; endclass
-defclass(Array6, Array) OBJ _object[]; endclass
-defclass(Array7, Array) OBJ _object[]; endclass
-defclass(Array8, Array) OBJ _object[]; endclass
-defclass(Array9, Array) OBJ _object[]; endclass
-defclass(ArrayN, Array) OBJ _object[]; endclass
+defclass(ArrayBlk, Array)
+endclass
+
+defclass(Array0, ArrayBlk) OBJ _object[]; endclass
+defclass(Array1, ArrayBlk) OBJ _object[]; endclass
+defclass(Array2, ArrayBlk) OBJ _object[]; endclass
+defclass(Array3, ArrayBlk) OBJ _object[]; endclass
+defclass(Array4, ArrayBlk) OBJ _object[]; endclass
+defclass(Array5, ArrayBlk) OBJ _object[]; endclass
+defclass(Array6, ArrayBlk) OBJ _object[]; endclass
+defclass(Array7, ArrayBlk) OBJ _object[]; endclass
+defclass(Array8, ArrayBlk) OBJ _object[]; endclass
+defclass(Array9, ArrayBlk) OBJ _object[]; endclass
+defclass(ArrayN, ArrayBlk) OBJ _object[]; endclass
 
 // ----- Fixed array, Dynamic array and Lazy array
 
 defclass(ArrayFix, Array)
   OBJ *_object;
-  U32  capacity;
 endclass
 
 defclass(ArrayDyn, ArrayFix)
+  U32 capacity;
 endclass
 
 // ----- Array view and subview
 
 defclass(ArrayView, Array)
-  struct Array *ref;
+  OBJ ref;
 endclass
 
 defclass(ArraySubView, ArrayView)
@@ -138,17 +143,18 @@ struct Array* ArrayView_init(struct ArrayView*, struct Array*,
   atArrayN(Sequence_SizedName(Array,10,N,__VA_ARGS__),__VA_ARGS__)
 
 #define atArrayN(TN,...) \
-  ( (struct Array*)&(struct TN) {{ {{ cos_object_auto(TN) }}, \
-    (OBJ[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 }} )
+  ( (struct Array*)&(struct TN) {{{ {{ cos_object_auto(TN) }}, \
+    (OBJ[]){ __VA_ARGS__ }, COS_PP_NARG(__VA_ARGS__), 1 }}} )
 
 #define atArray0() \
-  ( (struct Array*)&(struct Array0) {{ {{ cos_object_auto(Array0) }}, 0, 0, 1 }} )
+  ( (struct Array*)&(struct Array0) {{{ {{ cos_object_auto(Array0) }}, \
+    0, 0, 1 }}} )
 
 // --- ArrayView
 
 #define atArrayView(array,slice) ArrayView_init( \
-  (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \
-  array,slice,COS_NO)
+  (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, \
+    0, 0, 0 }, 0 }), array, slice, COS_NO)
 
 #define atArraySubView(array,slice) ArrayView_init( \
   (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.26 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Number.c,v 1.27 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -127,7 +127,7 @@ DEFMETHOD(Complex)
 #undef  DEFMETHOD
 #define DEFMETHOD(T1,T2) \
 \
-defmethod(OBJ,  ginitWith, T1, T2) \
+defmethod(OBJ, ginitWith, T1, T2) \
   self->value = self2->value; \
   retmethod(_1); \
 endmethod

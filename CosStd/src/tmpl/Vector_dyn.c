@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.16 2010/05/31 14:02:59 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.17 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -414,8 +414,7 @@ defmethod(OBJ, ginsertAt, TD, Slice, Object)
 endmethod
 
 defmethod(OBJ, ginsertAt, TD, Range, Object)
-  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),self->TF.T.size);
-  struct Slice *slice = Slice_fromRange(atSlice(0),range);
+  struct Slice *slice = Slice_fromRange(atSlice(0), self2, &self->TF.T.size);
   
   retmethod( ginsertAt(_1,(OBJ)slice,_3) );
 endmethod
@@ -534,8 +533,7 @@ defmethod(OBJ, gremoveAt, TD, Slice)
 endmethod
 
 defmethod(OBJ, gremoveAt, TD, Range)
-  struct Range *range = Range_normalize(Range_copy(atRange(0),self2),self->TF.T.size);
-  struct Slice *slice = Slice_fromRange(atSlice(0),range);
+  struct Slice *slice = Slice_fromRange(atSlice(0), self2, &self->TF.T.size);
   
   retmethod( gremoveAt(_1,(OBJ)slice) );
 endmethod

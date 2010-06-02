@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: sequence.h,v 1.10 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: sequence.h,v 1.11 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -81,11 +81,11 @@ defgeneric(OBJ, gdrop   , _1, idx);  // remove up to index (back if idx<0)
 defgeneric(OBJ, gfirst  , _1);
 defgeneric(OBJ, glast   , _1);
 
-// compact sequence (e.g. capacity to size)
-defgeneric(OBJ, gcompact, _1);
-defgeneric(OBJ, gadjust , _1); // compact + fix type
+// adjust sequence capacity to size
+defgeneric(OBJ, gadjust , _1); // compact (+ fix type)
 
 // englarge sequence memory (Note: front if by<0)
-defgeneric(OBJ, genlarge, _1, by);
+defgeneric(OBJ, genlarge , _1, by);
+defgeneric(U32, gcapacity, _1);
 
 #endif // COS_GEN_SEQUENCE_H

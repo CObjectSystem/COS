@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fct.c,v 1.11 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Functor_fct.c,v 1.12 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -70,7 +70,7 @@ endmethod
 // ----- 1
 
 defmethod(OBJ, gevalEnv, Function1, Array1)
-  OBJ *var = self2->Array.object;
+  OBJ *var = self2->ArrayBlk.Array.object;
 
   retmethod( self->fct(var[0]) );
 endmethod
@@ -86,7 +86,7 @@ endmethod
 // ----- 2
 
 defmethod(OBJ, gevalEnv, Function2, Array2)
-  OBJ *var = self2->Array.object;
+  OBJ *var = self2->ArrayBlk.Array.object;
 
   retmethod( self->fct(var[0], var[1]) );
 endmethod
@@ -102,7 +102,7 @@ endmethod
 // ----- 3
 
 defmethod(OBJ, gevalEnv, Function3, Array3)
-  OBJ *var = self2->Array.object;
+  OBJ *var = self2->ArrayBlk.Array.object;
 
   retmethod( self->fct(var[0], var[1], var[2]) );
 endmethod
@@ -118,7 +118,7 @@ endmethod
 // ----- 4
 
 defmethod(OBJ, gevalEnv, Function4, Array4)
-  OBJ *var = self2->Array.object;
+  OBJ *var = self2->ArrayBlk.Array.object;
 
   retmethod( self->fct(var[0], var[1], var[2], var[3]) );
 endmethod
@@ -134,7 +134,7 @@ endmethod
 // ----- 5
 
 defmethod(OBJ, gevalEnv, Function5, Array5)
-  OBJ *var = self2->Array.object;
+  OBJ *var = self2->ArrayBlk.Array.object;
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4]) );
 endmethod
@@ -150,7 +150,7 @@ endmethod
 // ----- 6
 
 defmethod(OBJ, gevalEnv, Function6, Array6)
-  OBJ *var = self2->Array.object;
+  OBJ *var = self2->ArrayBlk.Array.object;
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4], var[5]) );
 endmethod
@@ -166,7 +166,7 @@ endmethod
 // ----- 7
 
 defmethod(OBJ, gevalEnv, Function7, Array7)
-  OBJ *var = self2->Array.object;
+  OBJ *var = self2->ArrayBlk.Array.object;
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
                        var[5], var[6]) );
@@ -184,7 +184,7 @@ endmethod
 // ----- 8
 
 defmethod(OBJ, gevalEnv, Function8, Array8)
-  OBJ *var = self2->Array.object;
+  OBJ *var = self2->ArrayBlk.Array.object;
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
                        var[5], var[6], var[7]) );
@@ -202,7 +202,7 @@ endmethod
 // ----- 9
 
 defmethod(OBJ, gevalEnv, Function9, Array9)
-  OBJ *var = self2->Array.object;
+  OBJ *var = self2->ArrayBlk.Array.object;
 
   retmethod( self->fct(var[0], var[1], var[2], var[3], var[4],
                        var[5], var[6], var[7], var[8]) );

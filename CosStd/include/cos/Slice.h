@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Slice.h,v 1.19 2010/05/23 15:44:57 ldeniau Exp $
+ | $Id: Slice.h,v 1.20 2010/06/02 22:47:18 ldeniau Exp $
  |
 */
 
@@ -198,8 +198,11 @@ Slice_addTo(struct Slice *s1, const struct Slice *s2) {
 #include <cos/Range.h>
 
 static cos_inline struct Slice*
-Slice_fromRange(struct Slice *s, const struct Range *r)
+Slice_fromRange(struct Slice *s, const struct Range *r, const U32 *size)
 {
+  if (size) // ask for normalization
+    r = Range_normalize(Range_copy(atRange(0), r), *size);
+
   return Slice_init(s, Range_start(r), Range_size(r), Range_stride(r));
 }
 

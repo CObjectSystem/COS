@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_vw.c,v 1.7 2010/05/25 15:33:39 ldeniau Exp $
+ | $Id: Array_vw.c,v 1.8 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -54,83 +54,82 @@ useclass(ArrayView, ArraySubView);
 // ----- initializer
 
 struct Array*
-ArrayView_init(struct ArrayView *vecv, struct Array *vec, struct Slice *slc, BOOL isSub)
+ArrayView_init(struct ArrayView *arrv, struct Array *arr, struct Slice *slc, BOOL isSub)
 {
-  test_assert( Slice_first(slc) < vec->size &&
-               Slice_last (slc) < vec->size, "slice out of range" );
+  test_assert( Slice_first(slc) < arr->size &&
+               Slice_last (slc) < arr->size, "slice out of range" );
 
-  struct Array* vw = &vecv->Array;
+  struct Array* vw = &arrv->Array;
 
-  vw->object = Slice_start (slc)*vec->stride + vec->object;
+  vw->object = Slice_start (slc)*arr->stride + arr->object;
   vw->size   = Slice_size  (slc);
-  vw->stride = isSub ? Slice_stride(slc) : Slice_stride(slc)*vec->stride;
-  vecv->ref  = vec;
+  vw->stride = isSub ? Slice_stride(slc) : Slice_stride(slc)*arr->stride;
+  arrv->ref  = (OBJ)arr;
 
+  return vw;
+}
+
+static OBJ
+ArrayView_make(OBJ vw, struct Array *arr, struct Slice *slc, BOOL isSub)
+{
+  PRT(vw);
+  struct ArrayView *arrv = chkcast(ArrayView, vw);
+  
+  arrv->ref = 0;
+  arrv->ref = gretain(gadjust( (OBJ)arr ));
+
+  ArrayView_init(arrv, arr, slc, isSub);
+
+  UNPRT(vw);
   return vw;
 }
 
 // ----- view constructors
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, Array, Slice);
-defmethod(OBJ,  ginitWith2          , mView, Array, Slice) // vector view
-  retmethod(ginitWith3(galloc(ArrayView),_2,_3,aInt(NO)));
+defmethod(OBJ,  ginitWith2          , mView, Array, Slice) // array view
+  retmethod( ArrayView_make(galloc(ArrayView), self2, self3, NO) );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, Array, Range);
-defmethod(OBJ,  ginitWith2          , mView, Array, Range) // vector view
-  struct Range *range = Range_normalize(Range_copy(atRange(0),self3),self2->size);
-  struct Slice *slice = Slice_fromRange(atSlice(0),range);
+defmethod(OBJ,  ginitWith2          , mView, Array, Range) // array view
+  struct Slice *slice = Slice_fromRange(atSlice(0), self3, &self2->size);
   
-  retmethod(ginitWith3(galloc(ArrayView),_2,(OBJ)slice,aInt(NO)));
+  retmethod( ArrayView_make(galloc(ArrayView), self2, slice, NO) );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mSubView, Array, Slice);
-defmethod(OBJ,  ginitWith2          , mSubView, Array, Slice) // vector view
-  retmethod(ginitWith3(galloc(ArraySubView),_2,_3,aInt(YES)));
+defmethod(OBJ,  ginitWith2          , mSubView, Array, Slice) // array subview
+  retmethod( ArrayView_make(galloc(ArraySubView), self2, self3, YES) );
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mSubView, Array, Range);
-defmethod(OBJ,  ginitWith2          , mSubView, Array, Range) // vector view
-  struct Range *range = Range_normalize(Range_copy(atRange(0),self3),self2->size);
-  struct Slice *slice = Slice_fromRange(atSlice(0),range);
+defmethod(OBJ,  ginitWith2          , mSubView, Array, Range) // vector subview
+  struct Slice *slice = Slice_fromRange(atSlice(0),self3, &self2->size);
 
-  retmethod(ginitWith3(galloc(ArraySubView),_2,(OBJ)slice,aInt(YES)));
-endmethod
-
-defmethod(OBJ, ginitWith3, ArrayView, Array, Slice, Int) // vector view
-  PRT(_1);
-  self->ref = 0;
-
-  if (cos_object_isKindOf(_2, classref(ArrayDyn)))
-    gadjust(_2);
-
-  OBJ ref = gretain(_2); PRT(ref);
-  
-  ArrayView_init(self, STATIC_CAST(struct Array*, ref), self3, self4->value);
-
-  UNPRT(_1);
-  retmethod(_1);
+  retmethod( ArrayView_make(galloc(ArraySubView), self2, slice, YES) );
 endmethod
 
 // ----- destructor
 
 defmethod(OBJ, gdeinit, ArrayView)
   if (self->ref)              // take care of protection cases
-    grelease( (OBJ)self->ref ), self->ref = 0;
+    grelease(self->ref), self->ref = 0;
+    
   retmethod(_1);
 endmethod
 
 // ----- invariant
 
 defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
-  test_assert( cos_object_isKindOf((OBJ)self->ref, classref(Array)),
+  test_assert( cos_object_isKindOf(self->ref, classref(Array)),
                "array view points to something not an array", func, file, line);
 
   test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(ArrayDyn)) ||
-                cos_object_rc((OBJ)self->ref) == COS_RC_AUTO ,
+                cos_object_rc(self->ref) == COS_RC_AUTO ,
                "array view points to a dynamic array", func, file, line);
 
-  struct Array *vec = self->ref;
+  struct Array *vec = chkcast(Array, self->ref);
 
   I32 start  = (vec->object - self->Array.object)/vec->stride;
   U32 size   = self->Array.size;
@@ -141,8 +140,8 @@ defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
   U32 first = Slice_first(slc);
   U32 last  = Slice_last (slc);
 
-  test_assert( first < self->ref->size &&
-               last  < self->ref->size, "array view is out of range", func, file, line);
+  test_assert( first < vec->size &&
+               last  < vec->size, "array view is out of range", func, file, line);
 
   if (next_method_p)
     next_method(self, func, file, line);

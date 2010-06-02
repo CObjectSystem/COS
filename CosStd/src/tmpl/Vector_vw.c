@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.12 2010/05/23 15:44:57 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.13 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -73,8 +73,7 @@ endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, T, Range);
 defmethod(OBJ,  ginitWith2          , mView, T, Range) // vector view
-  struct Range *range = Range_normalize(Range_copy(atRange(0),self3),self2->size);
-  struct Slice *slice = Slice_fromRange(atSlice(0),range);
+  struct Slice *slice = Slice_fromRange(atSlice(0), self3, &self2->size);
   
   retmethod(ginitWith3(galloc(TV),_2,(OBJ)slice,aInt(NO)));
 endmethod
@@ -86,8 +85,7 @@ endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mSubView, T, Range);
 defmethod(OBJ,  ginitWith2          , mSubView, T, Range) // vector view
-  struct Range *range = Range_normalize(Range_copy(atRange(0),self3),self2->size);
-  struct Slice *slice = Slice_fromRange(atSlice(0),range);
+  struct Slice *slice = Slice_fromRange(atSlice(0), self3, &self2->size);
 
   retmethod(ginitWith3(galloc(TW),_2,(OBJ)slice,aInt(YES)));
 endmethod

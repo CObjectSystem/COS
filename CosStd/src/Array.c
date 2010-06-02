@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.56 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Array.c,v 1.57 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -40,6 +40,7 @@
 
 #include <cos/gen/collection.h>
 #include <cos/gen/functor.h>
+#include <cos/gen/init.h>
 #include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
@@ -49,39 +50,50 @@
 // -----
 
 makclass(Array, Sequence);
+makclass(ArrayBlk, Array);
 
-makclass(Array0, Array);
-makclass(Array1, Array);
-makclass(Array2, Array);
-makclass(Array3, Array);
-makclass(Array4, Array);
-makclass(Array5, Array);
-makclass(Array6, Array);
-makclass(Array7, Array);
-makclass(Array8, Array);
-makclass(Array9, Array);
-makclass(ArrayN, Array);
+makclass(Array0, ArrayBlk);
+makclass(Array1, ArrayBlk);
+makclass(Array2, ArrayBlk);
+makclass(Array3, ArrayBlk);
+makclass(Array4, ArrayBlk);
+makclass(Array5, ArrayBlk);
+makclass(Array6, ArrayBlk);
+makclass(Array7, ArrayBlk);
+makclass(Array8, ArrayBlk);
+makclass(Array9, ArrayBlk);
+makclass(ArrayN, ArrayBlk);
 
 // -----
 
-useclass(Array, ExOverflow);
+useclass(Array, Int, Float, ExOverflow);
 
 // --- getters
 
+defmethod(OBJ, gisEmpty, Array)
+  retmethod(self->size ? False : True);
+endmethod
+
 defmethod(U32, gsize, Array)
   retmethod(self->size);
+endmethod
+
+defmethod(I32, gstride, Array)
+  retmethod(self->stride);
 endmethod
 
 defmethod(OBJ*, gobjPtr, Array)
   retmethod(self->object);
 endmethod
 
-defmethod(OBJ, gisEmpty, Array)
-  retmethod(self->size ? False : True);
-endmethod
-
 defmethod(OBJ, gclass, Array)
   retmethod(Array);     // class cluster: hide implementation details
+endmethod
+
+// --- transformers
+
+defmethod(OBJ, gadjust, Array)
+  retmethod(_1);
 endmethod
 
 // --- alloc
@@ -96,23 +108,23 @@ Array_alloc(U32 size)
              ArrayN)
   };
 
-  size_t extra = size*sizeof(OBJ);
+  size_t extra = size * sizeof(OBJ);
 
   // check for overflow
   if (extra/sizeof(OBJ) < size)
     THROW(gnewWithStr(ExOverflow, "size is too large"));
 
   OBJ _cls = (OBJ)cls[size > N ? N : size];
-  OBJ _vec = gallocWithSize(_cls, extra);
+  OBJ _arr = gallocWithSize(_cls, extra);
 
-  struct ArrayN *vecn = STATIC_CAST(struct ArrayN*, _vec);
-  struct Array  *vec  = &vecn->Array;
+  struct ArrayN *arrn = STATIC_CAST(struct ArrayN*, _arr);
+  struct Array  *arr  = &arrn->ArrayBlk.Array;
 
-  vec->object = vecn->_object;
-  vec->size   = 0;
-  vec->stride = 1;
+  arr->object = arrn->_object;
+  arr->size   = 0;
+  arr->stride = 1;
 
-  return vec;
+  return arr;
 }
 
 // ----- allocator
@@ -170,45 +182,42 @@ endmethod
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Slice);
 defmethod(OBJ,  ginitWith         , pmArray, Slice) // Int sequence
   U32 size = Slice_size(self2);
-  
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < size; i++) {
-    vec->object[i] = gcopy(aInt(Slice_eval(self2,i)));
-    vec->size++;
+    arr->object[i] = ginitWithInt(galloc(Int), Slice_eval(self2,i));
+    arr->size++;
   }
 
-  UNPRT(_vec);
-  retmethod(_vec);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Range);
 defmethod(OBJ,  ginitWith         , pmArray, Range) // Int sequence
   U32 size = Range_size(self2);
-  
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < size; i++) {
-    vec->object[i] = gcopy(aInt(Range_eval(self2,i)));
-    vec->size++;
+    arr->object[i] = ginitWithInt(galloc(Int), Range_eval(self2,i));
+    arr->size++;
   }
 
-  UNPRT(_vec);
-  retmethod(_vec);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, XRange);
 defmethod(OBJ,  ginitWith         , pmArray, XRange) // Float sequence
   U32 size = XRange_size(self2);
-
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   for (U32 i = 0; i < size; i++) {
-    vec->object[i] = gcopy(aFloat(XRange_eval(self2,i)));
-    vec->size++;
+    arr->object[i] = ginitWithFlt(galloc(Float), XRange_eval(self2,i));
+    arr->size++;
   }
   
   if (size) { // avoid overshoot
@@ -216,11 +225,11 @@ defmethod(OBJ,  ginitWith         , pmArray, XRange) // Float sequence
 
     if ((XRange_stride(self2) > 0 && end > XRange_end(self2)) ||
         (XRange_stride(self2) < 0 && end < XRange_end(self2)))
-      ginitWith(vec->object[size-1], aFloat(XRange_end(self2)));     
+      ginitWithFlt(arr->object[size-1], XRange_end(self2));
   }
   
-  UNPRT(_vec);
-  retmethod(_vec);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Int, Object);
@@ -230,19 +239,18 @@ PRE
 
 BODY
   U32 size = self2->value;
-  
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
-  U32 *dst_n = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = dst + size;
 
   while (dst != end)
     *dst++ = gretain(_3), ++*dst_n;
 
-  UNPRT(_vec);
-  retmethod(_vec);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Int, Functor);
@@ -252,44 +260,43 @@ PRE
 
 BODY
   U32 size = self2->value;
-  
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
-  U32 *dst_n = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = dst + size;
 
   while (dst != end)
     *dst++ = gretain(geval(_3)), ++*dst_n;
 
-  UNPRT(_vec);
-  retmethod(_vec);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, Slice);
-defmethod(OBJ,  ginitWith2          , pmArray, Array, Slice) // sub vector
+defmethod(OBJ,  ginitWith2          , pmArray, Array, Slice) // sub array
 PRE
   test_assert( Slice_first(self3) < self2->size &&
                Slice_last (self3) < self2->size, "slice out of range" );
+               
 BODY
+  U32 size = self3->size;
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
+
   I32 start  = Slice_start (self3)*self2->stride;
   I32 stride = Slice_stride(self3)*self2->stride;
-  U32 size   = self3->size;
-  
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
 
-  copy(vec->object, 1, &vec->size, self2->object+start, stride, size);
+  copy(arr->object, 1, &arr->size, self2->object+start, stride, size);
 
-  UNPRT(_vec);
-  retmethod(_vec);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, Range);
-defmethod(OBJ,  ginitWith2          , pmArray, Array, Range) // sub vector
-  struct Range* rng = Range_normalize(Range_copy(atRange(0),self3),self2->size);
-  struct Slice* slc = Slice_fromRange(atSlice(0), rng);
+defmethod(OBJ,  ginitWith2          , pmArray, Array, Range) // sub array
+  struct Slice* slc = Slice_fromRange(atSlice(0), self3, &self2->size);
 
   retmethod( ginitWith2(_1,_2,(OBJ)slc) );
 endmethod
@@ -297,17 +304,16 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, IntVector);
 defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random sequence
   U32 size = self3->size;
-  
-  struct Array* vec = Array_alloc(size);
-  OBJ _vec = (OBJ)vec; PRT(_vec);
+  struct Array* arr = Array_alloc(size);
+  OBJ _arr = (OBJ)arr; PRT(_arr);
 
   U32  val_n = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
   I32  idx_s = self3->stride;
   I32 *idx   = self3->value;
-  U32 *dst_n = &vec->size;
-  OBJ *dst   = vec->object;
+  U32 *dst_n = &arr->size;
+  OBJ *dst   = arr->object;
   OBJ *end   = dst + size;
 
   while (dst != end) {
@@ -317,8 +323,8 @@ defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random seque
     idx += idx_s;
   }
 
-  UNPRT(_vec);
-  retmethod(_vec);
+  UNPRT(_arr);
+  retmethod(_arr);
 endmethod
 
 // ----- invariant

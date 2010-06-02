@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: File.c,v 1.24 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: File.c,v 1.25 2010/06/02 22:47:26 ldeniau Exp $
  |
 */
 
@@ -232,21 +232,15 @@ endmethod
 
 OBJ StdIn=0, StdOut=0, StdErr=0, StdLog=0;
 
-defmethod(void, ginitialize, pmInputFile)
-  if (!StdIn) StdIn = ginitWithFILE(galloc(InputFile), stdin, aStr("stdin" ));
-endmethod
-
-defmethod(void, gdeinitialize, pmInputFile)
-  if (StdIn) grelease(StdIn), StdIn = 0;
-endmethod
-
-defmethod(void, ginitialize, pmOutputFile)
+defmethod(void, (ginitialize)StdioInit, Any)
+  if (!StdIn ) StdIn  = ginitWithFILE(galloc(InputFile) , stdin , aStr("stdin" ));
   if (!StdOut) StdOut = ginitWithFILE(galloc(OutputFile), stdout, aStr("stdout"));
   if (!StdErr) StdErr = ginitWithFILE(galloc(OutputFile), stderr, aStr("stderr"));
   if (!StdLog) StdLog = ginitWithFILE(galloc(OutputFile), stderr, aStr("stdlog"));
 endmethod
 
-defmethod(void, gdeinitialize, pmOutputFile)
+defmethod(void, (gdeinitialize)StdioDeinit, Any)
+  if (StdIn ) grelease(StdIn ), StdIn  = 0;
   if (StdOut) grelease(StdOut), StdOut = 0;
   if (StdErr) grelease(StdErr), StdErr = 0;
   if (StdLog) grelease(StdLog), StdLog = 0;
