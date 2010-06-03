@@ -367,8 +367,12 @@
                     <keyword>STATIC_ASSERT</keyword>
                     <keyword>STATIC_CAST</keyword>
                     <keyword>chkcast</keyword>
-                    <keyword>objcast</keyword>
+                    <keyword>cast</keyword>
                     <keyword>dyncast</keyword>
+                    <keyword>ecast</keyword>
+                    <keyword>edyncast</keyword>
+                    <keyword>ecastLoc</keyword>
+                    <keyword>edyncastLoc</keyword>
                     <keyword>test_assert</keyword>
                     <keyword>test_invariant</keyword>
                     <keyword>method_retval</keyword>
