@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.42 2010/06/03 09:03:49 ldeniau Exp $
+ | $Id: object.h,v 1.43 2010/06/03 22:40:55 ldeniau Exp $
  |
 */
 
@@ -52,8 +52,12 @@ defgeneric(OBJ , gnewWith4  , _1, _2, _3, _4, _5);
 defgeneric(OBJ , gnewWithStr, _1, (STR)str);
 
 // copy, clone
-defgeneric(OBJ , gcopy      , _1); // shallow copy
-defgeneric(OBJ , gclone     , _1); // deep    copy
+defgeneric(OBJ , gcopy , _1); // shallow copy
+defgeneric(OBJ , gclone, _1); // deep    copy
+
+// assign, swap
+defgeneric(OBJ , gassign, _1, _2); // copy content
+defgeneric(OBJ , gswap  , _1, _2); // swap content
 
 // constructors, copy ctor
 defgeneric(OBJ , ginit       , _1);
