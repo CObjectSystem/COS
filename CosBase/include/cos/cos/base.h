@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.32 2010/05/21 14:22:07 ldeniau Exp $
+ | $Id: base.h,v 1.33 2010/06/03 08:19:24 ldeniau Exp $
  |
 */
 
@@ -45,8 +45,10 @@
 #define COS_DISABLE_YES
 #define COS_DISABLE_STATIC_ASSERT
 #define COS_DISABLE_STATIC_CAST
-#define COS_DISABLE_objcast
+#define COS_DISABLE_cast
 #define COS_DISABLE_dyncast
+#define COS_DISABLE_ecast
+#define COS_DISABLE_edyncast
 #define COS_DISABLE_chkcast
 #endif
 
@@ -66,12 +68,20 @@
 #define STATIC_CAST(typename,value) COS_STATIC_CAST(typename,value)
 #endif
 
-#ifndef COS_DISABLE_objcast
-#define objcast(class,object) COS_OBJECT_CAST(class,object)
+#ifndef COS_DISABLE_cast
+#define cast(class,object) COS_OBJECT_CAST(class,object)
 #endif
 
 #ifndef COS_DISABLE_dyncast
 #define dyncast(class,object) COS_OBJECT_DCAST(class,object)
+#endif
+
+#ifndef COS_DISABLE_ecast
+#define ecast(class,object) COS_OBJECT_ECAST(class,object)
+#endif
+
+#ifndef COS_DISABLE_edyncast
+#define edyncast(class,object) COS_OBJECT_EDCAST(class,object)
 #endif
 
 #ifndef COS_DISABLE_chkcast
@@ -100,16 +110,24 @@
         
 // convert object (COS cast)
 #define COS_OBJECT_CAST(cls,obj) \
-((struct cls*) cos_object_cast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
+((struct cls*) cos_object_cast(obj,classref(cls)))
 
 // convert object (COS downcast)
 #define COS_OBJECT_DCAST(cls,obj) \
-((struct cls*) cos_object_dyncast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
+((struct cls*) cos_object_dyncast(obj,classref(cls)))
+
+// convert object (COS cast or throw)
+#define COS_OBJECT_ECAST(cls,obj) \
+((struct cls*) cos_object_ecast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
+
+// convert object (COS downcast or throw)
+#define COS_OBJECT_EDCAST(cls,obj) \
+((struct cls*) cos_object_edyncast(obj,classref(cls),__FUNC__,__FILE__,__LINE__))
 
 // convert value (static cast in release mode, dynamic cast in debug mode)
 #define COS_OBJECT_SCAST(cls,obj) \
 COS_PP_IFNDEF(COS_DEBUG) ( COS_STATIC_CAST(struct cls*, obj), \
-                           COS_OBJECT_DCAST(cls, obj) )
+                           COS_OBJECT_EDCAST(cls, obj) )
 
 // compile time assert
 #define COS_STATIC_ASSERT(tag,cond) \
