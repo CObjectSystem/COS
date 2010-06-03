@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos.h,v 1.15 2010/03/13 15:16:22 ldeniau Exp $
+ | $Id: cos.h,v 1.16 2010/06/03 15:06:28 ldeniau Exp $
  |
 */
 
@@ -87,6 +87,7 @@ extern "C" {
 /* NOTE-USER: COS language headers
  */
 #include <cos/cos/base.h>
+#include <cos/cos/cast.h>
 #include <cos/cos/class.h>
 #include <cos/cos/alias.h>
 #include <cos/cos/method.h>
@@ -105,7 +106,7 @@ extern "C" {
  */
 #include <cos/cos/dispatch.h>
 
-/* NOTE-USER: COS docstr system
+/* NOTE-USER: COS doc string system
  */
 #include <cos/cos/docstr.h>
 

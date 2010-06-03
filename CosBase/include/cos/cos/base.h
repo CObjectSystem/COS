@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: base.h,v 1.34 2010/06/03 09:03:49 ldeniau Exp $
+ | $Id: base.h,v 1.35 2010/06/03 15:06:27 ldeniau Exp $
  |
 */
 
@@ -44,14 +44,6 @@
 #define COS_DISABLE_NO
 #define COS_DISABLE_YES
 #define COS_DISABLE_STATIC_ASSERT
-#define COS_DISABLE_STATIC_CAST
-#define COS_DISABLE_cast
-#define COS_DISABLE_dyncast
-#define COS_DISABLE_ecast
-#define COS_DISABLE_edyncast
-#define COS_DISABLE_ecastLoc
-#define COS_DISABLE_edyncastLoc
-#define COS_DISABLE_chkcast
 #endif
 
 #ifndef COS_DISABLE_NO
@@ -64,38 +56,6 @@
 
 #ifndef COS_DISABLE_STATIC_ASSERT
 #define STATIC_ASSERT(tag,cond) COS_STATIC_ASSERT(tag,cond)
-#endif
-
-#ifndef COS_DISABLE_STATIC_CAST
-#define STATIC_CAST(typename,value) COS_STATIC_CAST(typename,value)
-#endif
-
-#ifndef COS_DISABLE_cast
-#define cast(class,object) COS_OBJECT_CAST(class,object)
-#endif
-
-#ifndef COS_DISABLE_dyncast
-#define dyncast(class,object) COS_OBJECT_DYNCAST(class,object)
-#endif
-
-#ifndef COS_DISABLE_ecast
-#define ecast(class,object) COS_OBJECT_ECAST(class,object)
-#endif
-
-#ifndef COS_DISABLE_edyncast
-#define edyncast(class,object) COS_OBJECT_EDYNCAST(class,object)
-#endif
-
-#ifndef COS_DISABLE_ecastLoc
-#define ecastLoc(class,object) COS_OBJECT_ECASTLOC(class,object)
-#endif
-
-#ifndef COS_DISABLE_edyncastLoc
-#define edyncastLoc(class,object) COS_OBJECT_EDYNCASTLOC(class,object)
-#endif
-
-#ifndef COS_DISABLE_chkcast
-#define chkcast(class,object) COS_OBJECT_CHKCAST(class,object)
 #endif
 
 /***********************************************************
@@ -115,37 +75,9 @@
 #define COS_LOGMSG_ERROR 5
 #define COS_LOGMSG_ABORT 6
 
-// convert value (C cast)
-#define COS_STATIC_CAST(type,value) ((type) (value))
-        
-// convert object (COS cast)
-#define COS_OBJECT_CAST(cls,obj) \
-((struct cls*) cos_object_cast(obj,classref(cls)))
-
-// convert object (COS downcast)
-#define COS_OBJECT_DYNCAST(cls,obj) \
-((struct cls*) cos_object_dyncast(obj,classref(cls)))
-
-// convert object (COS cast or throw)
-#define COS_OBJECT_ECAST(cls,obj) \
-        COS_OBJECT_ECASTLOC(cls,obj,__FILE__,__LINE__)
-
-// convert object (COS downcast or throw)
-#define COS_OBJECT_EDYNCAST(cls,obj) \
-        COS_OBJECT_EDYNCASTLOC(cls,obj,__FILE__,__LINE__)
-
-// convert object (COS cast or throw)
-#define COS_OBJECT_ECASTLOC(cls,obj,file,line) \
-((struct cls*) cos_object_ecast(obj,classref(cls),file,line))
-
-// convert object (COS downcast or throw)
-#define COS_OBJECT_EDYNCASTLOC(cls,obj,file,line) \
-((struct cls*) cos_object_edyncast(obj,classref(cls),file,line))
-
-// convert value (static cast in release mode, dynamic cast in debug mode)
-#define COS_OBJECT_CHKCAST(cls,obj) \
-COS_PP_IFNDEF(COS_DEBUG)( COS_STATIC_CAST(struct cls*, obj), \
-                          COS_OBJECT_EDYNCASTLOC(cls,obj,__FILE__,__LINE__) )
+// array size
+#define COS_ARRLEN(a) \
+        (sizeof (a) / sizeof *(a))
 
 // compile time assert
 #define COS_STATIC_ASSERT(tag,cond) \
@@ -168,10 +100,6 @@ COS_PP_IFNDEF(COS_DEBUG)( COS_STATIC_CAST(struct cls*, obj), \
 #define COS_FIELD_COMPATIBILITY(S1,S2,F) \
         (COS_FIELD_ALIGNMENT(S1,S2,F) && \
          sizeof(((struct S1*)0)->F) == sizeof(((struct S2*)0)->F))
-
-// array size
-#define COS_ARRLEN(a) \
-        (sizeof (a) / sizeof *(a))
 
 // symbols names
 #define COS_CLS_NAME(NAME)    COS_PP_CAT(cos_c_  ,NAME)

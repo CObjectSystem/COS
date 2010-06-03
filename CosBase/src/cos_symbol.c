@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_symbol.c,v 1.59 2010/06/03 09:03:49 ldeniau Exp $
+ | $Id: cos_symbol.c,v 1.60 2010/06/03 15:06:34 ldeniau Exp $
  |
 */
 
@@ -95,10 +95,10 @@ cls_name(const struct Class *cls)
     return cls->str;
 
   case cos_tag_class :
-    return STATIC_CAST(const struct Class*, cls->str)->str+2;
+    return CAST(const struct Class*, cls->str)->str+2;
 
   case cos_tag_mclass:
-    return STATIC_CAST(const struct Class*, cls->cls->str)->str+1;
+    return CAST(const struct Class*, cls->cls->str)->str+1;
 
   default:
     return "unknown";
@@ -169,7 +169,7 @@ static void
 bhv_setTag(struct Behavior *bhv)
 {
   if (bhv->Object.Any._id) { // generics case
-    struct Generic *gen = STATIC_CAST(struct Generic*, bhv);
+    struct Generic *gen = CAST(struct Generic*, bhv);
 
     if (bhv->id)
       cos_abort("generic '%s' at (%s,%d) has already an id",
@@ -183,7 +183,7 @@ bhv_setTag(struct Behavior *bhv)
     bhv->Object.Any._id = 0;
 
   } else {              // classes case
-    struct Class *cls = STATIC_CAST(struct Class*, bhv);
+    struct Class *cls = CAST(struct Class*, bhv);
 
     if (bhv->Object.Any._id)
       cos_abort("class '%s' at (%s,%d) has already an id",
@@ -340,7 +340,7 @@ static void
 als_stinit(struct Method1 *ali)
 {
   // hack: retrieve aliased method stored in cls[0]
-  struct Method1 *mth = STATIC_CAST(struct Method1*, ali->cls[0]);
+  struct Method1 *mth = CAST(struct Method1*, ali->cls[0]);
   
   if (mth->Method.Object.Any._rc == cos_tag_alias) { // alias of alias
     ali->Method.Object.Any._rc = cos_tag_invalid; // temporally invalid
@@ -491,7 +491,7 @@ cls_classPropLst(const struct Generic *gen,
                  const struct Class   *cls, I32 rnk,
                  const struct Class  **prp, U32 n_prp)
 {
-  struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
+  struct Method5 **mth = CAST(struct Method5**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
   U32 i=0, p=0;
   I32 r = COS_CLS_RNK(cls);
@@ -534,7 +534,7 @@ cls_classPropLst(const struct Generic *gen,
 static void
 cls_setClassProp(const struct Generic *gen)
 {
-  struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
+  struct Method5 **mth = CAST(struct Method5**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
   U32 i, j, p=0;
   enum { get, put };
@@ -603,7 +603,7 @@ mth_isSubOf(struct Class* const*cls, struct Class* const* ref, U32 n)
 static inline FCT
 nxt_init(SEL gen, U32 info, U32 arnd, struct Class *const *cls)
 {
-  struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
+  struct Method5 **mth = CAST(struct Method5**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
   U32 n_cls = COS_GEN_RNK (gen);
   enum { n = 5 };
@@ -693,7 +693,7 @@ sym_init(void)
 
       // set behavior tag
       if (tbl_sym[t][s]->_rc & 0x1) {
-        struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl_sym[t][s]);
+        struct Behavior *bhv = CAST(struct Behavior*, tbl_sym[t][s]);
         bhv_setTag(bhv);
       }
     }
@@ -712,7 +712,7 @@ sym_init(void)
 
       // add behavior symbol to behavior table
       if (tbl_sym[t][s]->_rc & 0x1) {
-        struct Behavior *bhv = STATIC_CAST(struct Behavior*, tbl_sym[t][s]);
+        struct Behavior *bhv = CAST(struct Behavior*, tbl_sym[t][s]);
         U32 i = bhv->id & sym.msk;
 
         if (sym.bhv[i]) {
@@ -720,12 +720,12 @@ sym_init(void)
           case cos_tag_class :
           case cos_tag_pclass:
           case cos_tag_mclass: {
-            struct Class *cls = STATIC_CAST(struct Class*, bhv);
+            struct Class *cls = CAST(struct Class*, bhv);
             cos_abort("class '%s' at (%s,%d) slot %u already assigned",
                       cls_name(cls), cls_file(cls), cls_line(cls), i);
           }
           case cos_tag_generic: {
-            struct Generic *gen = STATIC_CAST(struct Generic*, bhv);
+            struct Generic *gen = CAST(struct Generic*, bhv);
             cos_abort("generic '%s' at (%s,%d) slot %u already assigned",
                       gen_name(gen), gen_file(gen), gen_line(gen), i);
           }}
@@ -737,8 +737,8 @@ sym_init(void)
       // finalize symbol information and store it
       switch (tbl_sym[t][s]->_rc) {
       case cos_tag_class: {
-        struct Class *cls = STATIC_CAST(struct Class*, tbl_sym[t][s]);
-        const struct Class *pcl = STATIC_CAST(const struct Class*, cls->str);
+        struct Class *cls = CAST(struct Class*, tbl_sym[t][s]);
+        const struct Class *pcl = CAST(const struct Class*, cls->str);
         sym.cls[sym.n_cls++] = cls;             // hack: meta-link
         cls->str = pcl->str+2;                  // hack: name is shared
         cls->Behavior.file = cls_file(cls);     // hack: file is indirect
@@ -747,7 +747,7 @@ sym_init(void)
       } break;
 
       case cos_tag_pclass: {
-        struct Class *pcl = STATIC_CAST(struct Class*, tbl_sym[t][s]);
+        struct Class *pcl = CAST(struct Class*, tbl_sym[t][s]);
         pcl->spr->str = pcl->str+1;             // hack: name is shared
         pcl->Behavior.file = cls_file(pcl);     // hack: file is indirect
         pcl->Behavior.Object.Any._id = cos_class_id(classref(PropMetaClass));
@@ -755,15 +755,15 @@ sym_init(void)
       } break;
 
       case cos_tag_mclass: {
-        struct Class *mcl = STATIC_CAST(struct Class*, tbl_sym[t][s]);
+        struct Class *mcl = CAST(struct Class*, tbl_sym[t][s]);
         mcl->Behavior.file = cls_file(mcl);    // hack: file is indirect
         mcl->Behavior.Object.Any._id = cos_class_id(classref(MetaClass));
         mcl->Behavior.Object.Any._rc = COS_RC_STATIC;
       } break;
 
       case cos_tag_generic: {
-        struct Generic *gen = STATIC_CAST(struct Generic*, tbl_sym[t][s]);
-        const struct Class *cls = STATIC_CAST(const struct Class*, gen->sig);
+        struct Generic *gen = CAST(struct Generic*, tbl_sym[t][s]);
+        const struct Class *cls = CAST(const struct Class*, gen->sig);
         sym.gen[sym.n_gen++] = gen;
         gen->sig = gen->str + strlen(gen->str) + 1; // hack: sig follows name
         gen->Behavior.file = gen_file(gen);         // hack: file is indirect
@@ -772,7 +772,7 @@ sym_init(void)
       } break;
 
       case cos_tag_method: {
-        struct Method *mth = STATIC_CAST(struct Method*, tbl_sym[t][s]);
+        struct Method *mth = CAST(struct Method*, tbl_sym[t][s]);
         gen_incMth(mth->gen);
         sym.mth[sym.n_mth++] = mth;
         mth->Object.Any._rc = COS_RC_STATIC;
@@ -787,7 +787,7 @@ sym_init(void)
       } break;
       
       case cos_tag_docstr: {
-        struct MetaDocStr *doc = STATIC_CAST(struct MetaDocStr*, tbl_sym[t][s]);
+        struct MetaDocStr *doc = CAST(struct MetaDocStr*, tbl_sym[t][s]);
         sym.doc[sym.n_doc++] = doc;
         doc->Object.Any._id = cos_class_id(classref(MetaDocStr));
         doc->Object.Any._rc = COS_RC_STATIC;
@@ -841,7 +841,7 @@ static void
 cls_init(void)
 {
   struct Generic *gen = genericref(ginitialize);
-  struct Method1 **ini = STATIC_CAST(struct Method1**, sym.mth)+gen->mth;
+  struct Method1 **ini = CAST(struct Method1**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
   U32 i;
 
@@ -860,7 +860,7 @@ static void
 cls_deinit(void)
 {
   struct Generic *gen = genericref(gdeinitialize);
-  struct Method1 **dei = STATIC_CAST(struct Method1**, sym.mth)+gen->mth;
+  struct Method1 **dei = CAST(struct Method1**, sym.mth)+gen->mth;
   U32 n_mth = COS_GEN_NMTH(gen);
   U32 i;
 
@@ -967,7 +967,7 @@ cos_symbol_register(struct Any* sym[], STR tag)
 struct Generic*
 cos_generic_get(U32 id)
 {
-  struct Generic *gen = STATIC_CAST(struct Generic*, sym.bhv[id & sym.msk]);
+  struct Generic *gen = CAST(struct Generic*, sym.bhv[id & sym.msk]);
 
   if (!gen || cos_generic_id(gen) != id)
     cos_abort("invalid generic id %d", id);
@@ -993,7 +993,7 @@ cos_generic_getWithStr(STR str)
 struct Class*
 cos_class_get(U32 id)
 {
-  struct Class *cls = STATIC_CAST(struct Class*, sym.bhv[id & sym.msk]);
+  struct Class *cls = CAST(struct Class*, sym.bhv[id & sym.msk]);
 
   if (!COS_ID_TAG(id))
     cos_abort("invalid class id %d - dynamic object already destroyed or "
@@ -1124,7 +1124,7 @@ cos_object_unsafeChangeClass(OBJ _1, const struct Class *new,
 IMP1
 cos_method_get1(SEL gen, U32 id1)
 {
-  struct Method1 **mth = STATIC_CAST(struct Method1**, sym.mth)+gen->mth;
+  struct Method1 **mth = CAST(struct Method1**, sym.mth)+gen->mth;
   struct Class *cls[1];
   U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),0,0,0,0,0);
@@ -1151,7 +1151,7 @@ cos_method_get1(SEL gen, U32 id1)
 IMP2
 cos_method_get2(SEL gen, U32 id1, U32 id2)
 {
-  struct Method2 **mth = STATIC_CAST(struct Method2**, sym.mth)+gen->mth;
+  struct Method2 **mth = CAST(struct Method2**, sym.mth)+gen->mth;
   struct Class *cls[2];
   U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),COS_ID_RNK(id2),0,0,0,0);
@@ -1179,7 +1179,7 @@ cos_method_get2(SEL gen, U32 id1, U32 id2)
 IMP3
 cos_method_get3(SEL gen, U32 id1, U32 id2, U32 id3)
 {
-  struct Method3 **mth = STATIC_CAST(struct Method3**, sym.mth)+gen->mth;
+  struct Method3 **mth = CAST(struct Method3**, sym.mth)+gen->mth;
   struct Class *cls[3];
   U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),
@@ -1210,7 +1210,7 @@ cos_method_get3(SEL gen, U32 id1, U32 id2, U32 id3)
 IMP4
 cos_method_get4(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4)
 {
-  struct Method4 **mth = STATIC_CAST(struct Method4**, sym.mth)+gen->mth;
+  struct Method4 **mth = CAST(struct Method4**, sym.mth)+gen->mth;
   struct Class *cls[4];
   U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),
@@ -1243,7 +1243,7 @@ cos_method_get4(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4)
 IMP5
 cos_method_get5(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
-  struct Method5 **mth = STATIC_CAST(struct Method5**, sym.mth)+gen->mth;
+  struct Method5 **mth = CAST(struct Method5**, sym.mth)+gen->mth;
   struct Class *cls[5];
   U32 i, n_mth = COS_GEN_NMTH(gen);
   U32 info = COS_MTH_INFO(COS_ID_RNK(id1),
@@ -1508,7 +1508,7 @@ cpyObjClsName(char *dst, char *end, OBJ obj[], U32 nobj)
 char*
 cos_method_name(const struct Method *mth, char *str, U32 sz)
 {
-  struct Class* const *cls = STATIC_CAST(const struct Method5*, mth)->cls;
+  struct Class* const *cls = CAST(const struct Method5*, mth)->cls;
   U32  ncls = COS_GEN_RNK(mth->gen);
   char *end = str+sz;
 
@@ -1535,7 +1535,7 @@ cos_method_call(SEL gen, OBJ obj[], char *str, U32 sz)
 char*
 cos_method_callName(const struct Method *mth, OBJ obj[], char *str, U32 sz)
 {
-  struct Class* const *cls = STATIC_CAST(const struct Method5*, mth)->cls;
+  struct Class* const *cls = CAST(const struct Method5*, mth)->cls;
   U32  ncls = COS_GEN_RNK(mth->gen);
   char *end = str+sz;
 
