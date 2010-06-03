@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_logmsg.c,v 1.17 2010/05/26 15:01:57 ldeniau Exp $
+ | $Id: cos_logmsg.c,v 1.18 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -64,10 +64,10 @@ cos_logmsg_setLevel(int lvl)
 }
 
 void
-cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
+cos_logmsg_(int lvl, STR file, int line, STR fmt, ...)
 {
   if (lvl < COS_LOGMSG_TRALL || lvl > COS_LOGMSG_ABORT) {
-    cos_logmsg_(COS_LOGMSG_WARN, func, file, line,
+    cos_logmsg_(COS_LOGMSG_WARN, file, line,
                 "cos_logmsg discards out-of-range message level %d", lvl);
     return;
   }
@@ -86,7 +86,7 @@ cos_logmsg_(int lvl, STR func, STR file, int line, STR fmt, ...)
     fprintf(cos_logmsg_out, "COS-%s: "    , tag[lvl]);
 #endif
     if (lvl < COS_LOGMSG_INFO)
-      fprintf(cos_logmsg_out, "(%s,%d,%s): ", file ? file : "", line, func ? func : "");
+      fprintf(cos_logmsg_out, "(%s,%d): ", file ? file : "", line);
 
     vfprintf(cos_logmsg_out,fmt,va);
     putc('\n',cos_logmsg_out);

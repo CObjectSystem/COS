@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Exception.c,v 1.22 2010/05/26 22:46:30 ldeniau Exp $
+ | $Id: Exception.c,v 1.23 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -133,39 +133,38 @@ endmethod
 
 // ----- assert
 
-void cos_exception_assert(STR reason, STR func, STR file, int line)
+void cos_exception_assert(STR reason, STR file, int line)
 {
   useclass(ExBadAssert);
   
   if (cos_object_id(ExBadAssert) == 0)
-    cos_logmsg(COS_LOGMSG_ABORT,func,file,line,"%s",reason);
+    cos_logmsg(COS_LOGMSG_ABORT,file,line,"%s",reason);
 
-  THROW( gnewWithStr(ExBadAssert,reason), func,file,line);
+  THROW( gnewWithStr(ExBadAssert,reason), file,line);
 }
 
 // ----- badcast
 
-void cos_exception_badcast(OBJ obj, const struct Class *cls,
-                           STR func, STR file, int line)
+void cos_exception_badcast(OBJ obj, const struct Class *cls, STR file, int line)
 {
   useclass(ExBadCast);
   
   if (cos_object_id(ExBadCast) == 0)
-    cos_logmsg(COS_LOGMSG_ABORT,func,file,line,"invalid cast %s", cls->str);
+    cos_logmsg(COS_LOGMSG_ABORT,file,line,"invalid cast %s", cls->str);
 
-  THROW( ginitWithObjStr(galloc(ExBadCast),obj,cls->str), func,file,line);
+  THROW( ginitWithObjStr(galloc(ExBadCast),obj,cls->str), file,line);
 }
 
 // ----- errno
 
-void cos_exception_errno(int err, STR func, STR file, int line)
+void cos_exception_errno(int err, STR file, int line)
 {
   useclass(ExErrno);
 
   if (cos_object_id(ExErrno) == 0)
-    cos_logmsg(COS_LOGMSG_ABORT,func,file,line, "[%d] %s", err, strerror(err));
+    cos_logmsg(COS_LOGMSG_ABORT,file,line, "[%d] %s", err, strerror(err));
 
-  THROW( ginitWithInt(galloc(ExErrno),err), func,file,line);
+  THROW( ginitWithInt(galloc(ExErrno),err), file, line);
 }
 
 defmethod(OBJ, ginitWithInt, ExErrno, (int)val)

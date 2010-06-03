@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ABCDE.c,v 1.13 2009/12/28 11:08:45 ldeniau Exp $
+ | $Id: ABCDE.c,v 1.14 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -183,28 +183,28 @@ endmethod
 
 // ---- invariant
 
-defmethod(void, ginvariant, A, (STR)func, (STR)file, (int)line)
-  test_assert(self->str[0] == 'A', func, file, line);
+defmethod(void, ginvariant, A, (STR)file, (int)line)
+  test_assert(self->str[0] == 'A', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
-defmethod(void, ginvariant, B, (STR)func, (STR)file, (int)line)
-  test_assert(self->A.str[0] == 'B', func, file, line);
+defmethod(void, ginvariant, B, (STR)file, (int)line)
+  test_assert(self->A.str[0] == 'B', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
-defmethod(void, ginvariant, C, (STR)func, (STR)file, (int)line)
-  test_assert(self->A.str[0] == 'C', func, file, line);
+defmethod(void, ginvariant, C, (STR)file, (int)line)
+  test_assert(self->A.str[0] == 'C', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
-defmethod(void, ginvariant, D, (STR)func, (STR)file, (int)line)
-  test_assert(self->C.A.str[0] == 'D', func, file, line);
+defmethod(void, ginvariant, D, (STR)file, (int)line)
+  test_assert(self->C.A.str[0] == 'D', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
-defmethod(void, ginvariant, E, (STR)func, (STR)file, (int)line)
-  test_assert(self->D.C.A.str[0] == 'E', func, file, line);
+defmethod(void, ginvariant, E, (STR)file, (int)line)
+  test_assert(self->D.C.A.str[0] == 'E', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 

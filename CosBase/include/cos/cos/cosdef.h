@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.34 2010/06/01 07:40:17 ldeniau Exp $
+ | $Id: cosdef.h,v 1.35 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -123,7 +123,7 @@ typedef void (*IMP3)(SEL,OBJ,OBJ,OBJ,        void*,void*);
 typedef void (*IMP4)(SEL,OBJ,OBJ,OBJ,OBJ,    void*,void*);
 typedef void (*IMP5)(SEL,OBJ,OBJ,OBJ,OBJ,OBJ,void*,void*);
 
-typedef void (*cos_exception_handler)(OBJ,STR,STR,int);
+typedef void (*cos_exception_handler)(OBJ,STR,int);
 
 // limits
 
@@ -232,7 +232,6 @@ struct cos_exception_context {
   struct cos_exception_protect *stk;
   BOOL unstk;
   volatile OBJ ex;
-  volatile STR func;
   volatile STR file;
   volatile int line;
   volatile int tag;

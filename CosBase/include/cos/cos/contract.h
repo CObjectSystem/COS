@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: contract.h,v 1.13 2009/09/28 14:04:05 ldeniau Exp $
+ | $Id: contract.h,v 1.14 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -61,22 +61,22 @@
 
   test-invariant-stmt:
     test_invariant( object-expr );
-    test_invariant( object-expr , func, file , line );
+    test_invariant( object-expr , file , line );
 
   test-assert-stmt:
     test_assert( boolean-expr );
     test_assert( boolean-expr , string-literal );
-    test_assert( boolean-expr , func, file , line );
-    test_assert( boolean-expr , string-literal , func, file , line );
+    test_assert( boolean-expr , file , line );
+    test_assert( boolean-expr , string-literal , file , line );
 
   example1:
 
     defmethod(..)
       PRE
-        test_assert(pre-cond [, str] [, func, file, line]);
+        test_assert(pre-cond [, str] [, file, line]);
 
       POST
-        test_assert(post-cond [, str] [, func, file, line]);
+        test_assert(post-cond [, str] [, file, line]);
 
       BODY
         // ...
@@ -89,10 +89,10 @@
     long foo(..) {
       defcontract(long)
       PRE
-        test_assert(pre-cond [, str] [, func, file, line]);
+        test_assert(pre-cond [, str] [, file, line]);
 
       POST
-        test_assert(post-cond [, str] [, func, file, line]);
+        test_assert(post-cond [, str] [, file, line]);
 
       BODY
         // ...
@@ -233,7 +233,7 @@
 #define COS_CTR_INVARIANT(C) \
     if (COS_CONTRACT >= COS_CONTRACT_ALL && _cos_ctr_st == cos_tag_post) \
       COS_PP_CAT(cos_contract_invariant,C)(COS_PP_SEQ(COS_SEL_NAME(C)), \
-                                           __FUNC__,__FILE__,__LINE__);
+                                           __FILE__,__LINE__);
 
 // contract body
 #define COS_CTR_BODY \
@@ -248,23 +248,23 @@
         COS_CTR_ASS_3(CS,C,CS)
 
 #define COS_CTR_ASS_3(CS,C,S) \
-        COS_CTR_ASS_6(CS,C,S,__FUNC__,__FILE__,__LINE__)
+        COS_CTR_ASS_5(CS,C,S,__FILE__,__LINE__)
 
-#define COS_CTR_ASS_5(CS,C,M,F,L) \
-        COS_CTR_ASS_6(CS,C,#C,M,F,L) // cannot avoid macro expansion in #C
+#define COS_CTR_ASS_4(CS,C,F,L) \
+        COS_CTR_ASS_5(CS,C,#C,F,L) // cannot avoid macro expansion in #C
 
-#define COS_CTR_ASS_6(CS,C,S,M,F,L) \
-        ((void)((C) || (cos_exception_assert(S,M,F,L),0)))
+#define COS_CTR_ASS_5(CS,C,S,F,L) \
+        ((void)((C) || (cos_exception_assert(S,F,L),0)))
 
 // test invariant
 #define COS_CTR_INV(...) \
         COS_PP_CAT_NARG(COS_CTR_INV_,__VA_ARGS__)(__VA_ARGS__)
 
 #define COS_CTR_INV_1(O) \
-        COS_CTR_INV_4(O,__FUNC__,__FILE__,__LINE__)
+        COS_CTR_INV_3(O,__FILE__,__LINE__)
 
-#define COS_CTR_INV_4(O,M,F,L) \
+#define COS_CTR_INV_3(O,F,L) \
         ((void)(COS_CONTRACT >= COS_CONTRACT_ALL && \
-         (cos_contract_invariant1(O,M,F,L),0)))
+         (cos_contract_invariant1(O,F,L),0)))
 
 #endif // COS_COS_CONTRACT_H

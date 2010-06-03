@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: config.h,v 1.20 2010/05/20 15:48:16 ldeniau Exp $
+ | $Id: config.h,v 1.21 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -102,15 +102,7 @@
 #endif
 */
 
-#ifndef __FUNC__
-#define __FUNC__ ""
-#endif
-
 #else // C99
-
-#ifndef __FUNC__
-#define __FUNC__ __func__
-#endif
 
 #endif
 

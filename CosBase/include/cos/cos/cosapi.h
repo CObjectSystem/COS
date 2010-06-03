@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.52 2010/06/03 08:19:25 ldeniau Exp $
+ | $Id: cosapi.h,v 1.53 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -94,18 +94,18 @@ void   cos_method_clearCache4(void);
 void   cos_method_clearCache5(void);
 void   cos_method_clearCaches(void);
 
-void   cos_contract_invariant1(OBJ,STR,STR,int);
-void   cos_contract_invariant2(OBJ,OBJ,STR,STR,int);
-void   cos_contract_invariant3(OBJ,OBJ,OBJ,STR,STR,int);
-void   cos_contract_invariant4(OBJ,OBJ,OBJ,OBJ,STR,STR,int);
-void   cos_contract_invariant5(OBJ,OBJ,OBJ,OBJ,OBJ,STR,STR,int);
+void   cos_contract_invariant1(OBJ,STR,int);
+void   cos_contract_invariant2(OBJ,OBJ,STR,int);
+void   cos_contract_invariant3(OBJ,OBJ,OBJ,STR,int);
+void   cos_contract_invariant4(OBJ,OBJ,OBJ,OBJ,STR,int);
+void   cos_contract_invariant5(OBJ,OBJ,OBJ,OBJ,OBJ,STR,int);
 int    cos_contract_setLevel  (int lvl); // return previous level
 
-void   cos_exception_assert (STR,STR,STR,int)  __attribute__((__noreturn__));
-void   cos_exception_errno  (int,STR,STR,int)  __attribute__((__noreturn__));
-void   cos_exception_badcast(OBJ,const struct Class*,STR,STR,int)
-                                               __attribute__((__noreturn__));
-void   cos_exception_throw  (OBJ,STR,STR,int)  __attribute__((__noreturn__));
+void   cos_exception_assert (STR,STR,int) __attribute__((__noreturn__));
+void   cos_exception_errno  (int,STR,int) __attribute__((__noreturn__));
+void   cos_exception_badcast(OBJ,const struct Class*,STR,int)
+                                          __attribute__((__noreturn__));
+void   cos_exception_throw  (OBJ,STR,int) __attribute__((__noreturn__));
 BOOL   cos_exception_catch  (OBJ,OBJ);
 BOOL   cos_exception_uncaught(void);
 void   cos_exception_initContext(struct cos_exception_context*);
@@ -123,31 +123,31 @@ void   cos_module_load(STR*); // null terminated array of module names
    - to access to cos_logmsg_out, you must include cos/cos/debug.h
 */
 #define cos_trace(...) \
-        cos_logmsg(COS_LOGMSG_TRACE,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_TRACE,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_debug(...) \
-        cos_logmsg(COS_LOGMSG_DEBUG,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_DEBUG,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_info(...) \
-        cos_logmsg(COS_LOGMSG_INFO ,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_INFO ,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_warn( ...) \
-        cos_logmsg(COS_LOGMSG_WARN ,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_WARN ,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_error(...) \
-        cos_logmsg(COS_LOGMSG_ERROR,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_ERROR,__FILE__,__LINE__,__VA_ARGS__)
 
 #define cos_abort(...) \
-        cos_logmsg(COS_LOGMSG_ABORT,__FUNC__,__FILE__,__LINE__,__VA_ARGS__)
+        cos_logmsg(COS_LOGMSG_ABORT,__FILE__,__LINE__,__VA_ARGS__)
 
-#define cos_logmsg(lvl,func,file,line,...) \
-((void)(cos_logmsg_level_ <= (lvl) && (cos_logmsg_(lvl,func,file,line,__VA_ARGS__),0)))
+#define cos_logmsg(lvl,file,line,...) \
+((void)(cos_logmsg_level_ <= (lvl) && (cos_logmsg_(lvl,file,line,__VA_ARGS__),0)))
 
 // topic-specific debug
 #define COS_DEBUG_IF(topic,...) \
         ((void)(COS_PP_CAT(DEBUG_,topic) && (cos_debug(__VA_ARGS__),0)))
 
-void cos_logmsg_(int,STR,STR,int,STR,...) __attribute__((__format__(__printf__,5,6)));
+void cos_logmsg_(int,STR,int,STR,...) __attribute__((__format__(__printf__,4,5)));
 int  cos_logmsg_setLevel(int lvl); // return previous level
 
 /* NOTE-INFO: auto ctor
@@ -427,12 +427,12 @@ cos_object_cast(OBJ obj, const struct Class *cls)
 }
 
 static cos_inline void*
-cos_object_ecast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
+cos_object_ecast(OBJ obj, const struct Class *cls, STR file, int line)
 {
   if (obj && cos_object_isa(obj, cls))
     return obj;
 
-  cos_exception_badcast(obj, cls, func, file, line);
+  cos_exception_badcast(obj, cls, file, line);
   COS_UNUSED(cos_object_ecast);
 }
 
@@ -445,14 +445,14 @@ cos_object_dyncast(OBJ obj, const struct Class *cls)
 }
 
 static cos_inline void*
-cos_object_edyncast(OBJ obj, const struct Class *cls, STR func,STR file,int line)
+cos_object_edyncast(OBJ obj, const struct Class *cls, STR file, int line)
 {
   if (obj && (
       cos_object_isa     (obj, cls) ||
       cos_object_isKindOf(obj, cls)))
     return obj;
 
-  cos_exception_badcast(obj, cls, func, file, line);
+  cos_exception_badcast(obj, cls, file, line);
   COS_UNUSED(cos_object_edyncast);
 }
 

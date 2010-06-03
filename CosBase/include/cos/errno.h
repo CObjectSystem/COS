@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: errno.h,v 1.5 2010/05/26 22:46:29 ldeniau Exp $
+ | $Id: errno.h,v 1.6 2010/06/03 09:03:41 ldeniau Exp $
  |
 */
 
@@ -46,6 +46,6 @@
 */
 #define test_errno() \
         ((void)(errno && \
-         (cos_exception_errno(errno,__FUNC__,__FILE__,__LINE__),0)))
+         (cos_exception_errno(errno,__FILE__,__LINE__),0)))
 
 #endif // COS_ERRNO_H

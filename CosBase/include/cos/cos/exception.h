@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: exception.h,v 1.13 2010/05/28 08:39:09 ldeniau Exp $
+ | $Id: exception.h,v 1.14 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -66,7 +66,7 @@
 
   throw-statement:
     THROW( object-expr );
-    THROW( object-expr , func, file , line );
+    THROW( object-expr , file , line );
 
   exception-name:
     identifier                                     // C99 6.4.2.1
@@ -274,7 +274,6 @@
 // exception local binding
 #define COS_EX_MAK(E) \
   OBJ E = _cos_ex_lcxt.ex; \
-  STR COS_PP_CAT(E,_func) = (COS_UNUSED(COS_PP_CAT(E,_func)), _cos_ex_lcxt.func); \
   STR COS_PP_CAT(E,_file) = (COS_UNUSED(COS_PP_CAT(E,_file)), _cos_ex_lcxt.file); \
   int COS_PP_CAT(E,_line) = (COS_UNUSED(COS_PP_CAT(E,_line)), _cos_ex_lcxt.line)
 
@@ -283,13 +282,13 @@
         COS_PP_CAT_NARG(COS_EX_THROW_,__VA_ARGS__)(__VA_ARGS__)
 
 #define COS_EX_THROW_1(E) \
-        COS_EX_THROW_4(E,__FUNC__,__FILE__,__LINE__)
+        COS_EX_THROW_3(E,__FILE__,__LINE__)
 
-#define COS_EX_THROW_4(E,M,F,L) \
-        cos_exception_throw(E,M,F,L)
+#define COS_EX_THROW_3(E,F,L) \
+        cos_exception_throw(E,F,L)
 
 #define COS_EX_RETHROW() \
-        COS_EX_THROW(_cos_ex_lcxt.ex,_cos_ex_lcxt.func,_cos_ex_lcxt.file,_cos_ex_lcxt.line)
+        COS_EX_THROW(_cos_ex_lcxt.ex,_cos_ex_lcxt.file,_cos_ex_lcxt.line)
 
 // pointer protection
 #define COS_EX_PRT(...) \

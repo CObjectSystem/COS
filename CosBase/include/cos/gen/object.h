@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: object.h,v 1.41 2010/05/28 08:39:12 ldeniau Exp $
+ | $Id: object.h,v 1.42 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -87,10 +87,10 @@ defgeneric(void, ginitialize   , _1);
 defgeneric(void, gdeinitialize , _1);
 
 // contract
-defgeneric(void, ginvariant    , _1, (STR)func, (STR)file, (int)line);
+defgeneric(void, ginvariant, _1, (STR)file, (int)line);
 
 // exception
-defgeneric(void, gthrow        , _1, (STR)func, (STR)file, (int)line);
+defgeneric(void, gthrow, _1, (STR)file, (int)line);
 
 // ----- inlined wrappers -----
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_contract.c,v 1.4 2009/09/28 14:04:06 ldeniau Exp $
+ | $Id: cos_contract.c,v 1.5 2010/06/03 09:03:49 ldeniau Exp $
  |
 */
 
@@ -55,57 +55,53 @@ cos_contract_setLevel(int lvl)
 // ----- invariant
 
 void
-cos_contract_invariant1(OBJ _1, STR func, STR file, int line)
+cos_contract_invariant1(OBJ _1, STR file, int line)
 {
   if (cos_contract_level_ < COS_CONTRACT_ALL) return;
   
   if (gunderstandMessage1(_1, genericref(ginvariant)) == True)
-    ginvariant(_1,func,file,line);
+    ginvariant(_1,file,line);
 }
 
 void
-cos_contract_invariant2(OBJ _1, OBJ _2,
-                        STR func, STR file, int line)
+cos_contract_invariant2(OBJ _1, OBJ _2, STR file, int line)
 {
   if (cos_contract_level_ < COS_CONTRACT_ALL) return;
 
-  cos_contract_invariant1(_1,func,file,line);
-  cos_contract_invariant1(_2,func,file,line);
+  cos_contract_invariant1(_1,file,line);
+  cos_contract_invariant1(_2,file,line);
 }
 
 void
-cos_contract_invariant3(OBJ _1, OBJ _2, OBJ _3,
-                        STR func, STR file, int line)
+cos_contract_invariant3(OBJ _1, OBJ _2, OBJ _3, STR file, int line)
 {
   if (cos_contract_level_ < COS_CONTRACT_ALL) return;
 
-  cos_contract_invariant1(_1,func,file,line);
-  cos_contract_invariant1(_2,func,file,line);
-  cos_contract_invariant1(_3,func,file,line);
+  cos_contract_invariant1(_1,file,line);
+  cos_contract_invariant1(_2,file,line);
+  cos_contract_invariant1(_3,file,line);
 }
 
 void
-cos_contract_invariant4(OBJ _1, OBJ _2, OBJ _3, OBJ _4,
-                        STR func, STR file, int line)
+cos_contract_invariant4(OBJ _1, OBJ _2, OBJ _3, OBJ _4, STR file, int line)
 {
   if (cos_contract_level_ < COS_CONTRACT_ALL) return;
 
-  cos_contract_invariant1(_1,func,file,line);
-  cos_contract_invariant1(_2,func,file,line);
-  cos_contract_invariant1(_3,func,file,line);
-  cos_contract_invariant1(_4,func,file,line);
+  cos_contract_invariant1(_1,file,line);
+  cos_contract_invariant1(_2,file,line);
+  cos_contract_invariant1(_3,file,line);
+  cos_contract_invariant1(_4,file,line);
 }
 
 void
-cos_contract_invariant5(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5,
-                        STR func, STR file, int line)
+cos_contract_invariant5(OBJ _1, OBJ _2, OBJ _3, OBJ _4, OBJ _5, STR file, int line)
 {
   if (cos_contract_level_ < COS_CONTRACT_ALL) return;
 
-  cos_contract_invariant1(_1,func,file,line);
-  cos_contract_invariant1(_2,func,file,line);
-  cos_contract_invariant1(_3,func,file,line);
-  cos_contract_invariant1(_4,func,file,line);
-  cos_contract_invariant1(_5,func,file,line);
+  cos_contract_invariant1(_1,file,line);
+  cos_contract_invariant1(_2,file,line);
+  cos_contract_invariant1(_3,file,line);
+  cos_contract_invariant1(_4,file,line);
+  cos_contract_invariant1(_5,file,line);
 }
 
