@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_vw.c,v 1.9 2010/06/03 15:27:50 ldeniau Exp $
+ | $Id: Array_vw.c,v 1.10 2010/06/03 22:47:19 ldeniau Exp $
  |
 */
 
@@ -49,13 +49,15 @@ makclass(ArraySubView, ArrayView);
 
 // -----
 
-useclass(ArrayView, ArraySubView);
+useclass(ArrayView, ArraySubView, ExBadRange);
 
 // ----- initializer (weaker than constructors: no retain)
 
 defmethod(OBJ, ginitWith2, ArrayView, Array, Slice) // array view
-  test_assert( Slice_first(self3) < self2->size &&
-               Slice_last (self3) < self2->size, "slice out of range" );
+  if ( Slice_first(self3) < self2->size && Slice_last(self3) < self2->size) {
+    self->ref = 0;
+    THROW( gnewWithStr(ExBadRange, "slice out of range") );
+  }
 
   self->Array.object = Slice_start (self3)*self2->stride + self2->object;
   self->Array.size   = Slice_size  (self3);
@@ -67,12 +69,15 @@ endmethod
 
 defmethod(OBJ, ginitWith2, ArrayView, Array, Range) // array view
   OBJ slc = (OBJ)Slice_fromRange(atSlice(0), self3, &self2->size);
-  retmethod( ginitWith2(_1,_2,(OBJ)slc) );
+  
+  retmethod( ginitWith2(_1, _2, slc) );
 endmethod
 
 defmethod(OBJ, ginitWith2, ArraySubView, Array, Slice) // array subview
-  test_assert( Slice_first(self3) < self2->size &&
-               Slice_last (self3) < self2->size, "slice out of range" );
+  if ( Slice_first(self3) < self2->size && Slice_last(self3) < self2->size) {
+    self->ArrayView.ref = 0;
+    THROW( gnewWithStr(ExBadRange, "slice out of range") );
+  }
 
   self->ArrayView.Array.object = Slice_start (self3) + self2->object;
   self->ArrayView.Array.size   = Slice_size  (self3);
@@ -84,7 +89,8 @@ endmethod
 
 defmethod(OBJ, ginitWith2, ArraySubView, Array, Range) // array subview
   OBJ slc = (OBJ)Slice_fromRange(atSlice(0), self3, &self2->size);
-  retmethod( ginitWith2(_1,_2,(OBJ)slc) );
+  
+  retmethod( ginitWith2(_1, _2, slc) );
 endmethod
 
 // ----- view constructors
@@ -136,7 +142,7 @@ endmethod
 // ----- destructor
 
 defmethod(OBJ, gdeinit, ArrayView)
-  if (self->ref && cos_object_rc(_1) != COS_RC_AUTO)
+  if (self->ref)
     grelease(self->ref), self->ref = 0;
     
   retmethod(_1);
@@ -145,26 +151,23 @@ endmethod
 // ----- invariant
 
 defmethod(void, ginvariant, ArrayView, (STR)file, (int)line)
-  test_assert( cos_object_isKindOf(self->ref, classref(Array)),
-               "array view points to something not an array", file, line);
+  struct Array *arr = dyncast(Array, self->ref);
 
-  test_assert( !cos_object_isKindOf(self->ref, classref(ArrayDyn)) ||
-                cos_object_rc(_1) == COS_RC_AUTO,
+  test_assert( arr, "array view points to something not an array", file, line);
+  test_assert( !dyncast(ArrayDyn, self->ref) || cos_object_rc(_1) == COS_RC_AUTO,
                "array view points to a dynamic array", file, line);
 
-  struct Array *vec = edyncast(Array, self->ref);
-
-  I32 start  = (vec->object - self->Array.object)/vec->stride;
+  I32 start  = (arr->object - self->Array.object)/arr->stride;
   U32 size   = self->Array.size;
-  I32 stride = self->Array.stride/vec->stride;
+  I32 stride = self->Array.stride/arr->stride;
 
   struct Slice *slc = atSlice(start, size, stride);
 
   U32 first = Slice_first(slc);
   U32 last  = Slice_last (slc);
 
-  test_assert( first < vec->size &&
-               last  < vec->size, "array view is out of range", file, line);
+  test_assert( first < arr->size && last < arr->size,
+               "array view is out of range", file, line);
 
   if (next_method_p)
     next_method(self, file, line);

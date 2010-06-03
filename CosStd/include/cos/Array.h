@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.34 2010/06/03 15:27:49 ldeniau Exp $
+ | $Id: Array.h,v 1.35 2010/06/03 22:47:19 ldeniau Exp $
  |
 */
 
@@ -133,12 +133,9 @@ endclass
 defclass(ArraySubView, ArrayView)
 endclass
 
-// ----- initializers, allocators (for the class cluster)
+// ----- allocators (for the class cluster)
 
-struct Slice;
 struct Array* Array_alloc(U32);
-struct Array* ArrayView_init(struct ArrayView*,
-                             OBJ arr, OBJ slc, BOOL isSub, STR file, int line);
 
 // ----- automatic constructors
 

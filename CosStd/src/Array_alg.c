@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.25 2010/06/03 15:27:50 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.26 2010/06/03 22:47:19 ldeniau Exp $
  |
 */
 
@@ -334,7 +334,7 @@ defmethod(OBJ, gzipn, Array)
        
   while (src != end) {
     struct Array* self2 = CAST(struct Array*, *src);
-    copy(dst,size,&arr->size,self2->object,self2->stride,self2->size);
+    arr_copy(dst,size,&arr->size,self2->object,self2->stride,self2->size);
     src += src_s;
     dst += 1;
   }
@@ -351,8 +351,8 @@ defmethod(OBJ, gconcat, Array, Array)
 
   OBJ *dst = arr->object;
 
-  dst = copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
-        copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+  dst = arr_copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
+        arr_copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
 
   retmethod(_arr);
 endmethod
@@ -364,9 +364,9 @@ defmethod(OBJ, gconcat3, Array, Array, Array)
 
   OBJ *dst = arr->object;
 
-  dst = copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
-  dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
-        copy(dst,1,&arr->size,self3->object,self3->stride,self3->size);
+  dst = arr_copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
+  dst = arr_copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+        arr_copy(dst,1,&arr->size,self3->object,self3->stride,self3->size);
 
   retmethod(_arr);
 endmethod
@@ -378,10 +378,10 @@ defmethod(OBJ, gconcat4, Array, Array, Array, Array)
 
   OBJ *dst = arr->object;
 
-  dst = copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
-  dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
-  dst = copy(dst,1,&arr->size,self3->object,self3->stride,self3->size);
-        copy(dst,1,&arr->size,self4->object,self4->stride,self4->size);
+  dst = arr_copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
+  dst = arr_copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+  dst = arr_copy(dst,1,&arr->size,self3->object,self3->stride,self3->size);
+        arr_copy(dst,1,&arr->size,self4->object,self4->stride,self4->size);
 
   retmethod(_arr);
 endmethod
@@ -394,11 +394,11 @@ defmethod(OBJ, gconcat5, Array, Array, Array, Array, Array)
 
   OBJ *dst = arr->object;
 
-  dst = copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
-  dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
-  dst = copy(dst,1,&arr->size,self3->object,self3->stride,self3->size);
-  dst = copy(dst,1,&arr->size,self4->object,self4->stride,self4->size);
-        copy(dst,1,&arr->size,self5->object,self5->stride,self5->size);
+  dst = arr_copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
+  dst = arr_copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+  dst = arr_copy(dst,1,&arr->size,self3->object,self3->stride,self3->size);
+  dst = arr_copy(dst,1,&arr->size,self4->object,self4->stride,self4->size);
+        arr_copy(dst,1,&arr->size,self5->object,self5->stride,self5->size);
 
   retmethod(_arr);
 endmethod
@@ -428,7 +428,7 @@ defmethod(OBJ, gconcatn, Array)
   
   while(src != end) {
     struct Array* self2 = CAST(struct Array*, *src);
-    dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+    dst = arr_copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
     src += src_s;
   }
 

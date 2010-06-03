@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.58 2010/06/03 15:27:50 ldeniau Exp $
+ | $Id: Array.c,v 1.59 2010/06/03 22:47:19 ldeniau Exp $
  |
 */
 
@@ -152,7 +152,7 @@ defmethod(OBJ, gcopy, Array) // copy
   struct Array* cpy = Array_alloc(self->size);
   OBJ _cpy = (OBJ)cpy; PRT(_cpy);
 
-  copy(cpy->object, 1, &cpy->size, self->object, self->stride, self->size);
+  arr_copy(cpy->object, 1, &cpy->size, self->object, self->stride, self->size);
 
   UNPRT(_cpy);
   retmethod(_cpy);
@@ -162,7 +162,7 @@ defmethod(OBJ, gclone, Array) // clone
   struct Array* cpy = Array_alloc(self->size);
   OBJ _cpy = (OBJ)cpy; PRT(_cpy);
 
-  clone(cpy->object, 1, &cpy->size, self->object, self->stride, self->size);
+  arr_clone(cpy->object, 1, &cpy->size, self->object, self->stride, self->size);
 
   UNPRT(_cpy);
   retmethod(_cpy);
@@ -173,7 +173,7 @@ defmethod(OBJ,  ginitWith         , pmArray, Array) // copy
   struct Array* cpy = Array_alloc(self2->size);
   OBJ _cpy = (OBJ)cpy; PRT(_cpy);
 
-  copy(cpy->object, 1, &cpy->size, self2->object, self2->stride, self2->size);
+  arr_copy(cpy->object, 1, &cpy->size, self2->object, self2->stride, self2->size);
 
   UNPRT(_cpy);
   retmethod(_cpy);
@@ -288,7 +288,7 @@ BODY
   I32 start  = Slice_start (self3)*self2->stride;
   I32 stride = Slice_stride(self3)*self2->stride;
 
-  copy(arr->object, 1, &arr->size, self2->object+start, stride, size);
+  arr_copy(arr->object, 1, &arr->size, self2->object+start, stride, size);
 
   UNPRT(_arr);
   retmethod(_arr);
@@ -325,6 +325,28 @@ defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random seque
 
   UNPRT(_arr);
   retmethod(_arr);
+endmethod
+
+// ----- other manipulation
+
+defmethod(OBJ, gswap, Array, Array) // swap
+PRE
+  test_assert( self->size >= self2->size, "incompatible array size" );
+
+BODY
+  arr_swap(self->object, self->stride, self2->object, self2->stride, self2->size);
+
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gassign, Array, Array) // assign
+PRE
+  test_assert( self->size >= self2->size, "incompatible array size" );
+
+BODY
+  arr_assign(self->object, self->stride, self2->object, self2->stride, self2->size);
+
+  retmethod(_1);
 endmethod
 
 // ----- invariant

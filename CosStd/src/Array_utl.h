@@ -4,7 +4,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Array - utilities
+ | COS Array - low-level utilities
  |
  o---------------------------------------------------------------------o
  |
@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_utl.h,v 1.5 2010/05/21 14:59:09 ldeniau Exp $
+ | $Id: Array_utl.h,v 1.6 2010/06/03 22:47:19 ldeniau Exp $
  |
 */
 
@@ -53,7 +53,35 @@ assign(OBJ *dst, OBJ val)
 }
 
 static cos_inline OBJ*
-copy(OBJ *dst, I32 dst_s, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
+arr_swap(OBJ *dst, I32 dst_s, OBJ *src, I32 src_s, U32 src_n)
+{
+  OBJ *end = src + src_s*src_n;
+
+  while (src != end) {
+    swap(dst, src);
+    dst += dst_s;
+    src += src_s;
+  }
+
+  return dst;
+}
+
+static cos_inline OBJ*
+arr_assign(OBJ *dst, I32 dst_s, OBJ *src, I32 src_s, U32 src_n)
+{
+  OBJ *end = src + src_s*src_n;
+
+  while (src != end) {
+    assign(dst, *src);
+    dst += dst_s;
+    src += src_s;
+  }
+
+  return dst;
+}
+
+static cos_inline OBJ*
+arr_copy(OBJ *dst, I32 dst_s, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
 {
   OBJ *end = src + src_s*src_n;
 
@@ -67,7 +95,7 @@ copy(OBJ *dst, I32 dst_s, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
 }
 
 static cos_inline OBJ*
-clone(OBJ *dst, I32 dst_s, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
+arr_clone(OBJ *dst, I32 dst_s, U32 *dst_n, OBJ *src, I32 src_s, U32 src_n)
 {
   OBJ *end = src + src_s*src_n;
 

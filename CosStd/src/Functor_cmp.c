@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.13 2010/06/03 15:27:50 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.14 2010/06/03 22:47:19 ldeniau Exp $
  |
 */
 
@@ -68,7 +68,7 @@ defmethod(OBJ,  ginitWith         , pmComposeFun, ComposeFun) // clone
   OBJ _cpy = (OBJ)cpy; PRT(_cpy);
   
   cpy->Functor.msk = self2->Functor.msk;
-  copy(cpy->fun,1,&cpy->size,self2->fun,1,self2->size);
+  arr_copy(cpy->fun,1,&cpy->size,self2->fun,1,self2->size);
 
   UNPRT(_cpy);
   retmethod(_cpy);
@@ -82,7 +82,7 @@ defmethod(OBJ,  ginitWith         , pmComposeFun, Array) // copy
   test_assert( self2->size > 0, "zero length array");
   
   cpy->Functor.msk = edyncast(Functor, self2->object[0])->msk;  
-  copy(cpy->fun,1,&cpy->size,self2->object,self2->stride,self2->size);
+  arr_copy(cpy->fun,1,&cpy->size,self2->object,self2->stride,self2->size);
 
   UNPRT(_cpy);
   retmethod(_cpy);
