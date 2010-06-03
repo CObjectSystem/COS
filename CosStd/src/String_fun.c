@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_fun.c,v 1.18 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: String_fun.c,v 1.19 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -142,7 +142,7 @@ defmethod(OBJ, gmapWhile, Functor, String)
   OBJ res;
 
   OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
-  struct String* str = STATIC_CAST(struct String*, _str);
+  struct String* str = CAST(struct String*, _str);
   
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
@@ -162,7 +162,7 @@ defmethod(OBJ, gmapIf, Functor, String)
   OBJ res;
 
   OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
-  struct String* str = STATIC_CAST(struct String*, _str);
+  struct String* str = CAST(struct String*, _str);
   
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
@@ -258,7 +258,7 @@ defmethod(OBJ, gselect, String, Functor)
   U8* end  = val + size;
 
   OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
-  struct String* str = STATIC_CAST(struct String*, _str);
+  struct String* str = CAST(struct String*, _str);
 
   U32 *dst_n = &str->size;
   U8*  dst   = str ->value;
@@ -278,7 +278,7 @@ defmethod(OBJ, greject, String, Functor)
   U8* end  = val + size;
 
   OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
-  struct String* str = STATIC_CAST(struct String*, _str);
+  struct String* str = CAST(struct String*, _str);
 
   U32 *dst_n = &str->size;
   U8*  dst   = str ->value;
@@ -298,7 +298,7 @@ defmethod(OBJ, gselectWhile, String, Functor)
   U8* end  = val + size;
 
   OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
-  struct String* str = STATIC_CAST(struct String*, _str);
+  struct String* str = CAST(struct String*, _str);
 
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
@@ -319,7 +319,7 @@ defmethod(OBJ, grejectWhile, String, Functor)
   U8* end  = val + size;
 
   OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
-  struct String* str = STATIC_CAST(struct String*, _str);
+  struct String* str = CAST(struct String*, _str);
 
   U32 *dst_n = &str->size;
   U8*  dst   = str->value;
@@ -437,7 +437,7 @@ endmethod
 defmethod(OBJ, gunique, String, Functor)
   U32 size = self->size;
   OBJ _str = gautoRelease(gnewWith(String,aInt(size)));
-  struct String* str = STATIC_CAST(struct String*, _str);
+  struct String* str = CAST(struct String*, _str);
 
   U8* val = self->value;
   U8* dst = str ->value;

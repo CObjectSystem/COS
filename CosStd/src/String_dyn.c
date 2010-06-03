@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.13 2010/06/02 22:47:26 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.14 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -111,12 +111,12 @@ endmethod
 
 // ----- invariant
 
-defmethod(void, ginvariant, StringDyn, (STR)func, (STR)file, (int)line)
+defmethod(void, ginvariant, StringDyn, (STR)file, (int)line)
   test_assert( self->StringFix.capacity >= self->StringFix.String.size,
-               "dynamic string has capacity < size", func, file, line);
+               "dynamic string has capacity < size", file, line);
 
   if (next_method_p)
-    next_method(self, func, file, line);
+    next_method(self, file, line);
 endmethod
 
 // ----- memory management

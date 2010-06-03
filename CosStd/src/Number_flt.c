@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number_flt.c,v 1.13 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Number_flt.c,v 1.14 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -197,7 +197,7 @@ endmethod
 // ----- abs
 
 defmethod(OBJ, gabs, Complex)
-  struct Float *flt = STATIC_CAST(struct Float*, gautoRelease(galloc(Float)));
+  struct Float *flt = CAST(struct Float*, gautoRelease(galloc(Float)));
   flt->value = cabs(self->value);
   retmethod( (OBJ)flt );
 endmethod
@@ -205,7 +205,7 @@ endmethod
 // ----- arg
 
 defmethod(OBJ, garg, Complex)
-  struct Float *flt = STATIC_CAST(struct Float*, gautoRelease(galloc(Float)));
+  struct Float *flt = CAST(struct Float*, gautoRelease(galloc(Float)));
   flt->value = carg(self->value);
   retmethod( (OBJ)flt );
 endmethod
@@ -277,7 +277,7 @@ endmethod
 // use C99 fma
 #ifdef FP_FAST_FMA
 defmethod(OBJ, gmulAdd, Float, Float, Float)
-  struct Float *flt = STATIC_CAST(struct Float*, gautoRelease(galloc(Float)));
+  struct Float *flt = CAST(struct Float*, gautoRelease(galloc(Float)));
   flt->value = fma(self->value,self2->value,self3->value);
   retmethod( (OBJ)flt );
 endmethod

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.35 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.36 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -267,7 +267,7 @@ defmethod(OBJ, gmapWhile, Functor, Array)
   OBJ  res;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -290,7 +290,7 @@ defmethod(OBJ, gmapIf, Functor, Array)
   OBJ  res;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -423,7 +423,7 @@ defmethod(OBJ, gselect, Array, Functor)
   OBJ *end   = val + val_s*size;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -444,7 +444,7 @@ defmethod(OBJ, greject, Array, Functor)
   OBJ *end   = val + val_s*size;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -465,7 +465,7 @@ defmethod(OBJ, gselectWhile, Array, Functor)
   OBJ *end   = val + val_s*size;
   
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -487,7 +487,7 @@ defmethod(OBJ, grejectWhile, Array, Functor)
   OBJ *end   = val + val_s*size;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -669,7 +669,7 @@ defmethod(OBJ, gaccumulate, Array, Functor)
   test_assert( self->size > 0, "empty array" );
 
   OBJ ini = gautoRelease(gclone(self->object[0]));
-  OBJ arr = aArrayView(self, atSlice(1, self->size-1));
+  OBJ arr = aArrayView(_1, aSlice(1, self->size-1));
   
   retmethod( gaccumulate1(arr, _2, ini) );
 endmethod
@@ -867,7 +867,7 @@ endmethod
 defmethod(OBJ, gunique, Array, Functor)
   U32 size = self->size;
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   I32  val_s = self->stride;
   OBJ *val   = self->object;
@@ -898,10 +898,10 @@ defmethod(OBJ, gsplit, Array, Functor)
   I32  val_s = self->stride;
   OBJ *val   = self->object;
   OBJ *end   = val + val_s*size;
-  I32  beg   = 0;
+  OBJ *beg   = val;
 
   while (val != end) {
-    U32 len = 1;
+    U32 lsz = 1;
     val += val_s;
 
     while (val != end) {
@@ -909,11 +909,11 @@ defmethod(OBJ, gsplit, Array, Functor)
         break;
         
       val += val_s;
-      len += 1;
+      lsz += 1;
     }
 
-    gpush(_arr, aArrayView(self, atSlice(beg, len, val_s)));
-    beg += len;
+    gpush(_arr, aArrayRef(beg, lsz, val_s));
+    beg = val;
   }
 
   retmethod(_arr);
@@ -940,9 +940,6 @@ defmethod(OBJ, ggroup, Array, Functor)
     gpush(res == True ? arr_t : arr_f, *val);
     val += val_s;
   }
-
-  gadjust(arr_f);
-  gadjust(arr_t);
 
   retmethod(arr);
 endmethod
@@ -991,7 +988,7 @@ endmethod
 defmethod(OBJ, gdiff, Array, Collection, Functor)
   U32 size = self->size;
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   I32  val_s  = self->stride;
   OBJ *val    = self->object;
@@ -1014,7 +1011,7 @@ endmethod
 defmethod(OBJ, gmatch, Array, Collection, Functor)
   U32 size = self->size;
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   I32  val_s  = self->stride;
   OBJ *val    = self->object;
@@ -1040,7 +1037,7 @@ endmethod
 defmethod(OBJ, gintersect, Array, Collection, Functor)
   U32 size = self->size;
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = STATIC_CAST(struct Array*, _arr);
+  struct Array* arr = CAST(struct Array*, _arr);
 
   I32  val_s  = self->stride;
   OBJ *val    = self->object;
@@ -1391,7 +1388,7 @@ defmethod(OBJ, gisort, Array, Functor)
   useclass(IntVector);
 
   OBJ _arr = gautoRelease(gnewWith(IntVector, aSlice(0,self->size,1)));
-  struct IntVector *arr = STATIC_CAST(struct IntVector*, _arr);
+  struct IntVector *arr = CAST(struct IntVector*, _arr);
 
   iqsortSFun(arr->value, arr->size-1, self->object, self->stride, _2);
 

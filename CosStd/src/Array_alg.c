@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.24 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.25 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -43,6 +43,7 @@
 #include <cos/gen/array.h>
 #include <cos/gen/collection.h>
 #include <cos/gen/sequence.h>
+#include <cos/gen/range.h>
 #include <cos/gen/relop.h>
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
@@ -53,7 +54,7 @@
 
 #include <string.h>
 
-useclass(Array);
+useclass(Array, View, Slice);
 
 // ----- equality
 
@@ -332,7 +333,7 @@ defmethod(OBJ, gzipn, Array)
        src = self->object;
        
   while (src != end) {
-    struct Array* self2 = chkcast(Array, *src);
+    struct Array* self2 = CAST(struct Array*, *src);
     copy(dst,size,&arr->size,self2->object,self2->stride,self2->size);
     src += src_s;
     dst += 1;
@@ -426,7 +427,7 @@ defmethod(OBJ, gconcatn, Array)
        src = self->object;
   
   while(src != end) {
-    struct Array* self2 = chkcast(Array, *src);
+    struct Array* self2 = CAST(struct Array*, *src);
     dst = copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
     src += src_s;
   }
@@ -557,7 +558,7 @@ defmethod(OBJ, gfind, Array, Array)
   OBJ *p = findSub(val,val_n,val_s,self2->object,self2->size,self2->stride);
   if (!p) retmethod(Nil);
 
-  OBJ avw = aArrayView(self, atSlice((p-val)/val_s,self2->size,val_s) );
+  OBJ avw = gnewWith2(View, _1, aSlice((p-val)/val_s, self2->size, val_s));
   retmethod(gautoRelease( avw ));
 endmethod
 
@@ -569,7 +570,7 @@ defmethod(OBJ, gifind, Array, Array)
   OBJ *p = findSub(val,val_n,val_s,self2->object,self2->size,self2->stride);
   if (!p) retmethod(Nil);
 
-  OBJ slc = aSlice((p-val)/val_s,self2->size,val_s);
+  OBJ slc = gnewSlc(Slice, (p-val)/val_s, self2->size, val_s);
   retmethod(gautoRelease( slc ));  
 endmethod
 

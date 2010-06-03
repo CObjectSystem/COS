@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_utl.c,v 1.16 2010/02/21 00:46:24 ldeniau Exp $
+ | $Id: Functor_utl.c,v 1.17 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -52,31 +52,31 @@ useclass(ExBadAlloc);
 static inline U32
 getFunIdx(OBJ arg) // unsafe, use with isIdx()
 {
-  return STATIC_CAST(struct FunArg*, arg)->idx;
+  return CAST(struct FunArg*, arg)->idx;
 }
 
 static inline OBJ
 getFunVar(OBJ arg) // unsafe, use with isVar()
 {
-  return STATIC_CAST(struct FunVar*, arg)->var;
+  return CAST(struct FunVar*, arg)->var;
 }
 
 static inline OBJ
 getFunFun(OBJ arg) // unsafe
 {
-  return STATIC_CAST(struct FunLzy*, arg)->fun;
+  return CAST(struct FunLzy*, arg)->fun;
 }
 
 static inline U32
 getFunCnt(OBJ arg) // unsafe
 {
-  return STATIC_CAST(struct FunLzy*, arg)->cnt;
+  return CAST(struct FunLzy*, arg)->cnt;
 }
 
 static inline U32
 getFunMsk(OBJ arg) // unsafe
 {
-  return STATIC_CAST(struct Functor*, arg)->msk;
+  return CAST(struct Functor*, arg)->msk;
 }
 
 static inline U32
@@ -105,7 +105,7 @@ setPar(U32 *msk, U32 par)
 static inline void
 setFunPar(OBJ arg, OBJ var, U32 cnt)
 {
-  struct FunLzy* lzy = STATIC_CAST(struct FunLzy*, arg);
+  struct FunLzy* lzy = CAST(struct FunLzy*, arg);
   
   lzy->fun = var;
   lzy->cnt = cnt;

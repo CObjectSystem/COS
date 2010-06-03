@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.33 2010/06/02 22:47:18 ldeniau Exp $
+ | $Id: Array.h,v 1.34 2010/06/03 15:27:49 ldeniau Exp $
  |
 */
 
@@ -41,9 +41,12 @@
 /* NOTE-USER: Array constructors (class cluster)
 
    aArray       (obj,...)               -> Block array    (automatic)
+   aArray0      ()                      -> Block array    (automatic)
    aArrayRef    (buffer,size[,stride])  -> Array          (automatic)
    aArrayView   (array,slice)           -> Array view     (automatic)
+   aArrayView   (array,range)           -> Array view     (automatic)
    aArraySubView(array,slice)           -> Array view     (automatic)
+   aArraySubView(array,range)           -> Array view     (automatic)
 
    gnewWith (Array,array)               -> Block array    (copy)
    gnewWith (Array,slice)               -> Block array    (Int sequence)
@@ -71,7 +74,7 @@
    - Block arrays will be one of Array0..9 if size is < 10, ArrayN otherwise
    - Dynamic arrays can shrink and grow (gappend, gpreprend)
    - Dynamic arrays can be converted to fixed array (gadjust)
-   - Array views convert dynamic arrays into fixed arrays
+   - Array (non-auto) views convert dynamic arrays into fixed arrays
    - Array views copy/clone are block arrays, not views
    - Array subviews are views which don't follow the underlying arrays strides
 */
@@ -134,8 +137,8 @@ endclass
 
 struct Slice;
 struct Array* Array_alloc(U32);
-struct Array* ArrayView_init(struct ArrayView*, struct Array*,
-                             struct Slice*, BOOL);
+struct Array* ArrayView_init(struct ArrayView*,
+                             OBJ arr, OBJ slc, BOOL isSub, STR file, int line);
 
 // ----- automatic constructors
 
@@ -152,13 +155,13 @@ struct Array* ArrayView_init(struct ArrayView*, struct Array*,
 
 // --- ArrayView
 
-#define atArrayView(array,slice) ArrayView_init( \
-  (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, \
-    0, 0, 0 }, 0 }), array, slice, COS_NO)
+#define atArrayView(array,slice) ((struct ArrayView*) ginitWith2( \
+  (OBJ)&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, \
+    0, 0, 0 }, 0 }, array, slice))
 
-#define atArraySubView(array,slice) ArrayView_init( \
-  (&(struct ArrayView) {{ {{ cos_object_auto(ArrayView) }}, 0, 0, 0 }, 0 }), \
-  array,slice,COS_YES)
+#define atArraySubView(array,slice) ((struct ArraySubView*) ginitWith2( \
+  (OBJ)&(struct ArraySubView) {{{ {{ cos_object_auto(ArraySubView) }}, \
+    0, 0, 0 }, 0 }}, array, slice))
 
 // --- ArrayRef (low-level)
 
@@ -169,6 +172,7 @@ struct Array* ArrayView_init(struct ArrayView*, struct Array*,
         atArrayRef_3(buffer,size,1)
 
 #define atArrayRef_3(buffer,size,stride) \
-  ( &(struct Array) { {{ cos_object_auto(Array) }}, buffer, size, stride } )
+  ( &(struct Array) { {{ cos_object_auto(Array) }}, \
+    buffer, size, stride } )
 
 #endif // COS_ARRAY_H

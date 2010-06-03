@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.57 2010/06/02 22:47:26 ldeniau Exp $
+ | $Id: Array.c,v 1.58 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -117,7 +117,7 @@ Array_alloc(U32 size)
   OBJ _cls = (OBJ)cls[size > N ? N : size];
   OBJ _arr = gallocWithSize(_cls, extra);
 
-  struct ArrayN *arrn = STATIC_CAST(struct ArrayN*, _arr);
+  struct ArrayN *arrn = CAST(struct ArrayN*, _arr);
   struct Array  *arr  = &arrn->ArrayBlk.Array;
 
   arr->object = arrn->_object;
@@ -329,7 +329,7 @@ endmethod
 
 // ----- invariant
 
-defmethod(void, ginvariant, Array, (STR)func, (STR)file, (int)line)
+defmethod(void, ginvariant, Array, (STR)file, (int)line)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
@@ -338,6 +338,6 @@ defmethod(void, ginvariant, Array, (STR)func, (STR)file, (int)line)
   while (val != end && *val)
     val += val_s;
 
-  test_assert( val == end, "array contains null elements", func, file, line);
+  test_assert( val == end, "array contains null elements", file, line);
 endmethod
 

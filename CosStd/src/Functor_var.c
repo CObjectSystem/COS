@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_var.c,v 1.8 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Functor_var.c,v 1.9 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -54,7 +54,7 @@ useclass(FunArg, FunVar, FunLzy);
 
 defmethod(OBJ, gclone, FunArg)
   OBJ _arg = galloc(FunArg);
-  struct FunArg *arg = chkcast(FunArg, _arg);
+  struct FunArg *arg = dbgcast(FunArg, _arg);
 
   arg->idx = self->idx;
   
@@ -63,7 +63,7 @@ endmethod
 
 defmethod(OBJ, gclone, FunVar)
   OBJ _var = galloc(FunVar);
-  struct FunVar *var = chkcast(FunVar, _var);
+  struct FunVar *var = dbgcast(FunVar, _var);
 
   var->var = gretain(self->var);
 
@@ -72,7 +72,7 @@ endmethod
 
 defmethod(OBJ, gclone, FunLzy)
   OBJ _lzy = galloc(FunLzy);
-  struct FunLzy *lzy = chkcast(FunLzy, _lzy);
+  struct FunLzy *lzy = dbgcast(FunLzy, _lzy);
 
   lzy->fun = gretain(self->fun);
   lzy->cnt = self->cnt;

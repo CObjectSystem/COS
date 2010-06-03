@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Locker.c,v 1.7 2009/09/21 09:49:38 ldeniau Exp $
+ | $Id: Locker.c,v 1.8 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -90,7 +90,7 @@ unlock(struct Locker *l)
 static inline void
 clear(OBJ obj)
 {
-  unlock(STATIC_CAST(struct Locker*, obj));
+  unlock(CAST(struct Locker*, obj));
 }
 
 // ----- rank2-{lock,unlock,chkret}

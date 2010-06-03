@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_dyn.c,v 1.17 2010/06/02 22:47:26 ldeniau Exp $
+ | $Id: Vector_dyn.c,v 1.18 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -104,12 +104,12 @@ endmethod
 
 // ----- invariant
 
-defmethod(void, ginvariant, TD, (STR)func, (STR)file, (int)line)
+defmethod(void, ginvariant, TD, (STR)file, (int)line)
   test_assert( self->TF.capacity >= self->TF.T.size,
-               "dynamic " TS " has capacity < size", func, file, line);
+               "dynamic " TS " has capacity < size", file, line);
 
   if (next_method_p)
-    next_method(self, func, file, line);
+    next_method(self, file, line);
 endmethod
 
 // ----- memory management

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_cmp.c,v 1.12 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Functor_cmp.c,v 1.13 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -51,7 +51,7 @@ static inline struct ComposeFun*
 ComposeFun_alloc(U32 size)
 {
   OBJ _cmp = gallocWithSize(ComposeFun, size * sizeof(OBJ));
-  struct ComposeFun *cmp = STATIC_CAST(struct ComposeFun*, _cmp);
+  struct ComposeFun *cmp = CAST(struct ComposeFun*, _cmp);
 
   cmp->size = 0;
   
@@ -81,7 +81,7 @@ defmethod(OBJ,  ginitWith         , pmComposeFun, Array) // copy
 
   test_assert( self2->size > 0, "zero length array");
   
-  cpy->Functor.msk = dyncast(Functor, self2->object[0])->msk;  
+  cpy->Functor.msk = edyncast(Functor, self2->object[0])->msk;  
   copy(cpy->fun,1,&cpy->size,self2->object,self2->stride,self2->size);
 
   UNPRT(_cpy);

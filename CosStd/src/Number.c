@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.c,v 1.27 2010/06/02 22:47:26 ldeniau Exp $
+ | $Id: Number.c,v 1.28 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -73,7 +73,7 @@ endmethod
 \
 defalias (OBJ, (ginitWith)gnewWith, pmNumber, T); \
 defmethod(OBJ,  ginitWith         , pmNumber, T) \
-  struct T *new = STATIC_CAST(struct T*, galloc(T)); \
+  struct T *new = CAST(struct T*, galloc(T)); \
   new->P value = self2->P value; \
   retmethod( (OBJ)new ); \
 endmethod
@@ -92,7 +92,7 @@ DEFMETHOD(Complex,     )
 \
 defalias (OBJ, (gcopy)gclone, T); \
 defmethod(OBJ,  gcopy       , T)  \
-  struct T *new = STATIC_CAST(struct T*, galloc(T)); \
+  struct T *new = CAST(struct T*, galloc(T)); \
   new->P value = self->P value; \
   retmethod( (OBJ)new ); \
 endmethod

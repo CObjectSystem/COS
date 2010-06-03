@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector.c,v 1.21 2010/06/02 22:47:26 ldeniau Exp $
+ | $Id: Vector.c,v 1.22 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -110,7 +110,7 @@ T_alloc(U32 size)
   OBJ _cls = (OBJ)cls[size > N ? N : size];
   OBJ _vec = gallocWithSize(_cls, size * sizeof(VAL));
 
-  struct TN *vecn = STATIC_CAST(struct TN*, _vec);
+  struct TN *vecn = CAST(struct TN*, _vec);
   struct T  *vec  = &vecn->T;
 
   vec->value = vecn->_value;

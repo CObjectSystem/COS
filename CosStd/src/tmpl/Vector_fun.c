@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.23 2010/05/31 14:02:59 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.24 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -246,7 +246,7 @@ defmethod(OBJ, gmapWhile, Functor, T)
   OBJ  res;
 
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
+  struct T* vec = CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
@@ -267,7 +267,7 @@ defmethod(OBJ, gmapIf, Functor, T)
   OBJ  res;
 
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
+  struct T* vec = CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
@@ -399,7 +399,7 @@ defmethod(OBJ, gselect, T, Functor)
   VAL *end   = val + val_s*size;
 
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
+  struct T* vec = CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec ->value;
@@ -420,7 +420,7 @@ defmethod(OBJ, greject, T, Functor)
   VAL *end   = val + val_s*size;
 
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
+  struct T* vec = CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec ->value;
@@ -441,7 +441,7 @@ defmethod(OBJ, gselectWhile, T, Functor)
   VAL *end   = val + val_s*size;
 
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
+  struct T* vec = CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec->value;
@@ -463,7 +463,7 @@ defmethod(OBJ, grejectWhile, T, Functor)
   VAL *end   = val + val_s*size;
 
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
+  struct T* vec = CAST(struct T*, _vec);
 
   U32 *dst_n = &vec->size;
   VAL *dst   = vec ->value;
@@ -772,7 +772,7 @@ endmethod
 defmethod(OBJ, gunique, T, Functor)
   U32 size = self->size;
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
+  struct T* vec = CAST(struct T*, _vec);
 
   I32  val_s = self->stride;
   VAL *val   = self->value;
@@ -799,7 +799,7 @@ endmethod
 defmethod(OBJ, gdiff, T, T, Functor)
   U32 size = self->size;
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
+  struct T* vec = CAST(struct T*, _vec);
 
   I32  val_s = self->stride;
   VAL *val   = self->value;
@@ -822,7 +822,7 @@ endmethod
 defmethod(OBJ, gintersect, T, Collection, Functor)
   U32 size = self->size;
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
-  struct T* vec = STATIC_CAST(struct T*, _vec);
+  struct T* vec = CAST(struct T*, _vec);
 
   I32  val_s = self->stride;
   VAL *val   = self->value;
@@ -1173,7 +1173,7 @@ defmethod(OBJ, gisort, T, Functor)
   useclass(IntVector);
 
   OBJ _vec = gautoRelease(gnewWith(IntVector, aSlice(0,self->size,1)));
-  struct IntVector *vec = STATIC_CAST(struct IntVector*, _vec);
+  struct IntVector *vec = CAST(struct IntVector*, _vec);
 
   iqsortSFun(vec->value, vec->size-1, self->value, self->stride, _2);
 

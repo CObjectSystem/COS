@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_vw.c,v 1.13 2010/06/02 22:47:26 ldeniau Exp $
+ | $Id: Vector_vw.c,v 1.14 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -99,7 +99,7 @@ defmethod(OBJ, ginitWith3, TV, T, Slice, Int) // vector view
 
   OBJ ref = gretain(_2); PRT(ref);
   
-  TV_init(self, STATIC_CAST(struct T*, ref), self3, self4->value);
+  TV_init(self, CAST(struct T*, ref), self3, self4->value);
 
   UNPRT(_1);
   retmethod(_1);
@@ -115,13 +115,13 @@ endmethod
 
 // ----- invariant
 
-defmethod(void, ginvariant, TV, (STR)func, (STR)file, (int)line)
+defmethod(void, ginvariant, TV, (STR)file, (int)line)
   test_assert( cos_object_isKindOf((OBJ)self->ref, classref(T)),
-               TS " view points to something not a " TS, func, file, line);
+               TS " view points to something not a " TS, file, line);
 
   test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(TD)) ||
                cos_object_rc((OBJ)self->ref) == COS_RC_AUTO ,
-               TS " view points to a dynamic " TS, func, file, line);
+               TS " view points to a dynamic " TS, file, line);
 
   struct T *vec = self->ref;
 
@@ -135,9 +135,9 @@ defmethod(void, ginvariant, TV, (STR)func, (STR)file, (int)line)
   U32 last  = Slice_last (slc);
 
   test_assert( first < self->ref->size &&
-               last  < self->ref->size, TS " view is out of range", func, file, line);
+               last  < self->ref->size, TS " view is out of range", file, line);
 
   if (next_method_p)
-    next_method(self, func, file, line);
+    next_method(self, file, line);
 endmethod
 

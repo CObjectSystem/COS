@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Tracer.c,v 1.9 2009/09/21 09:51:05 ldeniau Exp $
+ | $Id: Tracer.c,v 1.10 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -57,11 +57,10 @@ trace(struct Tracer *self, SEL sel, OBJ obj[], int pos)
 
 // ----- constructor
 
-defmethod(OBJ, ginitWithLoc, Tracer, Object, (STR)func, (STR)file, (int)line)
+defmethod(OBJ, ginitWithLoc, Tracer, Object, (STR)file, (int)line)
   defnext(OBJ, ginitWith, Tracer, Object);
   
   next_method(self, self2);
-  self->func = func ? func : "";
   self->file = file ? file : "";
   self->line = line;
 endmethod

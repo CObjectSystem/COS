@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.23 2010/06/02 22:47:26 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.24 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -138,12 +138,12 @@ endmethod
 
 // ----- invariant
 
-defmethod(void, ginvariant, ArrayDyn, (STR)func, (STR)file, (int)line)
+defmethod(void, ginvariant, ArrayDyn, (STR)file, (int)line)
   test_assert( self->capacity >= self->ArrayFix.Array.size,
-               "dynamic array has capacity < size", func, file, line);
+               "dynamic array has capacity < size", file, line);
 
   if (next_method_p)
-    next_method(self, func, file, line);
+    next_method(self, file, line);
 endmethod
 
 // ----- memory management

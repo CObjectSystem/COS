@@ -29,14 +29,22 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: View.c,v 1.4 2009/09/04 12:09:19 ldeniau Exp $
+ | $Id: View.c,v 1.5 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
 #include <cos/View.h>
 
+#include <cos/gen/object.h>
+
 // -----
 
 makclass(View, Nil);
 makclass(SubView, View);
+
+// ----- lazy alloc
+
+defmethod(OBJ, galloc, mView)
+  retmethod(_1);
+endmethod
 

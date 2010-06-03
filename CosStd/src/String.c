@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.17 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: String.c,v 1.18 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -87,7 +87,7 @@ String_alloc(U32 size)
   
   OBJ _str = gallocWithSize(StringN, size+1);
 
-  struct StringN *strn = STATIC_CAST(struct StringN*, _str);
+  struct StringN *strn = CAST(struct StringN*, _str);
   struct String  *str  = &strn->String;
 
   str->value = strn->_value;

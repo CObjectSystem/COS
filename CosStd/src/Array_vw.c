@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_vw.c,v 1.8 2010/06/02 22:47:26 ldeniau Exp $
+ | $Id: Array_vw.c,v 1.9 2010/06/03 15:27:50 ldeniau Exp $
  |
 */
 
@@ -51,69 +51,92 @@ makclass(ArraySubView, ArrayView);
 
 useclass(ArrayView, ArraySubView);
 
-// ----- initializer
+// ----- initializer (weaker than constructors: no retain)
 
-struct Array*
-ArrayView_init(struct ArrayView *arrv, struct Array *arr, struct Slice *slc, BOOL isSub)
-{
-  test_assert( Slice_first(slc) < arr->size &&
-               Slice_last (slc) < arr->size, "slice out of range" );
+defmethod(OBJ, ginitWith2, ArrayView, Array, Slice) // array view
+  test_assert( Slice_first(self3) < self2->size &&
+               Slice_last (self3) < self2->size, "slice out of range" );
 
-  struct Array* vw = &arrv->Array;
+  self->Array.object = Slice_start (self3)*self2->stride + self2->object;
+  self->Array.size   = Slice_size  (self3);
+  self->Array.stride = Slice_stride(self3)*self2->stride;
+  self->ref          = _2; // no retain!
 
-  vw->object = Slice_start (slc)*arr->stride + arr->object;
-  vw->size   = Slice_size  (slc);
-  vw->stride = isSub ? Slice_stride(slc) : Slice_stride(slc)*arr->stride;
-  arrv->ref  = (OBJ)arr;
+  retmethod(_1);
+endmethod
 
-  return vw;
-}
+defmethod(OBJ, ginitWith2, ArrayView, Array, Range) // array view
+  OBJ slc = (OBJ)Slice_fromRange(atSlice(0), self3, &self2->size);
+  retmethod( ginitWith2(_1,_2,(OBJ)slc) );
+endmethod
 
-static OBJ
-ArrayView_make(OBJ vw, struct Array *arr, struct Slice *slc, BOOL isSub)
-{
-  PRT(vw);
-  struct ArrayView *arrv = chkcast(ArrayView, vw);
-  
-  arrv->ref = 0;
-  arrv->ref = gretain(gadjust( (OBJ)arr ));
+defmethod(OBJ, ginitWith2, ArraySubView, Array, Slice) // array subview
+  test_assert( Slice_first(self3) < self2->size &&
+               Slice_last (self3) < self2->size, "slice out of range" );
 
-  ArrayView_init(arrv, arr, slc, isSub);
+  self->ArrayView.Array.object = Slice_start (self3) + self2->object;
+  self->ArrayView.Array.size   = Slice_size  (self3);
+  self->ArrayView.Array.stride = Slice_stride(self3);
+  self->ArrayView.ref          = _2; // no retain!
 
-  UNPRT(vw);
-  return vw;
-}
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, ginitWith2, ArraySubView, Array, Range) // array subview
+  OBJ slc = (OBJ)Slice_fromRange(atSlice(0), self3, &self2->size);
+  retmethod( ginitWith2(_1,_2,(OBJ)slc) );
+endmethod
 
 // ----- view constructors
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, Array, Slice);
 defmethod(OBJ,  ginitWith2          , mView, Array, Slice) // array view
-  retmethod( ArrayView_make(galloc(ArrayView), self2, self3, NO) );
+  OBJ arr = gretain(gadjust(_2)); PRT(arr);
+  OBJ avw = galloc(ArrayView);    PRT(avw);
+
+  ginitWith2(avw, arr, _3);
+
+  UNPRT(arr);
+  retmethod(avw);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mView, Array, Range);
 defmethod(OBJ,  ginitWith2          , mView, Array, Range) // array view
-  struct Slice *slice = Slice_fromRange(atSlice(0), self3, &self2->size);
-  
-  retmethod( ArrayView_make(galloc(ArrayView), self2, slice, NO) );
+  OBJ arr = gretain(gadjust(_2)); PRT(arr);
+  OBJ avw = galloc(ArrayView);    PRT(avw);
+
+  ginitWith2(avw, arr, _3);
+
+  UNPRT(arr);
+  retmethod(avw);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mSubView, Array, Slice);
 defmethod(OBJ,  ginitWith2          , mSubView, Array, Slice) // array subview
-  retmethod( ArrayView_make(galloc(ArraySubView), self2, self3, YES) );
+  OBJ arr = gretain(gadjust(_2)); PRT(arr);
+  OBJ avw = galloc(ArraySubView); PRT(avw);
+
+  ginitWith2(avw, arr, _3);
+
+  UNPRT(arr);
+  retmethod(avw);
 endmethod
 
 defalias (OBJ, (ginitWith2)gnewWith2, mSubView, Array, Range);
-defmethod(OBJ,  ginitWith2          , mSubView, Array, Range) // vector subview
-  struct Slice *slice = Slice_fromRange(atSlice(0),self3, &self2->size);
+defmethod(OBJ,  ginitWith2          , mSubView, Array, Range) // array subview
+  OBJ arr = gretain(gadjust(_2)); PRT(arr);
+  OBJ avw = galloc(ArraySubView); PRT(avw);
 
-  retmethod( ArrayView_make(galloc(ArraySubView), self2, slice, YES) );
+  ginitWith2(avw, arr, _3);
+  
+  UNPRT(arr);
+  retmethod(avw);
 endmethod
 
 // ----- destructor
 
 defmethod(OBJ, gdeinit, ArrayView)
-  if (self->ref)              // take care of protection cases
+  if (self->ref && cos_object_rc(_1) != COS_RC_AUTO)
     grelease(self->ref), self->ref = 0;
     
   retmethod(_1);
@@ -121,15 +144,15 @@ endmethod
 
 // ----- invariant
 
-defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
+defmethod(void, ginvariant, ArrayView, (STR)file, (int)line)
   test_assert( cos_object_isKindOf(self->ref, classref(Array)),
-               "array view points to something not an array", func, file, line);
+               "array view points to something not an array", file, line);
 
-  test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(ArrayDyn)) ||
-                cos_object_rc(self->ref) == COS_RC_AUTO ,
-               "array view points to a dynamic array", func, file, line);
+  test_assert( !cos_object_isKindOf(self->ref, classref(ArrayDyn)) ||
+                cos_object_rc(_1) == COS_RC_AUTO,
+               "array view points to a dynamic array", file, line);
 
-  struct Array *vec = chkcast(Array, self->ref);
+  struct Array *vec = edyncast(Array, self->ref);
 
   I32 start  = (vec->object - self->Array.object)/vec->stride;
   U32 size   = self->Array.size;
@@ -141,9 +164,9 @@ defmethod(void, ginvariant, ArrayView, (STR)func, (STR)file, (int)line)
   U32 last  = Slice_last (slc);
 
   test_assert( first < vec->size &&
-               last  < vec->size, "array view is out of range", func, file, line);
+               last  < vec->size, "array view is out of range", file, line);
 
   if (next_method_p)
-    next_method(self, func, file, line);
+    next_method(self, file, line);
 endmethod
 
