@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.h,v 1.35 2010/06/03 22:47:19 ldeniau Exp $
+ | $Id: Array.h,v 1.36 2010/06/04 23:27:21 ldeniau Exp $
  |
 */
 
@@ -60,7 +60,7 @@
    gnewWith2(Array,array,intvec)        -> Block array    (random subarray)
 
    gnew     (Array)                     -> Dynamic array
-   gnew     (Array,size)                -> Dynamic array  (with capacity)
+   gnewWith (Array,size)                -> Dynamic array  (with capacity)
 
    gnewWith2(View,array,slice)          -> Array view     (view)
    gnewWith2(View,array,range)          -> Array view     (view)

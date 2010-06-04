@@ -32,17 +32,9 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_utl.h,v 1.6 2010/06/03 22:47:19 ldeniau Exp $
+ | $Id: Array_utl.h,v 1.7 2010/06/04 23:27:22 ldeniau Exp $
  |
 */
-
-static cos_inline void
-swap(OBJ *val1, OBJ *val2)
-{
-  OBJ tmp = *val1;
-  *val1 = *val2;
-  *val2 = tmp;
-}
 
 static cos_inline void
 assign(OBJ *dst, OBJ val)
@@ -55,14 +47,21 @@ assign(OBJ *dst, OBJ val)
 static cos_inline OBJ*
 arr_swap(OBJ *dst, I32 dst_s, OBJ *src, I32 src_s, U32 src_n)
 {
+  OBJ tmp1; PRT(tmp1);
+  OBJ tmp2; PRT(tmp2);
   OBJ *end = src + src_s*src_n;
 
   while (src != end) {
-    swap(dst, src);
-    dst += dst_s;
+    tmp1 = tmp2 = 0;
+    tmp1 = gretain(*src);
+    tmp2 = gretain(*dst);
+    grelease(*src), *src = tmp2;
+    grelease(*dst), *dst = tmp1;
     src += src_s;
+    dst += dst_s;
   }
 
+  UNPRT(tmp1);
   return dst;
 }
 

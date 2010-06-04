@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.26 2010/06/03 22:47:19 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.27 2010/06/04 23:27:22 ldeniau Exp $
  |
 */
 
@@ -65,16 +65,17 @@ defmethod(OBJ, gisEqual, Array, Array)
   if (self->size != self2->size)
     retmethod(False);
 
-  U32  size   = self->size;
+  U32  val_n  = self->size;
   I32  val_s  = self->stride;
   OBJ *val    = self->object;
   I32  val2_s = self2->stride;
   OBJ *val2   = self2->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*val_n;
   
   while (val != end) {
     if (gisEqual(*val,*val2) != True)
       retmethod(False);
+      
     val  += val_s;
     val2 += val2_s;
   }
@@ -90,17 +91,18 @@ defmethod(OBJ, gcompare, Array, Array)
   if (self == self2)
     retmethod(Equal);
 
-  U32  size   = self->size;
+  U32  val_n  = self->size;
   I32  val_s  = self->stride;
   OBJ *val    = self->object;
   I32  val2_s = self2->stride;
   OBJ *val2   = self2->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*val_n;
   OBJ  res;
 
   while (val != end) {
     if ((res = gcompare(*val,*val2)) != Equal)
       retmethod(res);
+      
     val  += val_s;
     val2 += val2_s;
   }
@@ -110,14 +112,22 @@ endmethod
 
 // ----- in place
 
+static cos_inline void
+swap(OBJ *val1, OBJ *val2)
+{
+  OBJ tmp = *val1;
+  *val1 = *val2;
+  *val2 = tmp;
+}
+
 defmethod(OBJ, greverse, Array)
   if (self->size < 2)
     retmethod(_1);
 
-  U32  size  = self->size;
+  U32  val_n = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*(size-1);
+  OBJ *end   = val + val_s*(val_n-1);
 
   if (val_s > 0)
     while (val < end) {
@@ -135,6 +145,7 @@ defmethod(OBJ, greverse, Array)
   retmethod(_1);
 endmethod
 
+/*
 defmethod(OBJ, gpermute, Array, IntVector)
   PRE
     test_assert( self->size == self2->size, "incompatible array sizes" );
@@ -190,6 +201,7 @@ defmethod(OBJ, gpermute, Array, IntVector)
 
     retmethod(_1);
 endmethod
+*/
 
 // ----- repeat
 
@@ -310,31 +322,30 @@ endmethod
 */
 
 defmethod(OBJ, gzipn, Array)
-  U32  size  = self->size;
+  U32  src_n = self->size;
   I32  src_s = self->stride;
   OBJ *src   = self->object;
-  OBJ *end   = src + size*src_s;
-  U32  msize = 0;
+  OBJ *end   = src + src_s*src_n;
+  U32  max_size = 0;
 
   // compute max of sizes
   while (src != end) {
-    test_assert( cos_object_isKindOf(*src, classref(Array)),
+    test_assert( dyncast(Array, *src),
                  "invalid array element (should be an Array)" );
-    U32 sz = gsize(*src);
-    if (sz < msize) msize = sz;
+    U32 size = gsize(*src);
+    if (size < max_size) max_size = size;
     src += src_s;
   }
 
   // intersperse arrays
-  struct Array* arr = Array_alloc(msize * size);
+  struct Array* arr = Array_alloc(max_size * src_n);
   OBJ _arr = gautoRelease( (OBJ)arr );
-
   OBJ *dst = arr->object;
        src = self->object;
        
   while (src != end) {
-    struct Array* self2 = CAST(struct Array*, *src);
-    arr_copy(dst,size,&arr->size,self2->object,self2->stride,self2->size);
+    struct Array* arr = dbgcast(Array, *src);
+    arr_copy(dst, src_n, &arr->size, arr->object, arr->stride, arr->size);
     src += src_s;
     dst += 1;
   }
@@ -348,7 +359,6 @@ defmethod(OBJ, gconcat, Array, Array)
   U32 size = self->size + self2->size;
   struct Array *arr = Array_alloc(size);
   OBJ _arr = gautoRelease( (OBJ)arr );
-
   OBJ *dst = arr->object;
 
   dst = arr_copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
@@ -361,7 +371,6 @@ defmethod(OBJ, gconcat3, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size;
   struct Array *arr = Array_alloc(size);
   OBJ _arr = gautoRelease( (OBJ)arr );
-
   OBJ *dst = arr->object;
 
   dst = arr_copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
@@ -375,7 +384,6 @@ defmethod(OBJ, gconcat4, Array, Array, Array, Array)
   U32 size = self->size + self2->size + self3->size + self4->size;
   struct Array *arr = Array_alloc(size);
   OBJ _arr = gautoRelease( (OBJ)arr );
-
   OBJ *dst = arr->object;
 
   dst = arr_copy(dst,1,&arr->size,self ->object,self ->stride,self ->size);
@@ -413,7 +421,7 @@ defmethod(OBJ, gconcatn, Array)
 
   // compute sum of sizes
   while (src != end) {
-    test_assert( cos_object_isKindOf(*src, classref(Array)),
+    test_assert( dyncast(Array, *src),
                  "invalid array element (should be an Array)" );
     ssize += gsize(*src);
     src += src_s;
@@ -422,12 +430,11 @@ defmethod(OBJ, gconcatn, Array)
   // concatenate arrays
   struct Array* arr = Array_alloc(ssize);
   OBJ _arr = gautoRelease( (OBJ)arr );
-  
   OBJ *dst = arr->object;
        src = self->object;
   
   while(src != end) {
-    struct Array* self2 = CAST(struct Array*, *src);
+    struct Array* self2 = dbgcast(Array, *src);
     dst = arr_copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
     src += src_s;
   }

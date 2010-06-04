@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.59 2010/06/03 22:47:19 ldeniau Exp $
+ | $Id: Array.c,v 1.60 2010/06/04 23:27:22 ldeniau Exp $
  |
 */
 
@@ -147,26 +147,6 @@ defmethod(OBJ, gdeinit, Array)
 endmethod
 
 // ----- constructors
-
-defmethod(OBJ, gcopy, Array) // copy
-  struct Array* cpy = Array_alloc(self->size);
-  OBJ _cpy = (OBJ)cpy; PRT(_cpy);
-
-  arr_copy(cpy->object, 1, &cpy->size, self->object, self->stride, self->size);
-
-  UNPRT(_cpy);
-  retmethod(_cpy);
-endmethod
-
-defmethod(OBJ, gclone, Array) // clone
-  struct Array* cpy = Array_alloc(self->size);
-  OBJ _cpy = (OBJ)cpy; PRT(_cpy);
-
-  arr_clone(cpy->object, 1, &cpy->size, self->object, self->stride, self->size);
-
-  UNPRT(_cpy);
-  retmethod(_cpy);
-endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmArray, Array);
 defmethod(OBJ,  ginitWith         , pmArray, Array) // copy
@@ -327,7 +307,27 @@ defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random seque
   retmethod(_arr);
 endmethod
 
-// ----- other manipulation
+// ----- copy, clone, swap, assign
+
+defmethod(OBJ, gcopy, Array) // copy
+  struct Array* cpy = Array_alloc(self->size);
+  OBJ _cpy = (OBJ)cpy; PRT(_cpy);
+
+  arr_copy(cpy->object, 1, &cpy->size, self->object, self->stride, self->size);
+
+  UNPRT(_cpy);
+  retmethod(_cpy);
+endmethod
+
+defmethod(OBJ, gclone, Array) // clone
+  struct Array* cpy = Array_alloc(self->size);
+  OBJ _cpy = (OBJ)cpy; PRT(_cpy);
+
+  arr_clone(cpy->object, 1, &cpy->size, self->object, self->stride, self->size);
+
+  UNPRT(_cpy);
+  retmethod(_cpy);
+endmethod
 
 defmethod(OBJ, gswap, Array, Array) // swap
 PRE

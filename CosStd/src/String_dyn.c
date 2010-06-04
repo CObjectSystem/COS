@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_dyn.c,v 1.14 2010/06/03 15:27:50 ldeniau Exp $
+ | $Id: String_dyn.c,v 1.15 2010/06/04 23:27:22 ldeniau Exp $
  |
 */
 
@@ -38,11 +38,8 @@
 #include <cos/Range.h>
 
 #include <cos/gen/collection.h>
-#include <cos/gen/message.h>
-#include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
-#include <cos/gen/stream.h>
-#include <cos/gen/string.h>
+#include <cos/gen/object.h>
 #include <cos/gen/value.h>
 
 #include <stdlib.h>
@@ -55,26 +52,42 @@ makclass(StringDyn, StringFix);
 
 // -----
 
-useclass(String, StringDyn, ExBadAlloc);
+useclass(String, StringDyn, ExBadAlloc, ExOverflow);
 
-// -----
+// ----- getter
 
-#ifndef STRING_GROWTH_RATE
-#define STRING_GROWTH_RATE SEQUENCE_GROWTH_RATE
-#endif
+defmethod(U32, gcapacity, StringDyn)
+  retmethod(self->capacity);
+endmethod
 
-#ifndef STRING_MINSIZE
-#define STRING_MINSIZE 1024
-#endif
+// ----- destructor
 
-STATIC_ASSERT(string_growth_rate_is_too_small , STRING_GROWTH_RATE >= 1.5);
-STATIC_ASSERT(string_minimun_size_is_too_small, STRING_MINSIZE     >= 256);
+defmethod(OBJ, gdeinit, StringFix)
+  next_method(self);
+  
+  if (self->_value) { // take care of protection cases
+    free(self->_value);
+    self->String.value = 0;
+    self->_value        = 0;
+  }
+  
+  retmethod(_1);
+endmethod
 
 // ----- constructors
 
 defalias (OBJ, (ginit)gnew, pmString);
 defmethod(OBJ,  ginit     , pmString) // Dynamic string
-  retmethod(ginitWith(galloc(StringDyn),aInt(0)));
+  retmethod( ginit(galloc(StringDyn)) );
+endmethod
+
+defmethod(OBJ, ginit, StringDyn)
+  self->StringFix.String.size  = 0;
+  self->StringFix.String.value = 0;
+  self->StringFix._value       = 0;
+  self->capacity               = 0;
+
+  retmethod(_1);
 endmethod
 
 defalias (OBJ, (ginitWith)gnewWith, pmString, Int);
@@ -87,93 +100,79 @@ defmethod(OBJ, ginitWith, StringDyn, Int)
   struct StringFix *strf = &self->StringFix;
   struct String    *str  = &strf->String;
   U32           capacity = self2->value;
+  size_t            size = (capacity+1) * sizeof *str->value;
 
-  test_assert(self2->value >= 0, "negative string capacity");
+  if (size/sizeof *str->value < capacity+1) {
+    strf->_value = 0;
+    THROW(gnewWithStr(ExOverflow, "capacity is too large"));
+  }
 
-  strf->_value = malloc((capacity+1)*sizeof *str->value);
-  if (!strf->_value) THROW(ExBadAlloc);
+  strf->_value = malloc(size);
+  if (!strf->_value && size)
+    THROW(ExBadAlloc);
 
   str->size      = 0;
   str->value     = strf->_value;
-  strf->capacity = capacity;
+  self->capacity = capacity;
 
   UNPRT(_1);
-  retmethod(_1);
-endmethod
-
-// ----- destructor
-
-defmethod(OBJ, gdeinit, StringFix)
-  next_method(self);
-  free(self->_value);
   retmethod(_1);
 endmethod
 
 // ----- invariant
 
 defmethod(void, ginvariant, StringDyn, (STR)file, (int)line)
-  test_assert( self->StringFix.capacity >= self->StringFix.String.size,
+  test_assert( self->capacity >= self->StringFix.String.size,
                "dynamic string has capacity < size", file, line);
 
   if (next_method_p)
     next_method(self, file, line);
 endmethod
 
+// --- dequeue aliases
+defalias(OBJ, (gprepend  )gpushFront, StringDyn, Object);
+defalias(OBJ, (gappend   )gpushBack , StringDyn, Object);
+defalias(OBJ, (gprepend  )gpushFront, StringDyn, Char);
+defalias(OBJ, (gappend   )gpushBack , StringDyn, Char);
+defalias(OBJ, (gfirst    )gtopFront , String);
+defalias(OBJ, (glast     )gtopBack  , String);
+
+// --- stack aliases
+defalias(OBJ, (gpushBack)gpush, StringDyn, Object);
+defalias(OBJ, (gpushBack)gpush, StringDyn, Char);
+defalias(OBJ, (gpopBack )gpop , StringDyn);
+defalias(OBJ, (gtopBack )gtop , String);
+
 // ----- memory management
 
-static I32
-extra_size(U32 old_capacity, U32 size)
-{
-  U32 new_capacity = old_capacity < STRING_MINSIZE ? STRING_MINSIZE : old_capacity;
-  
-  while (new_capacity - old_capacity < size)
-    new_capacity *= STRING_GROWTH_RATE;
-
-  I32 extra = new_capacity - old_capacity;
-  
-  test_assert(extra > 0 && (U32)extra > size, "string size overflow");
-
-  return extra;
-}
-
-defmethod(OBJ, genlarge, StringDyn, Float) // negative factor means enlarge front
-  PRE
-    test_assert(self2->value < -1 ||
-                self2->value >  1, "invalid growing factor");
-  BODY
-    F64 factor   = self2->value;
-    U32 capacity = self->StringFix.capacity;
-
-    if (factor > 1)
-      retmethod( genlarge(_1, aInt(capacity * (factor-1))) );
-    else if (factor < 1)
-      retmethod( genlarge(_1, aInt(capacity * (factor+1))) );
-endmethod
-
 defmethod(OBJ, genlarge, StringDyn, Int) // negative size means enlarge front
-  PRE
-    test_assert(self2->value, "invalid growing size");
-  BODY
-    struct StringFix* strf = &self->StringFix;
-    struct String*    str  = &strf->String;
-    U32           capacity = strf->capacity;
-    ptrdiff_t       offset = str->value - strf->_value;
-    BOOL             front = self2->value < 0;
-    I32               size = front ? -self2->value : self2->value;
-
-    capacity += size = extra_size(capacity, size);
+  if (self2->value) {
+    struct StringFix *strf = &self->StringFix;
+    struct String    *str  = &strf->String;
     
-    U8* _value = realloc(strf->_value, (capacity+1)*sizeof *strf->_value);
-    if (!_value) THROW(ExBadAlloc);
+    ptrdiff_t offset = str->value - strf->_value;
+    BOOL       front = self2->value < 0;
+    U32        extra = front ? -self2->value : self2->value;
+    U32     capacity = Sequence_enlargeCapacity(self->capacity, extra);
+    size_t      size = (capacity+1) * sizeof *strf->_value;
 
-    str -> value   = _value + offset;
+    if (size/sizeof *strf->_value < capacity+1)
+      THROW(gnewWithStr(ExOverflow, "extra size is too large"));
+    
+    U8* _value = realloc(strf->_value, size);
+
+    if (!_value && size)
+      THROW(ExBadAlloc);
+
+    str->value = front ? // move data to book the new space front
+        memmove(_value + offset + (capacity - self->capacity),
+                _value + offset, str->size * sizeof *_value) :
+                _value + offset; // restore offset
+
     strf->_value   = _value;
-    strf->capacity = capacity;
-
-    if (front) // move data to book the new space front
-      str->value = memmove(str->value+size, str->value, str->size*sizeof *str->value);
-      
-    retmethod(_1);
+    self->capacity = capacity;
+  }      
+  retmethod(_1);
 endmethod
 
 // ----- adjustment (capacity -> size)
@@ -181,24 +180,25 @@ endmethod
 defmethod(OBJ, gadjust, StringDyn)
   struct StringFix *strf = &self->StringFix;
   struct String    *str  = &strf->String;
-  U32               size = str->size;
+  size_t            size = (str->size+1) * sizeof *str->value;
 
   // move data to storage base
   if (str->value != strf->_value)
-    str->value = memmove(strf->_value, str->value, size*sizeof *strf->_value);
+    str->value = memmove(strf->_value, str->value, size);
 
   // shrink storage
-  if (size != strf->capacity) {
-    U8* _value = realloc(strf->_value, (size+1)*sizeof *strf->_value);
-    if (!_value) THROW(ExBadAlloc);
+  if (str->size != self->capacity) {
+    U8* _value = realloc(strf->_value, size);
+    if (!_value && size)
+      THROW(ExBadAlloc);
 
     str -> value   = _value;
     strf->_value   = _value;
-    strf->capacity = size;
+    self->capacity = size;
   }
 
   BOOL ch_cls = cos_object_changeClass(_1, classref(StringFix));
-  test_assert( ch_cls, "unable to change StringDyn to StringFix" );
+  test_assert( ch_cls, "unable to change from dynamic to fixed size string" );
 
   retmethod(_1);
 endmethod
@@ -207,7 +207,6 @@ endmethod
 
 defmethod(OBJ, gclear, StringDyn)
   self->StringFix.String.size  = 0;
-  self->StringFix.String.value = self->StringFix._value;
   
   retmethod(_1);
 endmethod
@@ -255,7 +254,7 @@ defmethod(OBJ, gprepend, StringDyn, Char)
   if (str->value == strf->_value)
     genlarge(_1, aInt(-1));
 
-  *--str->value = self2->Int.value, str->size++;
+  *--str->value = (U32)self2->Int.value, str->size++;
 
   retmethod(_1);
 endmethod
@@ -264,10 +263,10 @@ defmethod(OBJ, gappend, StringDyn, Char)
   struct StringFix *strf = &self->StringFix;
   struct String    *str  = &strf->String;
 
-  if (str->value + str->size == strf->_value + strf->capacity)
+  if (str->value + str->size == strf->_value + self->capacity)
     genlarge(_1, aInt(1));
 
-  str->value[str->size++] = self2->Int.value;
+  str->value[str->size++] = (U32)self2->Int.value;
 
   retmethod(_1);
 endmethod
@@ -290,7 +289,7 @@ defmethod(OBJ, gappend, StringDyn, Object)
   struct StringFix *strf = &self->StringFix;
   struct String    *str  = &strf->String;
 
-  if (str->value + str->size == strf->_value + strf->capacity)
+  if (str->value + str->size == strf->_value + self->capacity)
     genlarge(_1, aInt(1));
 
   str->value[str->size++] = (U32)gchr(_2);
@@ -304,12 +303,15 @@ defmethod(OBJ, gprepend, StringDyn, String)
   struct StringFix *strf = &self->StringFix;
   struct String    *str  = &strf->String;
 
+  if (strf->_value > strf->_value + self2->size || self2->size > I32_MAX)
+    THROW(gnewWithStr(ExOverflow, "string to prepend is too large"));
+
   if (str->value < strf->_value + self2->size)
-    genlarge(_1, aInt(-self2->size));
+    genlarge(_1, aInt(-(I32)self2->size));
 
   str->value -= self2->size;
   str->size  += self2->size;
-  memcpy(str->value, self2->value, self2->size*sizeof *str->value);
+  memcpy(str->value, self2->value, self2->size * sizeof *str->value);
 
   retmethod(_1);
 endmethod
@@ -318,15 +320,19 @@ defmethod(OBJ, gappend, StringDyn, String)
   struct StringFix *strf = &self->StringFix;
   struct String    *str  = &strf->String;
 
-  if (str->value + str->size + self2->size > strf->_value + strf->capacity)
+  if (strf->_value > strf->_value + self->capacity + self2->size || self2->size > I32_MAX)
+    THROW(gnewWithStr(ExOverflow, "string to append is too large"));
+
+  if (str->value + str->size + self2->size > strf->_value + self->capacity)
     genlarge(_1, aInt(self2->size));
 
-  memcpy(str->value+str->size, self2->value, self2->size*sizeof *str->value);
+  memcpy(str->value + str->size, self2->value, self2->size * sizeof *str->value);
   str->size += self2->size;
 
   retmethod(_1);
 endmethod
 
+#if 0
 /* TODO: unchecked code (certainly buggy)
 */
 
@@ -437,17 +443,5 @@ defmethod(OBJ, gremoveAt, StringDyn, Range)
   retmethod(_1);
 endmethod
 
-// --- dequeue aliases
-defalias(OBJ, (gprepend  )gpushFront, StringDyn, Object);
-defalias(OBJ, (gappend   )gpushBack , StringDyn, Object);
-defalias(OBJ, (gprepend  )gpushFront, StringDyn, Char);
-defalias(OBJ, (gappend   )gpushBack , StringDyn, Char);
-defalias(OBJ, (gfirst    )gtopFront , String);
-defalias(OBJ, (glast     )gtopBack  , String);
-
-// --- stack aliases
-defalias(OBJ, (gpushBack)gpush, StringDyn, Object);
-defalias(OBJ, (gpushBack)gpush, StringDyn, Char);
-defalias(OBJ, (gpopBack )gpop , StringDyn);
-defalias(OBJ, (gtopBack )gtop , String);
+#endif
 

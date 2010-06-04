@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.11 2010/05/31 14:12:41 ldeniau Exp $
+ | $Id: String.h,v 1.12 2010/06/04 23:27:21 ldeniau Exp $
  |
 */
 
@@ -44,6 +44,7 @@
    aStringRef (buffer[,size])      -> String          (automatic)
 
    gnewWith (String,string)        -> Block string    (copy)
+   
    gnewWith2(String,size,chr)      -> Block string    (element)
    gnewWith2(String,size,fun)      -> Block string    (generator)
    gnewWith2(String,string,slice)  -> Block string    (substring)
@@ -51,7 +52,7 @@
    gnewWith2(String,string,intvec) -> Block string    (sequence)
 
    gnew     (String)               -> Dynamic string
-   gnewWith (String,capacity)      -> Dynamic string  (pre-allocated)
+   gnewWith (String,size)          -> Dynamic string  (with capacity)
 
    where:
    - All strings are mutable
@@ -96,15 +97,14 @@ endclass
 
 defclass(StringFix, String)
   U8* _value;
-  U32 capacity;
 endclass
 
 defclass(StringDyn, StringFix)
+  U32 capacity;
 endclass
 
 // ----- initializers, allocators (for the class cluster)
 
-struct Slice;
 struct String* String_alloc(U32);
 
 // ----- automatic constructors
@@ -122,6 +122,7 @@ struct String* String_alloc(U32);
         atStringRef_2(buffer, strlen(buffer))
 
 #define atStringRef_2(buffer,size) \
-  ( &(struct String) { {{{ cos_object_auto(String) }}}, (buffer), (size) } )
+  ( &(struct String) { {{{ cos_object_auto(String) }}}, \
+    buffer, size } )
 
 #endif // COS_STRING_H

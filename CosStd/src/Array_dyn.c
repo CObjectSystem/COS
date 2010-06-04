@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_dyn.c,v 1.24 2010/06/03 15:27:50 ldeniau Exp $
+ | $Id: Array_dyn.c,v 1.25 2010/06/04 23:27:22 ldeniau Exp $
  |
 */
 
@@ -56,19 +56,6 @@ makclass(ArrayDyn,ArrayFix);
 // -----
 
 useclass(ArrayDyn, ExBadAlloc, ExOverflow);
-
-// -----
-
-#ifndef ARRAY_GROWTH_RATE
-#define ARRAY_GROWTH_RATE SEQUENCE_GROWTH_RATE
-#endif
-
-#ifndef ARRAY_MINSIZE
-#define ARRAY_MINSIZE 1024
-#endif
-
-STATIC_ASSERT(array_growth_rate_is_too_small , ARRAY_GROWTH_RATE >= 1.5);
-STATIC_ASSERT(array_minimun_size_is_too_small, ARRAY_MINSIZE     >= 256);
 
 // ----- getter
 
@@ -119,11 +106,13 @@ defmethod(OBJ, ginitWith, ArrayDyn, Int)
   U32          capacity = self2->value;
   size_t           size = capacity * sizeof *arr->object;
 
-  if (size/sizeof *arr->object < capacity)
+  if (size/sizeof *arr->object < capacity) {
+    arrf->_object = 0;
     THROW(gnewWithStr(ExOverflow, "capacity is too large"));
+  }
 
   arrf->_object = malloc(size);
-
+  
   if (!arrf->_object && size)
     THROW(ExBadAlloc);
 
@@ -146,32 +135,18 @@ defmethod(void, ginvariant, ArrayDyn, (STR)file, (int)line)
     next_method(self, file, line);
 endmethod
 
+// ----- dequeue aliases
+defalias(OBJ, (gprepend)gpushFront, ArrayDyn, Object);
+defalias(OBJ, (gappend )gpushBack , ArrayDyn, Object);
+defalias(OBJ, (gfirst  )gtopFront , Array );
+defalias(OBJ, (glast   )gtopBack  , Array );
+
+// ----- stack aliases
+defalias(OBJ, (gpushBack)gpush, ArrayDyn, Object);
+defalias(OBJ, (gpopBack )gpop , ArrayDyn);
+defalias(OBJ, (gtopBack )gtop , Array);
+
 // ----- memory management
-
-static U32
-resize(U32 capacity, U32 extra)
-{
-  U32 size = capacity + extra;
-  U32 last = U32_MAX/ARRAY_GROWTH_RATE;
-
-  // overflow
-  if (capacity > U32_MAX-extra)
-    THROW(gnewWithStr(ExOverflow, "extra size is too large"));
-
-  // starting point
-  if (capacity < ARRAY_MINSIZE)
-    capacity = ARRAY_MINSIZE;
-  
-  // growth rate
-  while (capacity < size && capacity < last)
-    capacity *= ARRAY_GROWTH_RATE;
-
-  // round last growth
-  if (capacity < size)
-    capacity = size;
-
-  return capacity;
-}
 
 defmethod(OBJ, genlarge, ArrayDyn, Int) // negative size means enlarge front
   if (self2->value) {
@@ -181,7 +156,7 @@ defmethod(OBJ, genlarge, ArrayDyn, Int) // negative size means enlarge front
     ptrdiff_t offset = arr->object - arrf->_object;
     BOOL       front = self2->value < 0;
     U32        extra = front ? -self2->value : self2->value;
-    U32     capacity = resize(self->capacity, extra);
+    U32     capacity = Sequence_enlargeCapacity(self->capacity, extra);
     size_t      size = capacity * sizeof *arrf->_object;
     
     if (size/sizeof *arrf->_object < capacity)
@@ -217,7 +192,7 @@ defmethod(OBJ, gadjust, ArrayDyn)
   // shrink storage
   if (arr->size != self->capacity) {
     OBJ *_object = realloc(arrf->_object, size);
-
+    
     if (!_object && size)
       THROW(ExBadAlloc);
 
@@ -228,6 +203,7 @@ defmethod(OBJ, gadjust, ArrayDyn)
 
   BOOL ch_cls = cos_object_changeClass(_1, classref(ArrayFix));
   test_assert( ch_cls, "unable to change from dynamic to fixed size array" );
+  
   retmethod(_1);
 endmethod
 
@@ -317,11 +293,11 @@ defmethod(OBJ, gprepend, ArrayDyn, Array)
   struct ArrayFix *arrf = &self->ArrayFix;
   struct Array    *arr  = &arrf->Array;
 
-  if (arrf->_object > arrf->_object + self2->size)
-    THROW(gnewWithStr(ExOverflow, "size is too large"));
+  if (arrf->_object > arrf->_object + self2->size || self2->size > I32_MAX)
+    THROW(gnewWithStr(ExOverflow, "array to prepend is too large"));
 
   if (arr->object < arrf->_object + self2->size)
-    genlarge(_1, aInt(-self2->size));
+    genlarge(_1, aInt(-(I32)self2->size));
 
   OBJ *src   = self2->object;
   U32  src_n = self2->size;
@@ -340,8 +316,8 @@ defmethod(OBJ, gappend, ArrayDyn, Array)
   struct ArrayFix *arrf = &self->ArrayFix;
   struct Array    *arr  = &arrf->Array;
 
-  if (arrf->_object > arrf->_object + self2->size)
-    THROW(gnewWithStr(ExOverflow, "size is too large"));
+  if (arrf->_object > arrf->_object + self->capacity + self2->size || self2->size > I32_MAX)
+    THROW(gnewWithStr(ExOverflow, "array to append is too large"));
 
   if (arr->object + arr->size + self2->size > arrf->_object + self->capacity)
     genlarge(_1, aInt(self2->size));
@@ -359,6 +335,7 @@ defmethod(OBJ, gappend, ArrayDyn, Array)
   retmethod(_1);
 endmethod
 
+#if 0
 /* TODO: unchecked code (certainly buggy)
 */
 
@@ -734,14 +711,5 @@ defmethod(OBJ, gremoveAt, ArrayDyn, IntVector)
   retmethod(_1);
 endmethod
 
-// --- dequeue aliases
-defalias(OBJ, (gprepend)gpushFront, ArrayDyn, Object);
-defalias(OBJ, (gappend )gpushBack , ArrayDyn, Object);
-defalias(OBJ, (gfirst  )gtopFront , Array );
-defalias(OBJ, (glast   )gtopBack  , Array );
-
-// --- stack aliases
-defalias(OBJ, (gpushBack)gpush, ArrayDyn, Object);
-defalias(OBJ, (gpopBack )gpop , ArrayDyn);
-defalias(OBJ, (gtopBack )gtop , Array);
+#endif
 

@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.36 2010/06/03 15:27:50 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.37 2010/06/04 23:27:22 ldeniau Exp $
  |
 */
 
@@ -423,7 +423,7 @@ defmethod(OBJ, gselect, Array, Functor)
   OBJ *end   = val + val_s*size;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = CAST(struct Array*, _arr);
+  struct Array* arr = dbgcast(Array, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -444,7 +444,7 @@ defmethod(OBJ, greject, Array, Functor)
   OBJ *end   = val + val_s*size;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = CAST(struct Array*, _arr);
+  struct Array* arr = dbgcast(Array, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -465,7 +465,7 @@ defmethod(OBJ, gselectWhile, Array, Functor)
   OBJ *end   = val + val_s*size;
   
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = CAST(struct Array*, _arr);
+  struct Array* arr = dbgcast(Array, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -487,7 +487,7 @@ defmethod(OBJ, grejectWhile, Array, Functor)
   OBJ *end   = val + val_s*size;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = CAST(struct Array*, _arr);
+  struct Array* arr = dbgcast(Array, _arr);
 
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
@@ -867,7 +867,7 @@ endmethod
 defmethod(OBJ, gunique, Array, Functor)
   U32 size = self->size;
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = CAST(struct Array*, _arr);
+  struct Array* arr = dbgcast(Array, _arr);
 
   I32  val_s = self->stride;
   OBJ *val   = self->object;
@@ -919,6 +919,7 @@ defmethod(OBJ, gsplit, Array, Functor)
   retmethod(_arr);
 endmethod
 
+/*
 // ----- group (return an array of arrays)
 
 defmethod(OBJ, ggroup, Array, Functor)
@@ -943,6 +944,7 @@ defmethod(OBJ, ggroup, Array, Functor)
 
   retmethod(arr);
 endmethod
+*/
 
 // ----- merge
 
@@ -988,7 +990,7 @@ endmethod
 defmethod(OBJ, gdiff, Array, Collection, Functor)
   U32 size = self->size;
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = CAST(struct Array*, _arr);
+  struct Array* arr = dbgcast(Array, _arr);
 
   I32  val_s  = self->stride;
   OBJ *val    = self->object;
@@ -1037,7 +1039,7 @@ endmethod
 defmethod(OBJ, gintersect, Array, Collection, Functor)
   U32 size = self->size;
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
-  struct Array* arr = CAST(struct Array*, _arr);
+  struct Array* arr = dbgcast(Array, _arr);
 
   I32  val_s  = self->stride;
   OBJ *val    = self->object;

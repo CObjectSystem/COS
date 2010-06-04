@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.h,v 1.13 2010/05/21 14:59:07 ldeniau Exp $
+ | $Id: Sequence.h,v 1.14 2010/06/04 23:27:21 ldeniau Exp $
  |
 */
 
@@ -44,7 +44,15 @@ endclass
 defclass(ValueSequence, Sequence)
 endclass
 
+#ifndef SEQUENCE_GROWTH_RATE
 #define SEQUENCE_GROWTH_RATE 1.618034 // golden ratio
+#endif
+
+#ifndef SEQUENCE_MIN_SIZE
+#define SEQUENCE_MIN_SIZE 256         // dynamic sequence starting size
+#endif
+
+U32 Sequence_enlargeCapacity(U32 capacity, U32 extra);
 
 /***********************************************************
  * Implementation (private)

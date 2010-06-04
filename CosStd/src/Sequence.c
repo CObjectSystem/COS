@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Sequence.c,v 1.15 2010/01/21 14:52:54 ldeniau Exp $
+ | $Id: Sequence.c,v 1.16 2010/06/04 23:27:22 ldeniau Exp $
  |
 */
 
@@ -42,12 +42,48 @@
 
 // -----
 
+STATIC_ASSERT(sequence_growth_rate_is_too_small , SEQUENCE_GROWTH_RATE >= 1.5);
+STATIC_ASSERT(sequence_minimun_size_is_too_small, SEQUENCE_MIN_SIZE    >= 32 );
+
+// -----
+
 makclass(Sequence     , Collection);
 makclass(ValueSequence, Sequence );
+
+// -----
+
+useclass(ExOverflow);
 
 // -----
 
 defmethod(OBJ, gdeinit, ValueSequence)
   retmethod(_1);
 endmethod
+
+// -----
+
+U32
+Sequence_enlargeCapacity(U32 capacity, U32 extra)
+{
+  U32 size = capacity + extra;
+  U32 last = U32_MAX/SEQUENCE_GROWTH_RATE;
+
+  // overflow
+  if (capacity > U32_MAX-extra)
+    THROW(gnewWithStr(ExOverflow, "extra size is too large"));
+
+  // starting point
+  if (capacity < SEQUENCE_MIN_SIZE)
+    capacity = SEQUENCE_MIN_SIZE;
+  
+  // growth rate
+  while (capacity < size && capacity <= last)
+    capacity *= SEQUENCE_GROWTH_RATE;
+
+  // round last growth
+  if (capacity < size)
+    capacity = size;
+
+  return capacity;
+}
 

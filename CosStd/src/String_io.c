@@ -29,18 +29,28 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_io.c,v 1.11 2010/05/26 15:02:00 ldeniau Exp $
+ | $Id: String_io.c,v 1.12 2010/06/04 23:27:22 ldeniau Exp $
  |
 */
 
 #include <cos/Stream.h>
 #include <cos/String.h>
 
-#include <cos/gen/collection.h>
+#include <cos/gen/object.h>
 #include <cos/gen/sequence.h>
 #include <cos/gen/stream.h>
 
 // ----- get
+
+defmethod(OBJ, gget, String, pmString)
+  retmethod(gclone(_1));
+endmethod
+
+defmethod(OBJ, gget, String, Class)
+  forward_message(_1, gautoRelease(gnew(_2)));
+endmethod
+
+// ----- getline
 
 defmethod(OBJ, gget, InputStream, StringDyn)
   U8 buf[4096];
