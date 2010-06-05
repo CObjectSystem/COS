@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.27 2010/06/04 23:27:22 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.28 2010/06/05 21:21:24 ldeniau Exp $
  |
 */
 
@@ -412,34 +412,53 @@ defmethod(OBJ, gconcat5, Array, Array, Array, Array, Array)
 endmethod
 */
 
+// move to sequence?
 defmethod(OBJ, gconcatn, Array)
   U32  size  = self->size;
   I32  src_s = self->stride;
   OBJ *src   = self->object;
   OBJ *end   = src + size*src_s;
   U32  ssize = 0;
+  BOOL all_array = YES;
 
   // compute sum of sizes
   while (src != end) {
-    test_assert( dyncast(Array, *src),
-                 "invalid array element (should be an Array)" );
+    if (!dyncast(Array, *src))
+      all_array = NO;
     ssize += gsize(*src);
     src += src_s;
   }
 
-  // concatenate arrays
-  struct Array* arr = Array_alloc(ssize);
-  OBJ _arr = gautoRelease( (OBJ)arr );
-  OBJ *dst = arr->object;
-       src = self->object;
-  
-  while(src != end) {
-    struct Array* self2 = dbgcast(Array, *src);
-    dst = arr_copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
-    src += src_s;
-  }
+  if (ssize == 0)
+    retmethod(Nil);
 
-  retmethod(_arr);
+  if (all_array) {
+    // concatenate arrays
+    struct Array* arr = Array_alloc(ssize);
+    OBJ _arr = gautoRelease( (OBJ)arr );
+    OBJ *dst = arr->object;
+         src = self->object;
+    
+    while(src != end) {
+      struct Array* self2 = dbgcast(Array, *src);
+      dst = arr_copy(dst,1,&arr->size,self2->object,self2->stride,self2->size);
+      src += src_s;
+    }
+
+    retmethod(_arr);
+  }
+  else {
+    OBJ cls = gclass(*self->object);
+    OBJ res = gautoRelease(gnewWith(cls, aInt(ssize)));
+
+    src = self->object;
+    while(src != end) {
+      gappend(res, *src);
+      src += src_s;
+    }
+
+    retmethod(res);
+  }
 endmethod
 
 // ----- search (object)

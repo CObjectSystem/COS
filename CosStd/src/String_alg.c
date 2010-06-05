@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.22 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: String_alg.c,v 1.23 2010/06/05 21:21:24 ldeniau Exp $
  |
 */
 
@@ -109,6 +109,8 @@ defmethod(OBJ, gzip, String, String)
     *dst++ = *src2++;
   }
 
+  str->size = 2*size;
+  
   retmethod(gautoRelease( (OBJ)str ));
 endmethod
 
@@ -129,6 +131,8 @@ defmethod(OBJ, gzip3, String, String, String)
     *dst++ = *src3++;
   }
 
+  str->size = 3*size;
+  
   retmethod(gautoRelease( (OBJ)str ));
 endmethod
 
@@ -137,11 +141,12 @@ endmethod
 defmethod(OBJ, gconcat, String, String)
   U32 size = self->size + self2->size;
   struct String *str = String_alloc(size);
-
   U8* dst = str->value;
 
   memcpy(dst,self ->value,self ->size); dst += self->size;
   memcpy(dst,self2->value,self2->size);
+  
+  str->size = size;
 
   retmethod(gautoRelease( (OBJ)str ));
 endmethod
@@ -149,12 +154,13 @@ endmethod
 defmethod(OBJ, gconcat3, String, String, String)
   U32 size = self->size + self2->size + self3->size;
   struct String *str = String_alloc(size);
-
   U8* dst = str->value;
 
   memcpy(dst,self ->value,self ->size); dst += self ->size;
   memcpy(dst,self2->value,self2->size); dst += self2->size;
   memcpy(dst,self3->value,self3->size);
+
+  str->size = size;
 
   retmethod(gautoRelease( (OBJ)str ));
 endmethod
@@ -162,13 +168,14 @@ endmethod
 defmethod(OBJ, gconcat4, String, String, String, String)
   U32 size = self->size + self2->size + self3->size + self4->size;
   struct String *str = String_alloc(size);
-
   U8* dst = str->value;
 
   memcpy(dst,self ->value,self ->size); dst += self ->size;
   memcpy(dst,self2->value,self2->size); dst += self2->size;
   memcpy(dst,self3->value,self3->size); dst += self3->size;
   memcpy(dst,self4->value,self4->size);
+
+  str->size = size;
 
   retmethod(gautoRelease( (OBJ)str ));
 endmethod
@@ -186,6 +193,8 @@ defmethod(OBJ, gconcat5, String, String, String, String, String)
   memcpy(dst,self3->value,self3->size); dst += self3->size;
   memcpy(dst,self4->value,self4->size); dst += self4->size;
   memcpy(dst,self5->value,self5->size);
+
+  str->size = size;
 
   retmethod(gautoRelease( (OBJ)str ));
 endmethod

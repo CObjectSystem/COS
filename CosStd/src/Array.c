@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array.c,v 1.60 2010/06/04 23:27:22 ldeniau Exp $
+ | $Id: Array.c,v 1.61 2010/06/05 21:21:24 ldeniau Exp $
  |
 */
 
@@ -261,7 +261,7 @@ PRE
                Slice_last (self3) < self2->size, "slice out of range" );
                
 BODY
-  U32 size = self3->size;
+  U32 size = Slice_size(self3);
   struct Array* arr = Array_alloc(size);
   OBJ _arr = (OBJ)arr; PRT(_arr);
 

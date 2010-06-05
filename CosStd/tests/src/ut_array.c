@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.17 2010/05/31 14:02:59 ldeniau Exp $
+ | $Id: ut_array.c,v 1.18 2010/06/05 21:21:24 ldeniau Exp $
  |
 */
 
@@ -150,7 +150,7 @@ ut_array_functor(void)
   UTEST_START("Array functor")
 
   OBJ id    = aFun(cos_ident, __1);
-/* these definitions are equivalent and faster
+/* these definitions are equivalent and faster */
   OBJ div   = aFun(gdiv      , __1, __2);
   OBJ add   = aFun(gadd      , __1, __2);
   OBJ addTo = aFun(gaddTo    , __1, __2);
@@ -158,8 +158,7 @@ ut_array_functor(void)
   OBJ cmp   = aFun(gcompare  , __1, __2);
   OBJ eq    = aFun(gisEqual  , __1, __2);
   OBJ gt    = aFun(gisGreater, __1, aInt(3));
-*/
-// /*
+/* not fully yet tested (certainly buggy)
   OBJ div   = gdiv      (__1, __2);
   OBJ add   = gadd      (__1, __2);
   OBJ addTo = gaddTo    (__1, __2);
@@ -167,7 +166,7 @@ ut_array_functor(void)
   OBJ cmp   = gcompare  (__1, __2);
   OBJ eq    = gisEqual  (__1, __2);
   OBJ gt    = gisGreater(__1, aInt(3));
-// */
+*/
   OBJ arr   = Nil;
   OBJ obj   = Nil;
 
