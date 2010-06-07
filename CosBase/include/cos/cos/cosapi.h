@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.53 2010/06/03 09:03:49 ldeniau Exp $
+ | $Id: cosapi.h,v 1.54 2010/06/07 22:18:13 ldeniau Exp $
  |
 */
 
@@ -501,7 +501,7 @@ cos_exception_objectProtect(struct cos_exception_extendedProtect *ptr,
 
 static cos_inline struct cos_exception_extendedProtect
 cos_exception_extendedProtect(struct cos_exception_extendedProtect *ptr,
-                              void * const*alt, FCTV fct)
+                              void *const *alt, FCTV fct)
 {
   struct cos_exception_context *cxt = cos_exception_context();
 
