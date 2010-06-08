@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.55 2010/06/08 09:05:20 ldeniau Exp $
+ | $Id: cosapi.h,v 1.56 2010/06/08 22:36:26 ldeniau Exp $
  |
 */
 
@@ -113,8 +113,9 @@ void   cos_exception_deinitContext(struct cos_exception_context*);
 
 cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
 
+void   cos_functor_overflow(void);
+void   cos_functor_underflow(void) __attribute__((__noreturn__));
 void   cos_functor_clearContext(void);
-void   cos_functor_enlargeContext(void);
 
 void   cos_module_load(STR*); // null terminated array of module names
 
@@ -503,10 +504,22 @@ cos_functor_ensure(int n)
   struct cos_functor_context *cxt = cos_functor_context();
   
   if (cxt->top + n > cxt->end)
-    cos_functor_enlargeContext();
+    cos_functor_overflow();
 
   return cxt;
   COS_UNUSED(cos_functor_ensure);
+}
+
+static cos_inline struct cos_functor_context*
+cos_functor_require(int n)
+{
+  struct cos_functor_context *cxt = cos_functor_context();
+  
+  if (cxt->stk + n > cxt->top)
+    cos_functor_underflow();
+
+  return cxt;
+  COS_UNUSED(cos_functor_require);
 }
 
 static cos_inline struct cos_exception_protect

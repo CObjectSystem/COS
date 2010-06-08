@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_functor.c,v 1.1 2010/06/08 09:05:57 ldeniau Exp $
+ | $Id: cos_functor.c,v 1.2 2010/06/08 22:36:27 ldeniau Exp $
  |
 */
 
@@ -84,10 +84,10 @@ cos_functor_context_init(void)
   
 #endif // ------------------------------------------------
 
-useclass(ExBadAlloc, ExOverflow);
+useclass(ExBadAlloc, ExOverflow, ExUnderflow);
 
 void
-cos_functor_enlargeContext(void)
+cos_functor_overflow(void)
 {
   struct cos_functor_context *cxt = cos_functor_context();
   size_t ssize = COS_FUNCTOR_STACKSIZE * sizeof(OBJ);
@@ -100,6 +100,12 @@ cos_functor_enlargeContext(void)
   
 	cxt->top = cxt->stk;
 	cxt->end = cxt->stk + COS_FUNCTOR_STACKSIZE;
+}
+
+void
+cos_functor_underflow(void)
+{
+  THROW(gnewWithStr(ExUnderflow, "functor stack underflow"));
 }
 
 void
