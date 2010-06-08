@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_exception.c,v 1.32 2010/06/03 09:03:49 ldeniau Exp $
+ | $Id: cos_exception.c,v 1.33 2010/06/08 09:05:28 ldeniau Exp $
  |
 */
 
@@ -121,6 +121,14 @@ unwind_stack(struct cos_exception_context *cxt)
 }
 
 static void
+unwind_funstack(struct cos_exception_context *cxt)
+{
+  struct cos_functor_context *fcxt = cos_functor_context();
+
+  fcxt->top = fcxt->stk + cxt->fss;
+}
+
+static void
 terminate_default(OBJ ex, STR file, int line)
 {
   STR reason = cos_object_isKindOf(ex, classref(Exception)) ? gstr(ex) : ".";
@@ -174,10 +182,14 @@ cos_exception_uncaught(void)
 void
 cos_exception_initContext(struct cos_exception_context *cxt)
 {
+  struct cos_functor_context *fcxt = cos_functor_context();
+
   cxt->prv   = cos_exception_context();
   cxt->stk   = 0;
   cxt->unstk = 0;
   cxt->ex    = 0;
+  cxt->fss   = fcxt->top - fcxt->stk;
+
   cxt_set(cxt);
 }
 
@@ -222,6 +234,7 @@ defmethod(void, gthrow, Object, (STR)file, (int)line)
     terminate();
 
   unwind_stack(cxt);
+  unwind_funstack(cxt);
 
   if (cxt == &_cxt0)
     terminate();

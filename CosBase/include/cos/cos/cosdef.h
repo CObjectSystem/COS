@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosdef.h,v 1.35 2010/06/03 09:03:49 ldeniau Exp $
+ | $Id: cosdef.h,v 1.36 2010/06/08 09:05:20 ldeniau Exp $
  |
 */
 
@@ -226,15 +226,23 @@ struct cos_generic_arginfo {
   U8  objidx; // index as object
 };
 
+// functor context
+struct cos_functor_context {
+  OBJ *top;
+  OBJ *end;
+  OBJ *stk;
+};
+
 // exception context
 struct cos_exception_context {
   struct cos_exception_context *prv;
   struct cos_exception_protect *stk;
   BOOL unstk;
-  volatile OBJ ex;
-  volatile STR file;
-  volatile int line;
-  volatile int tag;
+  volatile OBJ    ex;
+  volatile STR    file;
+  volatile int    line;
+  volatile int    tag;
+  volatile size_t fss;
   cos_exception_jmpbuf buf;
 };
 
