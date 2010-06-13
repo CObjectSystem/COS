@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: utils.h,v 1.3 2009/08/11 20:33:38 ldeniau Exp $
+ | $Id: utils.h,v 1.4 2010/06/13 20:17:18 ldeniau Exp $
  |
  o
 */
@@ -52,6 +52,7 @@
 #define COS_PP_COMMA()       ,
 #define COS_PP_LPAR()        (
 #define COS_PP_RPAR()        )
+#define COS_PP_BRACE(...)   { __VA_ARGS__ }
 
 #define COS_PP_ARG1(a,                ...)  a
 #define COS_PP_ARG2(a,b,              ...)  b
