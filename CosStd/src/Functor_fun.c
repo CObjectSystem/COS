@@ -1,7 +1,7 @@
 /*
  o---------------------------------------------------------------------o
  |
- | COS Functor (Functor Expression)
+ | COS FunExpr (High Order Function)
  |
  o---------------------------------------------------------------------o
  |
@@ -29,72 +29,17 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.25 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.26 2010/06/13 20:24:46 ldeniau Exp $
  |
 */
 
-#include <cos/Array.h>
 #include <cos/Functor.h>
-#include <cos/gen/accessor.h>
-#include <cos/gen/functor.h>
+
 #include <cos/gen/object.h>
+#include <cos/gen/functor.h>
 #include <cos/gen/value.h>
 
-#include "Functor.h"
-#include "Functor_utl.h"
-
-// ----- type compatibility with functions
-
-STATIC_ASSERT(functor1_to_function1_compatibility,
-              COS_FIELD_COMPATIBILITY(Function1,FunExpr1,fct));
-
-STATIC_ASSERT(functor2_to_function2_compatibility,
-              COS_FIELD_COMPATIBILITY(Function2,FunExpr2,fct));
-
-STATIC_ASSERT(functor3_to_function3_compatibility,
-              COS_FIELD_COMPATIBILITY(Function3,FunExpr3,fct));
-
-STATIC_ASSERT(functor4_to_function4_compatibility,
-              COS_FIELD_COMPATIBILITY(Function4,FunExpr4,fct));
-
-STATIC_ASSERT(functor5_to_function5_compatibility,
-              COS_FIELD_COMPATIBILITY(Function5,FunExpr5,fct));
-
-STATIC_ASSERT(functor6_to_function6_compatibility,
-              COS_FIELD_COMPATIBILITY(Function6,FunExpr6,fct));
-
-STATIC_ASSERT(functor7_to_function7_compatibility,
-              COS_FIELD_COMPATIBILITY(Function7,FunExpr7,fct));
-
-STATIC_ASSERT(functor8_to_function8_compatibility,
-              COS_FIELD_COMPATIBILITY(Function8,FunExpr8,fct));
-
-STATIC_ASSERT(functor9_to_function9_compatibility,
-              COS_FIELD_COMPATIBILITY(Function9,FunExpr9,fct));
-
-// ----- utils
-
-enum { FUN_ISEXPR, FUN_ISCLOSED, FUN_ISFUNC };
-
-static cos_inline int
-getFunType(U32 msk, OBJ arg[], U32 n)
-{
-  U32 i, narg = 0;
-  
-  for (i = 0; i < n; i++) {
-    if (isArg(msk, i)) ++narg;
-
-    else
-    if (!isIdx(msk, i) || i - narg != getIdx(arg[i]))
-      break;
-  }
-       
-  return i == n ? (!narg ? FUN_ISFUNC : FUN_ISCLOSED) : FUN_ISEXPR;
-}
-
 // ----- initializer
-
-dclclass(SFunExpr1, SFunExpr2, SFunExpr3, SFunExpr4);
 
 #undef  DEFFUNC
 #define DEFFUNC(N) \
@@ -102,27 +47,15 @@ dclclass(SFunExpr1, SFunExpr2, SFunExpr3, SFunExpr4);
 struct Functor* COS_PP_CAT(FunExpr_init,N) \
 (struct COS_PP_CAT(FunExpr,N) *fun) \
 { \
-  U32 *msk = &fun->FunExpr.Functor.msk; \
+  for (int i = 0; i < N; i++) { \
+    struct FunArg *arg = cast(FunArg, fun->arg[i].obj); \
 \
-  for (U32 i = 0; i < N; i++) \
-    Functor_setMask(msk, i, fun->arg+i); \
-\
-  switch(getFunType(*msk, fun->arg, N)) { \
-  case FUN_ISFUNC: \
-    cos_object_setId((OBJ)fun, cos_class_id(classref(COS_PP_CAT(Function,N))));\
-    break; \
-\
-  COS_PP_IF(COS_PP_GT(N,4))(, \
-  case FUN_ISCLOSED: \
-    cos_object_setId((OBJ)fun, cos_class_id(classref(COS_PP_CAT(SFunExpr,N))));\
-    break; \
-  ) \
-  COS_PP_IF(COS_PP_GT(N,5))(, \
-  case FUN_ISEXPR: \
-    if (getPar(*msk)) \
-      cos_object_setId((OBJ)fun,cos_class_id(classref(COS_PP_CAT(PFunExpr,N))));\
-    break; \
-  ) \
+    if (arg) { \
+      fun->arg[i].idx = arg->idx; \
+      if (arg->idx < fun->FunExpr.max) \
+        fun->FunExpr.max = arg->idx; \
+    } else \
+      fun->FunExpr.msk |= 1u << i; \
   } \
 \
   return &fun->FunExpr.Functor; \
@@ -138,22 +71,22 @@ DEFFUNC(7)
 DEFFUNC(8)
 DEFFUNC(9)
 
-// ----- constructors
-
-defmethod(OBJ, ginitWithFun0, pmFunctor, (FUN0)fct)
-  retmethod( gautoRelease(aFun(fct)) );
-endmethod
+// ----- ctors
 
 #undef  DEFMETHOD
 #define DEFMETHOD(N) \
 \
 defmethod(OBJ, COS_PP_CAT(ginitWithFun,N), pmFunctor, (COS_PP_CAT(FUN,N))fct, (OBJ*)arg) \
   OBJ fun = aFun(fct, COS_PP_SEQ(COS_PP_MAP(COS_PP_TAKE(N,(COS_PP_NUMSEQ_N())),DEFARG))); \
-  retmethod( gclone(fun) ); \
+  retmethod( gcopy(fun) ); \
 endmethod
 
 #undef  DEFARG
 #define DEFARG(i) arg[i-1]
+
+defmethod(OBJ, ginitWithFun0, pmFunctor, (FUN0)fct)
+  retmethod( gcopy(aFun(fct)) );
+endmethod
 
 DEFMETHOD(1)
 DEFMETHOD(2)
@@ -171,16 +104,27 @@ DEFMETHOD(9)
 #define DEFMETHOD(N) \
 \
 defmethod(OBJ, ginitWith, COS_PP_CAT(FunExpr,N), COS_PP_CAT(FunExpr,N)) \
-  U32 msk = self2->FunExpr.Functor.msk; \
-\
-  self->FunExpr.Functor.msk = msk; \
   self->FunExpr.str = self2->FunExpr.str; \
+  self->FunExpr.msk = self2->FunExpr.msk; \
+  self->FunExpr.max = self2->FunExpr.max; \
   self->fct = self2->fct; \
 \
   for (int i = 0; i < N; i++) \
-    self->arg[i] = isIdx(msk, i) ? self2->arg[i] : gretain(self2->arg[i]); \
+    if (self->FunExpr.msk & (1u << i)) \
+      self->arg[i].obj = gretain(self2->arg[i].obj); \
+    else \
+      self->arg[i].idx = self2->arg[i].idx; \
 \
   retmethod(_1); \
+endmethod
+
+defmethod(OBJ, ginitWith, FunExpr0, FunExpr0)
+  self->FunExpr.str = self2->FunExpr.str;
+  self->FunExpr.msk = self2->FunExpr.msk;
+  self->FunExpr.max = self2->FunExpr.max;
+  self->fct = self2->fct;
+
+  retmethod(_1);
 endmethod
 
 DEFMETHOD(1)
@@ -199,12 +143,15 @@ DEFMETHOD(9)
 #define DEFMETHOD(N) \
 \
 defmethod(OBJ, gdeinit, COS_PP_CAT(FunExpr,N)) \
-  U32 msk = self->FunExpr.Functor.msk; \
-\
   for (int i = 0; i < N; i++) \
-    if (!isIdx(msk, i)) grelease(self->arg[i]); \
+    if (self->FunExpr.msk & (1u << i)) \
+      grelease(self->arg[i].obj); \
 \
   retmethod(_1); \
+endmethod
+
+defmethod(OBJ, gdeinit, FunExpr0)
+  retmethod(_1);
 endmethod
 
 DEFMETHOD(1)
@@ -217,451 +164,468 @@ DEFMETHOD(7)
 DEFMETHOD(8)
 DEFMETHOD(9)
 
-// ----- dtor (default)
-
-defmethod(OBJ, gdeinit, FunExpr)
-  retmethod(_1);
-endmethod
-
 // ----- str
 
 defmethod(STR, gstr, FunExpr)
   retmethod(self->str);
 endmethod
 
-// ----- eval (stack-like environment)
+// --------------------------------------------------------
+// ---- eval
 
-defmethod(OBJ, gevalEnv, FunExpr1, Array)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN1 fct = self->fct;
-  OBJ *arg = self->arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
+// ----- 0
 
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-
-  retmethod( fct(arg0) );
+defmethod(OBJ, gevalFun, FunExpr0)
+  retmethod( self->fct() );
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr1, Array) // partial evaluation
-  U32  msk = self->FunExpr1.FunExpr.Functor.msk;
+// ----- 1
+
+defmethod(OBJ, gevalFun, FunExpr1)
+  switch(self->FunExpr.msk) {
+    case 1: cos_object_setId(_1, cos_class_id(classref(FunExpr11))); break;
+    case 0: cos_object_setId(_1, cos_class_id(classref(FunExpr12))); break;
+    default : test_assert(0, "invalid FunExpr1 mask");
+  }
+
+  forward_message(_1);
+endmethod
+
+defmethod(OBJ, gevalFun, FunExpr11)
+  union cos_functor_arg *arg = self->FunExpr1.arg;
   FUN1 fct = self->FunExpr1.fct;
-  OBJ *arg = self->FunExpr1.arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
 
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-
-  retmethod( gautoRelease(aFun(fct, arg0)) );
+  retmethod( fct(arg[0].obj) );                                       // msk = 1
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr2, Array)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN2 fct = self->fct;
-  OBJ *arg = self->arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-
-  retmethod( fct(arg0, arg1) );
-endmethod
-
-defmethod(OBJ, gevalEnv, PFunExpr2, Array) // partial evaluation
-  U32  msk = self->FunExpr2.FunExpr.Functor.msk;
-  FUN2 fct = self->FunExpr2.fct;
-  OBJ *arg = self->FunExpr2.arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-
-  retmethod( gautoRelease(aFun(fct, arg0, arg1)) );
-endmethod
-
-defmethod(OBJ, gevalEnv, FunExpr3, Array)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN3 fct = self->fct;
-  OBJ *arg = self->arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-
-  retmethod( fct(arg0, arg1, arg2) );
-endmethod
-
-defmethod(OBJ, gevalEnv, PFunExpr3, Array) // partial evaluation
-  U32  msk = self->FunExpr3.FunExpr.Functor.msk;
-  FUN3 fct = self->FunExpr3.fct;
-  OBJ *arg = self->FunExpr3.arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2)) );
-endmethod
-
-defmethod(OBJ, gevalEnv, FunExpr4, Array)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN4 fct = self->fct;
-  OBJ *arg = self->arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
-  
-  retmethod( fct(arg0, arg1, arg2, arg3) );
-endmethod
-
-defmethod(OBJ, gevalEnv, PFunExpr4, Array) // partial evaluation
-  U32  msk = self->FunExpr4.FunExpr.Functor.msk;
-  FUN4 fct = self->FunExpr4.fct;
-  OBJ *arg = self->FunExpr4.arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
-  
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3)) );
-endmethod
-
-defmethod(OBJ, gevalEnv, FunExpr5, Array)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN5 fct = self->fct;
-  OBJ *arg = self->arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
-  OBJ arg4 = getArg(4, msk, arg[4], var, size, _2);
-
-  retmethod( fct(arg0, arg1, arg2, arg3, arg4) );
-endmethod
-
-defmethod(OBJ, gevalEnv, PFunExpr5, Array)
-  U32  msk = self->FunExpr5.FunExpr.Functor.msk;
-  FUN5 fct = self->FunExpr5.fct;
-  OBJ *arg = self->FunExpr5.arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
-  OBJ arg4 = getArg(4, msk, arg[4], var, size, _2);
-  
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4)) );
-endmethod
-
-defmethod(OBJ, gevalEnv, FunExpr6, Array)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN6 fct = self->fct;
-  OBJ *arg = self->arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
-  OBJ arg4 = getArg(4, msk, arg[4], var, size, _2);
-  OBJ arg5 = getArg(5, msk, arg[5], var, size, _2);
-
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5) );
-
-  // partial evaluation
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5)) );
-endmethod
-
-defmethod(OBJ, gevalEnv, FunExpr7, Array)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN7 fct = self->fct;
-  OBJ *arg = self->arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
-  OBJ arg4 = getArg(4, msk, arg[4], var, size, _2);
-  OBJ arg5 = getArg(5, msk, arg[5], var, size, _2);
-  OBJ arg6 = getArg(6, msk, arg[6], var, size, _2);
-
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6) );
-
-  // partial evaluation
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6)) );
-endmethod
-
-defmethod(OBJ, gevalEnv, FunExpr8, Array)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN8 fct = self->fct;
-  OBJ *arg = self->arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
-  OBJ arg4 = getArg(4, msk, arg[4], var, size, _2);
-  OBJ arg5 = getArg(5, msk, arg[5], var, size, _2);
-  OBJ arg6 = getArg(6, msk, arg[6], var, size, _2);
-  OBJ arg7 = getArg(7, msk, arg[7], var, size, _2);
-
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) );
-
-  // partial evaluation
-  retmethod( gautoRelease(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7)) );
-endmethod
-
-defmethod(OBJ, gevalEnv, FunExpr9, Array)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN9 fct = self->fct;
-  OBJ *arg = self->arg;
-  OBJ *var = self2->object;
-  U32 size = self2->size;
-
-  OBJ arg0 = getArg(0, msk, arg[0], var, size, _2);
-  OBJ arg1 = getArg(1, msk, arg[1], var, size, _2);
-  OBJ arg2 = getArg(2, msk, arg[2], var, size, _2);
-  OBJ arg3 = getArg(3, msk, arg[3], var, size, _2);
-  OBJ arg4 = getArg(4, msk, arg[4], var, size, _2);
-  OBJ arg5 = getArg(5, msk, arg[5], var, size, _2);
-  OBJ arg6 = getArg(6, msk, arg[6], var, size, _2);
-  OBJ arg7 = getArg(7, msk, arg[7], var, size, _2);
-  OBJ arg8 = getArg(8, msk, arg[8], var, size, _2);
-
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) );
-
-  // partial evaluation
-  retmethod(gautoRelease(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8)));
-endmethod
-
-// ----- eval (generic environment)
-
-defmethod(OBJ, gevalEnv, FunExpr1, Collection)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN1 fct = self->fct;
-  OBJ *arg = self->arg;
-
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-
-  retmethod( fct(arg0) );
-endmethod
-
-defmethod(OBJ, gevalEnv, PFunExpr1, Collection) // partial evaluation
-  U32  msk = self->FunExpr1.FunExpr.Functor.msk;
+defmethod(OBJ, gevalFun, FunExpr12)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr1.arg;
   FUN1 fct = self->FunExpr1.fct;
-  OBJ *arg = self->FunExpr1.arg;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
+  if (narg <= self->FunExpr1.FunExpr.max)
+    retmethod( fct(var[arg[0].idx]) );                                // msk = 0
 
-  retmethod( gautoRelease(aFun(fct, arg0)) );
+  else { // partial evaluation
+    OBJ arg0 = arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+
+    retmethod( gautoRelease(aFun(fct, arg0)) );
+  }
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr2, Collection)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN2 fct = self->fct;
-  OBJ *arg = self->arg;
+// ----- 2
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
+defmethod(OBJ, gevalFun, FunExpr2)
+  switch(self->FunExpr.msk) {
+    case 3: cos_object_setId(_1, cos_class_id(classref(FunExpr21))); break;
+    case 2: cos_object_setId(_1, cos_class_id(classref(FunExpr22))); break;
+    case 1: cos_object_setId(_1, cos_class_id(classref(FunExpr23))); break;
+    case 0: cos_object_setId(_1, cos_class_id(classref(FunExpr24))); break;
+    default : test_assert(0, "invalid FunExpr2 mask");
+  }
 
-  retmethod( fct(arg0, arg1) );
+  forward_message(_1);
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr2, Collection) // partial evaluation
-  U32  msk = self->FunExpr2.FunExpr.Functor.msk;
+defmethod(OBJ, gevalFun, FunExpr21)
+  union cos_functor_arg *arg = self->FunExpr2.arg;
   FUN2 fct = self->FunExpr2.fct;
-  OBJ *arg = self->FunExpr2.arg;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-
-  retmethod( gautoRelease(aFun(fct, arg0, arg1)) );
+  retmethod( fct(arg[0].obj, arg[1].obj) );                           // msk = 3
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr3, Collection)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN3 fct = self->fct;
-  OBJ *arg = self->arg;
+defmethod(OBJ, gevalFun, FunExpr22)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr2.arg;
+  FUN2 fct = self->FunExpr2.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
+  if (narg <= self->FunExpr2.FunExpr.max)
+    retmethod( fct(var[arg[0].idx], arg[1].obj) );                    // msk = 2
 
-  retmethod( fct(arg0, arg1, arg2) );
+  else { // partial evaluation
+    OBJ arg0 = arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+
+    retmethod( gautoRelease(aFun(fct, arg0, arg[1].obj)) );
+  }
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr3, Collection) // partial evaluation
-  U32  msk = self->FunExpr3.FunExpr.Functor.msk;
+defmethod(OBJ, gevalFun, FunExpr23)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr2.arg;
+  FUN2 fct = self->FunExpr2.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
+
+  if (narg <= self->FunExpr2.FunExpr.max)
+    retmethod( fct(arg[0].obj, var[arg[1].idx]) );                    // msk = 1
+
+  else { // partial evaluation
+    OBJ arg1 = arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+
+    retmethod( gautoRelease(aFun(fct, arg[0].obj, arg1)) );
+  }
+endmethod
+
+defmethod(OBJ, gevalFun, FunExpr24)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr2.arg;
+  FUN2 fct = self->FunExpr2.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
+
+  if (narg <= self->FunExpr2.FunExpr.max)
+    retmethod( fct(var[arg[0].idx], var[arg[1].idx]) );               // msk = 0
+
+  else { // partial evaluation
+    OBJ arg0 = arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg1 = arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+
+    retmethod( gautoRelease(aFun(fct, arg0, arg1)) );
+  }
+endmethod
+
+// ----- 3
+
+defmethod(OBJ, gevalFun, FunExpr3)
+  switch(self->FunExpr.msk) {
+    case 7: cos_object_setId(_1, cos_class_id(classref(FunExpr31))); break;
+    case 6: cos_object_setId(_1, cos_class_id(classref(FunExpr32))); break;
+    case 5: cos_object_setId(_1, cos_class_id(classref(FunExpr33))); break;
+    case 4: cos_object_setId(_1, cos_class_id(classref(FunExpr34))); break;
+    case 3: cos_object_setId(_1, cos_class_id(classref(FunExpr35))); break;
+    case 2: cos_object_setId(_1, cos_class_id(classref(FunExpr36))); break;
+    case 1: cos_object_setId(_1, cos_class_id(classref(FunExpr37))); break;
+    case 0: cos_object_setId(_1, cos_class_id(classref(FunExpr38))); break;
+    default  : test_assert(0, "invalid FunExpr3 mask");
+  }
+
+  forward_message(_1);
+endmethod
+
+defmethod(OBJ, gevalFun, FunExpr31)
+  union cos_functor_arg *arg = self->FunExpr3.arg;
   FUN3 fct = self->FunExpr3.fct;
-  OBJ *arg = self->FunExpr3.arg;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
-
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2)) );
+  retmethod( fct(arg[0].obj, arg[1].obj, arg[2].obj) );               // msk = 7
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr4, Collection)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN4 fct = self->fct;
-  OBJ *arg = self->arg;
+defmethod(OBJ, gevalFun, FunExpr32)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr3.arg;
+  FUN3 fct = self->FunExpr3.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
-  OBJ arg3 = getArgVar(3, msk, arg[3], _2);
+  if (narg <= self->FunExpr3.FunExpr.max)
+    retmethod( fct(var[arg[0].idx], arg[1].obj, arg[2].obj) );        // msk = 6
 
-  retmethod( fct(arg0, arg1, arg2, arg3) );
+  else { // partial evaluation
+    OBJ arg0 = arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+
+    retmethod( gautoRelease(aFun(fct, arg0, arg[1].obj, arg[2].obj)) );
+  }
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr4, Collection) // partial evaluation
-  U32  msk = self->FunExpr4.FunExpr.Functor.msk;
-  FUN4 fct = self->FunExpr4.fct;
-  OBJ *arg = self->FunExpr4.arg;
+defmethod(OBJ, gevalFun, FunExpr33)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr3.arg;
+  FUN3 fct = self->FunExpr3.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
-  OBJ arg3 = getArgVar(3, msk, arg[3], _2);
+  if (narg <= self->FunExpr3.FunExpr.max)
+    retmethod( fct(arg[0].obj, var[arg[1].idx], arg[2].obj) );        // msk = 5
 
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3)) );
+  else { // partial evaluation
+    OBJ arg1 = arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+
+    retmethod( gautoRelease(aFun(fct, arg[0].obj, arg1, arg[2].obj)) );
+  }
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr5, Collection)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN5 fct = self->fct;
-  OBJ *arg = self->arg;
+defmethod(OBJ, gevalFun, FunExpr34)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr3.arg;
+  FUN3 fct = self->FunExpr3.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
-  OBJ arg3 = getArgVar(3, msk, arg[3], _2);
-  OBJ arg4 = getArgVar(4, msk, arg[4], _2);
+  if (narg <= self->FunExpr3.FunExpr.max)
+    retmethod( fct(var[arg[0].idx], var[arg[1].idx], arg[2].obj) );   // msk = 4
 
-  retmethod( fct(arg0, arg1, arg2, arg3, arg4) );
+  else { // partial evaluation
+    OBJ arg0 = arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg1 = arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+
+    retmethod( gautoRelease(aFun(fct, arg0, arg1, arg[2].obj)) );
+  }
 endmethod
 
-defmethod(OBJ, gevalEnv, PFunExpr5, Collection) // partial evaluation
-  U32  msk = self->FunExpr5.FunExpr.Functor.msk;
-  FUN5 fct = self->FunExpr5.fct;
-  OBJ *arg = self->FunExpr5.arg;
+defmethod(OBJ, gevalFun, FunExpr35)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr3.arg;
+  FUN3 fct = self->FunExpr3.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
-  OBJ arg3 = getArgVar(3, msk, arg[3], _2);
-  OBJ arg4 = getArgVar(4, msk, arg[4], _2);
+  if (narg <= self->FunExpr3.FunExpr.max)
+    retmethod( fct(arg[0].obj, arg[1].obj, var[arg[2].idx]) );        // msk = 3
 
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4)) );
+  else { // partial evaluation
+    OBJ arg2 = arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
+
+    retmethod( gautoRelease(aFun(fct, arg[0].obj, arg[1].obj, arg2)) );
+  }
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr6, Collection)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN6 fct = self->fct;
-  OBJ *arg = self->arg;
+defmethod(OBJ, gevalFun, FunExpr36)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr3.arg;
+  FUN3 fct = self->FunExpr3.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
-  OBJ arg3 = getArgVar(3, msk, arg[3], _2);
-  OBJ arg4 = getArgVar(4, msk, arg[4], _2);
-  OBJ arg5 = getArgVar(5, msk, arg[5], _2);
+  if (narg <= self->FunExpr3.FunExpr.max)
+    retmethod( fct(var[arg[0].idx], arg[1].obj, var[arg[2].idx]) );   // msk = 2
 
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5) );
+  else { // partial evaluation
+    OBJ arg0 = arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg2 = arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
 
-  // partial evaluation
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5)) );
+    retmethod( gautoRelease(aFun(fct, arg0, arg[1].obj, arg2)) );
+  }
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr7, Collection)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN7 fct = self->fct;
-  OBJ *arg = self->arg;
+defmethod(OBJ, gevalFun, FunExpr37)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr3.arg;
+  FUN3 fct = self->FunExpr3.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
-  OBJ arg3 = getArgVar(3, msk, arg[3], _2);
-  OBJ arg4 = getArgVar(4, msk, arg[4], _2);
-  OBJ arg5 = getArgVar(5, msk, arg[5], _2);
-  OBJ arg6 = getArgVar(6, msk, arg[6], _2);
+  if (narg <= self->FunExpr3.FunExpr.max)
+    retmethod( fct(arg[0].obj, var[arg[1].idx], var[arg[2].idx]) );   // msk = 1
 
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6) );
+  else { // partial evaluation
+    OBJ arg1 = arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+    OBJ arg2 = arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
 
-  // partial evaluation
-  retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6)) );
+    retmethod( gautoRelease(aFun(fct, arg[0].obj, arg1, arg2)) );
+  }
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr8, Collection)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN8 fct = self->fct;
-  OBJ *arg = self->arg;
+defmethod(OBJ, gevalFun, FunExpr38)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->FunExpr3.arg;
+  FUN3 fct = self->FunExpr3.fct;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
-  OBJ arg3 = getArgVar(3, msk, arg[3], _2);
-  OBJ arg4 = getArgVar(4, msk, arg[4], _2);
-  OBJ arg5 = getArgVar(5, msk, arg[5], _2);
-  OBJ arg6 = getArgVar(6, msk, arg[6], _2);
-  OBJ arg7 = getArgVar(7, msk, arg[7], _2);
+  if (narg <= self->FunExpr3.FunExpr.max)
+    retmethod( fct(var[arg[0].idx], var[arg[1].idx], var[arg[2].idx]) ); // msk = 0
 
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) );
+  else { // partial evaluation
+    OBJ arg0 = arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg1 = arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+    OBJ arg2 = arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
 
-  // partial evaluation
-  retmethod( gautoRelease(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7)) );
+    retmethod( gautoRelease(aFun(fct, arg0, arg1, arg2)) );
+  }
 endmethod
 
-defmethod(OBJ, gevalEnv, FunExpr9, Collection)
-  U32  msk = self->FunExpr.Functor.msk;
-  FUN9 fct = self->fct;
-  OBJ *arg = self->arg;
+// ----- 4
 
-  OBJ arg0 = getArgVar(0, msk, arg[0], _2);
-  OBJ arg1 = getArgVar(1, msk, arg[1], _2);
-  OBJ arg2 = getArgVar(2, msk, arg[2], _2);
-  OBJ arg3 = getArgVar(3, msk, arg[3], _2);
-  OBJ arg4 = getArgVar(4, msk, arg[4], _2);
-  OBJ arg5 = getArgVar(5, msk, arg[5], _2);
-  OBJ arg6 = getArgVar(6, msk, arg[6], _2);
-  OBJ arg7 = getArgVar(7, msk, arg[7], _2);
-  OBJ arg8 = getArgVar(8, msk, arg[8], _2);
+defmethod(OBJ, gevalFun, FunExpr4)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->arg;
+  U32  msk = self->FunExpr.msk;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
 
-  if (!getPar(msk))
-    retmethod( fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) );
+  if (narg <= self->FunExpr.max) {
+    OBJ arg0 = msk & 1 ? arg[0].obj : var[arg[0].idx];
+    OBJ arg1 = msk & 2 ? arg[1].obj : var[arg[1].idx];
+    OBJ arg2 = msk & 4 ? arg[2].obj : var[arg[2].idx];
+    OBJ arg3 = msk & 8 ? arg[3].obj : var[arg[3].idx];
+  
+    retmethod( self->fct(arg0, arg1, arg2, arg3) );
 
-  // partial evaluation
-  retmethod(gautoRelease(aFun(fct,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8)));
+  } else { // partial evaluation
+    OBJ arg0 = msk & 1 ? arg[0].obj : arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg1 = msk & 2 ? arg[1].obj : arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+    OBJ arg2 = msk & 4 ? arg[2].obj : arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
+    OBJ arg3 = msk & 8 ? arg[3].obj : arg[3].idx < narg ? aFunArg(arg[3].idx-narg) : var[arg[3].idx];
+
+    retmethod( gautoRelease(aFun(self->fct, arg0, arg1, arg2, arg3)) );
+  }
+endmethod
+
+// ----- 5
+
+defmethod(OBJ, gevalFun, FunExpr5)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->arg;
+  U32  msk = self->FunExpr.msk;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
+
+  if (narg <= self->FunExpr.max) {
+    OBJ arg0 = msk &   1 ? arg[0].obj : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : var[arg[4].idx];
+  
+    retmethod( self->fct(arg0, arg1, arg2, arg3, arg4) );
+
+  } else { // partial evaluation
+    OBJ arg0 = msk &   1 ? arg[0].obj : arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : arg[3].idx < narg ? aFunArg(arg[3].idx-narg) : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : arg[4].idx < narg ? aFunArg(arg[4].idx-narg) : var[arg[4].idx];
+
+    retmethod( gautoRelease(aFun(self->fct, arg0, arg1, arg2, arg3, arg4)) );
+  }
+endmethod
+
+// ----- 6
+
+defmethod(OBJ, gevalFun, FunExpr6)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->arg;
+  U32  msk = self->FunExpr.msk;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
+
+  if (narg <= self->FunExpr.max) {
+    OBJ arg0 = msk &   1 ? arg[0].obj : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : var[arg[4].idx];
+    OBJ arg5 = msk &  32 ? arg[5].obj : var[arg[5].idx];
+  
+    retmethod( self->fct(arg0, arg1, arg2, arg3, arg4, arg5) );
+
+  } else { // partial evaluation
+    OBJ arg0 = msk &   1 ? arg[0].obj : arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : arg[3].idx < narg ? aFunArg(arg[3].idx-narg) : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : arg[4].idx < narg ? aFunArg(arg[4].idx-narg) : var[arg[4].idx];
+    OBJ arg5 = msk &  32 ? arg[5].obj : arg[5].idx < narg ? aFunArg(arg[5].idx-narg) : var[arg[5].idx];
+
+    retmethod( gautoRelease(aFun(self->fct, arg0, arg1, arg2, arg3, arg4, arg5)) );
+  }
+endmethod
+
+// ----- 7
+
+defmethod(OBJ, gevalFun, FunExpr7)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->arg;
+  U32  msk = self->FunExpr.msk;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
+
+  if (narg <= self->FunExpr.max) {
+    OBJ arg0 = msk &   1 ? arg[0].obj : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : var[arg[4].idx];
+    OBJ arg5 = msk &  32 ? arg[5].obj : var[arg[5].idx];
+    OBJ arg6 = msk &  64 ? arg[6].obj : var[arg[6].idx];
+  
+    retmethod( self->fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6) );
+
+  } else { // partial evaluation
+    OBJ arg0 = msk &   1 ? arg[0].obj : arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : arg[3].idx < narg ? aFunArg(arg[3].idx-narg) : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : arg[4].idx < narg ? aFunArg(arg[4].idx-narg) : var[arg[4].idx];
+    OBJ arg5 = msk &  32 ? arg[5].obj : arg[5].idx < narg ? aFunArg(arg[5].idx-narg) : var[arg[5].idx];
+    OBJ arg6 = msk &  64 ? arg[6].obj : arg[6].idx < narg ? aFunArg(arg[6].idx-narg) : var[arg[6].idx];
+
+    retmethod( gautoRelease(aFun(self->fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6)) );
+  }
+endmethod
+
+// ----- 8
+
+defmethod(OBJ, gevalFun, FunExpr8)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->arg;
+  U32  msk = self->FunExpr.msk;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
+
+  if (narg <= self->FunExpr.max) {
+    OBJ arg0 = msk &   1 ? arg[0].obj : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : var[arg[4].idx];
+    OBJ arg5 = msk &  32 ? arg[5].obj : var[arg[5].idx];
+    OBJ arg6 = msk &  64 ? arg[6].obj : var[arg[6].idx];
+    OBJ arg7 = msk & 128 ? arg[7].obj : var[arg[7].idx];
+  
+    retmethod( self->fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) );
+
+  } else { // partial evaluation
+    OBJ arg0 = msk &   1 ? arg[0].obj : arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : arg[3].idx < narg ? aFunArg(arg[3].idx-narg) : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : arg[4].idx < narg ? aFunArg(arg[4].idx-narg) : var[arg[4].idx];
+    OBJ arg5 = msk &  32 ? arg[5].obj : arg[5].idx < narg ? aFunArg(arg[5].idx-narg) : var[arg[5].idx];
+    OBJ arg6 = msk &  64 ? arg[6].obj : arg[6].idx < narg ? aFunArg(arg[6].idx-narg) : var[arg[6].idx];
+    OBJ arg7 = msk & 128 ? arg[7].obj : arg[7].idx < narg ? aFunArg(arg[7].idx-narg) : var[arg[7].idx];
+
+    retmethod( gautoRelease(aFun(self->fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)) );
+  }
+endmethod
+
+// ----- 9
+
+defmethod(OBJ, gevalFun, FunExpr9)
+  struct cos_functor_context *cxt = cos_functor_context();
+  union cos_functor_arg *arg = self->arg;
+  U32  msk = self->FunExpr.msk;
+  OBJ *var = cxt->top;
+  I32 narg = cxt->stk - cxt->top;
+
+  if (narg <= self->FunExpr.max) {
+    OBJ arg0 = msk &   1 ? arg[0].obj : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : var[arg[4].idx];
+    OBJ arg5 = msk &  32 ? arg[5].obj : var[arg[5].idx];
+    OBJ arg6 = msk &  64 ? arg[6].obj : var[arg[6].idx];
+    OBJ arg7 = msk & 128 ? arg[7].obj : var[arg[7].idx];
+    OBJ arg8 = msk & 256 ? arg[8].obj : var[arg[8].idx];
+  
+    retmethod( self->fct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) );
+
+  } else { // partial evaluation
+    OBJ arg0 = msk &   1 ? arg[0].obj : arg[0].idx < narg ? aFunArg(arg[0].idx-narg) : var[arg[0].idx];
+    OBJ arg1 = msk &   2 ? arg[1].obj : arg[1].idx < narg ? aFunArg(arg[1].idx-narg) : var[arg[1].idx];
+    OBJ arg2 = msk &   4 ? arg[2].obj : arg[2].idx < narg ? aFunArg(arg[2].idx-narg) : var[arg[2].idx];
+    OBJ arg3 = msk &   8 ? arg[3].obj : arg[3].idx < narg ? aFunArg(arg[3].idx-narg) : var[arg[3].idx];
+    OBJ arg4 = msk &  16 ? arg[4].obj : arg[4].idx < narg ? aFunArg(arg[4].idx-narg) : var[arg[4].idx];
+    OBJ arg5 = msk &  32 ? arg[5].obj : arg[5].idx < narg ? aFunArg(arg[5].idx-narg) : var[arg[5].idx];
+    OBJ arg6 = msk &  64 ? arg[6].obj : arg[6].idx < narg ? aFunArg(arg[6].idx-narg) : var[arg[6].idx];
+    OBJ arg7 = msk & 128 ? arg[7].obj : arg[7].idx < narg ? aFunArg(arg[7].idx-narg) : var[arg[7].idx];
+    OBJ arg8 = msk & 256 ? arg[8].obj : arg[8].idx < narg ? aFunArg(arg[8].idx-narg) : var[arg[8].idx];
+
+    retmethod( gautoRelease(aFun(self->fct, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)) );
+  }
 endmethod
 

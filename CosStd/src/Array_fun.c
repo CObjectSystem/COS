@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.37 2010/06/04 23:27:22 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.38 2010/06/13 20:24:46 ldeniau Exp $
  |
 */
 
@@ -997,10 +997,12 @@ defmethod(OBJ, gdiff, Array, Collection, Functor)
   U32 *dst_n  = &arr->size;
   OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
-  OBJ  fun    = aLzy(_3);
+//  OBJ  fun    = aLzy(_3);
+  OBJ  fun    = aFun(gfind, _2, _3);
 
   while (val != end) {
-    if (gfind(_2, aFun(geval2, fun, *val, __1)) == Nil)
+    if (geval(fun, *val) != Nil)
+//    if (gfind(_2, aFun(geval2, fun, *val, __1)) == Nil)
       *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }
@@ -1046,10 +1048,12 @@ defmethod(OBJ, gintersect, Array, Collection, Functor)
   U32 *dst_n  = &arr->size;
   OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
-  OBJ  fun    = aLzy(_3);
+  // OBJ  fun    = aLzy(_3);
+  OBJ  fun    = aFun(gfind, _2, _3);
 
   while (val != end) {
-    if (gfind(_2, aFun(geval2, fun, *val, __1)) != Nil)
+    if (geval(fun, *val) != Nil)
+//    if (gfind(_2, aFun(geval2, fun, *val, __1)) != Nil)
       *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }

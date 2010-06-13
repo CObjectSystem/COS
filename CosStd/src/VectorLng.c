@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: VectorLng.c,v 1.1 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: VectorLng.c,v 1.2 2010/06/13 20:24:46 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #define TN    LngVectorN
 #define TF    LngVectorFix
 #define TD    LngVectorDyn
-#define TL    LngVectorLzy
+// #define TL    LngVectorLzy
 #define TV    LngVectorView
 #define TW    LngVectorSubView
 #define TS    "long vector"

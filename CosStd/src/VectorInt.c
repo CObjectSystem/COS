@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: VectorInt.c,v 1.1 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: VectorInt.c,v 1.2 2010/06/13 20:24:46 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #define TN    IntVectorN
 #define TF    IntVectorFix
 #define TD    IntVectorDyn
-#define TL    IntVectorLzy
+// #define TL    IntVectorLzy
 #define TV    IntVectorView
 #define TW    IntVectorSubView
 #define TS    "int vector"

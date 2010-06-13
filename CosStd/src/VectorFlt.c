@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: VectorFlt.c,v 1.1 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: VectorFlt.c,v 1.2 2010/06/13 20:24:46 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #define TN    FltVectorN
 #define TF    FltVectorFix
 #define TD    FltVectorDyn
-#define TL    FltVectorLzy
+// #define TL    FltVectorLzy
 #define TV    FltVectorView
 #define TW    FltVectorSubView
 #define TS    "float vector"

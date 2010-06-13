@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Vector_fun.c,v 1.24 2010/06/03 15:27:50 ldeniau Exp $
+ | $Id: Vector_fun.c,v 1.25 2010/06/13 20:24:46 ldeniau Exp $
  |
 */
 
@@ -796,6 +796,7 @@ endmethod
 
 // ----- diff (asymetric diff, self1 - self2)
 
+/*
 defmethod(OBJ, gdiff, T, T, Functor)
   U32 size = self->size;
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
@@ -816,9 +817,11 @@ defmethod(OBJ, gdiff, T, T, Functor)
 
   retmethod(_vec);
 endmethod
+*/
 
 // ----- intersect (asymetric intersect, self1 - (self1 - self2))
 
+/*
 defmethod(OBJ, gintersect, T, Collection, Functor)
   U32 size = self->size;
   OBJ _vec = gautoRelease(gnewWith(T,aInt(size)));
@@ -839,6 +842,7 @@ defmethod(OBJ, gintersect, T, Collection, Functor)
 
   retmethod(_vec);
 endmethod
+*/
 
 // ----- finding
 

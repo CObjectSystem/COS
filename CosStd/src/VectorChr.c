@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: VectorChr.c,v 1.1 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: VectorChr.c,v 1.2 2010/06/13 20:24:46 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #define TN    ChrVectorN
 #define TF    ChrVectorFix
 #define TD    ChrVectorDyn
-#define TL    ChrVectorLzy
+// #define TL    ChrVectorLzy
 #define TV    ChrVectorView
 #define TW    ChrVectorSubView
 #define TS    "char vector"

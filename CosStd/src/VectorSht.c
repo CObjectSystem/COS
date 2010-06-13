@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: VectorSht.c,v 1.1 2010/05/31 14:02:59 ldeniau Exp $
+ | $Id: VectorSht.c,v 1.2 2010/06/13 20:24:46 ldeniau Exp $
  |
 */
 
@@ -41,7 +41,7 @@
 #define TN    ShtVectorN
 #define TF    ShtVectorFix
 #define TD    ShtVectorDyn
-#define TL    ShtVectorLzy
+// #define TL    ShtVectorLzy
 #define TV    ShtVectorView
 #define TW    ShtVectorSubView
 #define TS    "short vector"

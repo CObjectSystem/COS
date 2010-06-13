@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Stream.c,v 1.12 2010/05/31 14:02:58 ldeniau Exp $
+ | $Id: Stream.c,v 1.13 2010/06/13 20:24:46 ldeniau Exp $
  |
 */
 
@@ -398,7 +398,7 @@ endmethod
 defmethod(OBJ, ggetLines, InputStream)
   useclass(Array, String);
   
-  OBJ fun = gget(_1, aLzy(String));   // line generator
+  OBJ fun = aFun(gget, _1, String);   // content generator
   OBJ str = gnewWith(Array, fun);     // lazy array
 
   retmethod( gautoRelease(str) );
@@ -407,7 +407,7 @@ endmethod
 defmethod(OBJ, ggetContent, InputStream)
   useclass(String);
   
-  OBJ fun = gget(_1, aLzy(String));   // content generator
+  OBJ fun = aFun(gget, _1, String);   // content generator
   OBJ str = gnewWith(String, fun);    // lazy string
 
   retmethod( gautoRelease(str) );
