@@ -1,5 +1,4 @@
-#ifndef COS_CARRAY_H
-#define COS_CARRAY_H
+// multiple inclusion allowed
 
 /*
  o---------------------------------------------------------------------o
@@ -32,48 +31,57 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: carray.h,v 1.3 2009/09/14 13:35:13 ldeniau Exp $
+ | $Id: carray.h,v 1.4 2010/06/14 18:07:26 ldeniau Exp $
  |
 */
+
+#ifndef COS_CARRAY_H
+#define COS_CARRAY_H
 
 #include <cos/Object.h>
 
 #include <stdlib.h>
 
-/* NOTE-INFO: low level temporary C array
-   the array is allocated on the stack if its size <= TMPARRAY_LIMIT
+/* NOTE-INFO: low level C array
+   the array is allocated on the stack if its size <= CARRAY_LIMIT
    otherwise it is allocated on the heap.
 
    {
-     TMPARRAY_CREATE(OBJ, buf, 1000);
+     CARRAY_CREATE(OBJ, buf, 1000);
 
      buf[100] = gnew(Object);
      grelease(buf[100]);
 
-     TMPARRAY_DESTROY(buf);
+     CARRAY_DESTROY(buf);
    }
 */
 
-#define TMPARRAY_LIMIT (1024 * sizeof(void*))
+#define CARRAY_CREATE(T,name,nelem) \
+        CARRAY_CREATE_(T,name,nelem, \
+    /* local pointer */  COS_PP_CAT(_cos_tmp_carray_p_,name), \
+    /* local array   */  COS_PP_CAT(_cos_tmp_carray_a_,name), \
+    /* local size    */  COS_PP_CAT(_cos_tmp_carray_s_,name))
 
-#define TMPARRAY_CREATE(T,name,nelem) \
-        TMPARRAY_CREATE_(T,name,nelem, \
-    /* local pointer */  COS_PP_CAT(_cos_tmp_array_p_,name), \
-    /* local array   */  COS_PP_CAT(_cos_tmp_array_a_,name), \
-    /* local size    */  COS_PP_CAT(_cos_tmp_array_s_,name))
-
-#define TMPARRAY_CREATE_(T,name,N,P,A,S) \
+#define CARRAY_CREATE_(T,name,N,P,A,S) \
   U32 S = N; T *P, \
-    A[S*sizeof(T) <= TMPARRAY_LIMIT ? S : 0]; \
-  if (S*sizeof(T) <= TMPARRAY_LIMIT) P = A; \
+    A[S*sizeof(T) <= CARRAY_LIMIT ? S : 0]; \
+  if (S*sizeof(T) <= CARRAY_LIMIT) P = A; \
   else { \
     useclass(ExBadAlloc); \
     if ( !(P = malloc(S * sizeof(T))) ) THROW(ExBadAlloc); \
   } \
   T *const name = P
 
-#define TMPARRAY_DESTROY(name) \
-  if (name != COS_PP_CAT(_cos_tmp_array_a_,name)) \
+#define CARRAY_DESTROY(name) \
+  if (name != COS_PP_CAT(_cos_tmp_carray_a_,name)) \
     free(name)
 
 #endif // COS_CARRAY_H
+
+// can be redefined between inclusion
+#ifndef CARRAY_LIMIT
+#define CARRAY_LIMIT (1024 * sizeof(void*))
+#endif
+
+// multiple inclusion allowed
+

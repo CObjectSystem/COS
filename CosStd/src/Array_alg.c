@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_alg.c,v 1.28 2010/06/05 21:21:24 ldeniau Exp $
+ | $Id: Array_alg.c,v 1.29 2010/06/14 18:07:27 ldeniau Exp $
  |
 */
 
@@ -145,7 +145,6 @@ defmethod(OBJ, greverse, Array)
   retmethod(_1);
 endmethod
 
-/*
 defmethod(OBJ, gpermute, Array, IntVector)
   PRE
     test_assert( self->size == self2->size, "incompatible array sizes" );
@@ -160,8 +159,8 @@ defmethod(OBJ, gpermute, Array, IntVector)
     I32  idx_s = self2->stride;
     I32 *idx   = self2->value;
 
-    TMPARRAY_CREATE(OBJ,buf,size); // OBJ buf[size];
-    TMPARRAY_CREATE(U8 ,flg,size); // U8  flg[size];
+    CARRAY_CREATE(OBJ,buf,size); // OBJ buf[size];
+    CARRAY_CREATE(U8 ,flg,size); // U8  flg[size];
 
     memset(flg,1,size);
 
@@ -181,8 +180,8 @@ defmethod(OBJ, gpermute, Array, IntVector)
       for (cur = buf; cur != end; cur++)
         *val = *cur, val += val_s;
 
-      TMPARRAY_DESTROY(buf);
-      TMPARRAY_DESTROY(flg);
+      CARRAY_DESTROY(buf);
+      CARRAY_DESTROY(flg);
     } else {
       // rollback (error)
       BOOL iiir = i < size; // last index-is-in-range flag
@@ -193,15 +192,14 @@ defmethod(OBJ, gpermute, Array, IntVector)
         val[i*val_s] = *--cur;
       }
 
-      TMPARRAY_DESTROY(buf);
-      TMPARRAY_DESTROY(flg);
+      CARRAY_DESTROY(buf);
+      CARRAY_DESTROY(flg);
       test_assert( iiir, "index out of range" );
       test_assert(    0, "invalid cyclic permutation" );
     }
 
     retmethod(_1);
 endmethod
-*/
 
 // ----- repeat
 
@@ -506,7 +504,7 @@ endmethod
 static OBJ*
 KnuthMorrisPratt(OBJ *val, U32 val_n, I32 val_s, OBJ *pat, I32 pat_n, I32 pat_s)
 {
-  TMPARRAY_CREATE(I32,kmpNext,pat_n);
+  CARRAY_CREATE(I32,kmpNext,pat_n);
 
   { // preprocessing
     I32 i = 0, j = kmpNext[0] = -1;
@@ -533,13 +531,13 @@ KnuthMorrisPratt(OBJ *val, U32 val_n, I32 val_s, OBJ *pat, I32 pat_n, I32 pat_s)
       i++;
       j++;
       if (i >= pat_n) { // found
-        TMPARRAY_DESTROY(kmpNext);
+        CARRAY_DESTROY(kmpNext);
         return val + (j - i)*val_s;
       }
     }
   }
 
-  TMPARRAY_DESTROY(kmpNext);
+  CARRAY_DESTROY(kmpNext);
   return 0; // not found
 }
 

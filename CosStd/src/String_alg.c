@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String_alg.c,v 1.23 2010/06/05 21:21:24 ldeniau Exp $
+ | $Id: String_alg.c,v 1.24 2010/06/14 18:07:27 ldeniau Exp $
  |
 */
 
@@ -265,7 +265,7 @@ endmethod
 static U8*
 KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
 {
-  TMPARRAY_CREATE(I32,kmpNext,pat_n);
+  CARRAY_CREATE(I32,kmpNext,pat_n);
 
   { // preprocessing
     I32 i = 0, j = kmpNext[0] = -1;
@@ -292,13 +292,13 @@ KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
       i++;
       j++;
       if (i >= pat_n) { // found
-        TMPARRAY_DESTROY(kmpNext);
+        CARRAY_DESTROY(kmpNext);
         return str + (j - i);
       }
     }
   }
 
-  TMPARRAY_DESTROY(kmpNext);
+  CARRAY_DESTROY(kmpNext);
   return 0;
 }
 
