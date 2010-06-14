@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Array_fun.c,v 1.39 2010/06/14 06:21:57 ldeniau Exp $
+ | $Id: Array_fun.c,v 1.40 2010/06/14 06:34:53 ldeniau Exp $
  |
 */
 
@@ -997,9 +997,10 @@ defmethod(OBJ, gdiff, Array, Collection, Functor)
   U32 *dst_n  = &arr->size;
   OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
+  OBJ  fun    = aFun(gfind, _2, aFun(geval2, _3, __2, __1));
 
   while (val != end) {
-    if (gfind(_2, aFun(geval2, _3, *val, __1)) == Nil)
+    if (geval(fun, *val) == Nil)
       *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }
@@ -1045,9 +1046,10 @@ defmethod(OBJ, gintersect, Array, Collection, Functor)
   U32 *dst_n  = &arr->size;
   OBJ *dst    = arr->object;
   OBJ *end    = val + val_s*size;
+  OBJ  fun    = aFun(gfind, _2, aFun(geval2, _3, __2, __1));
 
   while (val != end) {
-    if (gfind(_2, aFun(geval2, _3, *val, __1)) != Nil)
+    if (geval(fun, *val) != Nil)
       *dst++ = gretain(*val), ++*dst_n;
     val += val_s;
   }
