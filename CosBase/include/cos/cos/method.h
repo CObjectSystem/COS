@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: method.h,v 1.44 2010/06/01 07:40:17 ldeniau Exp $
+ | $Id: method.h,v 1.45 2010/06/17 08:27:12 ldeniau Exp $
  |
 */
 
@@ -68,14 +68,12 @@
 
 /* NOTE-USER: tracing defmethod
 
-   - defmethod can be traced both when entering and exiting using
+   - defmethod can be traced in debug mode both when entering and exiting using
      #define COS_METHOD_TRACE // enable  trace
      #undef  COS_METHOD_TRACE // disable trace
-     if the method was compiled with COS_LOGMSG_LEVEL <= COS_LOGMSG_DEBUG
    - the function pointer cos_method_trace (see cos/cos/cosapi.h) will be
-     called only if the cos_logmsg_level == COS_LOGMSG_TRACE at runtime.
-   - COS_METHOD_TRACE is automatically defined if
-     COS_LOGMSG <= COS_LOGMSG_DEBUG
+     called only if the cos_logmsg_level <= COS_LOGMSG_TRALL at runtime.
+   - COS_METHOD_TRACE is automatically defined if COS_DEBUG is defined
 */
 
 /* method keywords:
@@ -416,13 +414,13 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
     (_sel,COS_PP_SEQ(COS_MTH_FWD_USE(N)),_arg,_ret); \
   } while (0)
 
-// method trace
-#if COS_LOGMSG <= COS_LOGMSG_DEBUG
+// trace method invocation
+#ifdef COS_DEBUG
 #define COS_METHOD_TRACE
 #endif
 
 #define COS_MTH_TRC(E,C) \
-  if (cos_logmsg_level_ == COS_LOGMSG_TRALL) { \
+  if (cos_logmsg_level_ <= COS_LOGMSG_TRALL) { \
     COS_PP_IF(E)(COS_MTH_OBJ_INI(C);,) \
     cos_method_trace(__FILE__, COS_PP_IF(E)(__LINE__,_cos_mth_line), \
                      E, _mth, _cos_mth_objs); \
