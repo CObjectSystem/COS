@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.h,v 1.12 2010/06/04 23:27:21 ldeniau Exp $
+ | $Id: String.h,v 1.13 2010/06/17 09:28:25 ldeniau Exp $
  |
 */
 
@@ -77,6 +77,8 @@ endclass
 #ifndef COS_NOSHORTCUT
 
 #define aStr(...)  COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),aString)) // C-string literal
+
+#define aArrStr(...) aArray(aStr(__VA_ARGS__))
 
 #endif
 

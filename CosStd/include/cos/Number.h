@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Number.h,v 1.18 2010/05/26 15:02:00 ldeniau Exp $
+ | $Id: Number.h,v 1.19 2010/06/17 09:28:25 ldeniau Exp $
  |
 */
 
@@ -83,6 +83,13 @@ defclass(Complex , Floating) C64 value; endclass
 #define aLng(...)  COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),aLong   ))
 #define aFlt(...)  COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),aFloat  ))
 #define aCpx(...)  COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__),aComplex))
+
+#define aArrChr(...)  aArray(aChr(__VA_ARGS__))
+#define aArrSht(...)  aArray(aSht(__VA_ARGS__))
+#define aArrInt(...)  aArray(aInt(__VA_ARGS__))
+#define aArrLng(...)  aArray(aLng(__VA_ARGS__))
+#define aArrFlt(...)  aArray(aFlt(__VA_ARGS__))
+#define aArrCpx(...)  aArray(aCpx(__VA_ARGS__))
 
 #endif
 

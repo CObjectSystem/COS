@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: ut_array.c,v 1.18 2010/06/05 21:21:24 ldeniau Exp $
+ | $Id: ut_array.c,v 1.19 2010/06/17 09:28:30 ldeniau Exp $
  |
 */
 
@@ -52,6 +52,26 @@
 #include <cos/utest.h>
 
 #include "tests.h"
+
+#include <stdio.h>
+
+defmethod(OBJ, gprint, Array)
+  printf("[");
+  gforeach(_1, aFun(gprint, __1));
+  printf("] ");
+  retmethod(_1);
+endmethod
+
+defmethod(OBJ, gprint, Int)
+  printf("%d ", self->value);
+  retmethod(_1);
+endmethod
+
+static OBJ
+fun3(OBJ x, OBJ y, OBJ z)
+{
+  return gmulBy(gsub(z,y),x);
+}
 
 static BOOL
 isEq(OBJ r, OBJ ref)
@@ -158,7 +178,7 @@ ut_array_functor(void)
   OBJ cmp   = aFun(gcompare  , __1, __2);
   OBJ eq    = aFun(gisEqual  , __1, __2);
   OBJ gt    = aFun(gisGreater, __1, aInt(3));
-/* not fully yet tested (certainly buggy)
+/* not fully tested yet (certainly buggy)
   OBJ div   = gdiv      (__1, __2);
   OBJ add   = gadd      (__1, __2);
   OBJ addTo = gaddTo    (__1, __2);
@@ -486,6 +506,23 @@ ut_array_functor(void)
   obj = gisSorted(aArray(aInt(1,2,3,2,3,4)), cmp);
   UTEST( obj == False );
 
+  // array of array, map of map, ...
+  {
+
+    OBJ xs = aArrInt(1,2,3);
+    OBJ ys = aArrInt(4,5,6);
+    OBJ zs = aArrInt(7,8,9);
+    OBJ rs = aArray(aArray(aArrInt(3, 6, 9),aArrInt(2,4, 6),aArrInt(1,2,3)),
+                    aArray(aArrInt(4, 8,12),aArrInt(3,6, 9),aArrInt(2,4,6)),
+                    aArray(aArrInt(5,10,15),aArrInt(4,8,12),aArrInt(3,6,9)));
+    arr = gmap(aFun(gmap, aFun(gmap, aFun(fun3, __1, __2, __3), xs), ys), zs);
+
+    obj = gisEqual(rs, arr);
+    UTEST( obj == True );  
+
+    /* gprint(arr), printf("\n"); */
+  }
+  
   UTEST_END
 
   grelease(pool);

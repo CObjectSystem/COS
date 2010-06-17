@@ -32,28 +32,28 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.h,v 1.36 2010/06/13 20:24:46 ldeniau Exp $
+ | $Id: Functor.h,v 1.37 2010/06/17 09:28:25 ldeniau Exp $
  |
 */
 
 #include <cos/Object.h>
 
-/* NOTE-USER: Functor (root class)
+/* NOTE-USER: Expression (root class)
    Functor makes the difference between:
     - Variable expression
     - Function expression
     - Message  expression
-   An important point is that Functor are not Objects.
+   An important point is that Functor are _not_ Objects.
 */
 
-// ----- Functor
+// ----- Expression
 
-defclass(Functor, Any)
+defclass(Expression, Any)
 endclass
 
 // ----- Functor expression
 
-defclass(VarExpr, Functor)
+defclass(Functor, Expression)
 endclass
 
 defclass(FunExpr, Functor)
@@ -69,6 +69,9 @@ defclass(MsgExpr, Functor)
 endclass
 
 // ----- Variable expression
+
+defclass(VarExpr, Expression)
+endclass
 
 defclass(FunArg, VarExpr)
   I32 idx;
@@ -200,14 +203,14 @@ endclass
 
 #define atFunctor0(F) \
   ( (struct Functor*)&(struct FunExpr0) { \
-    { cos_object_auto(FunExpr0), COS_PP_STR(F), 0, 0 }, F })
+    {{ cos_object_auto(FunExpr0) }, COS_PP_STR(F), 0, 0 }, F })
 
 #define atFunctorF(F,...) \
   atFunctorN(COS_PP_NARG(__VA_ARGS__), F, __VA_ARGS__)
 
 #define atFunctorN(N,F,...) COS_PP_CAT(FunExpr_init,N)( \
    &(struct COS_PP_CAT(FunExpr,N)) { \
-    { cos_object_auto(COS_PP_CAT(FunExpr,N)), COS_PP_STR(F), 0, 0 }, \
+    {{ cos_object_auto(COS_PP_CAT(FunExpr,N)) }, COS_PP_STR(F), 0, 0 }, \
       F, { COS_PP_SEQ(COS_PP_MAP((__VA_ARGS__), COS_PP_BRACE)) } })
 
 #define atFunArg(IDX) \

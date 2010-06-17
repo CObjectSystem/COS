@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: tests.h,v 1.6 2009/10/19 19:38:10 ldeniau Exp $
+ | $Id: tests.h,v 1.7 2010/06/17 09:28:30 ldeniau Exp $
  |
 */
 
@@ -42,5 +42,7 @@ void ut_xrange(void);
 void ut_string(void);
 void ut_array_basics(void);
 void ut_array_functor(void);
+
+defgeneric(OBJ, gprint, _1);
 
 #endif // COS_TESTS_TESTS_H

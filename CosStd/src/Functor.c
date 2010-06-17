@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor.c,v 1.27 2010/06/13 20:24:46 ldeniau Exp $
+ | $Id: Functor.c,v 1.28 2010/06/17 09:28:30 ldeniau Exp $
  |
 */
 
@@ -51,10 +51,7 @@ endmethod
 
 // ----- class cluster root classes
 
-makclass(Functor    , Any);
-makclass(VarExpr, Functor);
-makclass(FunExpr, Functor);
-makclass(MsgExpr, Functor);
+makclass(Expression, Any);
 
 // ----- functor operator (iterate, compose)
 
@@ -64,10 +61,15 @@ makclass(ComposeFun, Functor);
 // ------------------------------------------------------------
 // ----- variable expression
 
+makclass(VarExpr, Expression);
 makclass(FunArg , VarExpr);
 
 // ------------------------------------------------------------
 // ----- functor expression
+
+makclass(Functor, Expression);
+makclass(FunExpr, Functor);
+makclass(MsgExpr, Functor);
 
 makclass(FunExpr0, FunExpr);
 makclass(FunExpr1, FunExpr);
