@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: Functor_fun.c,v 1.26 2010/06/13 20:24:46 ldeniau Exp $
+ | $Id: Functor_fun.c,v 1.27 2010/06/19 23:18:14 ldeniau Exp $
  |
 */
 
@@ -47,15 +47,17 @@
 struct Functor* COS_PP_CAT(FunExpr_init,N) \
 (struct COS_PP_CAT(FunExpr,N) *fun) \
 { \
-  for (int i = 0; i < N; i++) { \
-    struct FunArg *arg = cast(FunArg, fun->arg[i].obj); \
+  struct FunArg *arg; \
 \
-    if (arg) { \
+  for (int i = 0; i < N; i++) { \
+    if ( (arg = cast(FunArg, fun->arg[i].obj)) ) { \
       fun->arg[i].idx = arg->idx; \
       if (arg->idx < fun->FunExpr.max) \
         fun->FunExpr.max = arg->idx; \
-    } else \
-      fun->FunExpr.msk |= 1u << i; \
+      continue; \
+    } \
+    \
+    fun->FunExpr.msk |= 1u << i; \
   } \
 \
   return &fun->FunExpr.Functor; \

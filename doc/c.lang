@@ -365,14 +365,14 @@
                     <keyword>BODY</keyword>
                     <keyword>FINAL_CLASS</keyword>
                     <keyword>STATIC_ASSERT</keyword>
-                    <keyword>STATIC_CAST</keyword>
-                    <keyword>chkcast</keyword>
+                    <keyword>CAST</keyword>
                     <keyword>cast</keyword>
-                    <keyword>dyncast</keyword>
                     <keyword>ecast</keyword>
-                    <keyword>edyncast</keyword>
                     <keyword>ecastLoc</keyword>
+                    <keyword>dyncast</keyword>
+                    <keyword>edyncast</keyword>
                     <keyword>edyncastLoc</keyword>
+                    <keyword>dbgcast</keyword>
                     <keyword>test_assert</keyword>
                     <keyword>test_invariant</keyword>
                     <keyword>method_retval</keyword>
