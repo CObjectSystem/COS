@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cos_functor.c,v 1.2 2010/06/08 22:36:27 ldeniau Exp $
+ | $Id: cos_functor.c,v 1.3 2010/06/19 23:26:51 ldeniau Exp $
  |
 */
 
@@ -69,7 +69,7 @@ cos_functor_context_init(void)
   pthread_once(&cos_functor_context_key_once, make_key);
   cos_functor_context_key_init = 1;
 
-  if (!(cxt = malloc(sizeof *context)))
+  if (!(cxt = malloc(sizeof *cxt)))
 	  cos_abort("out of memory while creating functor context");
 
   cxt->stk = 0;

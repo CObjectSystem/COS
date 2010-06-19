@@ -32,7 +32,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: cosapi.h,v 1.56 2010/06/08 22:36:26 ldeniau Exp $
+ | $Id: cosapi.h,v 1.57 2010/06/19 23:26:51 ldeniau Exp $
  |
 */
 
@@ -255,7 +255,13 @@ cos_exception_context(void)
 
 #include <pthread.h>
 
-struct cos_exception_context* cos_exception_context(void);
+struct cos_exception_context* cos_exception_context   (void);
+struct cos_functor_context*   cos_functor_context_init(void);
+struct cos_method_cache1*     cos_method_cache1_init  (void);
+struct cos_method_cache2*     cos_method_cache2_init  (void);
+struct cos_method_cache3*     cos_method_cache3_init  (void);
+struct cos_method_cache4*     cos_method_cache4_init  (void);
+struct cos_method_cache5*     cos_method_cache5_init  (void);
 
 static cos_inline struct cos_functor_context*
 cos_functor_context(void)
@@ -263,7 +269,6 @@ cos_functor_context(void)
   struct cos_functor_context *context;
   extern int cos_functor_context_key_init;
   extern pthread_key_t cos_functor_context_key;
-  struct cos_functor_context* cos_functor_context_init(void);
   
   if (! cos_functor_context_key_init ||
       !(context = pthread_getspecific(cos_functor_context_key)))
@@ -279,9 +284,7 @@ cos_method_cache1(void)
   struct cos_method_cache1 *cache;
   extern int cos_method_cache1_key_init;
   extern pthread_key_t cos_method_cache1_key;
-  struct cos_method_cache1* cos_method_cache1_init(void);
 
-  
   if (! cos_method_cache1_key_init ||
       !(cache = pthread_getspecific(cos_method_cache1_key)))
     cache = cos_method_cache1_init();
@@ -296,7 +299,6 @@ cos_method_cache2(void)
   struct cos_method_cache2 *cache;
   extern int cos_method_cache2_key_init;
   extern pthread_key_t cos_method_cache2_key;
-  struct cos_method_cache2* cos_method_cache2_init(void);
   
   if (! cos_method_cache2_key_init ||
       !(cache = pthread_getspecific(cos_method_cache2_key)))
@@ -312,7 +314,6 @@ cos_method_cache3(void)
   struct cos_method_cache3 *cache;
   extern int cos_method_cache3_key_init;
   extern pthread_key_t cos_method_cache3_key;
-  struct cos_method_cache3* cos_method_cache3_init(void);
 
   if (! cos_method_cache3_key_init ||
       !(cache = pthread_getspecific(cos_method_cache3_key)))
@@ -328,7 +329,6 @@ cos_method_cache4(void)
   struct cos_method_cache4 *cache;
   extern int cos_method_cache4_key_init;
   extern pthread_key_t cos_method_cache4_key;
-  struct cos_method_cache4* cos_method_cache4_init(void);
   
   if (! cos_method_cache4_key_init ||
       !(cache = pthread_getspecific(cos_method_cache4_key)))
@@ -344,7 +344,6 @@ cos_method_cache5(void)
   struct cos_method_cache5 *cache;
   extern int cos_method_cache5_key_init;
   extern pthread_key_t cos_method_cache5_key;
-  struct cos_method_cache5* cos_method_cache5_init(void);
 
   if (! cos_method_cache5_key_init ||
       !(cache = pthread_getspecific(cos_method_cache5_key)))
