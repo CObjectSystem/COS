@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.23 2009/09/05 21:13:38 ldeniau Exp $
+# | $Id: Darwin,v 1.24 2010/06/21 19:36:35 ldeniau Exp $
 # |
 #
 
@@ -59,7 +59,7 @@ LIBSHEXT    := .so
 #
 # tools specific
 #
-CC          := gcc -m64
+CC          := gcc $(if $(findstring 10.,$(OSVERS)),,-m64) # Darwin 9 vs 10
 CPP         := $(CC) -E
 DEP         := $(CC) -M
 LD          := $(CC)

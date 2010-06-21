@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.14 2009/06/14 17:47:36 ldeniau Exp $
+# | $Id: prologue,v 1.15 2010/06/21 19:36:30 ldeniau Exp $
 # |
 #
 
@@ -42,8 +42,10 @@
 #
 # NOTE-USER: config variables from make invocation
 #
-# INSTALL = where to install the project (optional, default is config specific)
-# OSNAME  = operating system             (optional, default is 'uname -s')
+# INSTALL = where to install the project  (optional, default is config specific)
+# OSNAME  = operating system name         (optional, default is 'uname -s')
+# OSVERS  = operating system version      (optional, default is 'uname -r')
+# OSARCH  = operating system architecture (optional, default is 'uname -m')
 # ARGS    = program.run extra arguments
 # SHOW    = yes -> show commands
 #
@@ -96,10 +98,14 @@ endif
 # detect cos path (e.g path-to-this-file)
 COSDIR := $(patsubst %/prologue,%,$(call last,$(MAKEFILE_LIST)))
 
-# detect operating system (e.g. Linux)
+# detect operating system name and version (e.g. Linux 2.6, Darwin 9.8)
 OSNAME := $(shell uname -s)
+OSVERS := $(shell uname -r)
+OSARCH := $(shell uname -m)
 ifeq ($(OSNAME),)
 OSNAME := Default
+OSVERS := 0
+OSARCH := unknown
 $(warning OSNAME set to Default for configuration)
 endif
 
