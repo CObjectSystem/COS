@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Darwin,v 1.24 2010/06/21 19:36:35 ldeniau Exp $
+# | $Id: Darwin,v 1.25 2011/01/02 21:41:50 ldeniau Exp $
 # |
 #
 
@@ -57,7 +57,7 @@ LIBAREXT    := .a
 LIBSHEXT    := .so
 
 #
-# tools specific
+# tools specific (force 64 bits on Darwin 9 or less)
 #
 CC          := gcc $(if $(findstring 10.,$(OSVERS)),,-m64) # Darwin 9 vs 10
 CPP         := $(CC) -E
