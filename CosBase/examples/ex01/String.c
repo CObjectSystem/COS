@@ -29,15 +29,15 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: String.c,v 1.4 2010/05/21 14:22:07 ldeniau Exp $
+ | $Id: String.c,v 1.5 2011/06/10 19:29:38 ldeniau Exp $
  |
 */
 
 #include "String.h"
 #include "generics.h"
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 makclass(String);
 
