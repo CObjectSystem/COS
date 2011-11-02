@@ -29,7 +29,7 @@
  |
  o---------------------------------------------------------------------o
  |
- | $Id: main.c,v 1.4 2010/05/26 15:12:59 ldeniau Exp $
+ | $Id: main.c,v 1.5 2011/11/02 17:06:49 ldeniau Exp $
  |
 */
 
@@ -66,9 +66,9 @@ sum_rep(I32 n)
   printf("*** functional sum (repeat + eval)\n");
 
   OBJ pool = gnew(AutoRelease);
-  OBJ inc  = gautoDelete(aFunctor(gaddTo,0,aInt(1)));
+  OBJ inc  = gautoRelease(aFunctor(gaddTo,0,aInt(1)));
   F64 t0   = clock();
-  OBJ xs   = gcompose(grepeat(inc,aInt(n)));
+  OBJ xs   = gcomposen(grepeat(inc,aInt(n)));
   F64 t1   = clock();
   I32 x    = gint(geval1(xs,aInt(0)));
   F64 t2   = clock();
@@ -88,7 +88,7 @@ sum_itr(I32 n)
   printf("*** functional sum (iterate + eval)\n");
 
   OBJ pool = gnew(AutoRelease);
-  OBJ inc  = gautoDelete(aFunctor(gaddTo,0,aInt(1)));
+  OBJ inc  = gautoRelease(aFunctor(gaddTo,0,aInt(1)));
   F64 t0   = clock();
   OBJ xs   = giterate(inc,aInt(n));
   F64 t1   = clock();
@@ -110,7 +110,7 @@ sum_oop(I32 n)
   printf("*** object-oriented sum (repeat + foldl)\n"); 
 
   OBJ pool = gnew(AutoRelease);
-  OBJ ini  = gautoDelete(aInt(1));
+  OBJ ini  = gautoRelease(aInt(1));
   F64 t0   = clock();
   OBJ xs   = grepeat(ini,aInt(n));
   F64 t1   = clock();

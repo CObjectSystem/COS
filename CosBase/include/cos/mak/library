@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: library,v 1.9 2009/09/05 21:13:38 ldeniau Exp $
+# | $Id: library,v 1.10 2011/11/02 17:06:49 ldeniau Exp $
 # |
 #
 
@@ -65,7 +65,7 @@ $(TARGET).lib: LDFLAGS += $(SHARED_LD)
 $(TARGET).lib: $(OSNAME)/lib/$(LIBNAME)
 
 $(OSNAME)/lib/$(LIBNAME): $(OSNAME)/$(TARGET)/$(library)_syms.o
-	@  echo "*** Building [$(TARGET)] $(@F)"
+	$E "*** Building [$(TARGET)] $(@F)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@.$(VERSION) $(LIBS)
 	$_ ln -sf $(@F).$(VERSION) $@
 
@@ -75,7 +75,7 @@ $(OSNAME)/lib/$(LIBNAME): $(OSNAME)/$(TARGET)/$(library)_syms.o
 $(TARGET).slib: $(OSNAME)/lib/$(SLIBNAME)
 
 $(OSNAME)/lib/$(SLIBNAME): $(OSNAME)/$(TARGET)/$(library)_syms.o
-	@  echo "*** Building [$(TARGET)] $(@F)"
+	$E "*** Building [$(TARGET)] $(@F)"
 	$_ $(AR) $@ $(OBJECTS) $<
 
 #

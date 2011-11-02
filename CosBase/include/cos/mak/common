@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: common,v 1.14 2009/05/10 01:32:57 ldeniau Exp $
+# | $Id: common,v 1.15 2011/11/02 17:06:49 ldeniau Exp $
 # |
 #
 
@@ -56,7 +56,7 @@ all.do: $(MODULES) $(if $(call neq,$(PRJTYPE),distrib),$(ALLTARGETS))
 
 ifneq ($(MODULES),)
 $(MODULES):
-	@echo "*** Making [$@]"
+	$E "*** Making [$@]"
 	$_ $(MAKE) -C $@
 endif
 

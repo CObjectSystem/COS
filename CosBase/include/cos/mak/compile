@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: compile,v 1.10 2009/09/05 21:13:38 ldeniau Exp $
+# | $Id: compile,v 1.11 2011/11/02 17:06:49 ldeniau Exp $
 # |
 #
 
@@ -42,32 +42,32 @@ vpath %.c $(SRCDIRS)
 # rule for generics
 #
 $(OSNAME)/$(TARGET)/$(PRJNAME)_gens.c: $(DEFGENS)
-	@  echo "*** Computing [$(TARGET)] generics"
+	$E "*** Computing [$(TARGET)] generics"
 	$_ $(COSGEN) --cpp="$(CPP) $(INCLUDE) $(CPPFLAGS)" --out=$@ $^
 
 #
 # rule for properties
 #
 $(OSNAME)/$(TARGET)/$(PRJNAME)_prps.c: $(DEFPRPS)
-	@  echo "*** Computing [$(TARGET)] properties"
+	$E "*** Computing [$(TARGET)] properties"
 	$_ $(COSPRP) --cpp="$(CPP) $(INCLUDE) $(CPPFLAGS)" --out=$@ $^
 
 #
 # rule for symbols
 #
 $(OSNAME)/$(TARGET)/$(PRJNAME)_syms.c: $(OBJECTS)
-	@  echo "*** Computing [$(TARGET)] symbols"
+	$E "*** Computing [$(TARGET)] symbols"
 	$_ $(COSSYM) --nm="$(NM)" $(MODS) --out=$(<D)/$(PRJNAME)_syms.c $(COSSYMOPT) $^
 
 #
 # rules for compilation
 #
 $(OSNAME)/$(TARGET)/%.o: $(OSNAME)/$(TARGET)/%.c
-	@  echo "*** Compiling [$(TARGET)] $(<F)"
+	$E "*** Compiling [$(TARGET)] $(<F)"
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
 $(OSNAME)/$(TARGET)/%.o: %.c
-	@  echo "*** Compiling [$(TARGET)] $(<F)"
+	$E "*** Compiling [$(TARGET)] $(<F)"
 	$_ $(CC) $(INCLUDE) $(CCFLAGS) -c $< -o $@
 
 #
@@ -75,7 +75,7 @@ $(OSNAME)/$(TARGET)/%.o: %.c
 #
 $(OSNAME)/$(TARGET)/%.d: TARGET := $(TARGET)
 $(OSNAME)/$(TARGET)/%.d: %.c
-	@  echo "*** Computing [$(TARGET)] $(@F)"
+	$E "*** Computing [$(TARGET)] $(@F)"
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
 	   sed -e 's,[^:]*:,$(basename $@).o:,' > $@
 

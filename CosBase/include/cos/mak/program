@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: program,v 1.15 2010/01/31 12:03:53 ldeniau Exp $
+# | $Id: program,v 1.16 2011/11/02 17:06:49 ldeniau Exp $
 # |
 #
 
@@ -64,7 +64,7 @@ $(TARGET): $(TARGET).pre  \
 $(TARGET).bin: $(OSNAME)/bin/$(BINNAME)
 
 $(OSNAME)/bin/$(BINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
-	@  echo "*** Building [$(TARGET)] $(@F)"
+	$E "*** Building [$(TARGET)] $(@F)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@ $(LIBS)
 
 #
@@ -75,7 +75,7 @@ $(TARGET).sbin: LDFLAGS += $(STATIC_LD)
 $(TARGET).sbin: $(OSNAME)/bin/$(SBINNAME)
 
 $(OSNAME)/bin/$(SBINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
-	@  echo "*** Building [$(TARGET)] $(@F)"
+	$E "*** Building [$(TARGET)] $(@F)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(OBJECTS) $< -o $@ $(LIBS)
 	$_ $(if $(STRIP),$(STRIP) $@)
 
@@ -84,7 +84,7 @@ $(OSNAME)/bin/$(SBINNAME): $(OSNAME)/$(TARGET)/$(program)_syms.o
 #
 $(TARGET).run: $(LIBTYPE) := $(filter shared,$(LIBTYPE))
 $(TARGET).run: $(TARGET)
-	@  echo "*** Running [$(TARGET)] $(BINNAME)"
+	$E "*** Running [$(TARGET)] $(BINNAME)"
 	$_ export $(SYSLIBPATH)=$$$(SYSLIBPATH)`echo "$(patsubst -L%,:%,$(LIBRARY))" | \
      sed -e 's, :,:,g'` ; \
      $(OSNAME)/bin/$(BINNAME) $(ARGS)
@@ -94,7 +94,7 @@ $(TARGET).run: $(TARGET)
 #
 $(TARGET).srun: $(LIBTYPE) := $(filter static,$(LIBTYPE))
 $(TARGET).srun: $(TARGET)
-	@  echo "*** Running [$(TARGET)] $(SBINNAME)"
+	$E "*** Running [$(TARGET)] $(SBINNAME)"
 	$_ $(OSNAME)/bin/$(SBINNAME) $(ARGS)
 
 #

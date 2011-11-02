@@ -73,21 +73,22 @@
             )
         </define-regex>
 
-        <context id="c">
+        <context id="c" class="no-spell-check">
             <include>
 
                 <!-- gtk-doc -->
                 <context ref="gtk-doc:inline-docs-section"/>
 
                 <!-- Comments -->
-                <context id="comment" style-ref="comment" end-at-line-end="true">
+                <context id="comment" style-ref="comment" end-at-line-end="true" class="comment" class-disabled="no-spell-check">
                     <start>//</start>
+
                     <include>
                       <context ref="def:in-line-comment"/>
                     </include>
                 </context>
 
-                <context id="comment-multiline" style-ref="comment">
+                <context id="comment-multiline" style-ref="comment" class="comment" class-disabled="no-spell-check">
                     <start>/\*</start>
                     <end>\*/</end>
                     <include>
@@ -143,7 +144,7 @@
                     </include>
                 </context>
 
-                <context id="string" style-ref="string" end-at-line-end="true">
+                <context id="string" style-ref="string" end-at-line-end="true" class="string" class-disabled="no-spell-check">
                     <start>L?"</start>
                     <end>"</end>
                     <include>
@@ -195,7 +196,7 @@
                 </context>
 
                 <!-- Keywords -->
-                <context id="keywords" style-ref="keyword">
+                <context id="keywords" style-ref="keyword" class="keyword">
                     <keyword>asm</keyword>
                     <keyword>break</keyword>
                     <keyword>case</keyword>
@@ -258,7 +259,7 @@
                     <keyword>_5</keyword>
                 </context>
 
-                <context id="types" style-ref="type">
+                <context id="types" style-ref="type" class="type">
                     <keyword>_Bool</keyword>
                     <keyword>_Complex</keyword>
                     <keyword>_Imaginary</keyword>
@@ -273,7 +274,7 @@
                     <keyword>size_t</keyword>
                     <keyword>unsigned</keyword>
                     <keyword>void</keyword>
-
+                    
                     <!-- COS Add-on -->
                     <keyword>BOOL</keyword>
                     <keyword>OBJ</keyword>
@@ -319,7 +320,7 @@
                     <keyword>C64</keyword>
                 </context>
 
-                <context id="storage-class" style-ref="storage-class">
+                <context id="storage-class" style-ref="storage-class" class="storage-class">
                     <keyword>auto</keyword>
                     <keyword>const</keyword>
                     <keyword>extern</keyword>
@@ -333,7 +334,7 @@
                     <keyword>cos_inline</keyword>
                 </context>
 
-                <context id="common-defines" style-ref="common-defines">
+                <context id="common-defines" style-ref="common-defines" class="common-defines">
                     <keyword>NULL</keyword>
                     <keyword>MAX</keyword>
                     <keyword>MIN</keyword>
@@ -389,7 +390,7 @@
                 </context>
 
                 <!-- C99 booleans -->
-                <context id="boolean" style-ref="boolean">
+                <context id="boolean" style-ref="boolean" class="boolean">
                     <keyword>true</keyword>
                     <keyword>false</keyword>
 

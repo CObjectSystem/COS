@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: plug-in,v 1.2 2009/09/05 21:13:38 ldeniau Exp $
+# | $Id: plug-in,v 1.3 2011/11/02 17:06:49 ldeniau Exp $
 # |
 #
 
@@ -62,7 +62,7 @@ $(TARGET).lib: LDFLAGS += $(PLUGIN_LD)
 $(TARGET).lib: $(OSNAME)/lib/$(LIBNAME)
 
 $(OSNAME)/lib/$(LIBNAME): $(OSNAME)/$(TARGET)/$(plug-in)_syms.o
-	@  echo "*** Building [$(TARGET)] $(@F)"
+	$E "*** Building [$(TARGET)] $(@F)"
 	$_ $(LD) $(LIBRARY) $(LDFLAGS) $(RPATH) $(OBJECTS) $< -o $@.$(VERSION) $(LIBS)
 	$_ ln -sf $(@F).$(VERSION) $@
 

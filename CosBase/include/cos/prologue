@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: prologue,v 1.15 2010/06/21 19:36:30 ldeniau Exp $
+# | $Id: prologue,v 1.16 2011/11/02 17:06:49 ldeniau Exp $
 # |
 #
 
@@ -114,6 +114,7 @@ endif
 
 # set command echo
 _ := $(if $(call eq,$(SHOW),yes),,@)
+E := $(if $(call eq,$(SHOW),yes),@ \#,@ echo)
 
 # debug
 ifneq ($(SHOW),yes)
