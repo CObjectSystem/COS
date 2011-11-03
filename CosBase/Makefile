@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.36 2010/05/26 22:47:51 ldeniau Exp $
+# | $Id: Makefile,v 1.37 2011/11/03 09:32:51 ldeniau Exp $
 # |
 #
 
@@ -52,10 +52,10 @@ package := $(library)-$(version)_$(release)
 targets := all
 
 # files and modules
-sources := $(wildcard src/*.c)
-headers := $(wildcard include/cos/*.h include/cos/*/*.h)
-defgens := $(wildcard include/cos/gen/*.h)
-defprps := $(wildcard include/cos/prp/*.h)
+sources := src/*.c
+headers := include/cos/*.h include/cos/*/*.h
+defgens := include/cos/gen/*.h
+defprps := include/cos/prp/*.h
 
 # project dependencies (as with -lname)
 libdeps := $(SYSLIBS)

@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.12 2010/05/28 11:57:08 ldeniau Exp $
+# | $Id: Makefile,v 1.13 2011/11/03 09:32:51 ldeniau Exp $
 # |
 #
 
@@ -48,8 +48,8 @@ program := testCosBase
 targets := debug.run
 
 # files & modules
-sources := $(wildcard src/*.c)
-headers := $(wildcard src/*.h)
+sources := src/*.c
+headers := src/*.h
 defgens := $(headers)
 defprps := $(headers)
 

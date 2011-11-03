@@ -29,7 +29,7 @@
 # |
 # o---------------------------------------------------------------------o
 # |
-# | $Id: Makefile,v 1.2 2010/05/26 15:12:59 ldeniau Exp $
+# | $Id: Makefile,v 1.3 2011/11/03 09:32:51 ldeniau Exp $
 # |
 #
 
@@ -47,7 +47,7 @@ program := cos-ex01
 targets := release.run # debug.run
 
 # files & modules
-sources := $(wildcard *.c)
+sources := *.c
 defgens := 
 defprps :=
 
