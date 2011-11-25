@@ -1,40 +1,24 @@
 #ifndef COS_CPP_CPP_H
 #define COS_CPP_CPP_H
 
-/*
- o---------------------------------------------------------------------o
- |
- | C Object System -- CPP standalone header
- |
- o---------------------------------------------------------------------o
- |
- | C Object System
- |
- | Copyright (c) 2006+ Laurent Deniau, laurent.deniau@cern.ch
- |
- | For more information, see:
- | http://cern.ch/laurent.deniau/cos.html
- |
- o---------------------------------------------------------------------o
- |
- | This file is part of the C Object System framework.
- |
- | The C Object System is free software; you can redistribute it and/or
- | modify it under the terms of the GNU Lesser General Public License
- | as published by the Free Software Foundation; either version 3 of
- | the License, or (at your option) any later version.
- |
- | The C Object System is distributed in the hope that it will be
- | useful, but WITHOUT ANY WARRANTY; without even the implied warranty
- | of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- |
- | See <http://www.gnu.org/licenses> for more details.
- |
- o---------------------------------------------------------------------o
- |
- | $Id: cpp.h,v 1.1 2009/07/09 13:16:28 ldeniau Exp $
- |
-*/
+/**
+ * C Object System
+ * COS -- CPP standalone header
+ *
+ * Copyright 2006+ Laurent Deniau <laurent.deniau@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #if !__STDC__ || __STDC_VERSION__ < 199901L
 #error "COS-CPP: COS-CPP requires an ISO C99 preprocessor to work properly"
