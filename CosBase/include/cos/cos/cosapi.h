@@ -177,7 +177,7 @@ extern int cos_logmsg_level_;
  * Inlined functions
  */
 
-#if defined(_OPENMP) || COS_HAVE_TLS || !COS_HAVE_POSIX // --------------------
+#if defined(_OPENMP) || COS_HAS_TLS || !COS_HAS_POSIX // --------------------
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -260,9 +260,9 @@ cos_exception_context(void)
   COS_UNUSED(cos_exception_context);
 }
 
-#else // !defined(_OPENMP) && !COS_HAVE_TLS && COS_HAVE_POSIX -----------------
+#else // !defined(_OPENMP) && !COS_HAS_TLS && COS_HAS_POSIX -----------------
 
-#if COS_HAVE_POSIX
+#if COS_HAS_POSIX
 #include <pthread.h>
 #endif
 

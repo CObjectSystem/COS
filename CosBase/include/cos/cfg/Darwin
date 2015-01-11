@@ -87,8 +87,7 @@ RPATH        = # $(patsubst -L%,-Wl$(comma)-rpath$(comma)%,$(LIBRARY))
 #
 # system specific
 #
-SYSFLAGS    := -DOSNAME=$(OSNAME) \
-               -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
+SYSFLAGS    := -DOSNAME=$(OSNAME) -D_REENTRANT -D_THREAD_SAFE \
                -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SYSLIBPATH  := DYLD_LIBRARY_PATH
 SYSLIBS     := pthread dl

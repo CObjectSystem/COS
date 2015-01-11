@@ -163,25 +163,37 @@ endmethod
 
 // ----- signal
 
-#ifdef __GLIBC__
-extern const char* strsignal(int);
+#ifdef COS_HAS_STRSIGNAL
+extern char* strsignal(int);
 #else
-static const char* strsignal(int sig)
+static char* strsignal(int sig)
 {
+  static char str[][25] = {
+  "Aborted",
+  "Alarm clock",
+  "Bus error",
+  "Floating point exception",
+  "Illegal instruction",
+  "Interrupt",
+  "Quit",
+  "Segmentation fault",
+  "Terminated",
+  "Unknown signal" };
+
   switch (sig) {
-  case SIGABRT: return "Aborted";
-  case SIGALRM: return "Alarm clock";
-  case SIGBUS : return "Bus error";
-  case SIGFPE : return "Floating point exception";
-  case SIGILL : return "Illegal instruction";
-  case SIGINT : return "Interrupt";
-  case SIGQUIT: return "Quit";
-  case SIGSEGV: return "Segmentation fault";
-  case SIGTERM: return "Terminated";
-  default     : return "Unknown signal";
+  case SIGABRT: return str[0];
+  case SIGALRM: return str[1];
+  case SIGBUS : return str[2];
+  case SIGFPE : return str[3];
+  case SIGILL : return str[4];
+  case SIGINT : return str[5];
+  case SIGQUIT: return str[6];
+  case SIGSEGV: return str[7];
+  case SIGTERM: return str[8];
+  default     : return str[9];
   }
 }
-#endif // __GLIBC__
+#endif // HAS_STRSIGNAL
 
 defmethod(OBJ, ginitWithInt, ExSignal, (int)val)
   defnext(OBJ, ginitWithStr, ExSignal, (STR)str);

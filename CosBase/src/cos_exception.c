@@ -29,7 +29,7 @@
 
 static struct cos_exception_context _cxt0;
 
-#if defined(_OPENMP) || COS_HAVE_TLS || !COS_HAVE_POSIX // --------------------
+#if defined(_OPENMP) || COS_HAS_TLS || !COS_HAS_POSIX // --------------------
 
 __thread struct cos_exception_context *cos_exception_cxt_ = &_cxt0;
 
@@ -39,7 +39,7 @@ cxt_set(struct cos_exception_context *cxt)
   cos_exception_cxt_ = cxt;
 }
 
-#else // !defined(_OPENMP) && !COS_HAVE_TLS && COS_HAVE_POSIX -----------------
+#else // !defined(_OPENMP) && !COS_HAS_TLS && COS_HAS_POSIX -----------------
 
 static int            cxt_key_init = 0;
 static pthread_key_t  cxt_key;

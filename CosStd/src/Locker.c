@@ -28,7 +28,7 @@ makclass(Locker,Proxy);
 
 // -----
 
-#if !COS_HAVE_POSIX    // ----------------------------------------------
+#if !COS_HAS_POSIX    // ----------------------------------------------
 
 defmethod(OBJ, galloc, pmLocker)
   retmethod(_1);
@@ -38,7 +38,7 @@ defmethod(OBJ, ginitWith, pmLocker, Object)
   retmethod(_2);
 endmethod
 
-#else // if COS_HAVE_POSIX ---------------------------------------------
+#else // if COS_HAS_POSIX ---------------------------------------------
 
 // ----- ctor/dtor
 
@@ -644,5 +644,5 @@ defmethod(void, gunrecognizedMessage5, Locker, Locker, Locker, Locker, Locker)
   UNPRT(_1);
 endmethod
 
-#endif // if COS_HAVE_POSIX
+#endif // if COS_HAS_POSIX
 

@@ -50,9 +50,6 @@ typedef unsigned long         U64;
 #elif ULLONG_MAX >= 18446744073709551615ULL
 typedef signed   long long    I64;
 typedef unsigned long long    U64;
-#elif defined(_LongLong)
-typedef  _LongLong            I64;
-typedef _ULongLong            U64;
 #else
 typedef struct { U32 _[2]; }  I64;
 typedef struct { U32 _[2]; }  U64;
@@ -64,9 +61,6 @@ typedef double                F64;
 #if __STDC_VERSION__ >= 199901L
 typedef _Complex float        C32;
 typedef _Complex double       C64;
-#elif defined(_ComplexDouble)
-typedef _ComplexFloat         C32;
-typedef _ComplexDouble        C64;
 #else
 typedef struct { F32 _[2]; }  C32;
 typedef struct { F64 _[2]; }  C64;
@@ -151,6 +145,7 @@ struct cos_mem_alignment {
   U16   u16,  *pu16;
   U32   u32,  *pu32;
   U64   u64,  *pu64;
+  F32   f32,  *pf32;
   F64   f64,  *pf64;
   STR   str,  *pstr;
   void *ptr, **pptr;

@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#if COS_HAVE_POSIX && COS_HAVE_DLINK
+#if COS_HAS_POSIX && COS_HAS_DLINK
 #include <dlfcn.h>
 #include <stdio.h>
 #endif
@@ -1267,7 +1267,7 @@ cos_method_get5(SEL gen, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 
 // ----- next-method
 
-#if COS_HAVE_POSIX
+#if COS_HAS_POSIX
 
 #include <pthread.h>
 
@@ -1311,7 +1311,7 @@ cos_method_nextClear(void)
 
 // ----- module
 
-#if COS_HAVE_POSIX && COS_HAVE_DLINK
+#if COS_HAS_POSIX && COS_HAS_DLINK
 
 static void
 mod_clear(void)

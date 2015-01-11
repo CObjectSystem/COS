@@ -66,7 +66,7 @@ STATIC_ASSERT(COS_AUTORELEASE_WARN_is_too_small,
 
 static struct AutoRelease _pool0; // sentinel
 
-#if defined(_OPENMP) || COS_HAVE_TLS || !COS_HAVE_POSIX // --------------------
+#if defined(_OPENMP) || COS_HAS_TLS || !COS_HAS_POSIX // --------------------
 
 static __thread struct AutoRelease *_pool = &_pool0;
 #ifdef _OPENMP
@@ -90,7 +90,7 @@ _pool_init(void)
 {
 }
 
-#else // !defined(_OPENMP) && !COS_HAVE_TLS && COS_HAVE_POSIX -----------------
+#else // !defined(_OPENMP) && !COS_HAS_TLS && COS_HAS_POSIX -----------------
 
 static pthread_key_t _pool_key;
 

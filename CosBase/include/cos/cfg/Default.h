@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#define COS_HAVE_TLS   0
-#define COS_HAVE_POSIX 0
-#define COS_HAVE_DLINK 0
+#define COS_HAS_TLS   0
+#define COS_HAS_POSIX 0
+#define COS_HAS_DLINK 0
 
 #endif // COS_CFG_DEFAULT_H

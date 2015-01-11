@@ -22,7 +22,7 @@
 
 #include <cos/Proxy.h>
 
-#if COS_HAVE_POSIX
+#if COS_HAS_POSIX
 
 #include <pthread.h>
 

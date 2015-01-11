@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#define COS_HAVE_TLS   1
-#define COS_HAVE_POSIX 1
-#define COS_HAVE_DLINK 1
+#define COS_HAS_TLS   1
+#define COS_HAS_POSIX 1
+#define COS_HAS_DLINK 1
 
 #define COS_LIB_PREFIX "lib"
 #define COS_LIB_SHEXT  ".so"

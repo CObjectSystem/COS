@@ -75,17 +75,6 @@
 #define va_copy(d,s) ((d) = (s)) // __va_copy(d,s)
 #endif
 
-/*
-#ifndef _LongLong
-#define _LongLong            __long_long__
-#define _ULongLong  unsigned __long_long__
-#endif
-
-#ifndef _ComplexDouble
-#define _ComplexDouble __complex__
-#endif
-*/
-
 #else // C99
 
 #endif
@@ -93,7 +82,7 @@
 /* NOTE-CONF: Thread Local Storage
    see cos/cfg/OSNAME.h
 */
-#if defined(_OPENMP) || !COS_HAVE_TLS
+#if defined(_OPENMP) || !COS_HAS_TLS
 #define __thread
 #endif
 
@@ -112,5 +101,10 @@
 #define COS_INLINE_VALIST COS_NO // gcc doesn't know how to inline va_list arg
 
 #endif
+
+/* NOTE-CONF: POSIX dialect
+ */
+
+#define COS_HAS_STRSIGNAL 1
 
 #endif // COS_COS_CONFIG_H

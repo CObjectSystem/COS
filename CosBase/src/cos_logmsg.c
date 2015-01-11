@@ -25,7 +25,7 @@
 #include <string.h>
 #include <errno.h>
 
-#if COS_HAVE_POSIX
+#if COS_HAS_POSIX
 #include <unistd.h>
 #include <pthread.h>
 #endif
@@ -64,7 +64,7 @@ cos_logmsg_(int lvl, STR file, int line, STR fmt, ...)
     if (cos_logmsg_out == stderr) fflush(stdout);
 
     va_start(va,fmt);
-#if COS_HAVE_POSIX
+#if COS_HAS_POSIX
     fprintf(cos_logmsg_out, "COS-%s[%u]: ", tag[lvl], (U32)getpid());
 #else
     fprintf(cos_logmsg_out, "COS-%s: "    , tag[lvl]);

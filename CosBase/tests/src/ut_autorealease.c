@@ -35,7 +35,7 @@ ut_autorelease(void)
   OBJ a, c;
   volatile size_t i;
   volatile OBJ ar, ar1, ar2, ar3, ar4;
-  static OBJ arr[1000];
+  static OBJ arr[1000]; COS_UNUSED(arr);
   
   UTEST_START("reference counting & autorelease")
 
