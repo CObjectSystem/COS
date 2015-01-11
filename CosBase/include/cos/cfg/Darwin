@@ -99,7 +99,7 @@ SYSLIBS     := pthread dl
 CCFLAGS     += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
                -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
                -Wpointer-arith -Wbad-function-cast -Wcast-align -Wcast-qual \
-               -Wfloat-equal -Wconversion -Wno-conversion -Winline
+               -Wfloat-equal -Wconversion -Wno-conversion -Winline -Wno-unused-local-typedefs
 
 CCFLAGS     += --param large-function-growth=400 --param inline-unit-growth=200
 

@@ -3,7 +3,7 @@
 
 /**
  * C Object System
- * COS API
+ * COS api
  *
  * Copyright 2006+ Laurent Deniau <laurent.deniau@gmail.com>
  *
@@ -177,12 +177,19 @@ extern int cos_logmsg_level_;
  * Inlined functions
  */
 
-#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
+#if defined(_OPENMP) || COS_HAVE_TLS || !COS_HAVE_POSIX // --------------------
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 static cos_inline struct cos_functor_context*
 cos_functor_context(void)
 {
   extern __thread struct cos_functor_context cos_functor_context_;
+#ifdef _OPENMP
+#pragma omp threadprivate(cos_functor_context_)
+#endif
   return &cos_functor_context_;
   COS_UNUSED(cos_functor_context);
 }
@@ -191,6 +198,9 @@ static cos_inline struct cos_method_cache1*
 cos_method_cache1(void)
 {
   extern __thread struct cos_method_cache1 cos_method_cache1_;
+#ifdef _OPENMP
+#pragma omp threadprivate(cos_method_cache1_)
+#endif
   return &cos_method_cache1_;
   COS_UNUSED(cos_method_cache1);
 }
@@ -199,6 +209,9 @@ static cos_inline struct cos_method_cache2*
 cos_method_cache2(void)
 {
   extern __thread struct cos_method_cache2 cos_method_cache2_;
+#ifdef _OPENMP
+#pragma omp threadprivate(cos_method_cache2_)
+#endif
   return &cos_method_cache2_;
   COS_UNUSED(cos_method_cache2);
 }
@@ -207,6 +220,9 @@ static cos_inline struct cos_method_cache3*
 cos_method_cache3(void)
 {
   extern __thread struct cos_method_cache3 cos_method_cache3_;
+#ifdef _OPENMP
+#pragma omp threadprivate(cos_method_cache3_)
+#endif
   return &cos_method_cache3_;
   COS_UNUSED(cos_method_cache3);
 }
@@ -215,6 +231,9 @@ static cos_inline struct cos_method_cache4*
 cos_method_cache4(void)
 {
   extern __thread struct cos_method_cache4 cos_method_cache4_;
+#ifdef _OPENMP
+#pragma omp threadprivate(cos_method_cache4_)
+#endif
   return &cos_method_cache4_;
   COS_UNUSED(cos_method_cache4);
 }
@@ -223,6 +242,9 @@ static cos_inline struct cos_method_cache5*
 cos_method_cache5(void)
 {
   extern __thread struct cos_method_cache5 cos_method_cache5_;
+#ifdef _OPENMP
+#pragma omp threadprivate(cos_method_cache5_)
+#endif
   return &cos_method_cache5_;
   COS_UNUSED(cos_method_cache5);
 }
@@ -231,13 +253,18 @@ static cos_inline struct cos_exception_context*
 cos_exception_context(void)
 {
   extern __thread struct cos_exception_context *cos_exception_cxt_;
+#ifdef _OPENMP
+#pragma omp threadprivate(cos_exception_cxt_)
+#endif
   return cos_exception_cxt_;
   COS_UNUSED(cos_exception_context);
 }
 
-#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
+#else // !defined(_OPENMP) && !COS_HAVE_TLS && COS_HAVE_POSIX -----------------
 
+#if COS_HAVE_POSIX
 #include <pthread.h>
+#endif
 
 struct cos_exception_context* cos_exception_context   (void);
 struct cos_functor_context*   cos_functor_context_init(void);
@@ -358,6 +385,15 @@ cos_object_setId(OBJ obj, U32 id)
 {
   return ((struct Any*)obj)->_id = id, obj;
   COS_UNUSED(cos_object_setId);
+}
+
+static cos_inline OBJ
+cos_object_setIdAuto(OBJ res, OBJ obj)
+{
+  ((struct Any*)res)->_id = ((struct Any*)obj)->_id;
+  ((struct Any*)res)->_rc = COS_RC_AUTO;
+  return res;
+  COS_UNUSED(cos_object_setIdAuto);
 }
 
 static cos_inline I32

@@ -21,7 +21,7 @@
  */
 
 #define COS_HAVE_TLS   0
-#define COS_HAVE_POSIX 1
+#define COS_HAVE_POSIX 0
 #define COS_HAVE_DLINK 1
 
 #define COS_LIB_PREFIX "lib"

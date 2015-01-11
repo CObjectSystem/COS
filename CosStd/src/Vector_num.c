@@ -126,7 +126,7 @@ DEFMETHOD(CpxVector, C64)
 #define DEFMETHOD(MTH,T1,V1,OP,T2,V2) \
 defmethod(OBJ, MTH, T1, T2) \
   PRE \
-    test_assert(self->size == self2->size, "incompatible vector sizes"); \
+    ensure(self->size == self2->size, "incompatible vector sizes"); \
   BODY \
     V1 *dst   = self->value; \
     I32 dst_s = self->stride; \

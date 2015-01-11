@@ -45,4 +45,6 @@ defgeneric(OBJ, gaddTo2, _1, _2, _3);
 defgeneric(OBJ, gaddTo3, _1, _2, _3, _4);
 defgeneric(OBJ, gaddTo4, _1, _2, _3, _4, _5);
 
+defgeneric(OBJ, gaddToPlus, _1, _2, (U32)a);
+
 #endif // COS_TESTS_GENERIC_H

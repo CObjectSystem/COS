@@ -34,7 +34,7 @@ defmethod(void, gunrecognizedMessage1, InputOutputFile)
     next_method(self);
   
   BOOL chg = cos_object_unsafeChangeClass(_1, classref(OutputInputFile), classref(Stream));
-  test_assert(chg, "unable to change from InputOutputFile to OutputInputFile");
+  ensure(chg, "unable to change from InputOutputFile to OutputInputFile");
 
   forward_message(_1);
 endmethod
@@ -44,7 +44,7 @@ defmethod(void, gunrecognizedMessage2, InputOutputFile, Object)
     next_method(self,self2);
   
   BOOL chg = cos_object_unsafeChangeClass(_1, classref(OutputInputFile), classref(Stream));
-  test_assert(chg, "unable to change from InputOutputFile to OutputInputFile");
+  ensure(chg, "unable to change from InputOutputFile to OutputInputFile");
 
   forward_message(_1,_2);
 endmethod
@@ -54,7 +54,7 @@ defmethod(void, gunrecognizedMessage3, InputOutputFile, Object, Object)
     next_method(self,self2,self3);
   
   BOOL chg = cos_object_unsafeChangeClass(_1, classref(OutputInputFile), classref(Stream));
-  test_assert(chg, "unable to change from InputOutputFile to OutputInputFile");
+  ensure(chg, "unable to change from InputOutputFile to OutputInputFile");
 
   forward_message(_1,_2,_3);
 endmethod
@@ -68,7 +68,7 @@ defmethod(void, gunrecognizedMessage1, OutputInputFile)
   gflush(_1);
 
   BOOL chg = cos_object_unsafeChangeClass(_1, classref(InputOutputFile), classref(Stream));
-  test_assert(chg, "unable to change from OutputInputFile to InputOutputFile");
+  ensure(chg, "unable to change from OutputInputFile to InputOutputFile");
 
   forward_message(_1);
 endmethod
@@ -80,7 +80,7 @@ defmethod(void, gunrecognizedMessage2, OutputInputFile, Object)
   gflush(_1);
 
   BOOL chg = cos_object_unsafeChangeClass(_1, classref(InputOutputFile), classref(Stream));
-  test_assert(chg, "unable to change from OutputInputFile to InputOutputFile");
+  ensure(chg, "unable to change from OutputInputFile to InputOutputFile");
 
   forward_message(_1,_2);
 endmethod
@@ -92,7 +92,7 @@ defmethod(void, gunrecognizedMessage3, OutputInputFile, Object, Object)
   gflush(_1);
 
   BOOL chg = cos_object_unsafeChangeClass(_1, classref(InputOutputFile), classref(Stream));
-  test_assert(chg, "unable to change from OutputInputFile to InputOutputFile");
+  ensure(chg, "unable to change from OutputInputFile to InputOutputFile");
 
   forward_message(_1,_2,_3);
 endmethod

@@ -32,7 +32,7 @@
  * objects autoreleased in a single pool (during expansion only).
  */
 #define COS_AUTORELEASE_INIT 500
-#define COS_AUTORELEASE_RATE 1.618034 // golden ratio
+#define COS_AUTORELEASE_RATE 1618     // golden ratio * 1000
 #define COS_AUTORELEASE_WARN 10000000 // 0 = *never*
 
 // private class
@@ -54,7 +54,7 @@ useclass(ExBadValue, ExBadAlloc, ExBadMessage);
 // -----
 
 STATIC_ASSERT(COS_AUTORELEASE_RATE_must_be_greater_than_3_div_2,
-              COS_AUTORELEASE_RATE >= 1.5);
+              COS_AUTORELEASE_RATE >= 1500);
 STATIC_ASSERT(COS_AUTORELEASE_INIT_must_be_greater_than_100,
               COS_AUTORELEASE_INIT >= 100);
 STATIC_ASSERT(COS_AUTORELEASE_WARN_is_too_small,
@@ -66,9 +66,12 @@ STATIC_ASSERT(COS_AUTORELEASE_WARN_is_too_small,
 
 static struct AutoRelease _pool0; // sentinel
 
-#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
+#if defined(_OPENMP) || COS_HAVE_TLS || !COS_HAVE_POSIX // --------------------
 
 static __thread struct AutoRelease *_pool = &_pool0;
+#ifdef _OPENMP
+#pragma omp threadprivate(_pool)
+#endif
 
 static inline struct AutoRelease*
 pool_get(void)
@@ -87,14 +90,14 @@ _pool_init(void)
 {
 }
 
-#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
+#else // !defined(_OPENMP) && !COS_HAVE_TLS && COS_HAVE_POSIX -----------------
 
 static pthread_key_t _pool_key;
 
 static void
 pool_set(struct AutoRelease *pool)
 {
-	test_assert( pthread_setspecific(_pool_key, pool) == 0 );
+	ensure( pthread_setspecific(_pool_key, pool) == 0 );
 }
 
 static cos_inline struct AutoRelease*
@@ -121,7 +124,7 @@ _pool_deinit(void *pool_)
 static void
 _pool_init(void)
 {
-	test_assert( pthread_key_create(&_pool_key, _pool_deinit) == 0 );
+	ensure( pthread_key_create(&_pool_key, _pool_deinit) == 0 );
 }
 
 #endif // ------------------------------------------------
@@ -138,7 +141,7 @@ enlarge(struct AutoRelease* p)
     stk = malloc(sizeof *stk * new_size);
     if (stk) memcpy(stk, p->stk, sizeof *stk * size);
   } else {
-    new_size = size * COS_AUTORELEASE_RATE;
+    new_size = size * (COS_AUTORELEASE_RATE/1000.0);
     stk = realloc(p->stk, sizeof *stk * new_size);
     if (size >= COS_AUTORELEASE_WARN)
       cos_debug("pool at %p hold %u autoreleased objects", (void*)p, size);

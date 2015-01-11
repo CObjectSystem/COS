@@ -171,7 +171,7 @@ defmethod(OBJ, gevalFun, FunExpr1)
   switch(self->FunExpr.msk) {
     case 1: cos_object_setId(_1, cos_class_id(classref(FunExpr11))); break;
     case 0: cos_object_setId(_1, cos_class_id(classref(FunExpr12))); break;
-    default : test_assert(0, "invalid FunExpr1 mask");
+    default : ensure(0, "invalid FunExpr1 mask");
   }
 
   forward_message(_1);
@@ -209,7 +209,7 @@ defmethod(OBJ, gevalFun, FunExpr2)
     case 2: cos_object_setId(_1, cos_class_id(classref(FunExpr22))); break;
     case 1: cos_object_setId(_1, cos_class_id(classref(FunExpr23))); break;
     case 0: cos_object_setId(_1, cos_class_id(classref(FunExpr24))); break;
-    default : test_assert(0, "invalid FunExpr2 mask");
+    default : ensure(0, "invalid FunExpr2 mask");
   }
 
   forward_message(_1);
@@ -286,7 +286,7 @@ defmethod(OBJ, gevalFun, FunExpr3)
     case 2: cos_object_setId(_1, cos_class_id(classref(FunExpr36))); break;
     case 1: cos_object_setId(_1, cos_class_id(classref(FunExpr37))); break;
     case 0: cos_object_setId(_1, cos_class_id(classref(FunExpr38))); break;
-    default  : test_assert(0, "invalid FunExpr3 mask");
+    default  : ensure(0, "invalid FunExpr3 mask");
   }
 
   forward_message(_1);

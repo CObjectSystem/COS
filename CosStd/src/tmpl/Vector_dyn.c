@@ -40,7 +40,7 @@ useclass(TD);
 #define VECTOR_MINSIZE 1024
 #endif
 
-STATIC_ASSERT(vector_growth_rate_is_too_small , VECTOR_GROWTH_RATE >= 1.5);
+STATIC_ASSERT(vector_growth_rate_is_too_small , VECTOR_GROWTH_RATE >= 1500);
 STATIC_ASSERT(vector_minimun_size_is_too_small, VECTOR_MINSIZE     >= 256);
 
 // ----- constructors
@@ -61,7 +61,7 @@ defmethod(OBJ, ginitWith, TD, Int)
   struct T  *vec  = &vecf->T;
   U32    capacity = self2->value;
 
-  test_assert(self2->value >= 0, "negative " TS " capacity");
+  ensure(self2->value >= 0, "negative " TS " capacity");
 
   vecf->_value = malloc(capacity*sizeof *vec->value);
   if (!vecf->_value && capacity) THROW(ExBadAlloc);
@@ -89,7 +89,7 @@ endmethod
 // ----- invariant
 
 defmethod(void, ginvariant, TD, (STR)file, (int)line)
-  test_assert( self->TF.capacity >= self->TF.T.size,
+  ensure( self->TF.capacity >= self->TF.T.size,
                "dynamic " TS " has capacity < size", file, line);
 
   if (next_method_p)
@@ -104,18 +104,18 @@ extra_size(U32 old_capacity, U32 size)
   U32 new_capacity = old_capacity < VECTOR_MINSIZE ? VECTOR_MINSIZE : old_capacity;
   
   while (new_capacity - old_capacity < size)
-    new_capacity *= VECTOR_GROWTH_RATE;
+    new_capacity *= (VECTOR_GROWTH_RATE/1000.0);
 
   I32 extra = new_capacity - old_capacity;
   
-  test_assert(extra > 0 && (U32)extra > size, TS "size overflow");
+  ensure(extra > 0 && (U32)extra > size, TS "size overflow");
 
   return extra;
 }
 
 defmethod(OBJ, genlarge, TD, Float) // negative factor means enlarge front
   PRE
-    test_assert(self2->value < -1 ||
+    ensure(self2->value < -1 ||
                 self2->value >  1, "invalid growing factor");
   BODY
     F64 factor   = self2->value;
@@ -129,7 +129,7 @@ endmethod
 
 defmethod(OBJ, genlarge, TD, Int) // negative size means enlarge front
   PRE
-    test_assert(self2->value, "invalid growing size");
+    ensure(self2->value, "invalid growing size");
   BODY
     struct TF*  vecf = &self->TF;
     struct T*   vec  = &vecf->T;
@@ -175,7 +175,7 @@ defmethod(OBJ, gadjust, TD)
   }
 
   BOOL ch_cls = cos_object_changeClass(_1, classref(TF));
-  test_assert( ch_cls, "unable to change from dynamic to fixed size " TS );
+  ensure( ch_cls, "unable to change from dynamic to fixed size " TS );
   
   retmethod(_1);
 endmethod
@@ -330,7 +330,7 @@ defmethod(OBJ, ginsertAt, TD, Int, Object)
 
   PRE
     i = Range_index(self2->value, self->TF.T.size);
-    test_assert( i <= self->TF.T.size, "index out of range" );
+    ensure( i <= self->TF.T.size, "index out of range" );
   BODY
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
@@ -352,7 +352,7 @@ endmethod
 
 defmethod(OBJ, ginsertAt, TD, Slice, Object)
   PRE
-    test_assert( Slice_first(self2) <= self->TF.T.size &&
+    ensure( Slice_first(self2) <= self->TF.T.size &&
                  Slice_last (self2) <= self->TF.T.size, "slice out of range" );
   BODY
     struct TF *vecf = &self->TF;
@@ -405,9 +405,9 @@ endmethod
 
 defmethod(OBJ, ginsertAt, TD, Slice, T)
   PRE
-    test_assert( Slice_first(self2) <= self->TF.T.size &&
+    ensure( Slice_first(self2) <= self->TF.T.size &&
                  Slice_last (self2) <= self->TF.T.size, "slice out of range" );
-    test_assert( Slice_size (self2) <= self3->size, "source " TS " is too small" );
+    ensure( Slice_size (self2) <= self3->size, "source " TS " is too small" );
   BODY
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
@@ -459,7 +459,7 @@ defmethod(OBJ, gremoveAt, TD, Int)
 
   PRE
     i = Range_index(self2->value, self->TF.T.size);
-    test_assert( i <= self->TF.T.size, "index out of range" );
+    ensure( i <= self->TF.T.size, "index out of range" );
   BODY
     struct TF *vecf = &self->TF;
     struct T  *vec  = &vecf->T;
@@ -477,7 +477,7 @@ endmethod
 
 defmethod(OBJ, gremoveAt, TD, Slice)
   PRE
-    test_assert( Slice_first(self2) <= self->TF.T.size &&
+    ensure( Slice_first(self2) <= self->TF.T.size &&
                  Slice_last (self2) <= self->TF.T.size, "slice out of range" );
   BODY
     struct TF *vecf = &self->TF;
@@ -601,7 +601,7 @@ defmethod(OBJ, ginsertAt, TD, IntVector, Object)
   if (vec->size + self2->size > vecf->capacity)
     genlarge(_1, aInt(self2->size));
 
-  test_assert( prepareRandomInsert(vec,self2), "index out of range" );
+  ensure( prepareRandomInsert(vec,self2), "index out of range" );
 
   // insert data
   VAL *dst   = vec->value;
@@ -623,7 +623,7 @@ endmethod
 
 defmethod(OBJ, ginsertAt, TD, IntVector, T)
   PRE
-    test_assert( self2->size <= self3->size, "source " TS " is too small" );
+    ensure( self2->size <= self3->size, "source " TS " is too small" );
   POST
     // automatically trigger ginvariant
 
@@ -635,7 +635,7 @@ defmethod(OBJ, ginsertAt, TD, IntVector, T)
     if (vec->size + self2->size > vecf->capacity)
       genlarge(_1, aInt(self2->size));
 
-    test_assert( prepareRandomInsert(vec,self2), "index out of range" );
+    ensure( prepareRandomInsert(vec,self2), "index out of range" );
 
     // insert data
     VAL *dst   = vec->value;
@@ -683,7 +683,7 @@ defmethod(OBJ, gremoveAt, TD, IntVector)
   
   if (idx != end) {
     TMPARRAY_DESTROY(flg);
-    test_assert( 0, "index out of range" );
+    ensure( 0, "index out of range" );
   }
 
   // shrink

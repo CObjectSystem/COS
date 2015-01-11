@@ -199,7 +199,7 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Int, Object);
 defmethod(OBJ,  ginitWith2          , pmArray, Int, Object) // element
 PRE
-  test_assert(self2->value >= 0, "negative array size");
+  ensure(self2->value >= 0, "negative array size");
 
 BODY
   U32 size = self2->value;
@@ -220,7 +220,7 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Int, Functor);
 defmethod(OBJ,  ginitWith2          , pmArray, Int, Functor) // generator
 PRE
-  test_assert(self2->value >= 0, "negative array size");
+  ensure(self2->value >= 0, "negative array size");
 
 BODY
   U32 size = self2->value;
@@ -241,7 +241,7 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, pmArray, Array, Slice);
 defmethod(OBJ,  ginitWith2          , pmArray, Array, Slice) // sub array
 PRE
-  test_assert( Slice_first(self3) < self2->size &&
+  ensure( Slice_first(self3) < self2->size &&
                Slice_last (self3) < self2->size, "slice out of range" );
                
 BODY
@@ -282,7 +282,7 @@ defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random seque
 
   while (dst != end) {
     U32 i = Range_index(*idx, val_n);
-    test_assert( i < val_n, "index out of range" );
+    ensure( i < val_n, "index out of range" );
     *dst++ = gretain(val[i*val_s]), ++*dst_n;
     idx += idx_s;
   }
@@ -315,7 +315,7 @@ endmethod
 
 defmethod(OBJ, gswap, Array, Array) // swap
 PRE
-  test_assert( self->size >= self2->size, "incompatible array size" );
+  ensure( self->size >= self2->size, "incompatible array size" );
 
 BODY
   arr_swap(self->object, self->stride, self2->object, self2->stride, self2->size);
@@ -325,7 +325,7 @@ endmethod
 
 defmethod(OBJ, gassign, Array, Array) // assign
 PRE
-  test_assert( self->size >= self2->size, "incompatible array size" );
+  ensure( self->size >= self2->size, "incompatible array size" );
 
 BODY
   arr_assign(self->object, self->stride, self2->object, self2->stride, self2->size);
@@ -344,6 +344,6 @@ defmethod(void, ginvariant, Array, (STR)file, (int)line)
   while (val != end && *val)
     val += val_s;
 
-  test_assert( val == end, "array contains null elements", file, line);
+  ensure( val == end, "array contains null elements", file, line);
 endmethod
 

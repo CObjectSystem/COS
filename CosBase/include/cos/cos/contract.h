@@ -43,24 +43,24 @@
   body-stmt:
     BODY statement
 
-  test-invariant-stmt:
-    test_invariant( object-expr );
-    test_invariant( object-expr , file , line );
+  ensure-invariant-stmt:
+    ensure_invariant( object-expr );
+    ensure_invariant( object-expr , file , line );
 
-  test-assert-stmt:
-    test_assert( boolean-expr );
-    test_assert( boolean-expr , string-literal );
-    test_assert( boolean-expr , file , line );
-    test_assert( boolean-expr , string-literal , file , line );
+  ensure-stmt:
+    ensure( boolean-expr );
+    ensure( boolean-expr , string-literal );
+    ensure( boolean-expr , file , line );
+    ensure( boolean-expr , string-literal , file , line );
 
   example1:
 
     defmethod(..)
       PRE
-        test_assert(pre-cond [, str] [, file, line]);
+        ensure(pre-cond [, str] [, file, line]);
 
       POST
-        test_assert(post-cond [, str] [, file, line]);
+        ensure(post-cond [, str] [, file, line]);
 
       BODY
         // ...
@@ -73,10 +73,10 @@
     long foo(..) {
       defcontract(long)
       PRE
-        test_assert(pre-cond [, str] [, file, line]);
+        ensure(pre-cond [, str] [, file, line]);
 
       POST
-        test_assert(post-cond [, str] [, file, line]);
+        ensure(post-cond [, str] [, file, line]);
 
       BODY
         // ...
@@ -95,7 +95,7 @@
     (see "Behavioral Contracts and Behavioral Subtyping" for motivation)
     Invariants in methods (only) are automatically checked (if activated) after
     the POST section
-  - test_invariant allows to test an invariant explicitely by sending the
+  - ensure_invariant allows to ensure an invariant explicitely by sending the
     message ginvariant to its argument.
 
   contract precedences:
@@ -113,8 +113,8 @@
 #define COS_DISABLE_PRE
 #define COS_DISABLE_POST
 #define COS_DISABLE_BODY
-#define COS_DISABLE_test_assert
-#define COS_DISABLE_test_invariant
+#define COS_DISABLE_ensure
+#define COS_DISABLE_ensure_invariant
 #endif
 
 #ifndef COS_DISABLE_defcontract
@@ -141,12 +141,12 @@
 #define BODY COS_CTR_BODY
 #endif
 
-#ifndef COS_DISABLE_test_invariant
-#define test_invariant(...) COS_CTR_INV(__VA_ARGS__)
+#ifndef COS_DISABLE_ensure_invariant
+#define ensure_invariant(...) COS_CTR_INV(__VA_ARGS__)
 #endif
 
-#ifndef COS_DISABLE_test_assert
-#define test_assert(...) COS_CTR_ASS_(#__VA_ARGS__,__VA_ARGS__)
+#ifndef COS_DISABLE_ensure
+#define ensure(...) COS_CTR_ASS_(#__VA_ARGS__,__VA_ARGS__)
 #else
 #define COS_CTR_ASS(...) COS_CTR_ASS_(#__VA_ARGS__,__VA_ARGS__)
 #endif

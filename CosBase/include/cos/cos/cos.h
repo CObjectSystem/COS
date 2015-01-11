@@ -85,6 +85,7 @@ extern "C" {
 #include <cos/cos/cosdef.h>
 #include <cos/cos/coscls.h>
 #include <cos/cos/cosapi.h>
+#include <cos/cos/cosmem.h>
 
 /* NOTE-USER: COS inlined dispatch
  */

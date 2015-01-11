@@ -168,27 +168,27 @@ endmethod
 // ---- invariant
 
 defmethod(void, ginvariant, A, (STR)file, (int)line)
-  test_assert(self->str[0] == 'A', file, line);
+  ensure(self->str[0] == 'A', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
 defmethod(void, ginvariant, B, (STR)file, (int)line)
-  test_assert(self->A.str[0] == 'B', file, line);
+  ensure(self->A.str[0] == 'B', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
 defmethod(void, ginvariant, C, (STR)file, (int)line)
-  test_assert(self->A.str[0] == 'C', file, line);
+  ensure(self->A.str[0] == 'C', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
 defmethod(void, ginvariant, D, (STR)file, (int)line)
-  test_assert(self->C.A.str[0] == 'D', file, line);
+  ensure(self->C.A.str[0] == 'D', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
 defmethod(void, ginvariant, E, (STR)file, (int)line)
-  test_assert(self->D.C.A.str[0] == 'E', file, line);
+  ensure(self->D.C.A.str[0] == 'E', file, line);
   gcatStr(_1,"-INV" );
 endmethod
 
@@ -254,35 +254,35 @@ enum { COS_CONTRACT_SAVE = COS_CONTRACT };
 #define COS_CONTRACT COS_CONTRACT_ALL
 
 defmethod(void, gdoC, A, (int)val)
-  PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
-  POST test_assert(val == 1), gcatStr(_1,"-POST");
-  BODY test_assert(val == 1), gcatStr(_1,"-BODY");
+  PRE  ensure(val == 1), gcatStr(_1,"-PRE" );
+  POST ensure(val == 1), gcatStr(_1,"-POST");
+  BODY ensure(val == 1), gcatStr(_1,"-BODY");
 endmethod
 
 defmethod(void, gdoC, B, (int)val)
-  PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
-  POST test_assert(val == 0), gcatStr(_1,"-POST");
-  BODY test_assert(val == 1), gcatStr(_1,"-BODY");
+  PRE  ensure(val == 1), gcatStr(_1,"-PRE" );
+  POST ensure(val == 0), gcatStr(_1,"-POST");
+  BODY ensure(val == 1), gcatStr(_1,"-BODY");
 endmethod
 
 defmethod(void, gdoC, C, (int)val)
-  PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
-  POST test_assert(val == 0), gcatStr(_1,"-POST");
-  BODY test_assert(val == 0), gcatStr(_1,"-BODY");
+  PRE  ensure(val == 1), gcatStr(_1,"-PRE" );
+  POST ensure(val == 0), gcatStr(_1,"-POST");
+  BODY ensure(val == 0), gcatStr(_1,"-BODY");
 endmethod
 
 defmethod(void, gdoC, D, (int)val)
-  PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
-  POST test_assert(val == 1), gcatStr(_1,"-POST");
-  BODY test_assert(val == 1), gcatStr(_1,"-BODY");
-       test_assert(val == 0);
+  PRE  ensure(val == 1), gcatStr(_1,"-PRE" );
+  POST ensure(val == 1), gcatStr(_1,"-POST");
+  BODY ensure(val == 1), gcatStr(_1,"-BODY");
+       ensure(val == 0);
 
 endmethod
 
 defmethod(void, gdoC, E, (int)val)
-  PRE  test_assert(val == 1), gcatStr(_1,"-PRE" );
-  POST test_assert(val == 1), gcatStr(_1,"-POST");
-  BODY test_assert(val == 1), gcatStr(_1,"-BODY");
+  PRE  ensure(val == 1), gcatStr(_1,"-PRE" );
+  POST ensure(val == 1), gcatStr(_1,"-POST");
+  BODY ensure(val == 1), gcatStr(_1,"-BODY");
        retmethod();
 endmethod
 
@@ -343,7 +343,7 @@ endmethod
 // rnk 2
 defmethod(void, gdoY, A, A)
   gcat2Str(_1,_2,"-AA");
-  test_assert( !next_method_p );
+  ensure( !next_method_p );
 endmethod
 
 // rnk 3

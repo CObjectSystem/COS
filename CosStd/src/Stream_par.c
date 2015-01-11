@@ -1,6 +1,6 @@
 /**
  * C Object System
- * COS Number parser
+ * COS Stream number parser
  *
  * Copyright 2006+ Laurent Deniau <laurent.deniau@gmail.com>
  *
@@ -29,7 +29,7 @@
 U32 // integer: [+-]?[0-9]+
 Stream_parseI16(OBJ strm, I32 *val, BOOL skipSpc)
 {
-  test_assert( val, "invalid argument" );
+  ensure( val, "invalid argument" );
 
   U32 cnt = 0;                // char counter
   I32 chr;                    // character
@@ -80,7 +80,7 @@ Stream_parseI16(OBJ strm, I32 *val, BOOL skipSpc)
 U32 // integer: [+-]?[0-9]+
 Stream_parseI32(OBJ strm, I32 *val, BOOL skipSpc)
 {
-  test_assert( val, "invalid argument" );
+  ensure( val, "invalid argument" );
 
   U32 cnt = 0;                // char counter
   I32 chr;                    // character
@@ -131,7 +131,7 @@ Stream_parseI32(OBJ strm, I32 *val, BOOL skipSpc)
 U32 // integer: [+-]?[0-9]+
 Stream_parseI64(OBJ strm, I64 *val, BOOL skipSpc)
 {
-  test_assert( val, "invalid argument" );
+  ensure( val, "invalid argument" );
 
   U32 cnt = 0;                // char counter
   I32 chr;                    // character
@@ -182,7 +182,7 @@ Stream_parseI64(OBJ strm, I64 *val, BOOL skipSpc)
 U32 // floating: [+-]?[0-9]+(.[0-9]+)?([eE][+-]?[0-9]+)?
 Stream_parseF64(OBJ strm, F64 *val, BOOL skipSpc)
 {
-  test_assert( val, "invalid argument" );
+  ensure( val, "invalid argument" );
 
   U32 cnt = 0;                // char counter
   I32 chr;                    // character

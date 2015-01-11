@@ -35,7 +35,7 @@ useclass(TV, TW);
 struct T*
 TV_init(struct TV *vecv, struct T *vec, struct Slice *slc, BOOL isSub)
 {
-  test_assert( Slice_first(slc) < vec->size &&
+  ensure( Slice_first(slc) < vec->size &&
                Slice_last (slc) < vec->size, "slice out of range" );
 
   struct T* vw = &vecv->T;
@@ -100,10 +100,10 @@ endmethod
 // ----- invariant
 
 defmethod(void, ginvariant, TV, (STR)file, (int)line)
-  test_assert( cos_object_isKindOf((OBJ)self->ref, classref(T)),
+  ensure( cos_object_isKindOf((OBJ)self->ref, classref(T)),
                TS " view points to something not a " TS, file, line);
 
-  test_assert( !cos_object_isKindOf((OBJ)self->ref, classref(TD)) ||
+  ensure( !cos_object_isKindOf((OBJ)self->ref, classref(TD)) ||
                cos_object_rc((OBJ)self->ref) == COS_RC_AUTO ,
                TS " view points to a dynamic " TS, file, line);
 
@@ -118,7 +118,7 @@ defmethod(void, ginvariant, TV, (STR)file, (int)line)
   U32 first = Slice_first(slc);
   U32 last  = Slice_last (slc);
 
-  test_assert( first < self->ref->size &&
+  ensure( first < self->ref->size &&
                last  < self->ref->size, TS " view is out of range", file, line);
 
   if (next_method_p)

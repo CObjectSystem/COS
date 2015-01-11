@@ -179,7 +179,7 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, TP, Int, Object);
 defmethod(OBJ,  ginitWith2          , TP, Int, Object) // element
   PRE
-    test_assert(self2->value >= 0, "negative " TS " size");
+    ensure(self2->value >= 0, "negative " TS " size");
 
   BODY
     VAL val = TOVAL(_3);
@@ -200,7 +200,7 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, TP, Int, Functor);
 defmethod(OBJ,  ginitWith2          , TP, Int, Functor) // generator
   PRE
-    test_assert(self2->value >= 0, "negative " TS " size");
+    ensure(self2->value >= 0, "negative " TS " size");
 
   BODY
     U32 size = self2->value;
@@ -221,7 +221,7 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, TP, T, Slice);
 defmethod(OBJ,  ginitWith2          , TP, T, Slice) // sub vector
   PRE
-    test_assert( Slice_first(self3) < self2->size &&
+    ensure( Slice_first(self3) < self2->size &&
                  Slice_last (self3) < self2->size, "slice out of range" );
   POST
   BODY
@@ -259,7 +259,7 @@ defmethod(OBJ,  ginitWith2          , TP, T, IntVector) // random sequence
 
   while (dst != end) {
     U32 i = Range_index(*idx, val_n);
-    test_assert( i < val_n, "index out of range" );
+    ensure( i < val_n, "index out of range" );
     *dst++ = val[i*val_s], ++*dst_n;
     idx += idx_s;
   }

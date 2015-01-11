@@ -69,7 +69,7 @@ cos_method_understand1(SEL restrict _sel, U32 id1)
 static cos_inline U32
 cos_method_hkey2(U32 idg, U32 id1, U32 id2)
 {
-  return idg +id1 +id2/2;
+  return idg +id1 -id2/2;
 }
 
 static cos_inline IMP2
@@ -111,7 +111,7 @@ cos_method_understand2(SEL restrict _sel, U32 id1, U32 id2)
 static cos_inline U32
 cos_method_hkey3(U32 idg, U32 id1, U32 id2, U32 id3)
 {
-  return idg +id1 +id2/2 +id3/4;
+  return idg +id1 -id2/2 +id3*2;
 }
 
 static cos_inline IMP3
@@ -155,7 +155,7 @@ cos_method_understand3(SEL restrict _sel, U32 id1, U32 id2, U32 id3)
 static cos_inline U32
 cos_method_hkey4(U32 idg, U32 id1, U32 id2, U32 id3, U32 id4)
 {
-  return idg +id1 +id2/2 +id3/4 +id4/8;
+  return idg +id1 -id2/2 +id3*2 -id4/4;
 }
 
 static cos_inline IMP4
@@ -201,7 +201,7 @@ cos_method_understand4(SEL restrict _sel, U32 id1, U32 id2, U32 id3, U32 id4)
 static cos_inline U32
 cos_method_hkey5(U32 idg, U32 id1, U32 id2, U32 id3, U32 id4, U32 id5)
 {
-  return idg +id1 +id2/2 +id3/4 +id4/8 +id5/16;
+  return idg +id1 -id2/2 +id3*2 -id4/4 +id5*4;
 }
 
 static cos_inline IMP5

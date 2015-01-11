@@ -96,3 +96,9 @@ defmethod(OBJ, gaddTo4, Counter, Counter, Counter, Counter, Counter)
   self1->val += self2->val + self3->val + self4->val + self5->val;
   retmethod(_1);
 endmethod
+
+defmethod(OBJ, gaddToPlus, Counter, Counter, (U32)a)
+  self1->val += self2->val + a;
+  retmethod(_1);
+endmethod
+

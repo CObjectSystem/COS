@@ -112,7 +112,7 @@ endmethod
 // ----- invariant
 
 defmethod(void, ginvariant, ArrayDyn, (STR)file, (int)line)
-  test_assert( self->capacity >= self->ArrayFix.Array.size,
+  ensure( self->capacity >= self->ArrayFix.Array.size,
                "dynamic array has capacity < size", file, line);
 
   if (next_method_p)
@@ -186,7 +186,7 @@ defmethod(OBJ, gadjust, ArrayDyn)
   }
 
   BOOL ch_cls = cos_object_changeClass(_1, classref(ArrayFix));
-  test_assert( ch_cls, "unable to change from dynamic to fixed size array" );
+  ensure( ch_cls, "unable to change from dynamic to fixed size array" );
   
   retmethod(_1);
 endmethod
@@ -382,7 +382,7 @@ defmethod(OBJ, ginsertAt, ArrayDyn, Int, Object)
   struct Array    *arr  = &arrf->Array;
 
   U32 i = Range_index(self2->value, arr->size);
-  test_assert( i <= arr->size, "index out of range" );
+  ensure( i <= arr->size, "index out of range" );
 
   if (arr->size == self->capacity)
     genlarge(_1, aInt(1));
@@ -399,7 +399,7 @@ defmethod(OBJ, ginsertAt, ArrayDyn, Slice, Object)
   struct ArrayFix *arrf = &self->ArrayFix;
   struct Array    *arr  = &arrf->Array;
 
-  test_assert( Slice_first(self2) <= arr->size &&
+  ensure( Slice_first(self2) <= arr->size &&
                Slice_last (self2) <= arr->size, "slice out of range" );
  
   OBJ *dst;
@@ -456,7 +456,7 @@ defmethod(OBJ, ginsertAt, ArrayDyn, IntVector, Object)
   if (arr->size + self2->size > self->capacity)
     genlarge(_1, aInt(self2->size));
 
-  test_assert( prepareRandomInsert(arr,self2), "index out of range" );
+  ensure( prepareRandomInsert(arr,self2), "index out of range" );
 
   // insert data
   OBJ *dst   = arr->object;
@@ -479,9 +479,9 @@ endmethod
 
 defmethod(OBJ, ginsertAt, ArrayDyn, Slice, Array)
   PRE
-    test_assert( Slice_first(self2) <= self->ArrayFix.Array.size &&
+    ensure( Slice_first(self2) <= self->ArrayFix.Array.size &&
                  Slice_last (self2) <= self->ArrayFix.Array.size, "slice out of range" );
-    test_assert( Slice_size (self2) <= self3->size, "source array is too small" );
+    ensure( Slice_size (self2) <= self3->size, "source array is too small" );
  
   BODY
     struct ArrayFix *arrf = &self->ArrayFix;
@@ -537,7 +537,7 @@ endmethod
 
 defmethod(OBJ, ginsertAt, ArrayDyn, IntVector, Array)
   PRE
-    test_assert( self2->size <= self3->size, "source array is too small" );
+    ensure( self2->size <= self3->size, "source array is too small" );
 
   BODY
     struct ArrayFix *arrf = &self->ArrayFix;
@@ -547,7 +547,7 @@ defmethod(OBJ, ginsertAt, ArrayDyn, IntVector, Array)
     if (arr->size + self2->size > self->capacity)
       genlarge(_1, aInt(self2->size));
 
-    test_assert( prepareRandomInsert(arr,self2), "index out of range" );
+    ensure( prepareRandomInsert(arr,self2), "index out of range" );
 
     // insert data
     OBJ *dst   = arr->object;
@@ -574,7 +574,7 @@ defmethod(OBJ, gremoveAt, ArrayDyn, Int)
 
   PRE
     i = Range_index(self2->value, self->ArrayFix.Array.size);
-    test_assert( i <= self->ArrayFix.Array.size, "index out of range" );
+    ensure( i <= self->ArrayFix.Array.size, "index out of range" );
  
   BODY
     struct ArrayFix *arrf = &self->ArrayFix;
@@ -594,7 +594,7 @@ endmethod
 
 defmethod(OBJ, gremoveAt, ArrayDyn, Slice)
   PRE
-    test_assert( Slice_first(self2) <= self->ArrayFix.Array.size &&
+    ensure( Slice_first(self2) <= self->ArrayFix.Array.size &&
                  Slice_last (self2) <= self->ArrayFix.Array.size, "slice out of range" );
  
   BODY
@@ -672,7 +672,7 @@ defmethod(OBJ, gremoveAt, ArrayDyn, IntVector)
   
   if (idx != end) {
     TMPARRAY_DESTROY(flg);
-    test_assert( 0, "index out of range" );
+    ensure( 0, "index out of range" );
   }
 
   // shrink

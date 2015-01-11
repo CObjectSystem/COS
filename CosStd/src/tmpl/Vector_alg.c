@@ -76,7 +76,7 @@ endmethod
 
 defmethod(OBJ, gpermute, T, IntVector)
   PRE
-    test_assert( self->size == self2->size, "incompatible " TS " sizes" );
+    ensure( self->size == self2->size, "incompatible " TS " sizes" );
 
   BODY
     if (self->size < 2)
@@ -123,8 +123,8 @@ defmethod(OBJ, gpermute, T, IntVector)
 
       CARRAY_DESTROY(buf);
       CARRAY_DESTROY(flg);
-      test_assert( iiir, "index out of range" );
-      test_assert(    0, "invalid cyclic permutation" );
+      ensure( iiir, "index out of range" );
+      ensure(    0, "invalid cyclic permutation" );
     }
 
     retmethod(_1);

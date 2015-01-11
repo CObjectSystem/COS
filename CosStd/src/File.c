@@ -190,7 +190,7 @@ endmethod
 
 defmethod(OBJ, ginitWithFILE, InputFile, (FILE*)fp, String)
 PRE
-  test_assert(fp, "null file descriptor");
+  ensure(fp, "null file descriptor");
 
 BODY
   self->fd.fp   = fp;
@@ -202,7 +202,7 @@ endmethod
 
 defmethod(OBJ, ginitWithFILE, OutputFile, (FILE*)fp, String)
 PRE
-  test_assert(fp, "null file descriptor");
+  ensure(fp, "null file descriptor");
 
 BODY
   self->fd.fp   = fp;

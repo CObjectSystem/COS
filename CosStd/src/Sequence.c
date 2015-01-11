@@ -26,8 +26,8 @@
 
 // -----
 
-STATIC_ASSERT(sequence_growth_rate_is_too_small , SEQUENCE_GROWTH_RATE >= 1.5);
-STATIC_ASSERT(sequence_minimun_size_is_too_small, SEQUENCE_MIN_SIZE    >= 32 );
+STATIC_ASSERT(sequence_growth_rate_is_too_small , SEQUENCE_GROWTH_RATE >= 1500);
+STATIC_ASSERT(sequence_minimun_size_is_too_small, SEQUENCE_MIN_SIZE    >= 32);
 
 // -----
 
@@ -62,7 +62,7 @@ Sequence_enlargeCapacity(U32 capacity, U32 extra)
   
   // growth rate
   while (capacity < size && capacity <= last)
-    capacity *= SEQUENCE_GROWTH_RATE;
+    capacity *= SEQUENCE_GROWTH_RATE/1000.0;
 
   // round last growth
   if (capacity < size)

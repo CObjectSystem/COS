@@ -58,13 +58,17 @@ typedef struct { U32 _[2]; }  I64;
 typedef struct { U32 _[2]; }  U64;
 #endif
 
+typedef float                 F32;
 typedef double                F64;
 
 #if __STDC_VERSION__ >= 199901L
+typedef _Complex float        C32;
 typedef _Complex double       C64;
 #elif defined(_ComplexDouble)
+typedef _ComplexFloat         C32;
 typedef _ComplexDouble        C64;
 #else
+typedef struct { F32 _[2]; }  C32;
 typedef struct { F64 _[2]; }  C64;
 #endif
 
@@ -247,57 +251,62 @@ struct cos_exception_extendedProtect {
 struct cos_method_cache1 {
   struct cos_method_slot1 **slot;
   U32 msk, mis, mis2;
+  char _[64-sizeof(void*)-3*sizeof(U32)];
 };
 
 struct cos_method_cache2 {
   struct cos_method_slot2 **slot;
   U32 msk, mis, mis2;
+  char _[64-sizeof(void*)-3*sizeof(U32)];
 };
 
 struct cos_method_cache3 {
   struct cos_method_slot3 **slot;
   U32 msk, mis, mis2;
+  char _[64-sizeof(void*)-3*sizeof(U32)];
 };
 
 struct cos_method_cache4 {
   struct cos_method_slot4 **slot;
   U32 msk, mis, mis2;
+  char _[64-sizeof(void*)-3*sizeof(U32)];
 };
 
 struct cos_method_cache5 {
   struct cos_method_slot5 **slot;
   U32 msk, mis, mis2;
+  char _[64-sizeof(void*)-3*sizeof(U32)];
 };
 
 // dispatch slots
 struct cos_method_slot1 {
-  struct cos_method_slot1 *nxt;
-  IMP1 fct;
   U32 idg, id1;
+  IMP1 fct;
+  struct cos_method_slot1 *nxt;
 };
 
 struct cos_method_slot2 {
-  struct cos_method_slot2 *nxt;
-  IMP2 fct;
   U32 idg, id1, id2;
+  IMP2 fct;
+  struct cos_method_slot2 *nxt;
 };
 
 struct cos_method_slot3 {
-  struct cos_method_slot3 *nxt;
-  IMP3 fct;
   U32 idg, id1, id2, id3;
+  IMP3 fct;
+  struct cos_method_slot3 *nxt;
 };
 
 struct cos_method_slot4 {
-  struct cos_method_slot4 *nxt;
-  IMP4 fct;
   U32 idg, id1, id2, id3, id4;
+  IMP4 fct;
+  struct cos_method_slot4 *nxt;
 };
 
 struct cos_method_slot5 {
-  struct cos_method_slot5 *nxt;
-  IMP5 fct;
   U32 idg, id1, id2, id3, id4, id5;
+  IMP5 fct;
+  struct cos_method_slot5 *nxt;
 };
 
 #endif // COS_COS_COSDEF_H

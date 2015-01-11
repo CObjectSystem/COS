@@ -500,7 +500,7 @@ endmethod
 */
 
 defmethod(OBJ, greduce, Array, Functor)
-  test_assert( self->size > 0, "empty array" );
+  ensure( self->size > 0, "empty array" );
 
   U32  size  = self->size;
   I32  val_s = self->stride;
@@ -573,7 +573,7 @@ endmethod
 
 /*
 defmethod(OBJ, grreduce, Array, Functor)
-  test_assert( self->size > 0, "empty array" );
+  ensure( self->size > 0, "empty array" );
 
   U32  size  = self->size;
   I32  val_s = self->stride;
@@ -650,7 +650,7 @@ endmethod
 */
 
 defmethod(OBJ, gaccumulate, Array, Functor)
-  test_assert( self->size > 0, "empty array" );
+  ensure( self->size > 0, "empty array" );
 
   OBJ ini = gautoRelease(gclone(self->object[0]));
   OBJ arr = aArrayView(_1, aSlice(1, self->size-1));
@@ -728,7 +728,7 @@ endmethod
 
 /*
 defmethod(OBJ, graccumulate, Array, Functor)
-  test_assert( self->size > 0, "empty array" );
+  ensure( self->size > 0, "empty array" );
 
   OBJ ini = gautoRelease(gclone(glast(_1)));
   OBJ arr = aArrayView(self, atSlice(self->size-1));

@@ -28,11 +28,11 @@
 #define COS_FUNCTOR_STACKSIZE 8192  // 64k per thread on 64 bits arch
 #endif
 
-#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
+#if defined(_OPENMP) || COS_HAVE_TLS || !COS_HAVE_POSIX // --------------------
 
 __thread struct cos_functor_context cos_functor_context_ = { 0, 0, 0 };
 
-#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
+#else // !defined(_OPENMP) && !COS_HAVE_TLS && COS_HAVE_POSIX -----------------
 
        int            cos_functor_context_key_init = 0;
        pthread_key_t  cos_functor_context_key;

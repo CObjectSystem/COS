@@ -323,7 +323,7 @@ defmethod(OBJ, gfind, String, String)
   POST
     self->value[self->size] = self2->value[self2->size] = '\0';
     U8 *q = (U8*)strstr((STR)self->value, (STR)self2->value);
-    test_assert( p == q, "bug in substring searching");
+    ensure( p == q, "bug in substring searching");
 
   BODY
     p = findSub(self->value, self->size, self2->value, self2->size);
@@ -341,7 +341,7 @@ defmethod(OBJ, gifind, String, String)
   POST
     self->value[self->size] = self2->value[self2->size] = '\0';
     U8 *q = (U8*)strstr((STR)self->value, (STR)self2->value);
-    test_assert( p == q, "bug in substring searching");
+    ensure( p == q, "bug in substring searching");
 
   BODY
     p = findSub(self->value, self->size, self2->value, self2->size);

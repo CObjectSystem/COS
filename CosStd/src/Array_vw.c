@@ -137,8 +137,8 @@ endmethod
 defmethod(void, ginvariant, ArrayView, (STR)file, (int)line)
   struct Array *arr = dyncast(Array, self->ref);
 
-  test_assert( arr, "array view points to something not an array", file, line);
-  test_assert( !dyncast(ArrayDyn, self->ref) || cos_object_rc(_1) == COS_RC_AUTO,
+  ensure( arr, "array view points to something not an array", file, line);
+  ensure( !dyncast(ArrayDyn, self->ref) || cos_object_rc(_1) == COS_RC_AUTO,
                "array view points to a dynamic array", file, line);
 
   I32 start  = (arr->object - self->Array.object)/arr->stride;
@@ -150,7 +150,7 @@ defmethod(void, ginvariant, ArrayView, (STR)file, (int)line)
   U32 first = Slice_first(slc);
   U32 last  = Slice_last (slc);
 
-  test_assert( first < arr->size && last < arr->size,
+  ensure( first < arr->size && last < arr->size,
                "array view is out of range", file, line);
 
   if (next_method_p)

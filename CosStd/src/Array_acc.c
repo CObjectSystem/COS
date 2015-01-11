@@ -50,7 +50,7 @@ endmethod
 defmethod(OBJ, ggetAtIdx, Array, (I32)idx)
   U32 i = Range_index(idx, self->size);
   
-  test_assert( i < self->size, "index out of range" );
+  ensure( i < self->size, "index out of range" );
 
   retmethod( self->object[i*self->stride] );
 endmethod
@@ -58,7 +58,7 @@ endmethod
 defmethod(OBJ, ggetAt, Array, Int)
   U32 i = Range_index(self2->value, self->size);
 
-  test_assert( i < self->size, "index out of range" );
+  ensure( i < self->size, "index out of range" );
 
   retmethod( self->object[i*self->stride] );
 endmethod
@@ -85,7 +85,7 @@ endmethod
 defmethod(OBJ, gputAtIdx, Array, (I32)idx, Object)
   U32 i = Range_index(idx, self->size);
   
-  test_assert( i < self->size, "index out of range" );
+  ensure( i < self->size, "index out of range" );
 
   OBJ *dst = self->object + i*self->stride;
   assign(dst, _2);
@@ -96,7 +96,7 @@ endmethod
 defmethod(OBJ, gputAt, Array, Int, Object)
   U32 i = Range_index(self2->value, self->size);
   
-  test_assert( i < self->size, "index out of range" );
+  ensure( i < self->size, "index out of range" );
 
   OBJ *dst = self->object + i*self->stride;
   assign(dst, _3);
@@ -106,7 +106,7 @@ endmethod
 
 defmethod(OBJ, gputAt, Array, Slice, Object)
 PRE
-  test_assert( Slice_first(self2) < self->size &&
+  ensure( Slice_first(self2) < self->size &&
                Slice_last (self2) < self->size, "slice out of range" );
 BODY
   U32  dst_n = Slice_size  (self2);
@@ -140,7 +140,7 @@ defmethod(OBJ, gputAt, Array, IntVector, Object)
 
   while (idx != end) {
     U32 i = Range_index(*idx, dst_n);
-    test_assert( i < dst_n, "index out of range" );
+    ensure( i < dst_n, "index out of range" );
     assign(dst + i*dst_s, _3);
     idx += idx_s;
   }
@@ -158,9 +158,9 @@ endmethod
 
 defmethod(OBJ, gputAt, Array, Slice, Array)
 PRE
-  test_assert( Slice_first(self2) < self->size &&
+  ensure( Slice_first(self2) < self->size &&
                Slice_last (self2) < self->size, "slice out of range" );
-  test_assert( Slice_size (self2) <= self3->size, "source array is too small" );
+  ensure( Slice_size (self2) <= self3->size, "source array is too small" );
 
 BODY
   U32  dst_n = Slice_size  (self2);
@@ -188,7 +188,7 @@ endmethod
 
 defmethod(OBJ, gputAt, Array, IntVector, Array)
 PRE
-  test_assert( self2->size <= self3->size, "source array is too small" );
+  ensure( self2->size <= self3->size, "source array is too small" );
 
 BODY
   U32  dst_n = self->size;
@@ -203,7 +203,7 @@ BODY
 
   while (idx != end) {
     U32 i = Range_index(*idx, dst_n);
-    test_assert( i < dst_n, "index out of range" );
+    ensure( i < dst_n, "index out of range" );
     assign(dst + i*dst_s, *src);
     src += src_s;
     idx += idx_s;
@@ -215,7 +215,7 @@ endmethod
 // move to collection?
 defmethod(OBJ, gputAt, Array, Array, Array)
 PRE
-  test_assert( self2->size <= self3->size, "source array is too small" );
+  ensure( self2->size <= self3->size, "source array is too small" );
 
 BODY
   gforeach2(_2, _3, aFun(gputAt, _1, __1, __2));

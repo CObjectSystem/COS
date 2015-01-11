@@ -1008,19 +1008,19 @@ cos_class_getWithStr(STR str)
 
   switch (p-str) {
   case 0: // normal class
-    test_assert( cls_isClass(cls),
+    ensure( cls_isClass(cls),
                  "classes not starting by 'm' or 'pm' should be instance of Class" );
     break;
 
   case 1: // meta class
     cls = cos_object_superClass((OBJ)cls);
-    test_assert( cls_isMeta(cls),
+    ensure( cls_isMeta(cls),
                  "class starting by 'm' should be instance of MetaClass" );
     break;
 
   case 2: // property meta class
     cls = cos_object_class((OBJ)cls);
-    test_assert( cls_isPropMeta(cls),
+    ensure( cls_isPropMeta(cls),
                  "class starting by 'pm' should be instance of PropMetaClass" );
     break;
   }
@@ -1407,6 +1407,7 @@ cos_module_load(STR *mod)
 static void
 mod_clear(void)
 {
+  COS_UNUSED(tbl_mod);
 }
 
 void

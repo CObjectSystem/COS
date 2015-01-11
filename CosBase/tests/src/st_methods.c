@@ -43,7 +43,7 @@ st_methods(void)
   STEST( "method (4 arguments)", N, gincrBy4(cnt,1,1,1,1) );
   STEST( "method (5 arguments)", N, gincrBy5(cnt,1,1,1,1,1) );
   
-  test_assert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
+  ensure( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
 
   grelease(cnt);
 }
@@ -63,7 +63,7 @@ st_nextmethods(void)
   STEST( "method + next method (4 arguments)", P, gincrBy4(cnt,1,1,1,1) );
   STEST( "method + next method (5 arguments)", P, gincrBy5(cnt,1,1,1,1,1) );
   
-  test_assert( gint(cnt) == P+P+2*P+3*P+4*P+5*P );
+  ensure( gint(cnt) == P+P+2*P+3*P+4*P+5*P );
   grelease(cnt);
 }
 
@@ -80,7 +80,9 @@ st_multimethods(void)
   STEST( "multimethod (rank 4)", N, gaddTo3(cnt,one,one,one) );
   STEST( "multimethod (rank 5)", N, gaddTo4(cnt,one,one,one,one) );
   
-  test_assert( gint(cnt) == N+2*N+3*N+4*N );
+  STEST( "multimethod (rank 2 +1 arg)", N, gaddToPlus(cnt,one,1) );
+
+  ensure( gint(cnt) == N+2*N+3*N+4*N+2*N );
   grelease(cnt);
   grelease(one);
 }
@@ -116,7 +118,7 @@ st_methods_ptr(void)
   STEST( "method pointer (4 arguments)", N, gincrBy4_p((SEL)gincrBy4_s,cnt,&arg4,&ret) );
   STEST( "method pointer (5 arguments)", N, gincrBy5_p((SEL)gincrBy5_s,cnt,&arg5,&ret) );
   
-  test_assert( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
+  ensure( gint(cnt) == N+N+2*N+3*N+4*N+5*N );
 
   grelease(cnt);
 }
@@ -145,7 +147,7 @@ st_multimethods_ptr(void)
   STEST( "multimethod pointer (rank 4)", N, gaddTo3_p((SEL)gaddTo3_s,cnt,one,one,one,0,&ret) );
   STEST( "multimethod pointer (rank 5)", N, gaddTo4_p((SEL)gaddTo4_s,cnt,one,one,one,one,0,&ret) );
   
-  test_assert( gint(cnt) == N+2*N+3*N+4*N );
+  ensure( gint(cnt) == N+2*N+3*N+4*N );
 
   grelease(cnt);
   grelease(one);

@@ -104,7 +104,7 @@ endmethod
 
 defmethod(size_t, gputData, OutputStream, (U8*)buf, (size_t)len)
 PRE
-  test_assert( buf || !len, "invalid buffer" );
+  ensure( buf || !len, "invalid buffer" );
 
 BODY
   size_t n = 0;
@@ -126,7 +126,7 @@ endmethod
 
 defmethod(size_t, ggetData, InputStream, (U8*)buf, (size_t)len)
 PRE
-  test_assert( buf || !len, "invalid buffer" );
+  ensure( buf || !len, "invalid buffer" );
 
 BODY
   size_t n = 0;
@@ -149,7 +149,7 @@ endmethod
 /*
 defmethod(size_t, gungetData, InputStream, (U8*)buf, (size_t)len)
 PRE
-  test_assert( buf || !len, "invalid buffer" );
+  ensure( buf || !len, "invalid buffer" );
 
 BODY
   size_t n = len;
@@ -189,7 +189,7 @@ endmethod
 
 defmethod(size_t, ggetLine, InputStream, (U8*)buf, (size_t)len)
 PRE
-  test_assert( buf || !len, "invalid buffer" );
+  ensure( buf || !len, "invalid buffer" );
 
 BODY
   size_t n = 0;
@@ -224,7 +224,7 @@ endmethod
 
 defmethod(size_t, ggetDelim, InputStream, (U8*)buf, (size_t)len, (I32)delim)
 PRE
-  test_assert( buf || !len, "invalid buffer" );
+  ensure( buf || !len, "invalid buffer" );
 
 BODY
   size_t n = 0;
@@ -247,8 +247,8 @@ endmethod
 
 defmethod(size_t, ggetDelims, InputStream, (U8*)buf, (size_t)len, (STR)delims)
 PRE
-  test_assert( buf    || !len, "invalid buffer"     );
-  test_assert( delims || !len, "invalid delimiters" );
+  ensure( buf    || !len, "invalid buffer"     );
+  ensure( delims || !len, "invalid delimiters" );
 
 BODY
   size_t n = 0;
@@ -318,7 +318,7 @@ endmethod
 
 defmethod(size_t, gskipDelims, InputStream, (STR)delims)
 PRE
-  test_assert( delims, "invalid delimiters" );
+  ensure( delims, "invalid delimiters" );
 
 BODY
   size_t n = 0;
@@ -341,7 +341,7 @@ endmethod
 
 defmethod(size_t, ggetWhile, InputStream, (U8*)buf, (size_t)len, Functor)
 PRE
-  test_assert( buf || !len, "invalid buffer" );
+  ensure( buf || !len, "invalid buffer" );
 
 BODY
   size_t n = 0;

@@ -117,7 +117,7 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, pmString, Int, Object);
 defmethod(OBJ,  ginitWith2          , pmString, Int, Object) // element
 PRE
-  test_assert(self2->value >= 0, "negative string size");
+  ensure(self2->value >= 0, "negative string size");
 
 BODY
   I32 val = gchr(_3);
@@ -131,7 +131,7 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, pmString, Int, Functor);
 defmethod(OBJ,  ginitWith2          , pmString, Int, Functor) // generator
 PRE
-  test_assert(self2->value >= 0, "negative string size");
+  ensure(self2->value >= 0, "negative string size");
 
 BODY
   U32 size = self2->value;
@@ -152,7 +152,7 @@ endmethod
 defalias (OBJ, (ginitWith2)gnewWith2, pmString, String, Slice);
 defmethod(OBJ,  ginitWith2          , pmString, String, Slice) // sub string
 PRE
-  test_assert( Slice_first(self3) < self2->size &&
+  ensure( Slice_first(self3) < self2->size &&
                Slice_last (self3) < self2->size, "slice out of range" );
 
 BODY
@@ -195,7 +195,7 @@ defmethod(OBJ,  ginitWith2          , pmString, String, IntVector) // random seq
 
   while (dst != end) {
     U32 i = Range_index(*idx, val_n);
-    test_assert( i < val_n, "index out of range" );
+    ensure( i < val_n, "index out of range" );
     *dst++ = val[i], ++*dst_n;
     idx += idx_s;
   }

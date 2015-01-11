@@ -324,7 +324,7 @@ endmethod
 // ----- reduce
 
 defmethod(OBJ, greduce, String, Functor)
-  test_assert( self->size > 0, "empty string" );
+  ensure( self->size > 0, "empty string" );
 
   U32 size = self->size;
   U8* val  = self->value;
@@ -351,7 +351,7 @@ endmethod
 
 /*
 defmethod(OBJ, grreduce, String, Functor)
-  test_assert( self->size > 0, "empty string" );
+  ensure( self->size > 0, "empty string" );
 
   U32 size = self->size;
   U8* val  = self->value;

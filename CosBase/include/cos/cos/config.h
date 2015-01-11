@@ -93,7 +93,7 @@
 /* NOTE-CONF: Thread Local Storage
    see cos/cfg/OSNAME.h
 */
-#if !COS_HAVE_TLS
+#if defined(_OPENMP) || !COS_HAVE_TLS
 #define __thread
 #endif
 

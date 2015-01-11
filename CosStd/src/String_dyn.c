@@ -106,7 +106,7 @@ endmethod
 // ----- invariant
 
 defmethod(void, ginvariant, StringDyn, (STR)file, (int)line)
-  test_assert( self->capacity >= self->StringFix.String.size,
+  ensure( self->capacity >= self->StringFix.String.size,
                "dynamic string has capacity < size", file, line);
 
   if (next_method_p)
@@ -182,7 +182,7 @@ defmethod(OBJ, gadjust, StringDyn)
   }
 
   BOOL ch_cls = cos_object_changeClass(_1, classref(StringFix));
-  test_assert( ch_cls, "unable to change from dynamic to fixed size string" );
+  ensure( ch_cls, "unable to change from dynamic to fixed size string" );
 
   retmethod(_1);
 endmethod
@@ -327,7 +327,7 @@ defmethod(OBJ, ginsertAt, StringDyn, Int, Object)
 
   PRE
     i = Range_index(self2->value, self->StringFix.String.size);
-    test_assert( i <= self->StringFix.String.size, "index out of range" );
+    ensure( i <= self->StringFix.String.size, "index out of range" );
  
   BODY
     struct StringFix *strf = &self->StringFix;
@@ -353,7 +353,7 @@ defmethod(OBJ, ginsertAt, StringDyn, Int, String)
 
   PRE
     i = Range_index(self2->value, self->StringFix.String.size);
-    test_assert( i <= self->StringFix.String.size, "index out of range" );
+    ensure( i <= self->StringFix.String.size, "index out of range" );
  
   BODY
     struct StringFix *strf = &self->StringFix;
@@ -381,7 +381,7 @@ defmethod(OBJ, gremoveAt, StringDyn, Int)
 
   PRE
     i = Range_index(self2->value, self->StringFix.String.size);
-    test_assert( i <= self->StringFix.String.size, "index out of range" );
+    ensure( i <= self->StringFix.String.size, "index out of range" );
  
   BODY
     struct StringFix *strf = &self->StringFix;
@@ -400,9 +400,9 @@ endmethod
 
 defmethod(OBJ, gremoveAt, StringDyn, Slice)
   PRE
-    test_assert( Slice_first(self2) <= self->StringFix.String.size &&
+    ensure( Slice_first(self2) <= self->StringFix.String.size &&
                  Slice_last (self2) <= self->StringFix.String.size, "slice out of range" );
-    test_assert( Slice_stride(self2) != 1, "slice stride not 1");
+    ensure( Slice_stride(self2) != 1, "slice stride not 1");
      
   BODY
     struct StringFix *strf = &self->StringFix;

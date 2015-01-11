@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 
+
 #include <cos/Object.h>
 #include <cos/Proxy.h>
 #include <cos/gen/object.h>
@@ -46,7 +47,7 @@ st_pxymethods(void)
   STEST( "method through proxy (4 arguments)", N, gincrBy4(pxy,1,1,1,1) );
   STEST( "method through proxy (5 arguments)", N, gincrBy5(pxy,1,1,1,1,1) );
 
-  test_assert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
+  ensure( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
   
   grelease(pxy);
 }
@@ -76,7 +77,7 @@ st_pxynextmethods(void)
   STEST( "method + next method through proxy (4 arguments)", N, gincrBy4(pxy,1,1,1,1) );
   STEST( "method + next method through proxy (5 arguments)", N, gincrBy5(pxy,1,1,1,1,1) );
 
-  test_assert( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
+  ensure( gint(pxy) == N + N+2*N+3*N+4*N+5*N );
   
   grelease(pxy);
 }
@@ -97,7 +98,7 @@ st_pxymultimethods(void)
   STEST( "multimethod through proxy (rank 4)", N, gaddTo3(pxy,one,one,one) );
   STEST( "multimethod through proxy (rank 5)", N, gaddTo4(pxy,one,one,one,one) );
   
-  test_assert( gint(pxy) == N+2*N+3*N+4*N );
+  ensure( gint(pxy) == N+2*N+3*N+4*N );
   grelease(pxy);
   grelease(one);
 }

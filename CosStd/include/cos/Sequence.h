@@ -29,11 +29,11 @@ defclass(ValueSequence, Sequence)
 endclass
 
 #ifndef SEQUENCE_GROWTH_RATE
-#define SEQUENCE_GROWTH_RATE 1.618034 // golden ratio
+#define SEQUENCE_GROWTH_RATE 1618 // golden ratio * 1000
 #endif
 
 #ifndef SEQUENCE_MIN_SIZE
-#define SEQUENCE_MIN_SIZE 256         // dynamic sequence starting size
+#define SEQUENCE_MIN_SIZE 256     // dynamic sequence starting size
 #endif
 
 U32 Sequence_enlargeCapacity(U32 capacity, U32 extra);

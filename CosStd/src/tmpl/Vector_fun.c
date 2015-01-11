@@ -468,7 +468,7 @@ endmethod
 // ----- reduce1
 
 defmethod(OBJ, greduce, T, Functor)
-  test_assert( self->size > 0, "empty vector" );
+  ensure( self->size > 0, "empty vector" );
 
   U32  size  = self->size;
   I32  val_s = self->stride;
@@ -524,7 +524,7 @@ endmethod
 
 /*
 defmethod(OBJ, grreduce, T, Functor)
-  test_assert( self->size > 0, "empty vector" );
+  ensure( self->size > 0, "empty vector" );
 
   U32  size  = self->size;
   I32  val_s = self->stride;
@@ -582,7 +582,7 @@ endmethod
 // ----- accumulate
 
 defmethod(OBJ, gaccumulate, T, Functor)
-  test_assert( self->size > 0, "empty vector" );
+  ensure( self->size > 0, "empty vector" );
   
   OBJ ini = gautoRelease(gclone(VALOBJ(self->value[0])));
   OBJ vec = aTView(self, atSlice(1, self->size-1));
@@ -643,7 +643,7 @@ endmethod
 
 /*
 defmethod(OBJ, graccumulate, T, Functor)
-  test_assert( self->size > 0, "empty vector" );
+  ensure( self->size > 0, "empty vector" );
   
   OBJ ini = glast(_1);
   OBJ vec = aTView(self, atSlice(self->size-1));

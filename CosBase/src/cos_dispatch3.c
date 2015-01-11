@@ -38,16 +38,20 @@ STATIC_ASSERT(COS_METHOD_MAXSLOT3_must_be_a_pow2_greater_than_512,
               COS_METHOD_MAXSLOT3 > 512 &&
               (COS_METHOD_MAXSLOT3 & (COS_METHOD_MAXSLOT3-1)) == 0);
 
+STATIC_ASSERT(COS_METHOD_CACHE3_must_have_a_size_of_64_bytes,
+              sizeof(struct cos_method_cache3) == 64);
+
 static void init(SEL,OBJ,OBJ,OBJ,void*,void*);
 
-static struct cos_method_slot3 sentinel = { &sentinel,init,0,0,0,0 };
+static struct cos_method_slot3 sentinel = { 0,0,0,0,init,&sentinel };
 static struct cos_method_slot3 *cache_empty = &sentinel;
 
-#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
+#if defined(_OPENMP) || COS_HAVE_TLS || !COS_HAVE_POSIX // --------------------
 
-__thread struct cos_method_cache3 cos_method_cache3_ = { &cache_empty, 0, 0, 0 };
+__thread struct cos_method_cache3 cos_method_cache3_
+  __attribute__((aligned(64))) = { &cache_empty, 0, 0, 0, {0} };
 
-#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
+#else // !defined(_OPENMP) && !COS_HAVE_TLS && COS_HAVE_POSIX -----------------
 
        int            cos_method_cache3_key_init = 0;
        pthread_key_t  cos_method_cache3_key;

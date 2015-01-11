@@ -29,7 +29,7 @@
 
 static struct cos_exception_context _cxt0;
 
-#if COS_HAVE_TLS || !COS_HAVE_POSIX // -----------------------------
+#if defined(_OPENMP) || COS_HAVE_TLS || !COS_HAVE_POSIX // --------------------
 
 __thread struct cos_exception_context *cos_exception_cxt_ = &_cxt0;
 
@@ -39,7 +39,7 @@ cxt_set(struct cos_exception_context *cxt)
   cos_exception_cxt_ = cxt;
 }
 
-#else // COS_HAVE_POSIX && !COS_HAVE_TLS ---------------------------
+#else // !defined(_OPENMP) && !COS_HAVE_TLS && COS_HAVE_POSIX -----------------
 
 static int            cxt_key_init = 0;
 static pthread_key_t  cxt_key;
@@ -122,8 +122,8 @@ terminate_default(OBJ ex, STR file, int line)
               "leading to an undefined behavior",
               cos_object_className(ex), reason, file, line);
   else
-    cos_info ("exiting with uncaught exception %s '%s' thrown at (%s:%d)",
-              cos_object_className(ex), reason, file, line);
+    cos_warn("exiting with uncaught exception %s '%s' thrown at (%s:%d)",
+             cos_object_className(ex), reason, file, line);
 }
 
 static cos_exception_handler handler = terminate_default;

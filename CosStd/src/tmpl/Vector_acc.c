@@ -37,14 +37,14 @@ endmethod
 
 defmethod(OBJ, ggetAtIdx, T, (I32)idx)
   U32 i = Range_index(idx, self->size);
-  test_assert( i < self->size, "index out of range" );
+  ensure( i < self->size, "index out of range" );
 
   retmethod( gautoRelease(VALOBJ(self->value[i*self->stride])) );
 endmethod
 
 defmethod(OBJ, ggetAt, T, Int)
   U32 i = Range_index(self2->value, self->size);
-  test_assert( i < self->size, "index out of range" );
+  ensure( i < self->size, "index out of range" );
 
   retmethod( gautoRelease(VALOBJ(self->value[i*self->stride])) );
 endmethod
@@ -65,7 +65,7 @@ endmethod
 
 defmethod(OBJ, gputAtIdx, T, (I32)idx, Object)
   U32 i = Range_index(idx, self->size);
-  test_assert( i < self->size, "index out of range" );
+  ensure( i < self->size, "index out of range" );
 
   VAL  val = TOVAL(_2);
   VAL *dst = self->value + i*self->stride;
@@ -77,7 +77,7 @@ endmethod
 
 defmethod(OBJ, gputAt, T, Int, Object)
   U32 i = Range_index(self2->value, self->size);
-  test_assert( i < self->size, "index out of range" );
+  ensure( i < self->size, "index out of range" );
 
   VAL  val = TOVAL(_3);
   VAL *dst = self->value + i*self->stride;
@@ -89,7 +89,7 @@ endmethod
 
 defmethod(OBJ, gputAt, T, Slice, Object)
   PRE
-    test_assert( Slice_first(self2) < self->size &&
+    ensure( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
 
   BODY
@@ -125,7 +125,7 @@ defmethod(OBJ, gputAt, T, IntVector, Object)
 
   while (idx != end) {
     U32 i = Range_index(*idx, dst_n);
-    test_assert( i < dst_n, "index out of range" );
+    ensure( i < dst_n, "index out of range" );
     dst[i*dst_s] = val;
     idx += idx_s;
   }
@@ -137,9 +137,9 @@ endmethod
 
 defmethod(OBJ, gputAt, T, Slice, T)
   PRE
-    test_assert( Slice_first(self2) < self->size &&
+    ensure( Slice_first(self2) < self->size &&
                  Slice_last (self2) < self->size, "slice out of range" );
-    test_assert( Slice_size (self2) <= self3->size, "source " TS " is too small" );
+    ensure( Slice_size (self2) <= self3->size, "source " TS " is too small" );
 
   BODY
     U32  dst_n = Slice_size  (self2);
@@ -160,7 +160,7 @@ endmethod
 
 defmethod(OBJ, gputAt, T, IntVector, T)
   PRE
-    test_assert( self2->size <= self3->size, "source " TS " is too small" );
+    ensure( self2->size <= self3->size, "source " TS " is too small" );
 
   BODY
     U32  dst_n = self->size;
@@ -175,7 +175,7 @@ defmethod(OBJ, gputAt, T, IntVector, T)
 
     while (idx != end) {
       U32 i = Range_index(*idx, dst_n);
-      test_assert( i < dst_n, "index out of range" );
+      ensure( i < dst_n, "index out of range" );
       dst[i*dst_s] = *src;
       src += src_s;
       idx += idx_s;
@@ -202,7 +202,7 @@ defmethod(I32, gintAt, T, Int)
 
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
@@ -221,7 +221,7 @@ defmethod(I64, glngAt, T, Int)
 
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
@@ -241,7 +241,7 @@ defmethod(F64, gfltAt, T, Int)
 
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
@@ -261,7 +261,7 @@ defmethod(C64, gcpxAt, T, Int)
 
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
@@ -284,7 +284,7 @@ defmethod(OBJ, gputAt, T, Int, Char)
   
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
@@ -306,7 +306,7 @@ defmethod(OBJ, gputAt, T, Int, Short)
   
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
@@ -327,7 +327,7 @@ defmethod(OBJ, gputAt, T, Int, Int)
   
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
@@ -348,7 +348,7 @@ defmethod(OBJ, gputAt, T, Int, Long)
   
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
@@ -368,7 +368,7 @@ defmethod(OBJ, gputAt, T, Int, Float)
   
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE
@@ -388,7 +388,7 @@ defmethod(OBJ, gputAt, T, Int, Complex)
   
   PRE
     i = Range_index(self2->value, self->size);
-    test_assert( i < self->size, "index out of range" );
+    ensure( i < self->size, "index out of range" );
 
   BODY
     if (!COS_CONTRACT) // no PRE

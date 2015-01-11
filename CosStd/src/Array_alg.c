@@ -131,7 +131,7 @@ endmethod
 
 defmethod(OBJ, gpermute, Array, IntVector)
   PRE
-    test_assert( self->size == self2->size, "incompatible array sizes" );
+    ensure( self->size == self2->size, "incompatible array sizes" );
 
   BODY
     if (self->size < 2)
@@ -178,8 +178,8 @@ defmethod(OBJ, gpermute, Array, IntVector)
 
       CARRAY_DESTROY(buf);
       CARRAY_DESTROY(flg);
-      test_assert( iiir, "index out of range" );
-      test_assert(    0, "invalid cyclic permutation" );
+      ensure( iiir, "index out of range" );
+      ensure(    0, "invalid cyclic permutation" );
     }
 
     retmethod(_1);
@@ -312,7 +312,7 @@ defmethod(OBJ, gzipn, Array)
 
   // compute max of sizes
   while (src != end) {
-    test_assert( dyncast(Array, *src),
+    ensure( dyncast(Array, *src),
                  "invalid array element (should be an Array)" );
     U32 size = gsize(*src);
     if (size < max_size) max_size = size;
