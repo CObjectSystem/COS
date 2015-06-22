@@ -71,7 +71,7 @@ float_ipow(F64 v, I32 n)
     else         break;
   }
 
-  return v;
+  return a;
 }
 
 // ----- complex
@@ -103,7 +103,7 @@ complex_ipow(C64 v, I32 n)
     else         break;
   }
 
-  return v;
+  return a;
 }
 
 // ----- absolute, conjugate and argument
