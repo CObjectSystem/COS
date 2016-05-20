@@ -75,9 +75,9 @@ include $(cos)/epilogue
 .PHONY: bootstrap
 
 bootstrap: $(OSNAME)/bin/coscmt$(BINEXT)
-	$_ cp -fP bin/cosgen$(BINEXT) $(dir $<)
-	$_ cp -fP bin/cosprp$(BINEXT) $(dir $<)
-	$_ cp -fP bin/cossym$(BINEXT) $(dir $<)
+	$_ cp -fP bin/cosgen $(dir $<)
+	$_ cp -fP bin/cosprp $(dir $<)
+	$_ cp -fP bin/cossym $(dir $<)
 
 $(OSNAME)/bin/coscmt$(BINEXT): CCFLAGS := $(CCFLAGS)
 $(OSNAME)/bin/coscmt$(BINEXT): tools/src/coscmt.c
