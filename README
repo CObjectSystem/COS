@@ -124,10 +124,8 @@ Tested platforms:
 -----------------
 
 # Systems & Architectures
-Linux Ubuntu 8.04, 8.10, 9.04, 9.10 (Debian) on i386   (32-bit) Core2 Duo
-Linux Ubuntu 8.04, 8.10, 9.04, 9.10 (Debian) on x86_64 (64-bit) Core2 Duo
-Linux SLC 4.0, 5.0 (RedHat) on x86_64 (64-bit) Quad Xeon
-Mac OS X Leopard (Darwin) on x86_64 (64-bit) Core2 Duo
+Linux Ubuntu from 8.04 to 12.04 on i386 and x86_64 multicore
+Mac OSX from Leopard to El Capitan on x86_64 multicore
 
 # Compilers
 gcc from 3.2.3 to 4.8.5
