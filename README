@@ -1,52 +1,67 @@
 #
 #  C Object System
-#  Copyright 2007+ Laurent Deniau <laurent.deniau@gmail.com>
+#  Copyright 2007+ Laurent Deniau <laurent.deniau at gmail dot com>
 #
 
 The motivation to develop the C Object System (COS) on top of the C language may
 not be obvious. While many new languages appear each year with new syntax and
 little new concepts, I prefer to try to lift C up to the level of other high
-level languages. C is portable, efficient, widely available and standardized.
+level languages. C is portable, efficient, widely available and standardised.
 This is probably why it is also the reference for other languages when memory
 and speed efficiency matter and why most languages have a Foreign Function
 Interface to C. Still, many virtual machines, interpreters, compilers or
 operating systems are written in C. If one often blame C to be a low level
 language similar to a super assembler, it should be worthwhile to raise C to the
-level of the other high level OO languages and beyond. This is the aim of the C
-Object System entirely written in ISO C.
+level of the other high level Object Oriented languages and beyond. This is the
+aim of COS, itself entirely written in ISO C.
 
-The C Object System has about 7,000 SLOC and fulfills very well the five
-principles it is aiming: simplicity, flexibility, extensibility, efficiency and
-portability. It is available on GitHub and described in these papers DLS'09
-[size=420kB] and OOPSLA'09 [size=992kB]. It is strongly inspired from CLOS and
-Objective-C and to a lesser extend by Cecil, Dylan, Haskell, Python, Slate and
-SmallTalk. It tries to keep minimal the available concepts for the sake of
-simplicity and flexibility: uniform object oriented programming including open
-classes, metaclasses, property metaclasses, generics, multimethods, delegation,
-ownership, properties, exceptions, contracts and closures.
+COS uses the C99 preprocessor to parse its DSL (Domain Specific Language)
+embedded in C files and to generate pure C89 code on-the-fly during the
+translation phases of C compilers (increase compile time by ~30%), using its
+advanced framework of C99 macros. The design and the DSL of COS are strongly
+inspired by Objective-C and CLOS (Common Lisp Object System), one of the most
+flexible object model ever developed, and to some lesser extend by Cecil, Dylan,
+Haskell, Python, Slate and SmallTalk. Contrary to CLOS, COS enforces strong
+encapsulation and separation of concerns through its open object model, which
+allows to use and to extend COS components (e.g. classes) defined in shared
+libraries without having the source code (see papers).
+
+The core of COS is only 7,000 SLOC and fulfils very well the five principles it
+aims: simplicity, flexibility, extensibility, efficiency and portability. It is
+available on GitHub and described in DLS'09 and OOPSLA'09 papers, and a
+presentation available in the doc directory. It tries to keep minimal the
+available concepts for the sake of simplicity and flexibility: uniform object
+model, open classes, metaclasses, property metaclasses, generics, multimethods,
+delegation, ownership, properties, exceptions, contracts and closures.
 
 COS design is tuned to provide efficient portable implementation of these
-concepts, specially dynamic message dispatch (x1.7-x2.3 slower than an indirect
-function call and about x1.2-x1.5 faster than Objective-C) as well as generic
-message forwarding (as fast as message dispatch and about x40-x80 faster than
-Objective-C). On top of these concepts, it is easy to implement high order
-messages, class-predicate dispatch, multiple inheritance, dynamic inheritance,
-dynamic classes, adaptive object model, reflection and advanced memory
-management (some of them are described in the papers). It also simplifies the
-programming of multi-agent systems, distributed systems or adaptive systems. COS
-achieves the principles of simplicity, flexibility and extensibility as well as
-existing mainstream scripting languages (e.g. PHP, Python, Ruby, Lua, SmallTalk)
-while keeping the efficiency and the portability in the range of C.
-Nevertheless, COS is compliant with POSIX threads and requires a (moderately
-compliant) C99 compiler.
+concepts, especially for its two key features: dynamic message dispatch
+supporting multimethods (i.e. many receivers) as well as generic message
+forwarding (i.e. delegation without limitations). COS message dispatch is
+x1.7-x2.3 slower than indirect function call (called through pointers) and about
+x1.2-x1.5 faster than Objective-C message dispatch. COS message forwarding is as
+fast as message dispatch and about x40-x80 faster than Objective-C message
+forwarding, which has strong limitations on the returned values. On top of these
+two efficient concepts, it is easy to implement high order messages, class-
+predicate dispatch, multiple inheritance, dynamic inheritance, dynamic classes,
+adaptive object model, reflection and advanced memory management (some of them
+are described in the papers).
+
+COS achieves the principles of simplicity, flexibility and extensibility as well
+as existing mainstream scripting languages (e.g. PHP, Python, Ruby, Lua,
+SmallTalk) while keeping the efficiency and the portability in the range of C.
+It can be used as both a dynamically or a statically typed programming language
+(see fast sorting of heterogeneous Array for an example of mixed use). COS is
+also designed for parallelisation, and it is compliant with TLS (Thread Local
+Storage), OpenMP and POSIX threads. Its minimal requirement is a C99
+preprocessor and a C89 compiler.
 
 Project information:
 --------------------
 
-  - web page: http:/cern.ch/laurent.deniau/cos.html
-  - web site: http://github.com/CObjectSystem
-  - contact : laurent.deniau@gmail.com
-  - license : http://www.apache.org/licenses/LICENSE-2.0
+  - web site : http://github.com/CObjectSystem
+  - license  : http://www.apache.org/licenses/LICENSE-2.0
+  - contact  : laurent.deniau at gmail dot com
 
 Documentation:
 --------------
@@ -58,6 +73,9 @@ or after installation to
 $(PREFIX)/$(DOCDIR)/cos/
 
 or on arXiv.org
+
+Wiki on CLOS:
+http://en.wikipedia.org/wiki/Common_Lisp_Object_System
 
 Makefile examples:
 ------------------
@@ -112,10 +130,9 @@ Linux SLC 4.0, 5.0 (RedHat) on x86_64 (64-bit) Quad Xeon
 Mac OS X Leopard (Darwin) on x86_64 (64-bit) Core2 Duo
 
 # Compilers
-gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2, 4.3.3
+gcc from 3.2.3 to 4.8.5
 
 Other available platforms (untested):
 -------------------------------------
 SunOS + gcc
 FreeBSD + gcc
-
