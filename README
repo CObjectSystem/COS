@@ -17,17 +17,17 @@
 #  limitations under the License.
 #
 
-The motivation to develop the C Object System (COS) on top of the C language may not
-be obvious. While many new languages appear each year with new syntax and little
-new concepts, I prefer to try to lift C up to the level of other high level
-languages. C is portable, efficient, widely available and standardized. This is
-probably why it is also the reference for other languages when memory and speed
-efficiency matter and why most languages have a Foreign Function Interface to C.
-Still, many virtual machines, interpreters, compilers or operating systems are
-written in C. If one often blame C to be a low level language similar to a super
-assembler, it should be worthwhile to raise C to the level of the other high
-level OO languages and beyond. This is the aim of the C Object System entirely
-written in ISO C.
+The motivation to develop the C Object System (COS) on top of the C language may
+not be obvious. While many new languages appear each year with new syntax and
+little new concepts, I prefer to try to lift C up to the level of other high
+level languages. C is portable, efficient, widely available and standardized.
+This is probably why it is also the reference for other languages when memory
+and speed efficiency matter and why most languages have a Foreign Function
+Interface to C. Still, many virtual machines, interpreters, compilers or
+operating systems are written in C. If one often blame C to be a low level
+language similar to a super assembler, it should be worthwhile to raise C to the
+level of the other high level OO languages and beyond. This is the aim of the C
+Object System entirely written in ISO C.
 
 The C Object System has about 7,000 SLOC and fulfills very well the five
 principles it is aiming: simplicity, flexibility, extensibility, efficiency and
