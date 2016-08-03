@@ -17,14 +17,14 @@ aim of COS, itself entirely written in ISO C.
 
 COS uses the C99 preprocessor to parse its DSL (Domain Specific Language)
 embedded in C files and to generate pure C89 code on-the-fly during the
-translation phases of C compilers (increase compile time by ~30%), using its
-advanced framework of C99 macros. The design and the DSL of COS are strongly
-inspired by Objective-C and CLOS (Common Lisp Object System), one of the most
-flexible object model ever developed, and to some lesser extend by Cecil, Dylan,
-Haskell, Python, Slate and SmallTalk. Contrary to CLOS, COS enforces strong
-encapsulation and separation of concerns through its open object model, which
-allows to use and to extend COS components (e.g. classes) defined in shared
-libraries without having the source code (see papers).
+translation phases of C compilers, using its advanced framework of C99 macros.
+The design and the DSL of COS are strongly inspired by Objective-C and CLOS
+(Common Lisp Object System), one of the most flexible object model ever
+developed, and to some lesser extend by Cecil, Dylan, Haskell, Python, Slate and
+SmallTalk. Contrary to CLOS, COS enforces strong encapsulation and separation of
+concerns through its open object model, which allows to use and to extend COS
+components (e.g. classes) defined in shared libraries without having the source
+code (see papers).
 
 The core of COS is only 7,000 SLOC and fulfils very well the five principles it
 aims: simplicity, flexibility, extensibility, efficiency and portability. It is
