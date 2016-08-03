@@ -91,9 +91,9 @@ INSEXCMD := $(call rest,$(addprefix -o -name ,$(INSEXPAT) $(insexpat)))
 # standard tools
 #
 COSBIN   := $(call mkpath,$(wildcard $(COSDIR)/../../$(OSNAME)/bin))
-COSSYM    = $(if $(COSBIN),$(COSBIN)/)cossym$(BINEXT)
-COSGEN    = $(if $(COSBIN),$(COSBIN)/)cosgen$(BINEXT)
-COSPRP    = $(if $(COSBIN),$(COSBIN)/)cosprp$(BINEXT)
+COSSYM    = $(if $(COSBIN),$(COSBIN)/)cossym
+COSGEN    = $(if $(COSBIN),$(COSBIN)/)cosgen
+COSPRP    = $(if $(COSBIN),$(COSBIN)/)cosprp
 COSCMT    = $(if $(COSBIN),$(COSBIN)/)coscmt$(BINEXT)
 
 #
