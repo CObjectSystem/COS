@@ -126,6 +126,7 @@ Tested platforms:
 # Systems & Architectures
 Linux Ubuntu from 8.04 to 12.04 on i386 and x86_64 multicore
 Mac OSX from Leopard to El Capitan on x86_64 multicore
+Windows from 7 to 10 on x86_64 multicore using MSys2 (mingw64)
 
 # Compilers
 gcc from 3.2.3 to 4.8.5
