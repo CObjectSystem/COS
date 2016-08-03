@@ -1,15 +1,15 @@
 #
 #  C Object System
 #  COS README
-# 
+#
 #  Copyright 2007+ Laurent Deniau <laurent.deniau@gmail.com>
-# 
+#
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
 #  You may obtain a copy of the License at
 #
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 #  Unless required by applicable law or agreed to in writing, software
 #  distributed under the License is distributed on an "AS IS" BASIS,
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,49 @@
 #  limitations under the License.
 #
 
-*** IMPORTANT: The C Object System requires GNU make 3.80 or higher ***
+The motivation to develop the C Object System (COS) on top of the C language may not
+be obvious. While many new languages appear each year with new syntax and little
+new concepts, I prefer to try to lift C up to the level of other high level
+languages. C is portable, efficient, widely available and standardized. This is
+probably why it is also the reference for other languages when memory and speed
+efficiency matter and why most languages have a Foreign Function Interface to C.
+Still, many virtual machines, interpreters, compilers or operating systems are
+written in C. If one often blame C to be a low level language similar to a super
+assembler, it should be worthwhile to raise C to the level of the other high
+level OO languages and beyond. This is the aim of the C Object System entirely
+written in ISO C.
+
+The C Object System has about 7,000 SLOC and fulfills very well the five
+principles it is aiming: simplicity, flexibility, extensibility, efficiency and
+portability. It is available on GitHub and described in these papers DLS'09
+[size=420kB] and OOPSLA'09 [size=992kB]. It is strongly inspired from CLOS and
+Objective-C and to a lesser extend by Cecil, Dylan, Haskell, Python, Slate and
+SmallTalk. It tries to keep minimal the available concepts for the sake of
+simplicity and flexibility: uniform object oriented programming including open
+classes, metaclasses, property metaclasses, generics, multimethods, delegation,
+ownership, properties, exceptions, contracts and closures.
+
+COS design is tuned to provide efficient portable implementation of these
+concepts, specially dynamic message dispatch (x1.7-x2.3 slower than an indirect
+function call and about x1.2-x1.5 faster than Objective-C) as well as generic
+message forwarding (as fast as message dispatch and about x40-x80 faster than
+Objective-C). On top of these concepts, it is easy to implement high order
+messages, class-predicate dispatch, multiple inheritance, dynamic inheritance,
+dynamic classes, adaptive object model, reflection and advanced memory
+management (some of them are described in the papers). It also simplifies the
+programming of multi-agent systems, distributed systems or adaptive systems. COS
+achieves the principles of simplicity, flexibility and extensibility as well as
+existing mainstream scripting languages (e.g. PHP, Python, Ruby, Lua, SmallTalk)
+while keeping the efficiency and the portability in the range of C.
+Nevertheless, COS is compliant with POSIX threads and requires a (moderately
+compliant) C99 compiler.
+
+Project information:
+--------------------
+
+  - web page: http:/cern.ch/laurent.deniau/cos.html
+  - web site: http://github.com/CObjectSystem
+  - contact : laurent.deniau@gmail.com
 
 Documentation:
 --------------
@@ -29,13 +71,6 @@ or after installation to
 $(PREFIX)/$(DOCDIR)/cos/
 
 or on arXiv.org
-
-Project information:
---------------------
-
-  - web page: http:/cern.ch/laurent.deniau/cos.html
-  - web site: http:/sf.net/projects/cos
-  - contact : laurent.deniau@cern.ch
 
 Makefile examples:
 ------------------
