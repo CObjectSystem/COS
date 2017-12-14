@@ -20,17 +20,10 @@
 #include <cos/Object.h>
 
 #include <cos/gen/object.h>
-
+#include <stdio.h>
 // ----- root of most common classes
 
 makclass(Object, Any);
-
-// ----- clone
-
-defalias (OBJ, (gcopy)gclone, Object);
-defmethod(OBJ,  gcopy       , Object)
-  retmethod( gnewWith(gclass(_1), _1) );
-endmethod
 
 // ----- new
 

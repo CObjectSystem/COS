@@ -38,7 +38,7 @@ useclass(ExBadAlloc, ExBadMessage, ExOverflow);
 defmethod(OBJ, ggetAt, Any, mP_class)
   retmethod(gclass(_1));
 endmethod
-   
+
 // ----- allocator
 
 defmethod(OBJ, galloc, mAny)
@@ -56,13 +56,13 @@ endmethod
 defmethod(OBJ, gallocWithSize, mAny, (size_t)extra)
   size_t size = self->isz + extra;
   struct Any *obj;
-  
+
   if (size - extra != self->isz)
     THROW(gnewWithStr(ExOverflow, "extra size is too large"));
-  
+
   if (!(obj = malloc(size)))
     THROW(ExBadAlloc); // throw the class (no allocation)
-  
+
   obj->_id = cos_class_id(self);
   obj->_rc = COS_RC_UNIT;
 
@@ -73,6 +73,13 @@ endmethod
 
 defmethod(void, gdealloc, Any)
   free(_1);
+endmethod
+
+// ----- clone
+
+defalias (OBJ, (gcopy)gclone, Any);
+defmethod(OBJ,  gcopy       , Any)
+  retmethod( ginitWith(galloc(gclass(_1)), _1) );
 endmethod
 
 // ----- ownership
