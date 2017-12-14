@@ -32,7 +32,7 @@
   Purpose:
     provide fast memory allocator per-thread.
     allocated memory can be used-by/moved-to any thread (global allocator).
- 
+
   Information:
   - parameters ending with an underscope can be null.
   - cos_mem_free does not free the memory, it just returns it to the pool.
@@ -104,7 +104,7 @@ struct cos_mem_slot_ {
 enum {
   cos_mem_node_size_ = offsetof(union cos_mem_node_, used.data),
   cos_mem_slot_size_ = sizeof(struct cos_mem_slot_),
-  cos_mem_slot_max_  = (1<<16)/cos_mem_slot_size_, // max pool size:     ~64kB/thread                  
+  cos_mem_slot_max_  = (1<<16)/cos_mem_slot_size_, // max pool size:     ~64kB/thread
 };
 
 // memory pool
@@ -258,7 +258,7 @@ void cos_mem_free_n (void* ptr_[], int n)
 {
   if (n > 0) {
     unsigned slot = cos_mem_get_base_(ptr_[n-1])->used.slot;
-    
+
     if (slot < cos_mem_slot_max_) {
       struct cos_mem_pool_ *restrict pool = &cos_mem_pool_;
       struct cos_mem_slot_ *restrict pptr = pool->slot+slot;
