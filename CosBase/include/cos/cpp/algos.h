@@ -64,7 +64,7 @@
         COS_PP_RES_(COS_PP_EVAL(COS_PP_LEN(T1), \
           ((),(COS_PP_ID T1,),(COS_PP_ID T2,),(COS_PP_ID T3,),F),COS_PP_MAP3_0))
 
-// flatten tuple T to sequence using s as separator, i.e. (a,b,c) -> a b c
+// flatten tuple T to sequence using space as separator, i.e. (a,b,c) -> a b c
 #define COS_PP_SEP(T) \
         COS_PP_FOLDL(T,,COS_PP_PAIR)
 
