@@ -25,7 +25,7 @@ COS core generates code conform to ISO C89 but it requires a ISO C99 preprocesso
 CosBase (core) can be compiled with a standalone C99 preprocessor and a C89 compiler.
 
 CosStd and other modules require a C99 compiler or a compiler which supports at least
-  - compound litterals (automatic constructors)
+  - compound literals (automatic constructors)
   - flexible arrays (some class cluster definition like Array)
   - 64 bits integers on non 64 bits architectures (class Long)
   - complex numbers (class Complex)
