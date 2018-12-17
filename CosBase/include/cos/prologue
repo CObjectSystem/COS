@@ -98,7 +98,7 @@ endif
 
 # set command echo
 _ := $(if $(call eq,$(SHOW),yes),,@)
-E := $(if $(call eq,$(SHOW),yes),@ \#,@ echo)
+E := $(if $(call eq,$(SHOW),yes),@ echo '\#',@ echo)
 
 # debug
 ifneq ($(SHOW),yes)
