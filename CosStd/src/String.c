@@ -37,7 +37,7 @@ makclass(StringN, String);
 
 // -----
 
-useclass(String, ExBadAlloc, ExOverflow);
+useclass(String, ExOverflow);
 
 // --- getters
 

@@ -42,7 +42,7 @@ makclass(OutputInputFile, OutputFile);
 // -----
 
 useclass(InputFile, OutputFile, InputOutputFile, OutputInputFile);
-useclass(ExBadStream, ExBadAlloc, AutoRelease, Array, String);
+useclass(ExBadStream, String);
 
 // -----
 
