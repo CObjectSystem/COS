@@ -33,7 +33,7 @@
 
 // -----
 
-useclass(String, View, Array, ExBadAlloc);
+useclass(String, View, Array);
 useclass(Lesser,Equal,Greater);
 
 // ----- equality
