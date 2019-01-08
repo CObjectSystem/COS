@@ -41,8 +41,8 @@ makclass(OutputInputFile, OutputFile);
 
 // -----
 
-useclass(InputFile, OutputFile, InputOutputFile, OutputInputFile);
-useclass(ExBadStream, String);
+useclass(InputFile, OutputFile);
+useclass(ExBadStream);
 
 // -----
 
