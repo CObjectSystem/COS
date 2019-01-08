@@ -48,11 +48,12 @@ Tested platforms:
 # System & Architectures
 Linux Ubuntu 8.04, 8.10, 9.04, 9.10 (Debian) on i386   (32-bit) Core2 Duo
 Linux Ubuntu 8.04, 8.10, 9.04, 9.10 (Debian) on x86_64 (64-bit) Core2 Duo
+Linux Debian 8.11 on x86_64 (64-bit) Intel 8-core Xeon
 Linux SLC 4.0, 5.0 (RedHat) on x86_64 (64-bit) Quad Xeon
 Mac OS X Leopard (Darwin) on x86_64 (64-bit) Core2 Duo
 
 # Compilers
-gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2, 4.3.3
+gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2, 4.3.3, 7.2.0
 
 Other available platforms (untested):
 -------------------------------------
