@@ -670,6 +670,7 @@ sym_init(void)
       case cos_tag_pclass : ++n_pcl; pcl_stinit((void*)tbl_sym[t][s]); break;
       case cos_tag_generic: ++n_gen; gen_stinit((void*)tbl_sym[t][s]); break;
       case cos_tag_alias  :          als_stinit((void*)tbl_sym[t][s]);
+      /* intentional fall through */
       case cos_tag_method : ++n_mth; break;
       case cos_tag_docstr : ++n_doc; break;
       default: cos_abort("invalid COS symbol");
@@ -702,12 +703,15 @@ sym_init(void)
         if (sym.bhv[i]) {
           switch (bhv->Object.Any._rc) {
           case cos_tag_class :
+          /* intentional fall through */
           case cos_tag_pclass:
+          /* intentional fall through */
           case cos_tag_mclass: {
             struct Class *cls = CAST(struct Class*, bhv);
             cos_abort("class '%s' at (%s,%d) slot %u already assigned",
                       cls_name(cls), cls_file(cls), cls_line(cls), i);
           }
+          /* intentional fall through */
           case cos_tag_generic: {
             struct Generic *gen = CAST(struct Generic*, bhv);
             cos_abort("generic '%s' at (%s,%d) slot %u already assigned",
