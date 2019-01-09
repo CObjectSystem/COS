@@ -95,6 +95,7 @@ remove_cmt(FILE *in , FILE *out)
                  if (c == '/') { skip_line(in); break; }
                  if (c == '*') { skip_cmt (in); break; }
                  fputc('/', out);
+      /* intentional fall through */
       default  : fputc(c  , out);
     }
   }

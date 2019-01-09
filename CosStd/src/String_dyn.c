@@ -36,7 +36,7 @@ makclass(StringDyn, StringFix);
 
 // -----
 
-useclass(String, StringDyn, ExBadAlloc, ExOverflow);
+useclass(StringDyn, ExBadAlloc, ExOverflow);
 
 // ----- getter
 
