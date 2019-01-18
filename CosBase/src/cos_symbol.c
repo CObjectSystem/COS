@@ -907,6 +907,7 @@ cos_deinit(void)
     t1 = clock();
     deinit_duration = (t1-t0)/CLOCKS_PER_SEC;
 
+    cos_functor_clearContext();
     cos_method_clearCaches();
   }
 }
