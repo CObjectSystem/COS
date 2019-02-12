@@ -132,7 +132,7 @@ Mac OSX from Leopard to El Capitan on x86_64 multicore
 Windows from 7 to 10 on x86_64 multicore using MSys2 (mingw64)
 
 # Compilers
-gcc from 3.2.3 to 4.8.5 and 7.2.0
+gcc from 3.2.3 to 4.8.5, 7.2.0, and 8.2.0
 
 Other available platforms (untested):
 -------------------------------------

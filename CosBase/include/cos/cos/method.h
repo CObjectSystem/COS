@@ -369,7 +369,7 @@ static void COS_MTH_MNAME(COS_FCT_NAME(NAME,CS),TAG,T) \
   /* indirect invocation, normal */ \
    _cos_mth_nxt_g(__VA_ARGS__,_cos_mth_nxt_sel,_ret,_cos_mth_nxt_p) : \
   /* direct invocation, if GUM */ \
-   ((_cos_mth_nxt_d)_cos_mth_nxt_p)(_sel,__VA_ARGS__,_arg,_ret)))
+   ((_cos_mth_nxt_d)(void (*)(void))_cos_mth_nxt_p)(_sel,__VA_ARGS__,_arg,_ret)))
 
 #define COS_MTH_NXT_P \
   /* next_method check */ \
