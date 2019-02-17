@@ -38,7 +38,7 @@ useclass(ArrayView, ArraySubView, ExBadRange);
 // ----- initializer (weaker than constructors: no retain)
 
 defmethod(OBJ, ginitWith2, ArrayView, Array, Slice) // array view
-  if ( Slice_first(self3) < self2->size && Slice_last(self3) < self2->size) {
+  if ( Slice_first(self3) >= self2->size || Slice_last(self3) >= self2->size) {
     self->ref = 0;
     THROW( gnewWithStr(ExBadRange, "slice out of range") );
   }
@@ -58,7 +58,7 @@ defmethod(OBJ, ginitWith2, ArrayView, Array, Range) // array view
 endmethod
 
 defmethod(OBJ, ginitWith2, ArraySubView, Array, Slice) // array subview
-  if ( Slice_first(self3) < self2->size && Slice_last(self3) < self2->size) {
+  if ( Slice_first(self3) >= self2->size || Slice_last(self3) >= self2->size) {
     self->ArrayView.ref = 0;
     THROW( gnewWithStr(ExBadRange, "slice out of range") );
   }
