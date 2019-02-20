@@ -141,7 +141,7 @@ defmethod(OBJ, gputAt, Array, IntVector, Object)
   while (idx != end) {
     U32 i = Range_index(*idx, dst_n);
     ensure( i < dst_n, "index out of range" );
-    assign(dst + i*dst_s, _3);
+    assign(dst + (ptrdiff_t)i*dst_s, _3);
     idx += idx_s;
   }
   
@@ -204,7 +204,7 @@ BODY
   while (idx != end) {
     U32 i = Range_index(*idx, dst_n);
     ensure( i < dst_n, "index out of range" );
-    assign(dst + i*dst_s, *src);
+    assign(dst + (ptrdiff_t)i*dst_s, *src);
     src += src_s;
     idx += idx_s;
   }

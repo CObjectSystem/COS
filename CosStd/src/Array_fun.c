@@ -40,7 +40,7 @@ defmethod(void, gforeachWhile, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
 
   while (val != end && geval(_2, *val) != Nil)
     val += val_s;
@@ -50,7 +50,7 @@ defmethod(void, gforeach, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
 
   while (val != end) {
     geval(_2, *val);
@@ -64,7 +64,7 @@ defmethod(void, gforeach2, Array, Array, Functor)
   OBJ *val    = self->object;
   I32  val2_s = self2->stride;
   OBJ *val2   = self2->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
 
   while (val != end) {
     geval(_3, *val, *val2);
@@ -82,7 +82,7 @@ defmethod(void, gforeach3, Array, Array, Array, Functor)
   OBJ *val2   = self2->object;
   I32  val3_s = self3->stride;
   OBJ *val3   = self3->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
 
   while (val != end) {
     geval(_4, *val, *val2, *val3);
@@ -104,7 +104,7 @@ defmethod(void, gforeach4, Array, Array, Array, Array, Functor)
   OBJ *val3   = self3->object;
   I32  val4_s = self4->stride;
   OBJ *val4   = self4->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
 
   while (val != end) {
     geval(_5, *val, *val2, *val3, *val4);
@@ -121,7 +121,7 @@ defmethod(OBJ, gapplyWhile, Functor, Array)
   U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res, old;
 
   while (val != end) {
@@ -139,7 +139,7 @@ defmethod(OBJ, gapplyIf, Functor, Array)
   U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res, old;
 
   while (val != end) {
@@ -156,7 +156,7 @@ defmethod(OBJ, gapply, Functor, Array)
   U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res, old;
 
   while (val != end) {
@@ -175,7 +175,7 @@ defmethod(OBJ, gapply2, Functor, Array, Array)
   OBJ *val    = self2->object;
   I32  val2_s = self3->stride;
   OBJ *val2   = self3->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
   OBJ  res, old;
 
   while (val != end) {
@@ -198,7 +198,7 @@ defmethod(OBJ, gapply3, Functor, Array, Array, Array)
   OBJ *val2   = self3->object;
   I32  val3_s = self4->stride;
   OBJ *val3   = self4->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
   OBJ  res, old;
 
   while (val != end) {
@@ -225,7 +225,7 @@ defmethod(OBJ, gapply4, Functor, Array, Array, Array, Array)
   OBJ *val3   = self4->object;
   I32  val4_s = self5->stride;
   OBJ *val4   = self5->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
   OBJ  res, old;
 
   while (val != end) {
@@ -247,7 +247,7 @@ defmethod(OBJ, gmapWhile, Functor, Array)
   U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
@@ -270,7 +270,7 @@ defmethod(OBJ, gmapIf, Functor, Array)
   U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
@@ -293,7 +293,7 @@ defmethod(OBJ, gmap, Functor, Array)
   U32  size  = self2->size;
   I32  val_s = self2->stride;
   OBJ *val   = self2->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res;
 
   struct Array* arr = Array_alloc(size);
@@ -317,7 +317,7 @@ defmethod(OBJ, gmap2, Functor, Array, Array)
   OBJ *val    = self2->object;
   I32  val2_s = self3->stride;
   OBJ *val2   = self3->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
   OBJ  res;
 
   struct Array* arr = Array_alloc(size);
@@ -345,7 +345,7 @@ defmethod(OBJ, gmap3, Functor, Array, Array, Array)
   OBJ *val2   = self3->object;
   I32  val3_s = self4->stride;
   OBJ *val3   = self4->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
   OBJ  res;
 
   struct Array* arr = Array_alloc(size);
@@ -377,7 +377,7 @@ defmethod(OBJ, gmap4, Functor, Array, Array, Array, Array)
   OBJ *val3   = self4->object;
   I32  val4_s = self5->stride;
   OBJ *val4   = self5->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
   OBJ  res;
 
   struct Array* arr = Array_alloc(size);
@@ -404,7 +404,7 @@ defmethod(OBJ, gselect, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
   struct Array* arr = dbgcast(Array, _arr);
@@ -425,7 +425,7 @@ defmethod(OBJ, greject, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
   struct Array* arr = dbgcast(Array, _arr);
@@ -446,7 +446,7 @@ defmethod(OBJ, gselectWhile, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
   struct Array* arr = dbgcast(Array, _arr);
@@ -468,7 +468,7 @@ defmethod(OBJ, grejectWhile, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
 
   OBJ _arr = gautoRelease(gnewWith(Array,aInt(size)));
   struct Array* arr = dbgcast(Array, _arr);
@@ -505,7 +505,7 @@ defmethod(OBJ, greduce, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = gautoRelease(gclone(*val));
   
   val += val_s;
@@ -522,7 +522,7 @@ defmethod(OBJ, greduce1, Array, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = _3;
   
   while (val != end) {
@@ -546,7 +546,7 @@ defmethod(OBJ, greduce2, Array, Functor, Object, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = _3;
 
   if (size) {
@@ -578,7 +578,7 @@ defmethod(OBJ, grreduce, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = gautoRelease(gclone(*(end-val_s)));
 
   end -= val_s;
@@ -595,7 +595,7 @@ defmethod(OBJ, grreduce1, Array, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = _3;
   
   while (val != end) {
@@ -621,7 +621,7 @@ defmethod(OBJ, grreduce2, Array, Functor, Object, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = _3;
 
   if (size) {
@@ -662,7 +662,7 @@ defmethod(OBJ, gaccumulate1, Array, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = _3;
 
   struct Array* arr = Array_alloc(size);
@@ -693,7 +693,7 @@ defmethod(OBJ, gaccumulate2, Array, Functor, Object, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = _3;
 
   struct Array* arr = Array_alloc(size);
@@ -740,7 +740,7 @@ defmethod(OBJ, graccumulate1, Array, Functor, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = _3;
 
   struct Array* arr = Array_alloc(size);
@@ -772,7 +772,7 @@ defmethod(OBJ, graccumulate2, Array, Functor, Object, Object)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res   = _3;
 
   struct Array* arr = Array_alloc(size);
@@ -804,7 +804,7 @@ defmethod(OBJ, gall, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
 
   while (val != end) {
     if (geval(_2, *val) != True)
@@ -819,7 +819,7 @@ defmethod(OBJ, gany, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
 
   while (val != end) {
     if (geval(_2, *val) == True)
@@ -834,7 +834,7 @@ defmethod(U32, gcount, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   U32  cnt   = 0;
 
   while (val != end) {
@@ -857,7 +857,7 @@ defmethod(OBJ, gunique, Array, Functor)
   OBJ *val   = self->object;
   U32 *dst_n = &arr->size;
   OBJ *dst   = arr->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
 
   if (val != end) {
     *dst = gretain(*val), ++*dst_n;
@@ -881,7 +881,7 @@ defmethod(OBJ, gsplit, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ *beg   = val;
 
   while (val != end) {
@@ -917,7 +917,7 @@ defmethod(OBJ, ggroup, Array, Functor)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
   OBJ  res;
 
   while (val != end) {
@@ -980,7 +980,7 @@ defmethod(OBJ, gdiff, Array, Collection, Functor)
   OBJ *val    = self->object;
   U32 *dst_n  = &arr->size;
   OBJ *dst    = arr->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
   OBJ  fun    = aFun(gfind, _2, aFun(geval2, _3, __2, __1));
 
   while (val != end) {
@@ -1003,7 +1003,7 @@ defmethod(OBJ, gmatch, Array, Collection, Functor)
   OBJ *val    = self->object;
   U32 *dst_n  = &arr->size;
   OBJ *dst    = arr->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
   OBJ  fun    = aLzy(_3);
   OBJ  res;
 
@@ -1029,7 +1029,7 @@ defmethod(OBJ, gintersect, Array, Collection, Functor)
   OBJ *val    = self->object;
   U32 *dst_n  = &arr->size;
   OBJ *dst    = arr->object;
-  OBJ *end    = val + val_s*size;
+  OBJ *end    = val + val_s*(ptrdiff_t)size;
   OBJ  fun    = aFun(gfind, _2, aFun(geval2, _3, __2, __1));
 
   while (val != end) {
@@ -1055,7 +1055,7 @@ findFun(OBJ *val, U32 val_n, I32 val_s, OBJ _2)
 
   // linear search
   if (res == False) {
-    OBJ *end = val + val_s*val_n;
+    OBJ *end = val + val_s*(ptrdiff_t)val_n;
 
     val += val_s;
     while (val != end) {
@@ -1073,10 +1073,10 @@ findFun(OBJ *val, U32 val_n, I32 val_s, OBJ _2)
 
     while (lo <= hi) {
       U32 i = (lo + hi) / 2;
-      res = geval(_2, val[i*val_s]);
+      res = geval(_2, val[(ptrdiff_t)i*val_s]);
 
       if (res == Equal)
-        return val + i*val_s; // found
+        return val + (ptrdiff_t)i*val_s; // found
 
       if (res == Lesser)
         hi = i-1;
@@ -1389,7 +1389,7 @@ defmethod(OBJ, gisSorted, Array, Functor)
 
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*(size-1);
+  OBJ *end   = val + val_s*(ptrdiff_t)(size-1);
   OBJ  res;
   
   while (val != end) {
