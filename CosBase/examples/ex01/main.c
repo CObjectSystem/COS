@@ -30,7 +30,7 @@ int main(void)
 
   gprint(strm, str1);
   gprint(strm, str2);
-    
+
   grelease(str1);
   grelease(str2);
   grelease(strm);

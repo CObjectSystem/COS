@@ -39,7 +39,7 @@ defmethod(OBJ, ginitWithStr, String, (STR)str)
   self->str = str_dup(str);
   if (!self->str)
     THROW(ExBadAlloc);
-  
+
   retmethod(_1);
 endmethod
 
