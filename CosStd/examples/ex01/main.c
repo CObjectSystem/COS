@@ -59,11 +59,11 @@ sum_rep(I32 n)
              grelease(pool);
   F64 t3   = clock();
 
-  printf("count [n] = %d [%d]\n" , x, n); 
-  printf("time init = %.2f sec\n", (t1-t0)/CLOCKS_PER_SEC); 
-  printf("time eval = %.2f sec\n", (t2-t1)/CLOCKS_PER_SEC); 
-  printf("time fini = %.2f sec\n", (t3-t2)/CLOCKS_PER_SEC); 
-  printf("time all  = %.2f sec\n", (t3-t0)/CLOCKS_PER_SEC); 
+  printf("count [n] = %d [%d]\n" , x, n);
+  printf("time init = %.2f sec\n", (t1-t0)/CLOCKS_PER_SEC);
+  printf("time eval = %.2f sec\n", (t2-t1)/CLOCKS_PER_SEC);
+  printf("time fini = %.2f sec\n", (t3-t2)/CLOCKS_PER_SEC);
+  printf("time all  = %.2f sec\n", (t3-t0)/CLOCKS_PER_SEC);
 }
 
 static void
@@ -81,17 +81,17 @@ sum_itr(I32 n)
              grelease(pool);
   F64 t3   = clock();
 
-  printf("count [n] = %d [%d]\n" , x, n); 
-  printf("time init = %.2f sec\n", (t1-t0)/CLOCKS_PER_SEC); 
-  printf("time eval = %.2f sec\n", (t2-t1)/CLOCKS_PER_SEC); 
-  printf("time fini = %.2f sec\n", (t3-t2)/CLOCKS_PER_SEC); 
-  printf("time all  = %.2f sec\n", (t3-t0)/CLOCKS_PER_SEC); 
+  printf("count [n] = %d [%d]\n" , x, n);
+  printf("time init = %.2f sec\n", (t1-t0)/CLOCKS_PER_SEC);
+  printf("time eval = %.2f sec\n", (t2-t1)/CLOCKS_PER_SEC);
+  printf("time fini = %.2f sec\n", (t3-t2)/CLOCKS_PER_SEC);
+  printf("time all  = %.2f sec\n", (t3-t0)/CLOCKS_PER_SEC);
 }
 
 static void
 sum_oop(I32 n)
 {
-  printf("*** object-oriented sum (repeat + foldl)\n"); 
+  printf("*** object-oriented sum (repeat + foldl)\n");
 
   OBJ pool = gnew(AutoRelease);
   OBJ ini  = gautoRelease(aInt(1));
@@ -103,11 +103,11 @@ sum_oop(I32 n)
              grelease(pool);
   F64 t3   = clock();
 
-  printf("count [n] = %d [%d]\n" , x, n); 
-  printf("time init = %.2f sec\n", (t1-t0)/CLOCKS_PER_SEC); 
-  printf("time eval = %.2f sec\n", (t2-t1)/CLOCKS_PER_SEC); 
-  printf("time fini = %.2f sec\n", (t3-t2)/CLOCKS_PER_SEC); 
-  printf("time all  = %.2f sec\n", (t3-t0)/CLOCKS_PER_SEC); 
+  printf("count [n] = %d [%d]\n" , x, n);
+  printf("time init = %.2f sec\n", (t1-t0)/CLOCKS_PER_SEC);
+  printf("time eval = %.2f sec\n", (t2-t1)/CLOCKS_PER_SEC);
+  printf("time fini = %.2f sec\n", (t3-t2)/CLOCKS_PER_SEC);
+  printf("time all  = %.2f sec\n", (t3-t0)/CLOCKS_PER_SEC);
 }
 
 int main(int argc, char *argv[])

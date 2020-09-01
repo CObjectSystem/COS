@@ -28,7 +28,7 @@ defmethod(OBJ, ginitWithStr, File, (STR)str)
   self->file = str ? fopen(str,"r+") : stdout;
   if (!self->file)
     test_errno(); // THROW
-  
+
   retmethod(_1);
 endmethod
 
