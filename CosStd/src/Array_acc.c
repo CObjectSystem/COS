@@ -49,10 +49,10 @@ endmethod
 
 defmethod(OBJ, ggetAtIdx, Array, (I32)idx)
   U32 i = Range_index(idx, self->size);
-  
+
   ensure( i < self->size, "index out of range" );
 
-  retmethod( self->object[i*self->stride] );
+  retmethod( self->object[(ptrdiff_t)i*self->stride] );
 endmethod
 
 defmethod(OBJ, ggetAt, Array, Int)
@@ -60,7 +60,7 @@ defmethod(OBJ, ggetAt, Array, Int)
 
   ensure( i < self->size, "index out of range" );
 
-  retmethod( self->object[i*self->stride] );
+  retmethod( self->object[(ptrdiff_t)i*self->stride] );
 endmethod
 
 defmethod(OBJ, ggetAt, Array, Slice)
@@ -87,7 +87,7 @@ defmethod(OBJ, gputAtIdx, Array, (I32)idx, Object)
   
   ensure( i < self->size, "index out of range" );
 
-  OBJ *dst = self->object + i*self->stride;
+  OBJ *dst = self->object + (ptrdiff_t)i*self->stride;
   assign(dst, _2);
     
   retmethod(_1);
@@ -98,7 +98,7 @@ defmethod(OBJ, gputAt, Array, Int, Object)
   
   ensure( i < self->size, "index out of range" );
 
-  OBJ *dst = self->object + i*self->stride;
+  OBJ *dst = self->object + (ptrdiff_t)i*self->stride;
   assign(dst, _3);
     
   retmethod(_1);
@@ -112,7 +112,7 @@ BODY
   U32  dst_n = Slice_size  (self2);
   I32  dst_s = Slice_stride(self2)*self->stride;
   OBJ *dst   = Slice_start (self2)*self->stride + self->object;
-  OBJ *end   = dst + dst_s*dst_n;
+  OBJ *end   = dst + dst_s*(ptrdiff_t)dst_n;
 
   while (dst != end) {
     assign(dst, _3);
@@ -136,12 +136,12 @@ defmethod(OBJ, gputAt, Array, IntVector, Object)
   U32  idx_n = self2->size;
   I32  idx_s = self2->stride;
   I32 *idx   = self2->value;
-  I32 *end   = idx + idx_s*idx_n;
+  I32 *end   = idx + idx_s*(ptrdiff_t)idx_n;
 
   while (idx != end) {
     U32 i = Range_index(*idx, dst_n);
     ensure( i < dst_n, "index out of range" );
-    assign(dst + i*dst_s, _3);
+    assign(dst + (ptrdiff_t)i*dst_s, _3);
     idx += idx_s;
   }
   
@@ -168,7 +168,7 @@ BODY
   OBJ *dst   = Slice_start (self2)*self->stride + self->object;
   I32  src_s = self3->stride;
   OBJ *src   = self3->object;
-  OBJ *end   = dst + dst_s*dst_n;
+  OBJ *end   = dst + dst_s*(ptrdiff_t)dst_n;
 
   while (dst != end) {
     assign(dst, *src);
@@ -199,12 +199,12 @@ BODY
   I32 *idx   = self2->value;
   I32  src_s = self3->stride;
   OBJ *src   = self3->object;
-  I32 *end   = idx + idx_s*idx_n;
+  I32 *end   = idx + idx_s*(ptrdiff_t)idx_n;
 
   while (idx != end) {
     U32 i = Range_index(*idx, dst_n);
     ensure( i < dst_n, "index out of range" );
-    assign(dst + i*dst_s, *src);
+    assign(dst + (ptrdiff_t)i*dst_s, *src);
     src += src_s;
     idx += idx_s;
   }

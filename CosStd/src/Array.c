@@ -283,7 +283,7 @@ defmethod(OBJ,  ginitWith2          , pmArray, Array, IntVector) // random seque
   while (dst != end) {
     U32 i = Range_index(*idx, val_n);
     ensure( i < val_n, "index out of range" );
-    *dst++ = gretain(val[i*val_s]), ++*dst_n;
+    *dst++ = gretain(val[(ptrdiff_t)i*val_s]), ++*dst_n;
     idx += idx_s;
   }
 
@@ -339,7 +339,7 @@ defmethod(void, ginvariant, Array, (STR)file, (int)line)
   U32  size  = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*size;
+  OBJ *end   = val + val_s*(ptrdiff_t)size;
 
   while (val != end && *val)
     val += val_s;

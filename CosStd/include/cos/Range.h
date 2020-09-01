@@ -88,7 +88,8 @@ endclass
 */
 static cos_inline U32
 Range_index(I32 index, U32 seq_size) {
-  return index + (index < 0) * seq_size;
+  // OK because signed=>unsigned cast and unsigned overflow are well defined:
+  return (U32)index + (index < 0) * seq_size;
 }
 
 /***********************************************************

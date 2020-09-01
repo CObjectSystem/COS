@@ -54,7 +54,7 @@ defmethod(OBJ, gisEqual, Array, Array)
   OBJ *val    = self->object;
   I32  val2_s = self2->stride;
   OBJ *val2   = self2->object;
-  OBJ *end    = val + val_s*val_n;
+  OBJ *end    = val + val_s*(ptrdiff_t)val_n;
   
   while (val != end) {
     if (gisEqual(*val,*val2) != True)
@@ -80,7 +80,7 @@ defmethod(OBJ, gcompare, Array, Array)
   OBJ *val    = self->object;
   I32  val2_s = self2->stride;
   OBJ *val2   = self2->object;
-  OBJ *end    = val + val_s*val_n;
+  OBJ *end    = val + val_s*(ptrdiff_t)val_n;
   OBJ  res;
 
   while (val != end) {
@@ -111,7 +111,7 @@ defmethod(OBJ, greverse, Array)
   U32  val_n = self->size;
   I32  val_s = self->stride;
   OBJ *val   = self->object;
-  OBJ *end   = val + val_s*(val_n-1);
+  OBJ *end   = val + val_s*(ptrdiff_t)(val_n-1);
 
   if (val_s > 0)
     while (val < end) {
@@ -155,7 +155,7 @@ defmethod(OBJ, gpermute, Array, IntVector)
     for (cur = buf; cur != end; cur++) {
       i = Range_index(*idx, size);
       if ( !(i < size && flg[i]) ) break;
-      *cur = val[i*val_s], flg[i] = 0;
+      *cur = val[(ptrdiff_t)i*val_s], flg[i] = 0;
        idx += idx_s;
     }
 
@@ -173,7 +173,7 @@ defmethod(OBJ, gpermute, Array, IntVector)
       while (cur != buf) {
         idx -= idx_s;
         i = Range_index(*idx, size);
-        val[i*val_s] = *--cur;
+        val[(ptrdiff_t)i*val_s] = *--cur;
       }
 
       CARRAY_DESTROY(buf);
@@ -450,7 +450,7 @@ findVal(OBJ *val, U32 val_n, I32 val_s, OBJ _2)
 {
   if (!val_n) return 0;
 
-  OBJ *end = val + val_s*val_n;
+  OBJ *end = val + val_s*(ptrdiff_t)val_n;
 
   while (val != end) {
     if (gisEqual(_2, *val) == True)
