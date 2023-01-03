@@ -41,67 +41,67 @@ struct Class*   cos_class_get(U32);
 struct Class*   cos_class_getWithStr(STR);
 struct Class*   cos_property_getWithStr(STR);
 
-BOOL cos_class_isSubclassOf   (const struct Class*,    const struct Class*);
-U32  cos_class_readProperties (const struct Class*,U32,const struct Class**,U32);
-U32  cos_class_writeProperties(const struct Class*,U32,const struct Class**,U32);
+BOOL  cos_class_isSubclassOf   (const struct Class*,    const struct Class*);
+U32   cos_class_readProperties (const struct Class*,U32,const struct Class**,U32);
+U32   cos_class_writeProperties(const struct Class*,U32,const struct Class**,U32);
 
-IMP1   cos_method_get1(SEL,U32);
-IMP2   cos_method_get2(SEL,U32,U32);
-IMP3   cos_method_get3(SEL,U32,U32,U32);
-IMP4   cos_method_get4(SEL,U32,U32,U32,U32);
-IMP5   cos_method_get5(SEL,U32,U32,U32,U32,U32);
-IMP1   cos_method_lookup1(SEL,U32);
-IMP2   cos_method_lookup2(SEL,U32,U32);
-IMP3   cos_method_lookup3(SEL,U32,U32,U32);
-IMP4   cos_method_lookup4(SEL,U32,U32,U32,U32);
-IMP5   cos_method_lookup5(SEL,U32,U32,U32,U32,U32);
+IMP1  cos_method_get1(SEL,U32);
+IMP2  cos_method_get2(SEL,U32,U32);
+IMP3  cos_method_get3(SEL,U32,U32,U32);
+IMP4  cos_method_get4(SEL,U32,U32,U32,U32);
+IMP5  cos_method_get5(SEL,U32,U32,U32,U32,U32);
+IMP1  cos_method_lookup1(SEL,U32);
+IMP2  cos_method_lookup2(SEL,U32,U32);
+IMP3  cos_method_lookup3(SEL,U32,U32,U32);
+IMP4  cos_method_lookup4(SEL,U32,U32,U32,U32);
+IMP5  cos_method_lookup5(SEL,U32,U32,U32,U32,U32);
 /* inlined functions (see cos/cos/dispatch.h)
-IMP1   cos_method_fastLookup1(SEL,U32);
-IMP2   cos_method_fastLookup2(SEL,U32,U32);
-IMP3   cos_method_fastLookup3(SEL,U32,U32,U32);
-IMP4   cos_method_fastLookup4(SEL,U32,U32,U32,U32);
-IMP5   cos_method_fastLookup5(SEL,U32,U32,U32,U32,U32);
-BOOL   cos_method_understand1(SEL,U32);
-BOOL   cos_method_understand2(SEL,U32,U32);
-BOOL   cos_method_understand3(SEL,U32,U32,U32);
-BOOL   cos_method_understand4(SEL,U32,U32,U32,U32);
-BOOL   cos_method_understand5(SEL,U32,U32,U32,U32,U32);
+IMP1  cos_method_fastLookup1(SEL,U32);
+IMP2  cos_method_fastLookup2(SEL,U32,U32);
+IMP3  cos_method_fastLookup3(SEL,U32,U32,U32);
+IMP4  cos_method_fastLookup4(SEL,U32,U32,U32,U32);
+IMP5  cos_method_fastLookup5(SEL,U32,U32,U32,U32,U32);
+BOOL  cos_method_understand1(SEL,U32);
+BOOL  cos_method_understand2(SEL,U32,U32);
+BOOL  cos_method_understand3(SEL,U32,U32,U32);
+BOOL  cos_method_understand4(SEL,U32,U32,U32,U32);
+BOOL  cos_method_understand5(SEL,U32,U32,U32,U32,U32);
 */
-char*  cos_method_name(const struct Method*,char*,U32);
-char*  cos_method_call(SEL,OBJ*,char*,U32);
-char*  cos_method_callName(const struct Method*,OBJ*,char*,U32);
-void (*cos_method_trace)(STR,int,BOOL,const struct Method*,OBJ*);
-void   cos_method_clearCache1(void);
-void   cos_method_clearCache2(void);
-void   cos_method_clearCache3(void);
-void   cos_method_clearCache4(void);
-void   cos_method_clearCache5(void);
-void   cos_method_clearCaches(void);
+char* cos_method_name(const struct Method*,char*,U32);
+char* cos_method_call(SEL,OBJ*,char*,U32);
+char* cos_method_callName(const struct Method*,OBJ*,char*,U32);
+void  cos_method_trace(STR,int,BOOL,const struct Method*,OBJ*);
+void  cos_method_clearCache1(void);
+void  cos_method_clearCache2(void);
+void  cos_method_clearCache3(void);
+void  cos_method_clearCache4(void);
+void  cos_method_clearCache5(void);
+void  cos_method_clearCaches(void);
 
-void   cos_contract_invariant1(OBJ,STR,int);
-void   cos_contract_invariant2(OBJ,OBJ,STR,int);
-void   cos_contract_invariant3(OBJ,OBJ,OBJ,STR,int);
-void   cos_contract_invariant4(OBJ,OBJ,OBJ,OBJ,STR,int);
-void   cos_contract_invariant5(OBJ,OBJ,OBJ,OBJ,OBJ,STR,int);
-int    cos_contract_setLevel  (int lvl); // return previous level
+void  cos_contract_invariant1(OBJ,STR,int);
+void  cos_contract_invariant2(OBJ,OBJ,STR,int);
+void  cos_contract_invariant3(OBJ,OBJ,OBJ,STR,int);
+void  cos_contract_invariant4(OBJ,OBJ,OBJ,OBJ,STR,int);
+void  cos_contract_invariant5(OBJ,OBJ,OBJ,OBJ,OBJ,STR,int);
+int   cos_contract_setLevel  (int lvl); // return previous level
 
-void   cos_exception_assert (STR,STR,int) __attribute__((__noreturn__));
-void   cos_exception_errno  (int,STR,int) __attribute__((__noreturn__));
-void   cos_exception_badcast(OBJ,const struct Class*,STR,int)
+void  cos_exception_assert (STR,STR,int) __attribute__((__noreturn__));
+void  cos_exception_errno  (int,STR,int) __attribute__((__noreturn__));
+void  cos_exception_badcast(OBJ,const struct Class*,STR,int)
                                           __attribute__((__noreturn__));
-void   cos_exception_throw  (OBJ,STR,int) __attribute__((__noreturn__));
-BOOL   cos_exception_catch  (OBJ,OBJ);
-BOOL   cos_exception_uncaught(void);
-void   cos_exception_initContext(struct cos_exception_context*);
-void   cos_exception_deinitContext(struct cos_exception_context*);
+void  cos_exception_throw  (OBJ,STR,int) __attribute__((__noreturn__));
+BOOL  cos_exception_catch  (OBJ,OBJ);
+BOOL  cos_exception_uncaught(void);
+void  cos_exception_initContext(struct cos_exception_context*);
+void  cos_exception_deinitContext(struct cos_exception_context*);
 
 cos_exception_handler cos_exception_setTerminate(cos_exception_handler);
 
-void   cos_functor_overflow(void);
-void   cos_functor_underflow(void) __attribute__((__noreturn__));
-void   cos_functor_clearContext(void);
+void  cos_functor_overflow(void);
+void  cos_functor_underflow(void) __attribute__((__noreturn__));
+void  cos_functor_clearContext(void);
 
-void   cos_module_load(STR*); // null terminated array of module names
+void  cos_module_load(STR*); // null terminated array of module names
 
 /* NOTE-INFO: loggers
    - prototype: void cos_xxx(STR fmt, ...);

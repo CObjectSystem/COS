@@ -1536,8 +1536,8 @@ cos_method_callName(const struct Method *mth, OBJ obj[], char *str, U32 sz)
   return str;
 }
 
-static void
-mth_trace(STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)
+void
+cos_method_trace(STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)
 {
   char buf[256];
 
@@ -1546,8 +1546,6 @@ mth_trace(STR file, int line, BOOL enter, const struct Method *mth, OBJ *obj)
   else
     cos_logmsg(COS_LOGMSG_TRALL,file,line,"<- %s",cos_method_name    (mth,    buf,sizeof buf));
 }
-
-void (*cos_method_trace)(STR,int,BOOL,const struct Method*,OBJ*) = mth_trace;
 
 void
 cos_symbol_showSummary(FILE *fp)
