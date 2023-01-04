@@ -184,10 +184,11 @@ Slice_addTo(struct Slice *s1, const struct Slice *s2) {
 static cos_inline struct Slice*
 Slice_fromRange(struct Slice *s, const struct Range *r, const U32 *size)
 {
-  if (size) // ask for normalization
-    r = Range_normalize(Range_copy(atRange(0), r), *size);
+  struct Range *r2 = Range_copy(atRange(0), r);
 
-  return Slice_init(s, Range_start(r), Range_size(r), Range_stride(r));
+  if (size) r2 = Range_normalize(r2, *size); // ask for normalization
+
+  return Slice_init(s, Range_start(r2), Range_size(r2), Range_stride(r2));
 }
 
 #endif // COS_SLICE_H
