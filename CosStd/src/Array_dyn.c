@@ -26,8 +26,6 @@
 #include <cos/gen/sequence.h>
 #include <cos/gen/object.h>
 
-#include <cos/carray.h>
-
 #include "Array_utl.h"
 
 #include <string.h>
@@ -53,7 +51,7 @@ defmethod(OBJ, gdeinit, ArrayFix)
   next_method(self);
 
   if (self->_object) { // take care of protection cases
-    free(self->_object);
+    cos_free(self->_object);
     self->Array.object = 0;
     self->_object      = 0;
   }
@@ -95,7 +93,7 @@ defmethod(OBJ, ginitWith, ArrayDyn, Int)
     THROW(gnewWithStr(ExOverflow, "capacity is too large"));
   }
 
-  arrf->_object = malloc(size);
+  arrf->_object = cos_malloc(size);
   
   if (!arrf->_object && size)
     THROW(ExBadAlloc);
@@ -146,7 +144,7 @@ defmethod(OBJ, genlarge, ArrayDyn, Int) // negative size means enlarge front
     if (size/sizeof *arrf->_object < capacity)
       THROW(gnewWithStr(ExOverflow, "extra size is too large"));
     
-    OBJ *_object = realloc(arrf->_object, size);
+    OBJ *_object = cos_realloc(arrf->_object, size);
     
     if (!_object && size)
       THROW(ExBadAlloc);
@@ -175,7 +173,7 @@ defmethod(OBJ, gadjust, ArrayDyn)
 
   // shrink storage
   if (arr->size != self->capacity) {
-    OBJ *_object = realloc(arrf->_object, size);
+    OBJ *_object = cos_realloc(arrf->_object, size);
     
     if (!_object && size)
       THROW(ExBadAlloc);

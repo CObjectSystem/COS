@@ -50,9 +50,9 @@ defmethod(OBJ, gdeinit, StringFix)
   next_method(self);
   
   if (self->_value) { // take care of protection cases
-    free(self->_value);
+    cos_free(self->_value);
     self->String.value = 0;
-    self->_value        = 0;
+    self->_value       = 0;
   }
   
   retmethod(_1);
@@ -91,7 +91,7 @@ defmethod(OBJ, ginitWith, StringDyn, Int)
     THROW(gnewWithStr(ExOverflow, "capacity is too large"));
   }
 
-  strf->_value = malloc(size);
+  strf->_value = cos_malloc(size);
   if (!strf->_value && size)
     THROW(ExBadAlloc);
 
@@ -143,7 +143,7 @@ defmethod(OBJ, genlarge, StringDyn, Int) // negative size means enlarge front
     if (size/sizeof *strf->_value < capacity+1)
       THROW(gnewWithStr(ExOverflow, "extra size is too large"));
     
-    U8* _value = realloc(strf->_value, size);
+    U8* _value = cos_realloc(strf->_value, size);
 
     if (!_value && size)
       THROW(ExBadAlloc);
@@ -172,7 +172,7 @@ defmethod(OBJ, gadjust, StringDyn)
 
   // shrink storage
   if (str->size != self->capacity) {
-    U8* _value = realloc(strf->_value, size);
+    U8* _value = cos_realloc(strf->_value, size);
     if (!_value && size)
       THROW(ExBadAlloc);
 

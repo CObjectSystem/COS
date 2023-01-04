@@ -63,7 +63,7 @@ defmethod(OBJ, ginitWith, TD, Int)
 
   ensure(self2->value >= 0, "negative " TS " capacity");
 
-  vecf->_value = malloc(capacity*sizeof *vec->value);
+  vecf->_value = cos_malloc(capacity*sizeof *vec->value);
   if (!vecf->_value && capacity) THROW(ExBadAlloc);
 
   vec->size      = 0;
@@ -81,7 +81,7 @@ defmethod(OBJ, gdeinit, TF)
   next_method(self);
 
   if (self->_value)            // take care of protection cases
-    free(self->_value);
+    cos_free(self->_value);
 
   retmethod(_1);
 endmethod
@@ -140,7 +140,7 @@ defmethod(OBJ, genlarge, TD, Int) // negative size means enlarge front
 
     capacity += size = extra_size(capacity, size);
     
-    VAL *_value = realloc(vecf->_value, capacity*sizeof *vecf->_value);
+    VAL *_value = cos_realloc(vecf->_value, capacity*sizeof *vecf->_value);
     if (!_value && capacity) THROW(ExBadAlloc);
 
     vec -> value   = _value + offset;
@@ -166,7 +166,7 @@ defmethod(OBJ, gadjust, TD)
 
   // shrink storage
   if (size != vecf->capacity) {
-    VAL *_value = realloc(vecf->_value, size*sizeof *vecf->_value);
+    VAL *_value = cos_realloc(vecf->_value, size*sizeof *vecf->_value);
     if (!_value && size) THROW(ExBadAlloc);
 
     vec -> value  = _value;

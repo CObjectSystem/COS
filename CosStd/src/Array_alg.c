@@ -32,8 +32,6 @@
 #include <cos/gen/object.h>
 #include <cos/gen/value.h>
 
-#include <cos/carray.h>
-
 #include "Array_utl.h"
 
 #include <string.h>
@@ -143,8 +141,8 @@ defmethod(OBJ, gpermute, Array, IntVector)
     I32  idx_s = self2->stride;
     I32 *idx   = self2->value;
 
-    CARRAY_CREATE(OBJ,buf,size); // OBJ buf[size];
-    CARRAY_CREATE(U8 ,flg,size); // U8  flg[size];
+    cos_alloc_tmp(OBJ,buf,size); // OBJ buf[size];
+    cos_alloc_tmp(U8 ,flg,size); // U8  flg[size];
 
     memset(flg,1,size);
 
@@ -164,8 +162,8 @@ defmethod(OBJ, gpermute, Array, IntVector)
       for (cur = buf; cur != end; cur++)
         *val = *cur, val += val_s;
 
-      CARRAY_DESTROY(buf);
-      CARRAY_DESTROY(flg);
+      cos_free_tmp(buf);
+      cos_free_tmp(flg);
     } else {
       // rollback (error)
       BOOL iiir = i < size; // last index-is-in-range flag
@@ -176,8 +174,8 @@ defmethod(OBJ, gpermute, Array, IntVector)
         val[(ptrdiff_t)i*val_s] = *--cur;
       }
 
-      CARRAY_DESTROY(buf);
-      CARRAY_DESTROY(flg);
+      cos_free_tmp(buf);
+      cos_free_tmp(flg);
       ensure( iiir, "index out of range" );
       ensure(    0, "invalid cyclic permutation" );
     }
@@ -488,7 +486,7 @@ endmethod
 static OBJ*
 KnuthMorrisPratt(OBJ *val, U32 val_n, I32 val_s, OBJ *pat, I32 pat_n, I32 pat_s)
 {
-  CARRAY_CREATE(I32,kmpNext,pat_n);
+  cos_alloc_tmp(I32,kmpNext,pat_n);
 
   { // preprocessing
     I32 i = 0, j = kmpNext[0] = -1;
@@ -515,13 +513,13 @@ KnuthMorrisPratt(OBJ *val, U32 val_n, I32 val_s, OBJ *pat, I32 pat_n, I32 pat_s)
       i++;
       j++;
       if (i >= pat_n) { // found
-        CARRAY_DESTROY(kmpNext);
+        cos_free_tmp(kmpNext);
         return val + (j - i)*val_s;
       }
     }
   }
 
-  CARRAY_DESTROY(kmpNext);
+  cos_free_tmp(kmpNext);
   return 0; // not found
 }
 

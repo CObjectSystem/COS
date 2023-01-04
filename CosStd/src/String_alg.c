@@ -29,8 +29,6 @@
 #include <cos/gen/relop.h>
 #include <cos/gen/value.h>
 
-#include <cos/carray.h>
-
 // -----
 
 useclass(View, Array);
@@ -249,7 +247,7 @@ endmethod
 static U8*
 KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
 {
-  CARRAY_CREATE(I32,kmpNext,pat_n);
+  cos_alloc_tmp(I32,kmpNext,pat_n);
 
   { // preprocessing
     I32 i = 0, j = kmpNext[0] = -1;
@@ -276,13 +274,13 @@ KnuthMorrisPratt(U8 *str, U32 str_n, U8 *pat, I32 pat_n)
       i++;
       j++;
       if (i >= pat_n) { // found
-        CARRAY_DESTROY(kmpNext);
+        cos_free_tmp(kmpNext);
         return str + (j - i);
       }
     }
   }
 
-  CARRAY_DESTROY(kmpNext);
+  cos_free_tmp(kmpNext);
   return 0;
 }
 

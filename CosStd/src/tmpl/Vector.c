@@ -36,8 +36,6 @@
 // #include <cos/gen/sequence.h>
 #include <cos/gen/value.h>
 
-#include <cos/carray.h>
-
 #include <stdlib.h>
 #include <string.h>
 
