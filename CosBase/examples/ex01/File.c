@@ -33,7 +33,7 @@ defmethod(OBJ, ginitWithStr, File, (STR)str)
 endmethod
 
 defmethod(OBJ, gdeinit, File)
-  if (self->file)
+  if (self->file && self->file != stdout)
     fclose(self->file);
 
   retmethod(_1);
