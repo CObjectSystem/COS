@@ -166,16 +166,16 @@ st_memory(void)
 
   // allocator warm up
   for (i = 0; i < P; i++)
-    arr[i++] = malloc(sz);
+    arr[i++] = cos_malloc(sz);
 
   for (i = 0; i < P; i++)
-    free(arr[i++]);
+    cos_free(arr[i++]);
 
   i = 0;
-  STEST( "malloc", P, arr[i++] = malloc(sz) );
+  STEST( "malloc", P, arr[i++] = cos_malloc(sz) );
 
   i = 0;
-  STEST( "free", P, free(arr[i++]) );
+  STEST( "free", P, cos_free(arr[i++]) );
 
   i = 0;
   STEST( "alloc + init", P, arr[i++] = ginit(galloc(Counter)) );

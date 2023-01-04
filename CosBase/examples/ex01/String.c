@@ -20,15 +20,15 @@
 #include "String.h"
 #include "generics.h"
 
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 
 makclass(String);
 
 static char* str_dup(STR str)
 {
   size_t len = strlen(str);
-  char *s = malloc(len+1);
+  char *s = cos_malloc(len+1);
   if (s) memcpy(s, str, len+1);
   return s;
 }
@@ -44,7 +44,7 @@ defmethod(OBJ, ginitWithStr, String, (STR)str)
 endmethod
 
 defmethod(OBJ, gdeinit, String)
-  free(self->str), self->str = 0;
+  cos_free(self->str), self->str = 0;
   retmethod(_1);
 endmethod
 

@@ -17,14 +17,21 @@
  * limitations under the License.
  */
 
+
+/* NOTE-USER: to load the shared libraries
+   linux: export   LD_LIBRARY_PATH="path-to/CosBase/Darwin/lib/"
+   macos: export DYLD_LIBRARY_PATH="path-to/CosBase/Darwin/lib/"
+*/
+
 #include "generics.h"
+
 #include <stdlib.h>
 
 useclass(Stream, String);
 
 int main(void)
 {
-  OBJ strm = gnewWithStr(Stream, 0);
+  OBJ strm = gnewWithStr(Stream, NULL);
   OBJ str1 = gnewWithStr(String, "string one\n");
   OBJ str2 = gnewWithStr(String, "string two\n");
 

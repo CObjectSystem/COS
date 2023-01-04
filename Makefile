@@ -7,7 +7,7 @@
 # |
 # | C Object System
 # |
-# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@gmail.com
 # |
 # | For more information, see:
 # | http://cern.ch/laurent.deniau/cos.html

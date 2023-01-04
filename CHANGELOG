@@ -7,7 +7,7 @@
 # |
 # | C Object System
 # |
-# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@cern.ch
+# | Copyright (c) 2007+ Laurent Deniau, laurent.deniau@gmail.com
 # |
 # | For more information, see:
 # | http://cern.ch/laurent.deniau/cos.html
@@ -37,6 +37,8 @@
   - docstring system finished and based on Sphinx (Python) for
     the html/pdf output.
   - documentation is ongoing
+  - moved to GitHub
+  - License moved to Apache
 
 ** 0.9 [2009-2010]
   - "Any" class resurrected. Useful to factorize some "Core" message. No

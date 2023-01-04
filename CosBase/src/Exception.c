@@ -62,7 +62,7 @@ str_dup(STR str)
 {
   useclass(ExBadAlloc);
   
-  char *cpy = malloc(strlen(str)+1);
+  char *cpy = cos_malloc(strlen(str)+1);
   if (!cpy) THROW(ExBadAlloc);
   return strcpy(cpy, str);
 }
@@ -93,7 +93,7 @@ endmethod
 
 defmethod(OBJ, gdeinit, Exception)
   if (self->str)
-    free(self->str), self->str = 0;
+    cos_free(self->str), self->str = 0;
 
   if (self->obj)
     grelease(self->obj), self->obj = 0;

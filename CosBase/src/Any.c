@@ -42,7 +42,7 @@ endmethod
 // ----- allocator
 
 defmethod(OBJ, galloc, mAny)
-  struct Any *obj = malloc(self->isz);
+  struct Any *obj = cos_malloc(self->isz);
 
   if (!obj)
     THROW(ExBadAlloc); // throw the class (no allocation)
@@ -60,7 +60,7 @@ defmethod(OBJ, gallocWithSize, mAny, (size_t)extra)
   if (size - extra != self->isz)
     THROW(gnewWithStr(ExOverflow, "extra size is too large"));
 
-  if (!(obj = malloc(size)))
+  if (!(obj = cos_malloc(size)))
     THROW(ExBadAlloc); // throw the class (no allocation)
 
   obj->_id = cos_class_id(self);
@@ -72,7 +72,7 @@ endmethod
 // ----- deallocator
 
 defmethod(void, gdealloc, Any)
-  free(_1);
+  cos_free(_1);
 endmethod
 
 // ----- clone

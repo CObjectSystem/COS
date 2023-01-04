@@ -53,7 +53,7 @@ Linux SLC 4.0, 5.0 (RedHat) on x86_64 (64-bit) Quad Xeon
 Mac OS X Leopard (Darwin) on x86_64 (64-bit) Core2 Duo
 
 # Compilers
-gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2, 4.3.3, 7.2.0
+gcc 3.2.3, 3.4.6, 4.1.2, 4.2.4, 4.3.2, 4.3.3, 7.2.0, 12.2.0
 
 Other available platforms (untested):
 -------------------------------------
@@ -74,7 +74,6 @@ or on arXiv.org
 Project information:
 --------------------
 
-  - web page: http:/cern.ch/laurent.deniau/cos.html
-  - web site: http:/sf.net/projects/cos
-  - contact : laurent.deniau@cern.ch
+  - web site: https://github.com/CObjectSystem/COS
+  - contact : laurent dot deniau at gmail dot com
 
