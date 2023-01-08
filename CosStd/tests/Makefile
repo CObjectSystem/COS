@@ -31,8 +31,8 @@ program := testCosStd
 targets := debug.run
 
 # files and modules
-sources := $(wildcard src/*.c)
-headers := $(wildcard src/*.h)
+sources := src/*.c
+headers := src/*.h
 defgens := $(headers)
 defprps := $(headers)
 
