@@ -71,7 +71,7 @@
   - all the language feature are there
   - moving from alpha to beta state
   - properties added
-  - gdelete and gautoDelete added (for semi-GC)
+  - grelease and gautoRelease added (for semi-GC)
   - more compile-time checks
   - module support
   - start of other modules (not provided)

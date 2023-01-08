@@ -92,7 +92,7 @@ defmethod(OBJ, ggetAt, TL, Int)
   while (vec->size <= i)
     gappend(_1, geval(self->generator));
 
-  retmethod( gautoDelete(VALOBJ(vec->value[i*vec->stride])) );
+  retmethod( gautoRelease(VALOBJ(vec->value[i*vec->stride])) );
 endmethod
 
 // NOTE-TODO: other getters?

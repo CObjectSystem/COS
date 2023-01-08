@@ -24,7 +24,7 @@
 
 /* NOTE-USER: operators policy
    The policy of these messages is to return the operation result in a
-   new autoDelete object resulting from the promotion/coercion of _1
+   new autoRelease object resulting from the promotion/coercion of _1
    and _2 which follows the rules of C99 for primitive types.
 */
 defgeneric(OBJ, (G_conj  ) gconj , _1);  // return _1^*
