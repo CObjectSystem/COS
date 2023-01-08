@@ -36,11 +36,11 @@ defgens :=
 defprps :=
 
 # project dependencies (as with -lname)
-moddeps := CosStd CosBase
+moddeps := CosBase CosStd
 
 # project dependencies (as with -Ipath or -Lpath)
-incdirs := ../../../CosBase/include ../../include .
-libdirs := ../../../CosBase/$(OSNAME)/lib ../../$(OSNAME)/lib
+incdirs := $(foreach m,$(moddeps),../../../$(m)/include) .
+libdirs := $(foreach m,$(moddeps),../../../$(m)/$(OSNAME)/lib)
 
 include $(cos)/epilogue
 
