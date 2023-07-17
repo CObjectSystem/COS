@@ -92,6 +92,9 @@ OSVERS := 0
 OSARCH := unknown
 $(warning OSNAME set to Default for configuration)
 endif
+ifdef MSYSTEM
+OSNAME = $(MSYSTEM)
+endif
 
 # clear some suffixes (MAKEFLAGS += -R doesn't work)
 .SUFFIXES:
