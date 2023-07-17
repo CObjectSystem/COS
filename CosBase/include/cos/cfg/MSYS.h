@@ -1,5 +1,5 @@
-#ifndef COS_CFG_CYGWIN_H
-#define COS_CFG_CYGWIN_H
+#ifndef COS_CFG_MSYS_H
+#define COS_CFG_MSYS_H
 
 /**
  * C Object System
@@ -27,5 +27,5 @@
 #define COS_LIB_PREFIX "lib"
 #define COS_LIB_SHEXT  ".dll"
 
-#endif // COS_CFG_CYGWIN_H
+#endif // COS_CFG_MSYS_H
 
