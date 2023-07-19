@@ -17,6 +17,8 @@
 #  limitations under the License.
 #
 
+# Note: COS is not yet compile on CLANG64
+
 #
 # install paths
 #
