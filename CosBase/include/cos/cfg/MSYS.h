@@ -3,7 +3,7 @@
 
 /**
  * C Object System
- * COS config: Cygwin
+ * COS config: MSYS
  *
  * Copyright 2006+ Laurent Deniau <laurent.deniau@gmail.com>
  *
