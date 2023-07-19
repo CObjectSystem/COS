@@ -17,6 +17,8 @@
 #  limitations under the License.
 #
 
+# Note: COS is not yet compile on CLANGARM64
+
 #
 # install paths
 #
