@@ -17,8 +17,6 @@
 #  limitations under the License.
 #
 
-# Note: COS is not yet compile on CLANG64
-
 #
 # install paths
 #
@@ -55,9 +53,9 @@ STRIP       := strip -s
 #
 # compiler and linker specific
 #
-CPPFLAGS    := -std=c99 -W -Wno-unused-local-typedefs -Wall -pedantic
-CCFLAGS     := -std=c99 -W -Wno-unused-local-typedefs -Wall -pedantic -O3
-LDFLAGS     := -std=c99 -W -Wno-unused-local-typedefs -Wall -pedantic -O3
+CPPFLAGS    := -std=c99 -W -Wall -Wno-unused-local-typedefs -pedantic
+CCFLAGS     := -std=c99 -W -Wall -Wno-unused-local-typedefs -pedantic -O3
+LDFLAGS     := -std=c99 -W -Wall -Wno-unused-local-typedefs -pedantic -O3
 
 DEBUG_CPP   :=
 DEBUG_CC    := -g
