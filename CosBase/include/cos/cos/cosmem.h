@@ -99,10 +99,17 @@ void    cos_mem_mdump   (FILE*);
 
 #else
 
+#ifndef __clang__
 void* cos_malloc (size_t)        __attribute__((hot,malloc(cos_free,1),malloc,returns_nonnull));
 void* cos_calloc (size_t,size_t) __attribute__((hot,malloc(cos_free,1),malloc,returns_nonnull));
 void* cos_realloc(void* ,size_t) __attribute__((hot,malloc(cos_free,1)));
 void  cos_free   (void* )        __attribute__((hot));
+#else
+void* cos_malloc (size_t)        __attribute__((hot,malloc(),malloc,returns_nonnull));
+void* cos_calloc (size_t,size_t) __attribute__((hot,malloc(),malloc,returns_nonnull));
+void* cos_realloc(void* ,size_t) __attribute__((hot,malloc()));
+void  cos_free   (void* )        __attribute__((hot));
+#endif
 
 #endif
 
