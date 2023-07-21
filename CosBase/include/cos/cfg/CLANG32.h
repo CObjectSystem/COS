@@ -1,9 +1,9 @@
-#ifndef COS_CFG_CYGWIN_H
-#define COS_CFG_CYGWIN_H
+#ifndef COS_CFG_MINGW_H
+#define COS_CFG_MINGW_H
 
 /**
  * C Object System
- * COS config: Cygwin
+ * COS config: CLANG32
  *
  * Copyright 2006+ Laurent Deniau <laurent.deniau@gmail.com>
  *
@@ -21,11 +21,11 @@
  */
 
 #define COS_HAS_TLS   0
-#define COS_HAS_POSIX 1
+#define COS_HAS_POSIX 0
 #define COS_HAS_DLINK 0  /* Debug static build first */
 
 #define COS_LIB_PREFIX "lib"
 #define COS_LIB_SHEXT  ".dll"
 
-#endif // COS_CFG_CYGWIN_H
+#endif // COS_CFG_MINGW_H
 

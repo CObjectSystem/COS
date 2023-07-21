@@ -17,6 +17,11 @@
  * limitations under the License.
  */
 
+#ifdef __MINGW32__
+#define _POSIX
+#define __USE_MINGW_ALARM
+#endif
+
 #include <cos/Exception.h>
 
 #include <cos/errno.h>
