@@ -60,8 +60,13 @@ $(OSNAME)/$(TARGET)/%.o: %.c
 $(OSNAME)/$(TARGET)/%.d: TARGET := $(TARGET)
 $(OSNAME)/$(TARGET)/%.d: %.c
 	$E "*** Computing [$(TARGET)] $(@F)"
+ifdef MSYSTEM
+	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
+	   sed -z -e 's,[^:]*:,$(basename $@).o:,' > $@
+else
 	$_ $(DEP) $(INCLUDE) $(CPPFLAGS) $< | \
 	   sed -e 's,[^:]*:,$(basename $@).o:,' > $@
+endif
 
 #
 # include dependencies
