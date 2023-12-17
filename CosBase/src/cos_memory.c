@@ -25,6 +25,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <assert.h>
 
 #define COS_MEM_UTEST 0 // 1 -> run standalone unit tests in main().
