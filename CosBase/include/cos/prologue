@@ -92,6 +92,9 @@ OSVERS := 0
 OSARCH := unknown
 $(warning OSNAME set to Default for configuration)
 endif
+ifeq ($(OSTYPE),cygwin)
+OSNAME = CYGWIN
+endif
 
 # clear some suffixes (MAKEFLAGS += -R doesn't work)
 .SUFFIXES:
