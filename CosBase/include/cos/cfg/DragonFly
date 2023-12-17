@@ -1,0 +1,108 @@
+#
+#  C Object System
+#  COS makefile -- DragonFly
+# 
+#  Copyright 2007+ Laurent Deniau <laurent.deniau@gmail.com>
+# 
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+#
+# install paths
+#
+PREFIX      := /usr
+BINDIR      := bin
+LIBDIR      := lib
+INCDIR      := include
+DOCDIR      := share/doc
+
+#
+# program specific
+#
+BINTYPE     := shared
+BINEXT      :=
+
+#
+# library specific
+#
+LIBTYPE     := shared static plugin
+LIBPREFIX   := lib
+LIBAREXT    := .a
+LIBSHEXT    := .so
+
+#
+# tools specific
+#
+CC          := gcc
+CPP         := $(CC) -E
+DEP         := $(CC) -M
+LD          := $(CC)
+AR          := ar -cr
+NM          := nm -P -g
+STRIP       := strip -s
+
+#
+# compiler and linker specific
+#
+CPPFLAGS    := -std=c99 -W -Wall -pedantic -pipe
+CCFLAGS     := -std=c99 -W -Wall -pedantic -pipe -O3
+LDFLAGS     := -std=c99 -W -Wall -pedantic -pipe -O3
+
+DEBUG_CPP   :=
+DEBUG_CC    := -g
+DEBUG_LD    := -g
+
+PROFILE_CPP :=
+PROFILE_CC  := -pg
+PROFILE_LD  := -pg
+
+RELEASE_CPP :=
+RELEASE_CC  := 
+RELEASE_LD  := 
+
+STATIC_CC   := -static
+STATIC_LD   := -static
+
+SHARED_CC   := -shared -fPIC
+SHARED_LD    = -shared -fPIC -Wl,-soname,$(@F)
+
+PLUGIN_CC   := $(SHARED_CC)
+PLUGIN_LD    = $(SHARED_LD)
+
+#
+# dynamic library search path
+#
+RPATH        = # $(patsubst -L%,-Wl$(comma)-rpath$(comma)%,$(LIBRARY))
+
+#
+# system specific
+#
+SYSFLAGS    := -DOSNAME=$(OSNAME) \
+               -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE \
+               -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
+SYSLIBPATH  := LD_LIBRARY_PATH
+SYSLIBS     := pthread dl
+
+#
+# compiler specific (gcc is the reference)
+#
+
+CCFLAGS     += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
+               -Wchar-subscripts -Wformat-nonliteral -Wwrite-strings \
+               -Wpointer-arith -Wbad-function-cast -Wcast-align -Wcast-qual \
+               -Wfloat-equal -Wconversion -Wno-conversion -Winline \
+               -Wno-unused-local-typedefs
+
+# CCFLAGS   += --param large-function-growth=400 --param inline-unit-growth=200
+
+# end of makefile
