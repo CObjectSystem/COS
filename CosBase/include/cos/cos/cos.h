@@ -51,6 +51,7 @@ extern "C" {
 /* NOTE-USER: C headers
  */
 #include <stddef.h>
+#include <stdint.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <limits.h>
